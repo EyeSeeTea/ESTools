@@ -18,9 +18,17 @@ server=https://hnqis-dev-ci.psi-mis.org
 user=admin
 pass=district
 events=( $(cat events.list) )
+LOG_FILE=delete_events.log
 
+echo "----------" > ${LOG_FILE} 
+echo "Execution started: $(date)" >> ${LOG_FILE}
+echo "----------" >> ${LOG_FILE} 
 for eventID in ${events[@]}; do
   echo "deleting ${eventID}"
-  curl -X DELETE "${server}/api/events/${eventID}" -u ${user}:${pass} -v${event} >> delete_events.log
+  curl -X DELETE "${server}/api/events/${eventID}" -u ${user}:${pass} -v${event} >> ${LOG_FILE} 
+  echo "" >> ${LOG_FILE}
 done
+echo "----------" >> ${LOG_FILE} 
+echo "Execution finished: $(date)" >> ${LOG_FILE}
+echo "----------" >> ${LOG_FILE} 
 
