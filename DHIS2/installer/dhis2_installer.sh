@@ -117,7 +117,7 @@ stop_dhis_server() { local command=$1
 }
 
 run_psql() {
-  sudo -u postgres psql "$@"
+  sudo -u postgres psql --quiet "$@"
 }
 
 request_analytics() { local server_url=$1
