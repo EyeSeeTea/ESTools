@@ -320,33 +320,31 @@ main() {
 }
 
 print_help() {
-  tabs 2
-  stderr "usage: dhis_installer [-h] <command> [<command_options>]"
-  stderr
-  stderr "Commands:"
-  stderr
-  stderr "\t" "update [PROFILE] [OPTIONS]" "\t\t" "Update existing DHIS2 instance"
-  stderr "\t" "run-analytics SERVER_URL" "\t\t" "Run analytics"
-  stderr "\t" "-h | --help" "\t\t" "Show this help message"
-  stderr
-  stderr "<update> options:"
-  stderr
-  stderr "\t" "--soft" "\t\t" "Drop current DB and install a fresh one (keeping existing DHIS2 war) [default]"
-  stderr "\t" "--hard" "\t\t" "Drop current DB and install a fresh one and update DHIS war"
-  stderr
-  stderr "\t" "--data-directory=DIRECTORY" "\t" "Directory to store downloaded files and repos"
-  stderr "\t" "--logs-directory=DIRECTORY" "\t" "Directory to store logs"
-  stderr
-  stderr "\t" "--db-name=NAME" "\t" "Database name"
-  stderr "\t" "--db-source=URL" "\t" "File URL or github URL (repo will be cloned)"
-  stderr
-  stderr "\t" "--start-command=NAME" "\t" "Command to start DHIS2 server"
-  stderr "\t" "--stop-command=NAME" "\t" "Command to stop DHIS2 server"
-  stderr
-  stderr "\t" "--war-source=URL" "\t" "URL of the DHIS2 WAR to install (used only on --hard)"
-  stderr "\t" "--war-destination=DIRECTORY" "\t" "Directory to save DHIS2 war (used only on --hard)"
-  stderr
-  stderr "\t" "--run-analytics=DHIS_SERVER_BASEURL" "\t" "Run Analytics in this DHIS2 server after update"
+  stderr """usage: dhis2-installer [-h | --help] <command> [<command_options>]
+
+Commands:
+
+  update [PROFILE] [OPTIONS]  Update existing DHIS2 instance
+  run-analytics SERVER_URL    Run analytics
+
+<update> options:
+
+  --soft  Drop current DB and install a fresh one (keeping existing DHIS2 war) [default]
+  --hard  Drop current DB and install a fresh one and update DHIS war
+
+  --data-directory=DIRECTORY  Directory to store downloaded files and repos
+  --logs-directory=DIRECTORY  Directory to store logs
+
+  --db-name=NAME   Database name
+  --db-source=URL  File URL or github URL (repo will be cloned)
+
+  --start-command=NAME  Command to start DHIS2 server
+  --stop-command=NAME   Command to stop DHIS2 server
+
+  --war-source=URL             URL of the DHIS2 WAR to install (used only on --hard)
+  --war-destination=DIRECTORY  Directory to save DHIS2 war (used only on --hard)
+
+  --run-analytics=DHIS_SERVER_BASEURL   Run Analytics in this DHIS2 server after update"""
 }
 
 main "$@"
