@@ -89,9 +89,10 @@ parse_args() { local global_array=$1 coded_options=$2 print_help=$3
 ### App
 
 # Global variables
-# args : ([option-name-with-value]=VALUE [option-flag]=yes)
+
+# ([option-name-with-value]=VALUE [option-flag]=yes)
 declare -g -A args
-# profile used
+# Current profile
 declare -g profile
 
 download() { local destdir=$1 url=$2
@@ -129,12 +130,13 @@ request_analytics() { local server_url=$1
 
 import_database() { local db_filename=$1 db_name=$2
   debug "Recreate database: $db_name"
-  run_psql <<< "
+  run_psql -v "ON_ERROR_STOP=1" <<< "
     DROP DATABASE IF EXISTS $db_name;
     CREATE DATABASE $db_name OWNER 'dhis' ENCODING 'utf8';
   "
+
   debug "Import DB dump: $db_filename"
-  zcat -f  "$db_filename" | run_psql "$db_name"
+  zcat -f  "$db_filename" | run_psql -v "ON_ERROR_STOP=0" "$db_name"
 }
 
 install_dhis_war() { local warfile=$1 war_destination=$2
@@ -170,7 +172,7 @@ download_from_fileurl_or_repository() { local destdir=$1 db_source=$2 hard_updat
     git checkout -f $branch >&2
     ourbranch="dhis2-installer-$profile"
     debug "Use branch: $ourbranch"
-    git branch "$ourbranch" >&2 || true
+    git branch "$ourbranch" 2>/dev/null || true
     git checkout -f "$ourbranch" >&2
 
     if test "$hard_update"; then
@@ -179,6 +181,7 @@ download_from_fileurl_or_repository() { local destdir=$1 db_source=$2 hard_updat
       git merge $branch >&2
       git diff-index --quiet HEAD || git commit -m "Hard update" >&2
     fi
+    debug "Current commit: $(git rev-parse --verify HEAD)"
     echo "$github_dir/$path"
   else
     download "$destdir" "$db_source"
@@ -200,20 +203,21 @@ get_configuration_from_file() { local global_array=$1 profile=$2
 
 # Show stdout and stderr to console as usual but also append to the logs file
 config_logs() { local _logsdir=$1
-  local timestamp
+  local timestamp logsdir
   logsdir=${_logsdir%%/}
   mkdir -p "$logsdir"
   debug "Logs directory: $logsdir"
   timestamp=$(date +%Y-%m-%d_%H-%M-%S)
+
   # Process substitution is not available in POSIX mode, disable it temporally
   set +o posix
-  # This exec command redirect stderr/stdout to a file
+  # This exec command redirects stderr/stdout to a file
   exec &> >(tee -a "$logsdir/dhis2-installer-$timestamp.log")
   # Now re-enable POSIX mode
   set -o posix
 }
 
-wait_for_server() { local url=$1 max_wait=$2
+wait_for_server() { local url=$1 max_wait=${2:-300}
   local ts_start
   debug "Wait for server ($max_wait secs max): $url"
   ts_start=$(date +%s)
@@ -267,8 +271,6 @@ load_args_for_update_command() { local profile_or_first_option=${1:-}
   for opt in ${required_opts[*]}; do
     test "${args[$opt]-}" ||  die "Required option not found: --$opt"
   done
-
-  echo "$profile"
 }
 
 update() {
@@ -301,8 +303,8 @@ update() {
 }
 
 main() {
-  set -o posix
   local command=${1:-}
+  set -o posix
   test "$#" -ge 1 && shift 1
 
   case "$command" in
@@ -324,27 +326,27 @@ print_help() {
 
 Commands:
 
-  update [PROFILE] [OPTIONS]  Update existing DHIS2 instance
+  update [PROFILE] [OPTIONS]  Update an existing DHIS2 Tomcat instance
   run-analytics SERVER_URL    Run analytics
 
 <update> options:
 
   --soft  Drop current DB and install a fresh one (keeping existing DHIS2 war) [default]
-  --hard  Drop current DB and install a fresh one and update DHIS war
+  --hard  Drop current DB, install a fresh one and update DHIS war
 
   --data-directory=DIRECTORY  Directory to store downloaded files and repos
   --logs-directory=DIRECTORY  Directory to store logs
 
   --db-name=NAME   Database name
-  --db-source=URL  File URL or github URL (repo will be cloned)
+  --db-source=URL  File URL or github blob URL (repo will be cloned)
 
-  --start-command=NAME  Command to start DHIS2 server
-  --stop-command=NAME   Command to stop DHIS2 server
+  --start-command=NAME  Command to start the DHIS2 server
+  --stop-command=NAME   Command to stop the DHIS2 server
 
-  --war-source=URL             URL of the DHIS2 WAR to install (used only on --hard)
-  --war-destination=DIRECTORY  Directory to save DHIS2 war (used only on --hard)
+  --war-source=URL             URL of the DHIS2 WAR to install (only on --hard)
+  --war-destination=DIRECTORY  Directory to save DHIS2 war (only on --hard)
 
-  --run-analytics=DHIS_SERVER_BASEURL   Run Analytics in this DHIS2 server after update"""
+  --run-analytics=DHIS_SERVER_BASEURL   Run analytics after the update"""
 }
 
 main "$@"
