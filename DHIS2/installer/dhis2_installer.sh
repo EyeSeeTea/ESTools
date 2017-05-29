@@ -131,6 +131,10 @@ request_analytics() { local server_url=$1
 import_database() { local db_filename=$1 db_name=$2
   debug "Recreate database: $db_name"
   run_psql -v "ON_ERROR_STOP=1" <<< "
+    -- Terminate all sessions using the database
+    UPDATE pg_database SET datallowconn = 'false' WHERE datname = '$db_name';
+    SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db_name';
+    -- Re-create the database
     DROP DATABASE IF EXISTS $db_name;
     CREATE DATABASE $db_name OWNER 'dhis' ENCODING 'utf8';
   "
