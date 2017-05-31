@@ -34,7 +34,7 @@ parse_ini_section() { local global_array=$1 file=$2 section=$3
   done <<< "$section_contents"
 }
 
-# Parse arguments and populatie a global array
+# Parse arguments and populate a global array
 #   $1 - Global array variable to populate
 #   $2 - Coded options. Example: "output-file:|-o verbose|b no-verify"
 #   $3 - Function name that prints the help message
