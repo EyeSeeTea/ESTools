@@ -11,6 +11,36 @@ $ cp dhis2-installer.conf.example $HOME/.dhis2_installer.conf
 
 Now customize `$HOME/.dhis2_installer.conf` with your particular setup.
 
+## Usage
+
+```
+dhis2-installer [-h | --help] <command> [<command_options>]
+￼
+￼Commands:
+￼
+￼  update [PROFILE] [OPTIONS]  Update an existing DHIS2 Tomcat instance
+￼  run-analytics SERVER_URL    Run analytics
+￼
+￼<update> options:
+￼
+￼  --soft  Drop current DB and install a fresh one (keeping existing DHIS2 war) [default]
+￼  --hard  Drop current DB, install a fresh one and update DHIS war
+￼
+￼  --data-directory=DIRECTORY  Directory to store downloaded files and repos
+￼  --logs-directory=DIRECTORY  Directory to store logs
+￼
+￼  --db-name=NAME   Database name
+￼  --db-source=URL  File URL or github blob URL (repo will be cloned)
+￼
+￼  --start-command=NAME  Command to start the DHIS2 server
+￼  --stop-command=NAME   Command to stop the DHIS2 server
+￼
+￼  --war-source=URL             URL of the DHIS2 WAR to install (only on --hard)
+￼  --war-destination=DIRECTORY  Directory to save DHIS2 war (only on --hard)
+￼
+￼  --run-analytics=DHIS_SERVER_BASEURL   Run analytics after the update"
+```
+
 ## Examples
 
 ### Command <update>
