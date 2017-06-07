@@ -15,30 +15,31 @@ Now customize `$HOME/.dhis2_installer.conf` with your particular setup.
 
 ```
 dhis2-installer [-h | --help] <command> [<command_options>]
-￼
-￼Commands:
-￼
-￼  update [PROFILE] [OPTIONS]  Update an existing DHIS2 Tomcat instance
-￼  run-analytics SERVER_URL    Run analytics
-￼
-￼<update> options:
-￼
-￼  --soft  Drop current DB and install a fresh one (keeping existing DHIS2 war) [default]
-￼  --hard  Drop current DB, install a fresh one and update DHIS war
-￼
-￼  --data-directory=DIRECTORY  Directory to store downloaded files and repos
-￼  --logs-directory=DIRECTORY  Directory to store logs
-￼
-￼  --db-name=NAME   Database name
-￼  --db-source=URL  File URL or github blob URL (repo will be cloned)
-￼
-￼  --start-command=NAME  Command to start the DHIS2 server
-￼  --stop-command=NAME   Command to stop the DHIS2 server
-￼
-￼  --war-source=URL             URL of the DHIS2 WAR to install (only on --hard)
-￼  --war-destination=DIRECTORY  Directory to save DHIS2 war (only on --hard)
-￼
-￼  --run-analytics=DHIS_SERVER_BASEURL   Run analytics after the update"
+
+Commands:
+
+  update [PROFILE] [OPTIONS]  Update an existing DHIS2 Tomcat instance
+  run-analytics SERVER_URL    Run analytics
+
+<update> options:
+
+  --soft  Drop current DB and install a fresh one (keeping existing DHIS2 war) [default]
+  --hard  Drop current DB, install a fresh one and update DHIS war
+
+  --data-directory=DIRECTORY  Directory to store downloaded files and repos
+  --logs-directory=DIRECTORY  Directory to store logs
+
+  --db-name=NAME   Database name
+  --db-source=URL  File URL or github blob URL (repo will be cloned)
+
+  --start-command=NAME  Command to start the DHIS2 server
+  --stop-command=NAME   Command to stop the DHIS2 server
+
+  --war-source=URL             URL of the DHIS2 WAR to install (only on --hard)
+  --war-destination=DIRECTORY  Directory to save DHIS2 war (only on --hard)
+
+  --run-analytics       Run analytics after the update (requires --server-url)
+  --post-scripts=PATH   Run post scripts in directory after the update (requires --server-url)
 ```
 
 ## Examples
@@ -76,7 +77,7 @@ For example, this will run all 4 profiles on different times to avoid hogging th
 
 ```
 $ crontab -l
-00 03  * * * /usr/local/bin/dhis2-installer update dev
+00 03  * * * /usr/local/bin/dhis2-installer update dev --hard
 30 03  * * * /usr/local/bin/dhis2-installer update current
 00 04  * * * /usr/local/bin/dhis2-installer update previous1
 30 04  * * * /usr/local/bin/dhis2-installer update previous2
