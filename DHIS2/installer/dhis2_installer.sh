@@ -160,7 +160,7 @@ run_analytics() {
 run_post_scripts() { local scripts_path=$1 server_url=$2
   debug "Running post scripts: $scripts_path"
   find "$scripts_path" -type f -executable -print0 | while IFS= read -r -d $'\0' file; do
-    debug "Execute: $file $profile"
+    debug "Execute: $file $server_url"
     "$file" "$server_url"
   done
 }
