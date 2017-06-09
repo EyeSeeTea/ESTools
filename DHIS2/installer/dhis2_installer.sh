@@ -150,11 +150,19 @@ install_dhis_war() { local warfile=$1 war_destination=$2
 
 run_analytics() {
   local url=${1:-}
-  if ! test "$url"; then
+  if test -z "$url"; then
     die "Needs SERVER_URL"
   else
     request_analytics "$url"
   fi
+}
+
+run_post_scripts() { local scripts_path=$1 server_url=$2
+  debug "Running post scripts: $scripts_path"
+  find "$scripts_path" -type f -executable -print0 | while IFS= read -r -d $'\0' file; do
+    debug "Execute: $file $server_url"
+    "$file" "$server_url"
+  done
 }
 
 download_from_fileurl_or_repository() { local destdir=$1 db_source=$2 hard_update=$3
@@ -238,7 +246,9 @@ load_args_for_update_command() { local profile_or_first_option=${1:-}
     "db-name:|n:" "db-source:"
     "start-command:" "stop-command:"
     "war-source:" "war-destination:"
+    "server-url:"
     "run-analytics"
+    "post-scripts:"
   )
 
   if test "${profile_or_first_option}" && test "${profile_or_first_option:0:1}" != "-"; then
@@ -259,6 +269,12 @@ load_args_for_update_command() { local profile_or_first_option=${1:-}
   for opt in ${required_opts[*]}; do
     test "${args[$opt]-}" ||  die "Required option not found: --$opt"
   done
+
+  if test "${args[run-analytics]-}" -a -z "${args[server-url]-}"; then
+    die "Option --run-analytics requires --server-url"
+  elif test "${args[post-scripts]-}" -a -z "${args[server-url]-}"; then
+    die "Option --post-scripts requires --server-url"
+  fi
 }
 
 update() {
@@ -281,9 +297,16 @@ update() {
 
   start_dhis_server "${args[start-command]}"
 
-  if test "${args[run-analytics]-}"; then
-    wait_for_server "${args[run-analytics]}" 300
-    request_analytics "${args[run-analytics]}"
+  if test "${args[server-url]-}"; then
+    wait_for_server "${args[server-url]}" 300
+
+    if test "${args[run-analytics]-}"; then
+      run_analytics "${args[server-url]}"
+    fi
+
+    if test "${args[post-scripts]-}"; then
+      run_post_scripts "${args[post-scripts]}" "${args[server-url]}"
+    fi
   fi
 
   debug "Done"
@@ -318,8 +341,8 @@ Commands:
 
 <update> options:
 
-  --soft  Drop current DB and install a fresh one (keeping existing DHIS2 war) [default]
-  --hard  Drop current DB, install a fresh one and update DHIS war
+  --soft  Drop current DB and re-install [default]
+  --hard  Drop current DB, re-install a fresh one and update DHIS war
 
   --data-directory=DIRECTORY  Directory to store downloaded files and repos
   --logs-directory=DIRECTORY  Directory to store logs
@@ -329,11 +352,13 @@ Commands:
 
   --start-command=NAME  Command to start the DHIS2 server
   --stop-command=NAME   Command to stop the DHIS2 server
+  --server-url=URL      Server DHIS2 URL server
 
   --war-source=URL             URL of the DHIS2 WAR to install (only on --hard)
   --war-destination=DIRECTORY  Directory to save DHIS2 war (only on --hard)
 
-  --run-analytics=DHIS_SERVER_BASEURL   Run analytics after the update"""
+  --run-analytics       Run analytics after the update (requires --server-url)
+  --post-scripts=PATH   Run post scripts in directory after the update (requires --server-url)"""
 }
 
 main "$@"

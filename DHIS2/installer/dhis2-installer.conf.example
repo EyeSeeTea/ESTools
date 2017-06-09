@@ -1,14 +1,15 @@
 [global]
-  soft = yes
+  run-analytics = yes
   data-directory = /ebs1/dhis2-installer/cache
   logs-directory = /ebs1/dhis2-installer/logs
+  post-scripts = /home/ubuntu/.dhis2-installer.post-scripts/
 
 [profile:dev]
   db-name = dev
   db-source = https://github.com/dhis2/dhis2-demo-db/blob/master/sierra-leone/snapshot/dhis2-db-sierra-leone.sql.gz
   start-command = /ebs1/instances/android-dev/tomcat/bin/startup.sh
   stop-command = /ebs1/instances/android-dev/tomcat/bin/shutdown.sh
-  run-analytics = https://system:System123@play.dhis2.org/android-dev
+  server-url = https://system:System123@play.dhis2.org/android-dev
   war-source = https://ci.dhis2.org/job/dhis2-trunk/lastSuccessfulBuild/artifact/dhis-2/dhis-web/dhis-web-portal/target/dhis.war
   war-destination = /ebs1/instances/android-dev/tomcat/webapps/android-dev.war
 
@@ -17,7 +18,7 @@
   db-source = https://github.com/dhis2/dhis2-demo-db/blob/master/sierra-leone/snapshot/dhis2-db-sierra-leone.sql.gz
   start-command = /ebs1/instances/android-current/tomcat/bin/startup.sh
   stop-command = /ebs1/instances/android-current/tomcat/bin/shutdown.sh
-  run-analytics = https://system:System123@play.dhis2.org/android-current
+  server-url = https://system:System123@play.dhis2.org/android-current
   war-source = https://ci.dhis2.org/job/dhis2-trunk/lastSuccessfulBuild/artifact/dhis-2/dhis-web/dhis-web-portal/target/dhis.war
   war-destination = /ebs1/instances/android-current/tomcat/webapps/android-current.war
 
@@ -26,7 +27,7 @@
   db-source = https://github.com/dhis2/dhis2-demo-db/blob/master/sierra-leone/226/dhis2-db-sierra-leone.sql.gz
   start-command = /ebs1/instances/android-previous1/tomcat/bin/startup.sh
   stop-command = /ebs1/instances/android-previous1/tomcat/bin/shutdown.sh
-  run-analytics = https://system:System123@play.dhis2.org/android-previous1
+  server-url = https://system:System123@play.dhis2.org/android-previous1
   war-source = https://ci.dhis2.org/job/dhis2-2.26/lastSuccessfulBuild/artifact/dhis-2/dhis-web/dhis-web-portal/target/dhis.war
   war-destination = /ebs1/instances/android-previous1/tomcat/webapps/android-previous1.war
 
@@ -35,6 +36,6 @@
   db-source = https://github.com/dhis2/dhis2-demo-db/blob/master/sierra-leone/225/dhis2-db-sierra-leone.sql.gz
   start-command = /ebs1/instances/android-previous2/tomcat/bin/startup.sh
   stop-command = /ebs1/instances/android-previous2/tomcat/bin/shutdown.sh
-  run-analytics = https://system:System123@play.dhis2.org/android-previous2
+  server-url = https://system:System123@play.dhis2.org/android-previous2
   war-source = https://ci.dhis2.org/job/dhis2-2.25/lastSuccessfulBuild/artifact/dhis-2/dhis-web/dhis-web-portal/target/dhis.war
   war-destination = /ebs1/instances/android-previous2/tomcat/webapps/android-previous5.war
