@@ -165,36 +165,20 @@ run_post_scripts() { local scripts_path=$1 server_url=$2
   done
 }
 
-download_from_fileurl_or_repository() { local destdir=$1 db_source=$2 hard_update=$3 profile=$4
-  local protocol empty server org project blob branch path ourbranch github_dir
+download_from_fileurl_or_repository() { local destdir=$1 db_source=$2 hard_update=$3
+  local raw_url dbfile_path
   debug "DB origin URL: $db_source"
 
   if echo "$db_source" | grep -q "^https://github.com/[^/]*/[^/]*/blob/"; then # github repo file
-    IFS="/" read protocol empty server org project blob branch path <<< "$db_source"
-    debug "DB origin is a github blob URL, clone repository"
-    github_dir="$destdir/$org/$project"
-    mkdir -p "$destdir/$org"
-    if ! test -e "$github_dir"; then
-      git clone "https://github.com/$org/$project" "$github_dir" >&2
+    debug "DB origin is a github blob URL: $db_source"
+    raw_url=$(echo "$db_source" | sed "s@/blob/@/raw/@")
+    dbfile_path="$destdir/$(basename "$raw_url")"
+    if test -e "$dbfile_path" -a -z "$hard_update"; then
+      debug "Soft update, use cached DB file: $dbfile_path"
+      echo $dbfile_path
+    else
+      download "$destdir" "$raw_url"
     fi
-    cd "$github_dir"
-
-    # Keep different branches (dhis2-installer-PROFILE) to avoid mixing soft/hard updates
-    # of profiles that use the same github URL
-    git checkout -f $branch >&2
-    ourbranch="dhis2-installer-$profile"
-    debug "Use branch: $ourbranch"
-    git branch "$ourbranch" 2>/dev/null || true
-    git checkout -f "$ourbranch" >&2
-
-    if test "$hard_update"; then
-      debug "Fetch newest changes from upstream repo: $path"
-      git fetch >&2
-      git merge $branch >&2
-      git diff-index --quiet HEAD || git commit -m "Hard update" >&2
-    fi
-    debug "Current commit: $(git rev-parse --verify HEAD)"
-    echo "$github_dir/$path"
   else
     download "$destdir" "$db_source"
   fi
@@ -247,8 +231,8 @@ wait_for_server() { local url=$1 max_wait=${2:-300}
   done
 }
 
-set_data_directory() { local directory=$1
-  local datadir=${directory%%/}
+set_data_directory() { local directory=$1 profile=$2
+  local datadir="${directory%%/}/$profile"
   mkdir -p "$datadir"
   debug "Data directory: $datadir"
   echo "$datadir"
@@ -299,12 +283,11 @@ update() {
   load_args_for_update_command "$@"
 
   config_logs "${args[logs-directory]-./logs}"
-  datadir=$(set_data_directory ${args[data-directory]-./data})
+  datadir=$(set_data_directory "${args[data-directory]-./data}" "${profile:-noprofile}")
 
   stop_dhis_server "${args[stop-command]}"
 
-  dbfile=$(download_from_fileurl_or_repository \
-    "$datadir" "${args[db-source]}" "${args[hard]-}" "${profile:-noprofile}")
+  dbfile=$(download_from_fileurl_or_repository "$datadir" "${args[db-source]}" "${args[hard]-}")
   import_database "$dbfile" "${args[db-name]}"
 
   if test "${args[hard]-}"; then
