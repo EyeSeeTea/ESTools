@@ -24,13 +24,13 @@ parse_ini_section() { local global_array=$1 file=$2 section=$3
   local section_contents
   section_contents=$(
     awk "/^\s*\[$section\]/ { flag=1; next} /^\s*\[/ { flag=0 } flag" "$file" |
-    grep -v "^[[:space:]]$" | grep -v "^[[:space:]]#"
+    grep -v "^[[:space:]]*$" | grep -v "^[[:space:]]*#"
   ) || {
     debug "Cannot read section [$section] from $file"
     return 1
   }
   while IFS="=" read key value; do
-    eval "$global_array[$(trim "$key")]=$(trim "$value")"
+    eval "$global_array[$(trim "$key")]=$(trim "$value" | xargs printf "%q")"
   done <<< "$section_contents"
 }
 
@@ -75,7 +75,7 @@ parse_args() { local global_array=$1 coded_options=$2 print_help=$3
       stderr "Unknown option: $arg"
       return 1
     elif test "$value" == "yes"; then
-      eval "$global_array[$option_name]=$2"
+      eval "$global_array[$option_name]=$(printf "%q" "$2")"
       shift 2
     elif test "$value" == "no"; then
       eval "$global_array[$option_name]=yes"
@@ -136,7 +136,7 @@ import_database() { local db_filename=$1 db_name=$2
     SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db_name';
     -- Re-create the database
     DROP DATABASE IF EXISTS $db_name;
-    CREATE DATABASE $db_name OWNER 'dhis' ENCODING 'utf8';
+    CREATE DATABASE $db_name OWNER dhis ENCODING 'utf8';
   "
 
   debug "Import DB dump: $db_filename"
