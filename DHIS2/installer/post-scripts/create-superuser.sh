@@ -15,7 +15,7 @@ create_superadmin() { local server_url=$1
     echo "Cannot find system user"
     exit 1
   else
-     local json='{"username": "superadmin", "password": "Super123"}'
+    local json='{"username": "superadmin", "password": "Super123"}'
     curl -sS -f -d "$json" "$server_url/api/users/$user_id/replica" -H "Content-Type:application/json"
     echo
     echo "User replicated from <system> created: superadmin/Super123"

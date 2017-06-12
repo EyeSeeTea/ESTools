@@ -19,7 +19,8 @@ dhis2-installer [-h | --help] <command> [<command_options>]
 Commands:
 
   update [PROFILE] [OPTIONS]  Update an existing DHIS2 Tomcat instance
-  run-analytics SERVER_URL    Run analytics
+  run-analytics URL|PROFILE [URL|PROFILE...]  Run analytics
+  check-servers URL|PROFILE [URL|PROFILE...]  Check server status
 
 <update> options:
 
@@ -62,7 +63,13 @@ $ dhis2-installer update previous1 --hard
 ### Command <run-analytics>
 
 ```
-$ dhis2-installer run-analytics --server-url="https://admin:district@play.dhis2.org/demo"
+$ dhis2-installer run-analytics https://admin:district@play.dhis2.org/demo dev previous1
+```
+
+### Command <check-servers>
+
+```
+$ dhis2-installer check-servers https://admin:district@play.dhis2.org/demo dev previous1
 ```
 
 ## Crontab
@@ -73,7 +80,7 @@ You may want to run the scripts periodically. Use your user crontab:
 $ crontab -e
 ```
 
-For example, this will run all 4 profiles on different times to avoid hogging the machine:
+For example, this will run four profiles on different times to avoid hogging the machine:
 
 ```
 $ crontab -l

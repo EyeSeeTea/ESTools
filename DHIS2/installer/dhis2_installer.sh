@@ -24,13 +24,13 @@ parse_ini_section() { local global_array=$1 file=$2 section=$3
   local section_contents
   section_contents=$(
     awk "/^\s*\[$section\]/ { flag=1; next} /^\s*\[/ { flag=0 } flag" "$file" |
-    grep -v "^[[:space:]]$" | grep -v "^[[:space:]]#"
+    grep -v "^[[:space:]]*$" | grep -v "^[[:space:]]*#"
   ) || {
     debug "Cannot read section [$section] from $file"
     return 1
   }
   while IFS="=" read key value; do
-    eval "$global_array[$(trim "$key")]=$(trim "$value")"
+    eval "$global_array[$(trim "$key")]=$(printf "%q" "$(trim "$value")")"
   done <<< "$section_contents"
 }
 
@@ -75,7 +75,7 @@ parse_args() { local global_array=$1 coded_options=$2 print_help=$3
       stderr "Unknown option: $arg"
       return 1
     elif test "$value" == "yes"; then
-      eval "$global_array[$option_name]=$2"
+      eval "$global_array[$option_name]=$(printf "%q" "$2")"
       shift 2
     elif test "$value" == "no"; then
       eval "$global_array[$option_name]=yes"
@@ -84,6 +84,10 @@ parse_args() { local global_array=$1 coded_options=$2 print_help=$3
       die "Parsing error: arg=$arg, option_name=$option_name, value=$value"
     fi
   done
+}
+
+is_http() { local path_or_url=$1
+  echo "$path_or_url" | grep -q "^https\?://"
 }
 
 ### App
@@ -98,8 +102,10 @@ declare -g profile
 download() { local destdir=$1 url=$2
   local filename
   filename="$destdir/$(basename "$url")"
-  debug "Download: $url"
-  if wget -q -O "$filename" "$url"; then
+  if ! is_http "$url"; then # local file
+    echo "$url"
+  elif wget -q -O "$filename" "$url"; then # http file
+    debug "Downloaded: $url"
     echo $filename
   else
     debug "Could not download: $url"
@@ -136,7 +142,7 @@ import_database() { local db_filename=$1 db_name=$2
     SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db_name';
     -- Re-create the database
     DROP DATABASE IF EXISTS $db_name;
-    CREATE DATABASE $db_name OWNER 'dhis' ENCODING 'utf8';
+    CREATE DATABASE $db_name OWNER dhis ENCODING 'utf8';
   "
 
   debug "Import DB dump: $db_filename"
@@ -148,13 +154,46 @@ install_dhis_war() { local warfile=$1 war_destination=$2
   cp "$warfile" "$war_destination"
 }
 
-run_analytics() {
-  local url=${1:-}
-  if test -z "$url"; then
-    die "Needs SERVER_URL"
-  else
-    request_analytics "$url"
+get_server_urls() {
+  if test $# -eq 0; then
+    die "Need at least one URL|PROFILE"
   fi
+
+  for url_or_profile in "$@"; do
+    if is_http "$url_or_profile"; then
+      echo "$url_or_profile"
+    else
+      declare -A -g args_get_server_urls
+      get_configuration_from_file "args_get_server_urls" "$url_or_profile"
+      echo "${args_get_server_urls[server-url]-}"
+    fi
+  done
+}
+
+
+run_analytics() {
+  get_server_urls "$@" | sponge | while read server_url; do
+    request_analytics "$server_url"
+  done
+}
+
+check_servers() {
+  local info
+  get_server_urls "$@" | sponge | while read server_url; do
+    if info=$(curl --fail -sS "$server_url/api/system/info.json"); then
+      if test "$info"; then
+        echo "$server_url: UP"
+        echo "  version=$(jq -r '.version' <<< "$info") ($(jq -r '.revision' <<< "$info"))"
+        echo "  buildTime=$(jq -r '.buildTime' <<< "$info")"
+        echo "  lastAnalyticsTableSuccess=$(jq -r '.lastAnalyticsTableSuccess' <<< "$info")" \
+          " ($(jq -r '.intervalSinceLastAnalyticsTableSuccess' <<< "$info"))"
+      else
+        echo "$server_url: UP (system info could not retrieved)"
+      fi
+    else
+      echo "$server_url: DOWN"
+    fi
+  done
 }
 
 run_post_scripts() { local scripts_path=$1 server_url=$2
@@ -186,12 +225,11 @@ download_from_fileurl_or_repository() { local destdir=$1 db_source=$2 hard_updat
 
 get_configuration_from_file() { local global_array=$1 profile=$2
   local config_path="$HOME/.dhis2-installer.conf"
-  debug "Configuration file: $config_path"
 
   if ! test -e "$config_path"; then
     debug "Configuration file not found, use only command options"
   else
-    debug "Configuration file found, get config from sections [global] and [profile:$profile]"
+    debug "$config_path: get [global] and [profile:$profile]"
     parse_ini_section "$global_array" "$config_path" "global"
     parse_ini_section "$global_array" "$config_path" "profile:$profile"
   fi
@@ -324,6 +362,8 @@ main() {
       update "$@";;
     "run-analytics")
       run_analytics "$@";;
+    "check-servers")
+      check_servers "$@";;
     "")
       print_help;;
     *)
@@ -337,7 +377,8 @@ print_help() {
 Commands:
 
   update [PROFILE] [OPTIONS]  Update an existing DHIS2 Tomcat instance
-  run-analytics SERVER_URL    Run analytics
+  run-analytics URL|PROFILE [URL|PROFILE...]  Run analytics
+  check-servers URL|PROFILE [URL|PROFILE...]  Check server status
 
 <update> options:
 
