@@ -30,7 +30,7 @@ parse_ini_section() { local global_array=$1 file=$2 section=$3
     return 1
   }
   while IFS="=" read key value; do
-    eval "$global_array[$(trim "$key")]=$(trim "$value" | xargs printf "%q")"
+    eval "$global_array[$(trim "$key")]=$(printf "%q" "$(trim "$value")")"
   done <<< "$section_contents"
 }
 
