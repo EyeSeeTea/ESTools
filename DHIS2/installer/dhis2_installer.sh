@@ -181,11 +181,15 @@ check_servers() {
   local info
   get_server_urls "$@" | sponge | while read server_url; do
     if info=$(curl --fail -sS "$server_url/api/system/info.json"); then
-      echo "$server_url: UP"
-      echo "  version=$(jq -r '.version' <<< "$info") ($(jq -r '.revision' <<< "$info"))"
-      echo "  buildTime=$(jq -r '.buildTime' <<< "$info")"
-      echo "  lastAnalyticsTableSuccess=$(jq -r '.lastAnalyticsTableSuccess' <<< "$info")" \
-        " ($(jq -r '.intervalSinceLastAnalyticsTableSuccess' <<< "$info"))"
+      if test "$info"; then
+        echo "$server_url: UP"
+        echo "  version=$(jq -r '.version' <<< "$info") ($(jq -r '.revision' <<< "$info"))"
+        echo "  buildTime=$(jq -r '.buildTime' <<< "$info")"
+        echo "  lastAnalyticsTableSuccess=$(jq -r '.lastAnalyticsTableSuccess' <<< "$info")" \
+          " ($(jq -r '.intervalSinceLastAnalyticsTableSuccess' <<< "$info"))"
+      else
+        echo "$server_url: UP (system info could not retrieved)"
+      fi
     else
       echo "$server_url: DOWN"
     fi
