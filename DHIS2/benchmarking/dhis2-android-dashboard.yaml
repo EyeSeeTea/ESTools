@@ -1,0 +1,101 @@
+server:
+  url: 'https://play.dhis2.org/android-previous1/api/'
+  auth: 'admin:district'
+  nrequests: 100
+  concurrent_users: 4
+
+services:
+- {method: GET, url: '/me/?fields=id,created,lastUpdated,name,displayName,firstName,surname,gender,birthday,introduction,education,employer,interests,jobTitle,languages,email,phoneNumber,organisationUnits%5Bid%5D'}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/dashboards?paging=false&fields=id'}
+- {method: GET, url: '/dashboards?paging=false&fields=id,created,lastUpdated,name,displayName,access,dashboardItems%5Bid,created,lastUpdated,name,displayName,access,type,shape,messages,chart%5Bid,created,lastUpdated,name,displayName,access%5D,eventChart%5Bid,created,lastUpdated,name,displayName,access%5Dmap%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,eventReport%5Bid,created,lastUpdated,name,displayName,access%5D,users%5Bid,created,lastUpdated,name,displayName,access%5D,reports%5Bid,created,lastUpdated,name,displayName,access%5D,resources%5Bid,created,lastUpdated,name,displayName,access%5D%5D'}
+- {method: GET, url: '/dashboardItems?paging=false&fields=id,created,lastUpdated,shape'}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/charts?paging=false&fields=id'}
+- {method: GET, url: '/charts?paging=false&fields=id,created,lastUpdated,name,displayName'}
+- {method: GET, url: '/eventCharts?paging=false&fields=id'}
+- {method: GET, url: '/eventCharts?paging=false&fields=id,created,lastUpdated,name,displayName'}
+- {method: GET, url: '/maps?paging=false&fields=id'}
+- {method: GET, url: '/maps?paging=false&fields=id,created,lastUpdated,name,displayName'}
+- {method: GET, url: '/reportTables?paging=false&fields=id'}
+- {method: GET, url: '/reportTables?paging=false&fields=id,created,lastUpdated,name,displayName'}
+- {method: GET, url: '/eventReports?paging=false&fields=id'}
+- {method: GET, url: '/eventReports?paging=false&fields=id,created,lastUpdated,name,displayName'}
+- {method: GET, url: '/users?paging=false&fields=id'}
+- {method: GET, url: '/users?paging=false&fields=id,created,lastUpdated,name,displayName'}
+- {method: GET, url: '/reports?paging=false&fields=id'}
+- {method: GET, url: '/reports?paging=false&fields=id,created,lastUpdated,name,displayName'}
+- {method: GET, url: '/documents?paging=false&fields=id'}
+- {method: GET, url: '/documents?paging=false&fields=id,created,lastUpdated,name,displayName'}
+- {method: GET, url: '/documents?paging=false&fields=id'}
+- {method: GET, url: '/documents?paging=false&fields=id,created,lastUpdated,name,displayName'}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/interpretations/?paging=false&fields=id'}
+- {method: GET, url: '/interpretations/?paging=false&fields=id,created,lastUpdated,name,displayName,access,text,type,chart%5Bid,created,lastUpdated,name,displayName,access%5D,map%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,user%5Bid,created,lastUpdated,name,displayName,access%5D,dataSet%5Bid,created,lastUpdated,name,displayName,access%5D,period%5Bid,created,lastUpdated,name,displayName,access%5D,organisationUnit%5Bid,created,lastUpdated,name,displayName,access%5D,comments%5Bid,created,lastUpdated,name,displayName,access,user%5Bid,created,lastUpdated,name,displayName,access%5D,text%5D'}
+- {method: GET, url: /reportTables/xIWpSo5jjT1/data.html}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/interpretations/?paging=false&fields=id'}
+- {method: GET, url: /interpretations/BR11Oy1Q4yR/comments}
+- {method: GET, url: '/interpretations/BR11Oy1Q4yR?fields=created,lastUpdated,comments%5Bid,created,lastUpdated%5D'}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/interpretations/?paging=false&fields=id'}
+- {method: GET, url: '/interpretations/?paging=false&fields=id,created,lastUpdated,name,displayName,access,text,type,chart%5Bid,created,lastUpdated,name,displayName,access%5D,map%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,user%5Bid,created,lastUpdated,name,displayName,access%5D,dataSet%5Bid,created,lastUpdated,name,displayName,access%5D,period%5Bid,created,lastUpdated,name,displayName,access%5D,organisationUnit%5Bid,created,lastUpdated,name,displayName,access%5D,comments%5Bid,created,lastUpdated,name,displayName,access,user%5Bid,created,lastUpdated,name,displayName,access%5D,text%5D&filter=lastUpdated:gt:2017-07-18T21:35:32.373Z'}
+- {method: PUT, url: /interpretations/jGZx0tKq3VD/comments/lqhxGfbsntb, body: 'new comment'}
+- {method: GET, url: '/interpretations/jGZx0tKq3VD?fields=%5Bcreated,lastUpdated%5D'}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/interpretations/?paging=false&fields=id'}
+- {method: GET, url: '/interpretations/?paging=false&fields=id,created,lastUpdated,name,displayName,access,text,type,chart%5Bid,created,lastUpdated,name,displayName,access%5D,map%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,user%5Bid,created,lastUpdated,name,displayName,access%5D,dataSet%5Bid,created,lastUpdated,name,displayName,access%5D,period%5Bid,created,lastUpdated,name,displayName,access%5D,organisationUnit%5Bid,created,lastUpdated,name,displayName,access%5D,comments%5Bid,created,lastUpdated,name,displayName,access,user%5Bid,created,lastUpdated,name,displayName,access%5D,text%5D&filter=lastUpdated:gt:2017-07-18T21:36:05.952Z'}
+- {method: DELETE, url: /interpretations/jGZx0tKq3VD/comments/lqhxGfbsntb}
+- {method: GET, url: '/interpretations/jGZx0tKq3VD?fields=%5Bcreated,lastUpdated%5D'}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/dashboards?paging=false&fields=id'}
+- {method: GET, url: '/dashboards?paging=false&fields=id,created,lastUpdated,name,displayName,access,dashboardItems%5Bid,created,lastUpdated,name,displayName,access,type,shape,messages,chart%5Bid,created,lastUpdated,name,displayName,access%5D,eventChart%5Bid,created,lastUpdated,name,displayName,access%5Dmap%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,eventReport%5Bid,created,lastUpdated,name,displayName,access%5D,users%5Bid,created,lastUpdated,name,displayName,access%5D,reports%5Bid,created,lastUpdated,name,displayName,access%5D,resources%5Bid,created,lastUpdated,name,displayName,access%5D%5D&filter=lastUpdated:gt:2017-07-18T21:52:36.965'}
+- {method: GET, url: '/dashboardItems?paging=false&fields=id,created,lastUpdated,shape&filter=lastUpdated:gt:2017-07-18T21:52:36.965'}
+- {method: GET, url: /dashboards/nghVC4wtyzi}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/dashboards?paging=false&fields=id'}
+- {method: GET, url: '/dashboards?paging=false&fields=id,created,lastUpdated,name,displayName,access,dashboardItems%5Bid,created,lastUpdated,name,displayName,access,type,shape,messages,chart%5Bid,created,lastUpdated,name,displayName,access%5D,eventChart%5Bid,created,lastUpdated,name,displayName,access%5Dmap%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,eventReport%5Bid,created,lastUpdated,name,displayName,access%5D,users%5Bid,created,lastUpdated,name,displayName,access%5D,reports%5Bid,created,lastUpdated,name,displayName,access%5D,resources%5Bid,created,lastUpdated,name,displayName,access%5D%5D&filter=lastUpdated:gt:2017-07-18T22:24:23.021'}
+- {method: GET, url: '/dashboardItems?paging=false&fields=id,created,lastUpdated,shape&filter=lastUpdated:gt:2017-07-18T22:24:23.021'}
+- {method: GET, url: /dashboards/}
+- {method: GET, url: '/dashboards/nghVC4wtyzi?fields=created,lastUpdated'}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/dashboards?paging=false&fields=id'}
+- {method: GET, url: '/dashboards?paging=false&fields=id,created,lastUpdated,name,displayName,access,dashboardItems%5Bid,created,lastUpdated,name,displayName,access,type,shape,messages,chart%5Bid,created,lastUpdated,name,displayName,access%5D,eventChart%5Bid,created,lastUpdated,name,displayName,access%5Dmap%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,eventReport%5Bid,created,lastUpdated,name,displayName,access%5D,users%5Bid,created,lastUpdated,name,displayName,access%5D,reports%5Bid,created,lastUpdated,name,displayName,access%5D,resources%5Bid,created,lastUpdated,name,displayName,access%5D%5D&filter=lastUpdated:gt:2017-07-18T23:16:36.195'}
+- {method: GET, url: '/dashboardItems?paging=false&fields=id,created,lastUpdated,shape&filter=lastUpdated:gt:2017-07-18T23:16:36.195'}
+- {method: POST, url: '/dashboards/nghVC4wtyzi/items/content?type=CHART&id=LW0O27b7TdD'}
+- {method: GET, url: '/dashboards/nghVC4wtyzi?fields=created,lastUpdated'}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/interpretations/?paging=false&fields=id'}
+- {method: GET, url: '/interpretations/?paging=false&fields=id,created,lastUpdated,name,displayName,access,text,type,chart%5Bid,created,lastUpdated,name,displayName,access%5D,map%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,user%5Bid,created,lastUpdated,name,displayName,access%5D,dataSet%5Bid,created,lastUpdated,name,displayName,access%5D,period%5Bid,created,lastUpdated,name,displayName,access%5D,organisationUnit%5Bid,created,lastUpdated,name,displayName,access%5D,comments%5Bid,created,lastUpdated,name,displayName,access,user%5Bid,created,lastUpdated,name,displayName,access%5D,text%5D&filter=lastUpdated:gt:2017-07-18T23:17:24.422Z'}
+- {method: POST, url: /interpretations/chart/UlfTKWZWV4u, body: "The interpretation name"}
+- {method: POST, url: '/interpretations/jZOa6vEvdKI?fields=%5Bcreated,lastUpdated%5D', body: "The interpretation name"}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/dashboards?paging=false&fields=id'}
+- {method: GET, url: '/dashboards?paging=false&fields=id,created,lastUpdated,name,displayName,access,dashboardItems%5Bid,created,lastUpdated,name,displayName,access,type,shape,messages,chart%5Bid,created,lastUpdated,name,displayName,access%5D,eventChart%5Bid,created,lastUpdated,name,displayName,access%5Dmap%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,eventReport%5Bid,created,lastUpdated,name,displayName,access%5D,users%5Bid,created,lastUpdated,name,displayName,access%5D,reports%5Bid,created,lastUpdated,name,displayName,access%5D,resources%5Bid,created,lastUpdated,name,displayName,access%5D%5D&filter=lastUpdated:gt:2017-07-18T23:17:18.062'}
+- {method: GET, url: '/dashboardItems?paging=false&fields=id,created,lastUpdated,shape&filter=lastUpdated:gt:2017-07-18T23:17:18.062'}
+- {method: DELETE, url: /dashboards/nghVC4wtyzi/items/ntDcjU7MUya}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/charts?paging=false&fields=id'}
+- {method: GET, url: '/charts?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z'}
+- {method: GET, url: '/eventCharts?paging=false&fields=id'}
+- {method: GET, url: '/eventCharts?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z'}
+- {method: GET, url: '/maps?paging=false&fields=id'}
+- {method: GET, url: '/maps?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z'}
+- {method: GET, url: '/reportTables?paging=false&fields=id'}
+- {method: GET, url: '/reportTables?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z'}
+- {method: GET, url: '/eventReports?paging=false&fields=id'}
+- {method: GET, url: '/eventReports?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z'}
+- {method: GET, url: '/users?paging=false&fields=id'}
+- {method: GET, url: '/users?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z'}
+- {method: GET, url: '/reports?paging=false&fields=id'}
+- {method: GET, url: '/reports?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z'}
+- {method: GET, url: '/documents?paging=false&fields=id'}
+- {method: GET, url: '/documents?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:52:32.580Z'}
+- {method: GET, url: '/documents?paging=false&fields=id'}
+- {method: GET, url: '/documents?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:52:32.580Z'}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/interpretations/?paging=false&fields=id'}
+- {method: GET, url: '/interpretations/?paging=false&fields=id,created,lastUpdated,name,displayName,access,text,type,chart%5Bid,created,lastUpdated,name,displayName,access%5D,map%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,user%5Bid,created,lastUpdated,name,displayName,access%5D,dataSet%5Bid,created,lastUpdated,name,displayName,access%5D,period%5Bid,created,lastUpdated,name,displayName,access%5D,organisationUnit%5Bid,created,lastUpdated,name,displayName,access%5D,comments%5Bid,created,lastUpdated,name,displayName,access,user%5Bid,created,lastUpdated,name,displayName,access%5D,text%5D&filter=lastUpdated:gt:2017-07-18T21:41:50.918Z'}
+- {method: GET, url: '/charts/CNkMibmx1Zr/data.png?width=480&height=320'}
+- {method: GET, url: '/maps/Juj0mETi7L2/data.png?width=480&height=320'}
+- {method: GET, url: '/eventCharts/lUhwbwHKnSe/data.png?width=480&height=320'}
