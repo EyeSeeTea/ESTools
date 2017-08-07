@@ -20,9 +20,9 @@ def debug(s):
 def output(s):
     print(s, file=sys.stdout)
 
-def get_metrics_from_ab_output(output):
+def get_metrics_from_ab(body):
     metrics = {}
-    data_lines = itertools.dropwhile(lambda line: "Document Length" not in line, output.splitlines())
+    data_lines = itertools.dropwhile(lambda line: "Document Length" not in line, body.splitlines())
     for line in data_lines:
         # Skip aggregated by-request entries
         if "cross all concurrent requests" in line:
@@ -39,7 +39,6 @@ def get_metrics_from_ab_output(output):
 def benchmark(url, method="GET", concurrent_users=1, nrequests=100, auth=None):
     cmd = [
         "ab",
-        "-k",
         "-q",
         "-A", ":".join((auth or [])),
         "-n", str(nrequests),
@@ -49,8 +48,7 @@ def benchmark(url, method="GET", concurrent_users=1, nrequests=100, auth=None):
     ]
     debug("Benchmarking: {}".format(" ".join(shlex.quote(s) for s in cmd)))
     stdout = subprocess.check_output(cmd)
-    output = stdout.decode("utf8")
-    return get_metrics_from_ab_output(output)
+    return get_metrics_from_ab(stdout.decode("utf8"))
 
 def to_tabs(objs):
     return "\t".join([str(obj) for obj in objs])

@@ -2,7 +2,7 @@ server:
   url: 'https://play.dhis2.org/android-previous1/api/'
   auth: 'admin:district'
   nrequests: 100
-  concurrent_users: 4
+  concurrent_users: 1
 
 services:
 - {method: GET, url: '/me/?fields=id,created,lastUpdated,name,displayName,firstName,surname,gender,birthday,introduction,education,employer,interests,jobTitle,languages,email,phoneNumber,organisationUnits%5Bid%5D'}
