@@ -59,7 +59,7 @@ def run_benchmark(yaml_path):
     auth = config["server"]["auth"].split(":")
     nrequests = int(config["server"]["nrequests"])
     concurrent_users = int(config["server"]["concurrent_users"])
-    output(to_tabs(["rate (req/sec)", "mean time per req (ms)", "failed requests (%)"]))
+    #output(to_tabs(["rate (req/sec)", "mean time per req (ms)", "failed requests (%)"]))
 
     for service in config["services"]:
         if service["method"] != "GET":
@@ -72,8 +72,8 @@ def run_benchmark(yaml_path):
             concurrent_users=concurrent_users
         )
         metrics_info = to_tabs([
-            metrics["requests_per_second"],
-            metrics["time_per_request"],
+            #metrics["requests_per_second"],
+            int(metrics["time_per_request"]),
             "%.2f" % ((metrics["failed_requests"] / nrequests) * 100),
             service["method"],
             url,

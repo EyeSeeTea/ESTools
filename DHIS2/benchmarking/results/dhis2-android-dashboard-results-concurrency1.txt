@@ -1,89 +1,88 @@
-rate (req/sec)	mean time per req (ms)	failed requests (%)
- 0.67	1482.161	0.00	GET	https://play.dhis2.org/android-previous1/api/reportTables/xIWpSo5jjT1/data.html
- 0.72	1396.114	0.00	GET	https://play.dhis2.org/android-previous1/api/maps/Juj0mETi7L2/data.png?width=480&height=320
- 1.0	995.267	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id,created,lastUpdated,name,displayName,access,dashboardItems%5Bid,created,lastUpdated,name,displayName,access,type,shape,messages,chart%5Bid,created,lastUpdated,name,displayName,access%5D,eventChart%5Bid,created,lastUpdated,name,displayName,access%5Dmap%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,eventReport%5Bid,created,lastUpdated,name,displayName,access%5D,users%5Bid,created,lastUpdated,name,displayName,access%5D,reports%5Bid,created,lastUpdated,name,displayName,access%5D,resources%5Bid,created,lastUpdated,name,displayName,access%5D%5D
- 1.16	860.699	0.00	GET	https://play.dhis2.org/android-previous1/api/eventCharts/lUhwbwHKnSe/data.png?width=480&height=320
- 1.26	791.356	0.00	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id,created,lastUpdated,name,displayName,access,text,type,chart%5Bid,created,lastUpdated,name,displayName,access%5D,map%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,user%5Bid,created,lastUpdated,name,displayName,access%5D,dataSet%5Bid,created,lastUpdated,name,displayName,access%5D,period%5Bid,created,lastUpdated,name,displayName,access%5D,organisationUnit%5Bid,created,lastUpdated,name,displayName,access%5D,comments%5Bid,created,lastUpdated,name,displayName,access,user%5Bid,created,lastUpdated,name,displayName,access%5D,text%5D
- 1.26	791.384	0.00	GET	https://play.dhis2.org/android-previous1/api/charts/CNkMibmx1Zr/data.png?width=480&height=320
- 1.31	763.393	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboardItems?paging=false&fields=id,created,lastUpdated,shape
- 1.31	765.136	0.00	GET	https://play.dhis2.org/android-previous1/api/charts?paging=false&fields=id,created,lastUpdated,name,displayName
- 1.31	765.217	0.00	GET	https://play.dhis2.org/android-previous1/api/maps?paging=false&fields=id,created,lastUpdated,name,displayName
- 1.3	768.891	0.00	GET	https://play.dhis2.org/android-previous1/api/reportTables?paging=false&fields=id,created,lastUpdated,name,displayName
- 1.54	649.295	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboards/
- 1.55	643.109	0.00	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id
- 1.55	643.467	0.00	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id,created,lastUpdated,name,displayName,access,text,type,chart%5Bid,created,lastUpdated,name,displayName,access%5D,map%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,user%5Bid,created,lastUpdated,name,displayName,access%5D,dataSet%5Bid,created,lastUpdated,name,displayName,access%5D,period%5Bid,created,lastUpdated,name,displayName,access%5D,organisationUnit%5Bid,created,lastUpdated,name,displayName,access%5D,comments%5Bid,created,lastUpdated,name,displayName,access,user%5Bid,created,lastUpdated,name,displayName,access%5D,text%5D&filter=lastUpdated:gt:2017-07-18T23:17:24.422Z
- 1.55	644.375	0.00	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id,created,lastUpdated,name,displayName,access,text,type,chart%5Bid,created,lastUpdated,name,displayName,access%5D,map%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,user%5Bid,created,lastUpdated,name,displayName,access%5D,dataSet%5Bid,created,lastUpdated,name,displayName,access%5D,period%5Bid,created,lastUpdated,name,displayName,access%5D,organisationUnit%5Bid,created,lastUpdated,name,displayName,access%5D,comments%5Bid,created,lastUpdated,name,displayName,access,user%5Bid,created,lastUpdated,name,displayName,access%5D,text%5D&filter=lastUpdated:gt:2017-07-18T21:36:05.952Z
- 1.56	639.142	0.00	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id
- 1.56	639.316	16.00	GET	https://play.dhis2.org/android-previous1/api/system/info/
- 1.56	639.573	0.00	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id
- 1.56	639.947	0.00	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id
- 1.56	640.289	0.00	GET	https://play.dhis2.org/android-previous1/api/eventReports?paging=false&fields=id
- 1.56	640.33	0.00	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id
- 1.56	641.093	0.00	GET	https://play.dhis2.org/android-previous1/api/interpretations/BR11Oy1Q4yR?fields=created,lastUpdated,comments%5Bid,created,lastUpdated%5D
- 1.56	641.116	16.00	GET	https://play.dhis2.org/android-previous1/api/system/info/
- 1.56	641.456	0.00	GET	https://play.dhis2.org/android-previous1/api/interpretations/BR11Oy1Q4yR/comments
- 1.56	641.886	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboards/nghVC4wtyzi?fields=created,lastUpdated
- 1.56	642.231	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboards/nghVC4wtyzi?fields=created,lastUpdated
- 1.56	642.291	0.00	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id,created,lastUpdated,name,displayName,access,text,type,chart%5Bid,created,lastUpdated,name,displayName,access%5D,map%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,user%5Bid,created,lastUpdated,name,displayName,access%5D,dataSet%5Bid,created,lastUpdated,name,displayName,access%5D,period%5Bid,created,lastUpdated,name,displayName,access%5D,organisationUnit%5Bid,created,lastUpdated,name,displayName,access%5D,comments%5Bid,created,lastUpdated,name,displayName,access,user%5Bid,created,lastUpdated,name,displayName,access%5D,text%5D&filter=lastUpdated:gt:2017-07-18T21:35:32.373Z
- 1.56	642.687	0.00	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id,created,lastUpdated,name,displayName,access,text,type,chart%5Bid,created,lastUpdated,name,displayName,access%5D,map%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,user%5Bid,created,lastUpdated,name,displayName,access%5D,dataSet%5Bid,created,lastUpdated,name,displayName,access%5D,period%5Bid,created,lastUpdated,name,displayName,access%5D,organisationUnit%5Bid,created,lastUpdated,name,displayName,access%5D,comments%5Bid,created,lastUpdated,name,displayName,access,user%5Bid,created,lastUpdated,name,displayName,access%5D,text%5D&filter=lastUpdated:gt:2017-07-18T21:41:50.918Z
- 1.56	642.878	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboards/nghVC4wtyzi
- 1.57	635.053	0.00	GET	https://play.dhis2.org/android-previous1/api/users?paging=false&fields=id
- 1.57	635.543	0.00	GET	https://play.dhis2.org/android-previous1/api/charts?paging=false&fields=id
- 1.57	635.646	0.00	GET	https://play.dhis2.org/android-previous1/api/eventCharts?paging=false&fields=id
- 1.57	635.975	16.00	GET	https://play.dhis2.org/android-previous1/api/system/info/
- 1.57	636.034	16.00	GET	https://play.dhis2.org/android-previous1/api/system/info/
- 1.57	636.215	0.00	GET	https://play.dhis2.org/android-previous1/api/interpretations/jGZx0tKq3VD?fields=%5Bcreated,lastUpdated%5D
- 1.57	636.591	15.00	GET	https://play.dhis2.org/android-previous1/api/system/info/
- 1.57	636.902	80.00	GET	https://play.dhis2.org/android-previous1/api/system/info/
- 1.57	636.985	15.00	GET	https://play.dhis2.org/android-previous1/api/system/info/
- 1.57	637.217	15.00	GET	https://play.dhis2.org/android-previous1/api/system/info/
- 1.57	637.522	16.00	GET	https://play.dhis2.org/android-previous1/api/system/info/
- 1.57	637.604	82.00	GET	https://play.dhis2.org/android-previous1/api/system/info/
- 1.57	637.778	82.00	GET	https://play.dhis2.org/android-previous1/api/system/info/
- 1.57	637.871	0.00	GET	https://play.dhis2.org/android-previous1/api/me/?fields=id,created,lastUpdated,name,displayName,firstName,surname,gender,birthday,introduction,education,employer,interests,jobTitle,languages,email,phoneNumber,organisationUnits%5Bid%5D
- 1.57	638.319	16.00	GET	https://play.dhis2.org/android-previous1/api/system/info/
- 1.57	638.376	16.00	GET	https://play.dhis2.org/android-previous1/api/system/info/
- 1.57	638.678	0.00	GET	https://play.dhis2.org/android-previous1/api/interpretations/jGZx0tKq3VD?fields=%5Bcreated,lastUpdated%5D
- 1.57	638.893	0.00	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id
- 1.58	631.012	0.00	GET	https://play.dhis2.org/android-previous1/api/users?paging=false&fields=id
- 1.58	631.081	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id
- 1.58	631.342	0.00	GET	https://play.dhis2.org/android-previous1/api/eventReports?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z
- 1.58	631.544	0.00	GET	https://play.dhis2.org/android-previous1/api/documents?paging=false&fields=id
- 1.58	631.549	0.00	GET	https://play.dhis2.org/android-previous1/api/maps?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z
- 1.58	631.561	0.00	GET	https://play.dhis2.org/android-previous1/api/reportTables?paging=false&fields=id
- 1.58	631.562	0.00	GET	https://play.dhis2.org/android-previous1/api/eventCharts?paging=false&fields=id
- 1.58	631.596	0.00	GET	https://play.dhis2.org/android-previous1/api/documents?paging=false&fields=id
- 1.58	631.632	0.00	GET	https://play.dhis2.org/android-previous1/api/eventReports?paging=false&fields=id,created,lastUpdated,name,displayName
- 1.58	631.73	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id
- 1.58	631.813	0.00	GET	https://play.dhis2.org/android-previous1/api/documents?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:52:32.580Z
- 1.58	632.034	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboardItems?paging=false&fields=id,created,lastUpdated,shape&filter=lastUpdated:gt:2017-07-18T22:24:23.021
- 1.58	632.18	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id
- 1.58	632.358	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id,created,lastUpdated,name,displayName,access,dashboardItems%5Bid,created,lastUpdated,name,displayName,access,type,shape,messages,chart%5Bid,created,lastUpdated,name,displayName,access%5D,eventChart%5Bid,created,lastUpdated,name,displayName,access%5Dmap%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,eventReport%5Bid,created,lastUpdated,name,displayName,access%5D,users%5Bid,created,lastUpdated,name,displayName,access%5D,reports%5Bid,created,lastUpdated,name,displayName,access%5D,resources%5Bid,created,lastUpdated,name,displayName,access%5D%5D&filter=lastUpdated:gt:2017-07-18T22:24:23.021
- 1.58	632.576	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id
- 1.58	632.848	0.00	GET	https://play.dhis2.org/android-previous1/api/maps?paging=false&fields=id
- 1.58	632.863	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id,created,lastUpdated,name,displayName,access,dashboardItems%5Bid,created,lastUpdated,name,displayName,access,type,shape,messages,chart%5Bid,created,lastUpdated,name,displayName,access%5D,eventChart%5Bid,created,lastUpdated,name,displayName,access%5Dmap%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,eventReport%5Bid,created,lastUpdated,name,displayName,access%5D,users%5Bid,created,lastUpdated,name,displayName,access%5D,reports%5Bid,created,lastUpdated,name,displayName,access%5D,resources%5Bid,created,lastUpdated,name,displayName,access%5D%5D&filter=lastUpdated:gt:2017-07-18T23:16:36.195
- 1.58	632.911	0.00	GET	https://play.dhis2.org/android-previous1/api/eventCharts?paging=false&fields=id,created,lastUpdated,name,displayName
- 1.58	633.052	0.00	GET	https://play.dhis2.org/android-previous1/api/reports?paging=false&fields=id
- 1.58	633.118	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id,created,lastUpdated,name,displayName,access,dashboardItems%5Bid,created,lastUpdated,name,displayName,access,type,shape,messages,chart%5Bid,created,lastUpdated,name,displayName,access%5D,eventChart%5Bid,created,lastUpdated,name,displayName,access%5Dmap%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,eventReport%5Bid,created,lastUpdated,name,displayName,access%5D,users%5Bid,created,lastUpdated,name,displayName,access%5D,reports%5Bid,created,lastUpdated,name,displayName,access%5D,resources%5Bid,created,lastUpdated,name,displayName,access%5D%5D&filter=lastUpdated:gt:2017-07-18T23:17:18.062
- 1.58	633.168	0.00	GET	https://play.dhis2.org/android-previous1/api/eventReports?paging=false&fields=id
- 1.58	633.368	0.00	GET	https://play.dhis2.org/android-previous1/api/users?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z
- 1.58	633.624	0.00	GET	https://play.dhis2.org/android-previous1/api/charts?paging=false&fields=id
- 1.58	633.727	0.00	GET	https://play.dhis2.org/android-previous1/api/documents?paging=false&fields=id
- 1.58	633.852	0.00	GET	https://play.dhis2.org/android-previous1/api/users?paging=false&fields=id,created,lastUpdated,name,displayName
- 1.58	634.114	0.00	GET	https://play.dhis2.org/android-previous1/api/reportTables?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z
- 1.58	634.292	0.00	GET	https://play.dhis2.org/android-previous1/api/documents?paging=false&fields=id,created,lastUpdated,name,displayName
- 1.58	634.739	0.00	GET	https://play.dhis2.org/android-previous1/api/reportTables?paging=false&fields=id
- 1.59	627.966	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id
- 1.59	628.838	0.00	GET	https://play.dhis2.org/android-previous1/api/documents?paging=false&fields=id
- 1.59	628.914	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboardItems?paging=false&fields=id,created,lastUpdated,shape&filter=lastUpdated:gt:2017-07-18T21:52:36.965
- 1.59	629.525	0.00	GET	https://play.dhis2.org/android-previous1/api/documents?paging=false&fields=id,created,lastUpdated,name,displayName
- 1.59	629.956	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboardItems?paging=false&fields=id,created,lastUpdated,shape&filter=lastUpdated:gt:2017-07-18T23:16:36.195
- 1.59	630.128	0.00	GET	https://play.dhis2.org/android-previous1/api/reports?paging=false&fields=id
- 1.59	630.15	0.00	GET	https://play.dhis2.org/android-previous1/api/reports?paging=false&fields=id,created,lastUpdated,name,displayName
- 1.59	630.251	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id,created,lastUpdated,name,displayName,access,dashboardItems%5Bid,created,lastUpdated,name,displayName,access,type,shape,messages,chart%5Bid,created,lastUpdated,name,displayName,access%5D,eventChart%5Bid,created,lastUpdated,name,displayName,access%5Dmap%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,eventReport%5Bid,created,lastUpdated,name,displayName,access%5D,users%5Bid,created,lastUpdated,name,displayName,access%5D,reports%5Bid,created,lastUpdated,name,displayName,access%5D,resources%5Bid,created,lastUpdated,name,displayName,access%5D%5D&filter=lastUpdated:gt:2017-07-18T21:52:36.965
- 1.59	630.37	0.00	GET	https://play.dhis2.org/android-previous1/api/eventCharts?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z
- 1.59	630.419	0.00	GET	https://play.dhis2.org/android-previous1/api/dashboardItems?paging=false&fields=id,created,lastUpdated,shape&filter=lastUpdated:gt:2017-07-18T23:17:18.062
- 1.59	630.446	0.00	GET	https://play.dhis2.org/android-previous1/api/reports?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z
- 1.59	630.822	0.00	GET	https://play.dhis2.org/android-previous1/api/maps?paging=false&fields=id
- 1.59	630.88	0.00	GET	https://play.dhis2.org/android-previous1/api/charts?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z
- 1.59	630.88	0.00	GET	https://play.dhis2.org/android-previous1/api/documents?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:52:32.580Z
+112	GET	https://play.dhis2.org/android-previous1/api/me/?fields=id,created,lastUpdated,name,displayName,firstName,surname,gender,birthday,introduction,education,employer,interests,jobTitle,languages,email,phoneNumber,organisationUnits%5Bid%5D
+111	GET	https://play.dhis2.org/android-previous1/api/system/info/
+105	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id
+204	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id,created,lastUpdated,name,displayName,access,dashboardItems%5Bid,created,lastUpdated,name,displayName,access,type,shape,messages,chart%5Bid,created,lastUpdated,name,displayName,access%5D,eventChart%5Bid,created,lastUpdated,name,displayName,access%5Dmap%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,eventReport%5Bid,created,lastUpdated,name,displayName,access%5D,users%5Bid,created,lastUpdated,name,displayName,access%5D,reports%5Bid,created,lastUpdated,name,displayName,access%5D,resources%5Bid,created,lastUpdated,name,displayName,access%5D%5D
+108	GET	https://play.dhis2.org/android-previous1/api/dashboardItems?paging=false&fields=id,created,lastUpdated,shape
+112	GET	https://play.dhis2.org/android-previous1/api/system/info/
+107	GET	https://play.dhis2.org/android-previous1/api/charts?paging=false&fields=id
+110	GET	https://play.dhis2.org/android-previous1/api/charts?paging=false&fields=id,created,lastUpdated,name,displayName
+106	GET	https://play.dhis2.org/android-previous1/api/eventCharts?paging=false&fields=id
+105	GET	https://play.dhis2.org/android-previous1/api/eventCharts?paging=false&fields=id,created,lastUpdated,name,displayName
+105	GET	https://play.dhis2.org/android-previous1/api/maps?paging=false&fields=id
+107	GET	https://play.dhis2.org/android-previous1/api/maps?paging=false&fields=id,created,lastUpdated,name,displayName
+107	GET	https://play.dhis2.org/android-previous1/api/reportTables?paging=false&fields=id
+114	GET	https://play.dhis2.org/android-previous1/api/reportTables?paging=false&fields=id,created,lastUpdated,name,displayName
+105	GET	https://play.dhis2.org/android-previous1/api/eventReports?paging=false&fields=id
+105	GET	https://play.dhis2.org/android-previous1/api/eventReports?paging=false&fields=id,created,lastUpdated,name,displayName
+107	GET	https://play.dhis2.org/android-previous1/api/users?paging=false&fields=id
+107	GET	https://play.dhis2.org/android-previous1/api/users?paging=false&fields=id,created,lastUpdated,name,displayName
+106	GET	https://play.dhis2.org/android-previous1/api/reports?paging=false&fields=id
+105	GET	https://play.dhis2.org/android-previous1/api/reports?paging=false&fields=id,created,lastUpdated,name,displayName
+105	GET	https://play.dhis2.org/android-previous1/api/documents?paging=false&fields=id
+104	GET	https://play.dhis2.org/android-previous1/api/documents?paging=false&fields=id,created,lastUpdated,name,displayName
+106	GET	https://play.dhis2.org/android-previous1/api/documents?paging=false&fields=id
+105	GET	https://play.dhis2.org/android-previous1/api/documents?paging=false&fields=id,created,lastUpdated,name,displayName
+112	GET	https://play.dhis2.org/android-previous1/api/system/info/
+113	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id
+130	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id,created,lastUpdated,name,displayName,access,text,type,chart%5Bid,created,lastUpdated,name,displayName,access%5D,map%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,user%5Bid,created,lastUpdated,name,displayName,access%5D,dataSet%5Bid,created,lastUpdated,name,displayName,access%5D,period%5Bid,created,lastUpdated,name,displayName,access%5D,organisationUnit%5Bid,created,lastUpdated,name,displayName,access%5D,comments%5Bid,created,lastUpdated,name,displayName,access,user%5Bid,created,lastUpdated,name,displayName,access%5D,text%5D
+933	GET	https://play.dhis2.org/android-previous1/api/reportTables/xIWpSo5jjT1/data.html
+111	GET	https://play.dhis2.org/android-previous1/api/system/info/
+114	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id
+113	GET	https://play.dhis2.org/android-previous1/api/interpretations/BR11Oy1Q4yR/comments
+112	GET	https://play.dhis2.org/android-previous1/api/interpretations/BR11Oy1Q4yR?fields=created,lastUpdated,comments%5Bid,created,lastUpdated%5D
+111	GET	https://play.dhis2.org/android-previous1/api/system/info/
+115	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id
+116	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id,created,lastUpdated,name,displayName,access,text,type,chart%5Bid,created,lastUpdated,name,displayName,access%5D,map%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,user%5Bid,created,lastUpdated,name,displayName,access%5D,dataSet%5Bid,created,lastUpdated,name,displayName,access%5D,period%5Bid,created,lastUpdated,name,displayName,access%5D,organisationUnit%5Bid,created,lastUpdated,name,displayName,access%5D,comments%5Bid,created,lastUpdated,name,displayName,access,user%5Bid,created,lastUpdated,name,displayName,access%5D,text%5D&filter=lastUpdated:gt:2017-07-18T21:35:32.373Z
+111	GET	https://play.dhis2.org/android-previous1/api/interpretations/jGZx0tKq3VD?fields=%5Bcreated,lastUpdated%5D
+112	GET	https://play.dhis2.org/android-previous1/api/system/info/
+112	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id
+116	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id,created,lastUpdated,name,displayName,access,text,type,chart%5Bid,created,lastUpdated,name,displayName,access%5D,map%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,user%5Bid,created,lastUpdated,name,displayName,access%5D,dataSet%5Bid,created,lastUpdated,name,displayName,access%5D,period%5Bid,created,lastUpdated,name,displayName,access%5D,organisationUnit%5Bid,created,lastUpdated,name,displayName,access%5D,comments%5Bid,created,lastUpdated,name,displayName,access,user%5Bid,created,lastUpdated,name,displayName,access%5D,text%5D&filter=lastUpdated:gt:2017-07-18T21:36:05.952Z
+111	GET	https://play.dhis2.org/android-previous1/api/interpretations/jGZx0tKq3VD?fields=%5Bcreated,lastUpdated%5D
+110	GET	https://play.dhis2.org/android-previous1/api/system/info/
+105	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id
+105	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id,created,lastUpdated,name,displayName,access,dashboardItems%5Bid,created,lastUpdated,name,displayName,access,type,shape,messages,chart%5Bid,created,lastUpdated,name,displayName,access%5D,eventChart%5Bid,created,lastUpdated,name,displayName,access%5Dmap%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,eventReport%5Bid,created,lastUpdated,name,displayName,access%5D,users%5Bid,created,lastUpdated,name,displayName,access%5D,reports%5Bid,created,lastUpdated,name,displayName,access%5D,resources%5Bid,created,lastUpdated,name,displayName,access%5D%5D&filter=lastUpdated:gt:2017-07-18T21:52:36.965
+104	GET	https://play.dhis2.org/android-previous1/api/dashboardItems?paging=false&fields=id,created,lastUpdated,shape&filter=lastUpdated:gt:2017-07-18T21:52:36.965
+116	GET	https://play.dhis2.org/android-previous1/api/dashboards/nghVC4wtyzi
+110	GET	https://play.dhis2.org/android-previous1/api/system/info/
+105	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id
+105	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id,created,lastUpdated,name,displayName,access,dashboardItems%5Bid,created,lastUpdated,name,displayName,access,type,shape,messages,chart%5Bid,created,lastUpdated,name,displayName,access%5D,eventChart%5Bid,created,lastUpdated,name,displayName,access%5Dmap%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,eventReport%5Bid,created,lastUpdated,name,displayName,access%5D,users%5Bid,created,lastUpdated,name,displayName,access%5D,reports%5Bid,created,lastUpdated,name,displayName,access%5D,resources%5Bid,created,lastUpdated,name,displayName,access%5D%5D&filter=lastUpdated:gt:2017-07-18T22:24:23.021
+104	GET	https://play.dhis2.org/android-previous1/api/dashboardItems?paging=false&fields=id,created,lastUpdated,shape&filter=lastUpdated:gt:2017-07-18T22:24:23.021
+112	GET	https://play.dhis2.org/android-previous1/api/dashboards/
+117	GET	https://play.dhis2.org/android-previous1/api/dashboards/nghVC4wtyzi?fields=created,lastUpdated
+112	GET	https://play.dhis2.org/android-previous1/api/system/info/
+106	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id
+105	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id,created,lastUpdated,name,displayName,access,dashboardItems%5Bid,created,lastUpdated,name,displayName,access,type,shape,messages,chart%5Bid,created,lastUpdated,name,displayName,access%5D,eventChart%5Bid,created,lastUpdated,name,displayName,access%5Dmap%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,eventReport%5Bid,created,lastUpdated,name,displayName,access%5D,users%5Bid,created,lastUpdated,name,displayName,access%5D,reports%5Bid,created,lastUpdated,name,displayName,access%5D,resources%5Bid,created,lastUpdated,name,displayName,access%5D%5D&filter=lastUpdated:gt:2017-07-18T23:16:36.195
+105	GET	https://play.dhis2.org/android-previous1/api/dashboardItems?paging=false&fields=id,created,lastUpdated,shape&filter=lastUpdated:gt:2017-07-18T23:16:36.195
+115	GET	https://play.dhis2.org/android-previous1/api/dashboards/nghVC4wtyzi?fields=created,lastUpdated
+111	GET	https://play.dhis2.org/android-previous1/api/system/info/
+113	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id
+117	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id,created,lastUpdated,name,displayName,access,text,type,chart%5Bid,created,lastUpdated,name,displayName,access%5D,map%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,user%5Bid,created,lastUpdated,name,displayName,access%5D,dataSet%5Bid,created,lastUpdated,name,displayName,access%5D,period%5Bid,created,lastUpdated,name,displayName,access%5D,organisationUnit%5Bid,created,lastUpdated,name,displayName,access%5D,comments%5Bid,created,lastUpdated,name,displayName,access,user%5Bid,created,lastUpdated,name,displayName,access%5D,text%5D&filter=lastUpdated:gt:2017-07-18T23:17:24.422Z
+112	GET	https://play.dhis2.org/android-previous1/api/system/info/
+106	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id
+107	GET	https://play.dhis2.org/android-previous1/api/dashboards?paging=false&fields=id,created,lastUpdated,name,displayName,access,dashboardItems%5Bid,created,lastUpdated,name,displayName,access,type,shape,messages,chart%5Bid,created,lastUpdated,name,displayName,access%5D,eventChart%5Bid,created,lastUpdated,name,displayName,access%5Dmap%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,eventReport%5Bid,created,lastUpdated,name,displayName,access%5D,users%5Bid,created,lastUpdated,name,displayName,access%5D,reports%5Bid,created,lastUpdated,name,displayName,access%5D,resources%5Bid,created,lastUpdated,name,displayName,access%5D%5D&filter=lastUpdated:gt:2017-07-18T23:17:18.062
+106	GET	https://play.dhis2.org/android-previous1/api/dashboardItems?paging=false&fields=id,created,lastUpdated,shape&filter=lastUpdated:gt:2017-07-18T23:17:18.062
+112	GET	https://play.dhis2.org/android-previous1/api/system/info/
+109	GET	https://play.dhis2.org/android-previous1/api/charts?paging=false&fields=id
+107	GET	https://play.dhis2.org/android-previous1/api/charts?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z
+107	GET	https://play.dhis2.org/android-previous1/api/eventCharts?paging=false&fields=id
+106	GET	https://play.dhis2.org/android-previous1/api/eventCharts?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z
+107	GET	https://play.dhis2.org/android-previous1/api/maps?paging=false&fields=id
+106	GET	https://play.dhis2.org/android-previous1/api/maps?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z
+108	GET	https://play.dhis2.org/android-previous1/api/reportTables?paging=false&fields=id
+105	GET	https://play.dhis2.org/android-previous1/api/reportTables?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z
+106	GET	https://play.dhis2.org/android-previous1/api/eventReports?paging=false&fields=id
+105	GET	https://play.dhis2.org/android-previous1/api/eventReports?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z
+107	GET	https://play.dhis2.org/android-previous1/api/users?paging=false&fields=id
+106	GET	https://play.dhis2.org/android-previous1/api/users?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z
+105	GET	https://play.dhis2.org/android-previous1/api/reports?paging=false&fields=id
+105	GET	https://play.dhis2.org/android-previous1/api/reports?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:24:50.446Z
+106	GET	https://play.dhis2.org/android-previous1/api/documents?paging=false&fields=id
+106	GET	https://play.dhis2.org/android-previous1/api/documents?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:52:32.580Z
+107	GET	https://play.dhis2.org/android-previous1/api/documents?paging=false&fields=id
+106	GET	https://play.dhis2.org/android-previous1/api/documents?paging=false&fields=id,created,lastUpdated,name,displayName&filter=lastUpdated:gt:2017-07-18T21:52:32.580Z
+113	GET	https://play.dhis2.org/android-previous1/api/system/info/
+114	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id
+117	GET	https://play.dhis2.org/android-previous1/api/interpretations/?paging=false&fields=id,created,lastUpdated,name,displayName,access,text,type,chart%5Bid,created,lastUpdated,name,displayName,access%5D,map%5Bid,created,lastUpdated,name,displayName,access%5D,reportTable%5Bid,created,lastUpdated,name,displayName,access%5D,user%5Bid,created,lastUpdated,name,displayName,access%5D,dataSet%5Bid,created,lastUpdated,name,displayName,access%5D,period%5Bid,created,lastUpdated,name,displayName,access%5D,organisationUnit%5Bid,created,lastUpdated,name,displayName,access%5D,comments%5Bid,created,lastUpdated,name,displayName,access,user%5Bid,created,lastUpdated,name,displayName,access%5D,text%5D&filter=lastUpdated:gt:2017-07-18T21:41:50.918Z
+256	GET	https://play.dhis2.org/android-previous1/api/charts/CNkMibmx1Zr/data.png?width=480&height=320
+561	GET	https://play.dhis2.org/android-previous1/api/maps/Juj0mETi7L2/data.png?width=480&height=320
+199	GET	https://play.dhis2.org/android-previous1/api/eventCharts/lUhwbwHKnSe/data.png?width=480&height=320
