@@ -1,0 +1,221 @@
+Run for users: 1
+Input JMX test plan: dhis2-android-dashboard/dhis2-android-dashboard.jmx
+Output JTL results: dhis2-android-dashboard/android-previous2-users1.jtl
+Properties: -J protocol=https -J host=play.dhis2.org -J path_prefix=android-previous2 -J port=443 -J rampup_period=0 -J loop_count=1 -J users=1
+Creating summariser <summary>
+Created the tree successfully using dhis2-android-dashboard/dhis2-android-dashboard.jmx
+Starting the test @ Wed Aug 09 16:52:07 CEST 2017 (1502290327340)
+Waiting for possible Shutdown/StopTestNow/Heapdump message on port 4445
+summary +     37 in 00:00:23 =    1.6/s Avg:   626 Min:   122 Max:  5932 Err:     2 (5.41%) Active: 1 Started: 1 Finished: 0
+summary +     75 in 00:00:31 =    2.4/s Avg:   411 Min:   118 Max:  4546 Err:    11 (14.67%) Active: 1 Started: 1 Finished: 0
+summary =    112 in 00:00:54 =    2.1/s Avg:   482 Min:   118 Max:  5932 Err:    13 (11.61%)
+summary +     76 in 00:00:28 =    2.7/s Avg:   373 Min:   119 Max:  4079 Err:     9 (11.84%) Active: 1 Started: 1 Finished: 0
+summary =    188 in 00:01:23 =    2.3/s Avg:   438 Min:   118 Max:  5932 Err:    22 (11.70%)
+summary +     33 in 00:00:29 =    1.1/s Avg:   887 Min:   256 Max:  4030 Err:     0 (0.00%) Active: 1 Started: 1 Finished: 0
+summary =    221 in 00:01:52 =    2.0/s Avg:   505 Min:   118 Max:  5932 Err:    22 (9.95%)
+summary +     63 in 00:00:30 =    2.1/s Avg:   476 Min:   127 Max:  1983 Err:     4 (6.35%) Active: 1 Started: 1 Finished: 0
+summary =    284 in 00:02:22 =    2.0/s Avg:   499 Min:   118 Max:  5932 Err:    26 (9.15%)
+summary +     31 in 00:00:20 =    1.5/s Avg:   650 Min:   188 Max:  2643 Err:     0 (0.00%) Active: 0 Started: 1 Finished: 1
+summary =    315 in 00:02:42 =    1.9/s Avg:   513 Min:   118 Max:  5932 Err:    26 (8.25%)
+Tidying up ...    @ Wed Aug 09 16:54:50 CEST 2017 (1502290490364)
+... end of run
+dhis2-android-dashboard/android-previous2-users1.jtl
+  InitialSyncController (1) - mean elapsed by user: 87723 ms
+  UsageController (1) - mean elapsed by user: 74162 ms
+Run for users: 2
+Input JMX test plan: dhis2-android-dashboard/dhis2-android-dashboard.jmx
+Output JTL results: dhis2-android-dashboard/android-previous2-users2.jtl
+Properties: -J protocol=https -J host=play.dhis2.org -J path_prefix=android-previous2 -J port=443 -J rampup_period=0 -J loop_count=1 -J users=2
+Creating summariser <summary>
+Created the tree successfully using dhis2-android-dashboard/dhis2-android-dashboard.jmx
+Starting the test @ Wed Aug 09 16:54:52 CEST 2017 (1502290492659)
+Waiting for possible Shutdown/StopTestNow/Heapdump message on port 4445
+summary +     52 in 00:00:07 =    7.6/s Avg:   247 Min:   119 Max:  2739 Err:     2 (3.85%) Active: 2 Started: 2 Finished: 0
+summary +    109 in 00:00:33 =    3.3/s Avg:   555 Min:   118 Max:  5733 Err:    18 (16.51%) Active: 2 Started: 2 Finished: 0
+summary =    161 in 00:00:40 =    4.1/s Avg:   456 Min:   118 Max:  5733 Err:    20 (12.42%)
+summary +    144 in 00:00:29 =    5.0/s Avg:   399 Min:   121 Max:  5680 Err:    24 (16.67%) Active: 2 Started: 2 Finished: 0
+summary =    305 in 00:01:09 =    4.4/s Avg:   429 Min:   118 Max:  5733 Err:    44 (14.43%)
+summary +    116 in 00:00:28 =    4.1/s Avg:   529 Min:   119 Max:  5662 Err:     0 (0.00%) Active: 2 Started: 2 Finished: 0
+summary =    421 in 00:01:37 =    4.3/s Avg:   457 Min:   118 Max:  5733 Err:    44 (10.45%)
+summary +     90 in 00:00:30 =    3.0/s Avg:   665 Min:   123 Max:  5614 Err:     8 (8.89%) Active: 2 Started: 2 Finished: 0
+summary =    511 in 00:02:07 =    4.0/s Avg:   493 Min:   118 Max:  5733 Err:    52 (10.18%)
+summary +    100 in 00:00:30 =    3.3/s Avg:   603 Min:   222 Max:  3021 Err:     0 (0.00%) Active: 2 Started: 2 Finished: 0
+summary =    611 in 00:02:37 =    3.9/s Avg:   511 Min:   118 Max:  5733 Err:    52 (8.51%)
+summary +     19 in 00:00:06 =    3.4/s Avg:   544 Min:   282 Max:  1408 Err:     0 (0.00%) Active: 0 Started: 2 Finished: 2
+summary =    630 in 00:02:43 =    3.9/s Avg:   512 Min:   118 Max:  5733 Err:    52 (8.25%)
+Tidying up ...    @ Wed Aug 09 16:57:36 CEST 2017 (1502290656053)
+... end of run
+dhis2-android-dashboard/android-previous2-users2.jtl
+  InitialSyncController (2) - mean elapsed by user: 86487 ms
+  UsageController (2) - mean elapsed by user: 75049 ms
+Run for users: 5
+Input JMX test plan: dhis2-android-dashboard/dhis2-android-dashboard.jmx
+Output JTL results: dhis2-android-dashboard/android-previous2-users5.jtl
+Properties: -J protocol=https -J host=play.dhis2.org -J path_prefix=android-previous2 -J port=443 -J rampup_period=0 -J loop_count=1 -J users=5
+Creating summariser <summary>
+Created the tree successfully using dhis2-android-dashboard/dhis2-android-dashboard.jmx
+Starting the test @ Wed Aug 09 16:57:38 CEST 2017 (1502290658465)
+Waiting for possible Shutdown/StopTestNow/Heapdump message on port 4445
+summary +    185 in 00:00:21 =    8.8/s Avg:   464 Min:   137 Max:  7350 Err:    13 (7.03%) Active: 5 Started: 5 Finished: 0
+summary +    216 in 00:00:32 =    6.8/s Avg:   742 Min:   133 Max:  8098 Err:    37 (17.13%) Active: 5 Started: 5 Finished: 0
+summary =    401 in 00:00:53 =    7.6/s Avg:   614 Min:   133 Max:  8098 Err:    50 (12.47%)
+summary +    248 in 00:00:28 =    8.7/s Avg:   583 Min:   134 Max:  8272 Err:    35 (14.11%) Active: 5 Started: 5 Finished: 0
+summary =    649 in 00:01:21 =    8.0/s Avg:   602 Min:   133 Max:  8272 Err:    85 (13.10%)
+summary +    291 in 00:00:30 =    9.7/s Avg:   555 Min:   136 Max:  7901 Err:    25 (8.59%) Active: 5 Started: 5 Finished: 0
+summary =    940 in 00:01:51 =    8.5/s Avg:   588 Min:   133 Max:  8272 Err:   110 (11.70%)
+summary +    136 in 00:00:30 =    4.5/s Avg:   976 Min:   165 Max:  8166 Err:     0 (0.00%) Active: 5 Started: 5 Finished: 0
+summary =   1076 in 00:02:21 =    7.6/s Avg:   637 Min:   133 Max:  8272 Err:   110 (10.22%)
+summary +    167 in 00:00:30 =    5.6/s Avg:   977 Min:   163 Max: 10078 Err:    10 (5.99%) Active: 5 Started: 5 Finished: 0
+summary =   1243 in 00:02:51 =    7.3/s Avg:   682 Min:   133 Max: 10078 Err:   120 (9.65%)
+summary +    191 in 00:00:30 =    6.4/s Avg:   792 Min:   153 Max:  3468 Err:    10 (5.24%) Active: 5 Started: 5 Finished: 0
+summary =   1434 in 00:03:21 =    7.1/s Avg:   697 Min:   133 Max: 10078 Err:   130 (9.07%)
+summary +    141 in 00:00:30 =    4.7/s Avg:   962 Min:   323 Max:  4872 Err:     0 (0.00%) Active: 0 Started: 5 Finished: 5
+summary =   1575 in 00:03:51 =    6.8/s Avg:   721 Min:   133 Max: 10078 Err:   130 (8.25%)
+Tidying up ...    @ Wed Aug 09 17:01:29 CEST 2017 (1502290889886)
+... end of run
+dhis2-android-dashboard/android-previous2-users5.jtl
+  InitialSyncController (5) - mean elapsed by user: 125181 ms
+  UsageController (5) - mean elapsed by user: 102003 ms
+Run for users: 10
+Input JMX test plan: dhis2-android-dashboard/dhis2-android-dashboard.jmx
+Output JTL results: dhis2-android-dashboard/android-previous2-users10.jtl
+Properties: -J protocol=https -J host=play.dhis2.org -J path_prefix=android-previous2 -J port=443 -J rampup_period=0 -J loop_count=1 -J users=10
+Creating summariser <summary>
+Created the tree successfully using dhis2-android-dashboard/dhis2-android-dashboard.jmx
+Starting the test @ Wed Aug 09 17:01:32 CEST 2017 (1502290892215)
+Waiting for possible Shutdown/StopTestNow/Heapdump message on port 4445
+summary +    361 in 00:00:31 =   11.6/s Avg:   659 Min:   159 Max: 10756 Err:    20 (5.54%) Active: 10 Started: 10 Finished: 0
+summary +    154 in 00:00:26 =    5.9/s Avg:  1707 Min:   143 Max: 18434 Err:    39 (25.32%) Active: 10 Started: 10 Finished: 0
+summary =    515 in 00:00:57 =    9.0/s Avg:   972 Min:   143 Max: 18434 Err:    59 (11.46%)
+summary +    302 in 00:00:30 =   10.1/s Avg:  1064 Min:   151 Max: 18306 Err:    47 (15.56%) Active: 10 Started: 10 Finished: 0
+summary =    817 in 00:01:27 =    9.4/s Avg:  1006 Min:   143 Max: 18434 Err:   106 (12.97%)
+summary +    168 in 00:00:30 =    5.6/s Avg:  1636 Min:   135 Max: 19344 Err:    19 (11.31%) Active: 10 Started: 10 Finished: 0
+summary =    985 in 00:01:57 =    8.4/s Avg:  1114 Min:   135 Max: 19344 Err:   125 (12.69%)
+summary +    304 in 00:00:30 =   10.1/s Avg:  1119 Min:   152 Max: 17407 Err:    47 (15.46%) Active: 10 Started: 10 Finished: 0
+summary =   1289 in 00:02:27 =    8.7/s Avg:  1115 Min:   135 Max: 19344 Err:   172 (13.34%)
+summary +    198 in 00:00:30 =    6.6/s Avg:  1621 Min:   140 Max: 17926 Err:    36 (18.18%) Active: 10 Started: 10 Finished: 0
+summary =   1487 in 00:02:57 =    8.4/s Avg:  1182 Min:   135 Max: 19344 Err:   208 (13.99%)
+summary +    264 in 00:00:30 =    8.8/s Avg:  1110 Min:   156 Max: 15022 Err:    12 (4.55%) Active: 10 Started: 10 Finished: 0
+summary =   1751 in 00:03:27 =    8.4/s Avg:  1171 Min:   135 Max: 19344 Err:   220 (12.56%)
+summary +    210 in 00:00:30 =    7.0/s Avg:  1438 Min:   149 Max: 18115 Err:     0 (0.00%) Active: 10 Started: 10 Finished: 0
+summary =   1961 in 00:03:57 =    8.3/s Avg:  1200 Min:   135 Max: 19344 Err:   220 (11.22%)
+summary +    146 in 00:00:30 =    4.8/s Avg:  1832 Min:   315 Max: 17048 Err:     0 (0.00%) Active: 10 Started: 10 Finished: 0
+summary =   2107 in 00:04:28 =    7.9/s Avg:  1244 Min:   135 Max: 19344 Err:   220 (10.44%)
+summary +    135 in 00:00:30 =    4.6/s Avg:  2434 Min:   354 Max: 22978 Err:     0 (0.00%) Active: 10 Started: 10 Finished: 0
+summary =   2242 in 00:04:57 =    7.5/s Avg:  1315 Min:   135 Max: 22978 Err:   220 (9.81%)
+summary +    171 in 00:00:30 =    5.7/s Avg:  1754 Min:   251 Max: 14286 Err:    15 (8.77%) Active: 10 Started: 10 Finished: 0
+summary =   2413 in 00:05:27 =    7.4/s Avg:  1347 Min:   135 Max: 22978 Err:   235 (9.74%)
+summary +    197 in 00:00:30 =    6.6/s Avg:  1573 Min:   246 Max:  7763 Err:    17 (8.63%) Active: 10 Started: 10 Finished: 0
+summary =   2610 in 00:05:57 =    7.3/s Avg:  1364 Min:   135 Max: 22978 Err:   252 (9.66%)
+summary +    184 in 00:00:31 =    6.0/s Avg:  1566 Min:   407 Max:  6662 Err:     8 (4.35%) Active: 10 Started: 10 Finished: 0
+summary =   2794 in 00:06:28 =    7.2/s Avg:  1377 Min:   135 Max: 22978 Err:   260 (9.31%)
+summary +    156 in 00:00:30 =    5.2/s Avg:  1932 Min:   584 Max:  8056 Err:     0 (0.00%) Active: 10 Started: 10 Finished: 0
+summary =   2950 in 00:06:58 =    7.1/s Avg:  1406 Min:   135 Max: 22978 Err:   260 (8.81%)
+summary +    143 in 00:00:30 =    4.8/s Avg:  1926 Min:   553 Max:  9483 Err:     0 (0.00%) Active: 5 Started: 10 Finished: 5
+summary =   3093 in 00:07:27 =    6.9/s Avg:  1430 Min:   135 Max: 22978 Err:   260 (8.41%)
+summary +     57 in 00:00:13 =    4.5/s Avg:   707 Min:   258 Max:  3442 Err:     0 (0.00%) Active: 0 Started: 10 Finished: 10
+summary =   3150 in 00:07:40 =    6.8/s Avg:  1417 Min:   135 Max: 22978 Err:   260 (8.25%)
+Tidying up ...    @ Wed Aug 09 17:09:12 CEST 2017 (1502291352602)
+... end of run
+dhis2-android-dashboard/android-previous2-users10.jtl
+  InitialSyncController (10) - mean elapsed by user: 249986 ms
+  UsageController (10) - mean elapsed by user: 196597 ms
+Run for users: 25
+Input JMX test plan: dhis2-android-dashboard/dhis2-android-dashboard.jmx
+Output JTL results: dhis2-android-dashboard/android-previous2-users25.jtl
+Properties: -J protocol=https -J host=play.dhis2.org -J path_prefix=android-previous2 -J port=443 -J rampup_period=0 -J loop_count=1 -J users=25
+Creating summariser <summary>
+Created the tree successfully using dhis2-android-dashboard/dhis2-android-dashboard.jmx
+Starting the test @ Wed Aug 09 17:09:14 CEST 2017 (1502291354944)
+Waiting for possible Shutdown/StopTestNow/Heapdump message on port 4445
+summary +     32 in 00:00:15 =    2.2/s Avg:  2891 Min:   231 Max: 12927 Err:     4 (12.50%) Active: 25 Started: 25 Finished: 0
+summary +    696 in 00:00:30 =   23.2/s Avg:  1415 Min:   339 Max: 21907 Err:    23 (3.30%) Active: 25 Started: 25 Finished: 0
+summary =    728 in 00:00:45 =   16.4/s Avg:  1480 Min:   231 Max: 21907 Err:    27 (3.71%)
+summary +    197 in 00:00:30 =    6.5/s Avg:  2814 Min:   462 Max: 23524 Err:    38 (19.29%) Active: 25 Started: 25 Finished: 0
+summary =    925 in 00:01:15 =   12.4/s Avg:  1764 Min:   231 Max: 23524 Err:    65 (7.03%)
+summary +     39 in 00:00:30 =    1.3/s Avg:  5421 Min:   151 Max: 42519 Err:    18 (46.15%) Active: 25 Started: 25 Finished: 0
+summary =    964 in 00:01:45 =    9.2/s Avg:  1912 Min:   151 Max: 42519 Err:    83 (8.61%)
+summary +    188 in 00:00:30 =    6.3/s Avg:  7284 Min:   172 Max: 51038 Err:    49 (26.06%) Active: 25 Started: 25 Finished: 0
+summary =   1152 in 00:02:14 =    8.6/s Avg:  2789 Min:   151 Max: 51038 Err:   132 (11.46%)
+summary +    422 in 00:00:30 =   14.1/s Avg:  2001 Min:   197 Max: 36230 Err:    45 (10.66%) Active: 25 Started: 25 Finished: 0
+summary =   1574 in 00:02:45 =    9.6/s Avg:  2578 Min:   151 Max: 51038 Err:   177 (11.25%)
+summary +    306 in 00:00:30 =   10.1/s Avg:  1974 Min:   834 Max: 25808 Err:    43 (14.05%) Active: 25 Started: 25 Finished: 0
+summary =   1880 in 00:03:15 =    9.6/s Avg:  2479 Min:   151 Max: 51038 Err:   220 (11.70%)
+summary +     94 in 00:00:30 =    3.2/s Avg:  4202 Min:   144 Max: 40520 Err:    32 (34.04%) Active: 25 Started: 25 Finished: 0
+summary =   1974 in 00:03:45 =    8.8/s Avg:  2561 Min:   144 Max: 51038 Err:   252 (12.77%)
+summary +    213 in 00:00:30 =    7.1/s Avg:  4830 Min:   135 Max: 49219 Err:    14 (6.57%) Active: 25 Started: 25 Finished: 0
+summary =   2187 in 00:04:15 =    8.6/s Avg:  2782 Min:   135 Max: 51038 Err:   266 (12.16%)
+summary +    298 in 00:00:30 =    9.9/s Avg:  2245 Min:   204 Max: 44014 Err:    31 (10.40%) Active: 25 Started: 25 Finished: 0
+summary =   2485 in 00:04:45 =    8.7/s Avg:  2718 Min:   135 Max: 51038 Err:   297 (11.95%)
+summary +    238 in 00:00:30 =    8.0/s Avg:  2787 Min:   149 Max: 52484 Err:    31 (13.03%) Active: 25 Started: 25 Finished: 0
+summary =   2723 in 00:05:14 =    8.7/s Avg:  2724 Min:   135 Max: 52484 Err:   328 (12.05%)
+summary +    200 in 00:00:30 =    6.6/s Avg:  3395 Min:   132 Max: 54127 Err:    46 (23.00%) Active: 25 Started: 25 Finished: 0
+summary =   2923 in 00:05:45 =    8.5/s Avg:  2770 Min:   132 Max: 54127 Err:   374 (12.80%)
+summary +    155 in 00:00:30 =    5.2/s Avg:  5270 Min:   137 Max: 51548 Err:    43 (27.74%) Active: 25 Started: 25 Finished: 0
+summary =   3078 in 00:06:14 =    8.2/s Avg:  2896 Min:   132 Max: 54127 Err:   417 (13.55%)
+summary +    276 in 00:00:30 =    9.2/s Avg:  2688 Min:   135 Max: 51817 Err:    42 (15.22%) Active: 25 Started: 25 Finished: 0
+summary =   3354 in 00:06:45 =    8.3/s Avg:  2879 Min:   132 Max: 54127 Err:   459 (13.69%)
+summary +    315 in 00:00:30 =   10.5/s Avg:  3499 Min:   538 Max: 49367 Err:    50 (15.87%) Active: 25 Started: 25 Finished: 0
+summary =   3669 in 00:07:14 =    8.4/s Avg:  2932 Min:   132 Max: 54127 Err:   509 (13.87%)
+summary +    268 in 00:00:30 =    8.9/s Avg:  1653 Min:   225 Max: 21981 Err:    41 (15.30%) Active: 25 Started: 25 Finished: 0
+summary =   3937 in 00:07:45 =    8.5/s Avg:  2845 Min:   132 Max: 54127 Err:   550 (13.97%)
+summary +    150 in 00:00:30 =    5.0/s Avg:  4034 Min:   140 Max: 57229 Err:     0 (0.00%) Active: 25 Started: 25 Finished: 0
+summary =   4087 in 00:08:15 =    8.3/s Avg:  2888 Min:   132 Max: 57229 Err:   550 (13.46%)
+summary +    225 in 00:00:30 =    7.5/s Avg:  4805 Min:   382 Max: 52975 Err:     0 (0.00%) Active: 25 Started: 25 Finished: 0
+summary =   4312 in 00:08:45 =    8.2/s Avg:  2988 Min:   132 Max: 57229 Err:   550 (12.76%)
+summary +    249 in 00:00:31 =    8.0/s Avg:  2694 Min:   347 Max: 40614 Err:     0 (0.00%) Active: 25 Started: 25 Finished: 0
+summary =   4561 in 00:09:15 =    8.2/s Avg:  2972 Min:   132 Max: 57229 Err:   550 (12.06%)
+summary +    285 in 00:00:29 =    9.8/s Avg:  2950 Min:   349 Max: 45542 Err:     0 (0.00%) Active: 25 Started: 25 Finished: 0
+summary =   4846 in 00:09:45 =    8.3/s Avg:  2971 Min:   132 Max: 57229 Err:   550 (11.35%)
+summary +    179 in 00:00:30 =    5.9/s Avg:  4391 Min:   620 Max: 36810 Err:     0 (0.00%) Active: 25 Started: 25 Finished: 0
+summary =   5025 in 00:10:15 =    8.2/s Avg:  3022 Min:   132 Max: 57229 Err:   550 (10.95%)
+summary +    147 in 00:00:30 =    5.0/s Avg:  4031 Min:   460 Max: 42529 Err:     0 (0.00%) Active: 25 Started: 25 Finished: 0
+summary =   5172 in 00:10:45 =    8.0/s Avg:  3050 Min:   132 Max: 57229 Err:   550 (10.63%)
+summary +    122 in 00:00:30 =    4.0/s Avg:  3547 Min:   323 Max: 55455 Err:     2 (1.64%) Active: 25 Started: 25 Finished: 0
+summary =   5294 in 00:11:15 =    7.8/s Avg:  3062 Min:   132 Max: 57229 Err:   552 (10.43%)
+summary +    136 in 00:00:30 =    4.6/s Avg:  8349 Min:   156 Max: 60041 Err:     7 (5.15%) Active: 25 Started: 25 Finished: 0
+summary =   5430 in 00:11:45 =    7.7/s Avg:  3194 Min:   132 Max: 60041 Err:   559 (10.29%)
+summary +    159 in 00:00:31 =    5.2/s Avg:  4895 Min:   883 Max: 60012 Err:     9 (5.66%) Active: 25 Started: 25 Finished: 0
+summary =   5589 in 00:12:15 =    7.6/s Avg:  3243 Min:   132 Max: 60041 Err:   568 (10.16%)
+summary +    129 in 00:00:29 =    4.4/s Avg:  6195 Min:   556 Max: 30688 Err:     3 (2.33%) Active: 25 Started: 25 Finished: 0
+summary =   5718 in 00:12:45 =    7.5/s Avg:  3309 Min:   132 Max: 60041 Err:   571 (9.99%)
+summary +    186 in 00:00:31 =    6.0/s Avg:  4544 Min:   728 Max: 35543 Err:     5 (2.69%) Active: 25 Started: 25 Finished: 0
+summary =   5904 in 00:13:16 =    7.4/s Avg:  3348 Min:   132 Max: 60041 Err:   576 (9.76%)
+summary +    182 in 00:00:29 =    6.3/s Avg:  4320 Min:   969 Max: 16981 Err:    14 (7.69%) Active: 25 Started: 25 Finished: 0
+summary =   6086 in 00:13:45 =    7.4/s Avg:  3377 Min:   132 Max: 60041 Err:   590 (9.69%)
+summary +    176 in 00:00:30 =    5.9/s Avg:  3833 Min:   782 Max: 17228 Err:    10 (5.68%) Active: 25 Started: 25 Finished: 0
+summary =   6262 in 00:14:15 =    7.3/s Avg:  3390 Min:   132 Max: 60041 Err:   600 (9.58%)
+summary +    200 in 00:00:30 =    6.6/s Avg:  4001 Min:   956 Max: 19054 Err:    24 (12.00%) Active: 25 Started: 25 Finished: 0
+summary =   6462 in 00:14:45 =    7.3/s Avg:  3409 Min:   132 Max: 60041 Err:   624 (9.66%)
+summary +    184 in 00:00:31 =    6.0/s Avg:  3831 Min:   700 Max: 16977 Err:    18 (9.78%) Active: 25 Started: 25 Finished: 0
+summary =   6646 in 00:15:16 =    7.3/s Avg:  3421 Min:   132 Max: 60041 Err:   642 (9.66%)
+summary +    189 in 00:00:29 =    6.5/s Avg:  4108 Min:   969 Max: 25836 Err:    12 (6.35%) Active: 25 Started: 25 Finished: 0
+summary =   6835 in 00:15:45 =    7.2/s Avg:  3440 Min:   132 Max: 60041 Err:   654 (9.57%)
+summary +    160 in 00:00:30 =    5.3/s Avg:  4809 Min:  1285 Max: 20558 Err:     0 (0.00%) Active: 25 Started: 25 Finished: 0
+summary =   6995 in 00:16:15 =    7.2/s Avg:  3471 Min:   132 Max: 60041 Err:   654 (9.35%)
+summary +    188 in 00:00:30 =    6.3/s Avg:  3668 Min:  1245 Max: 15457 Err:     0 (0.00%) Active: 22 Started: 25 Finished: 3
+summary =   7183 in 00:16:45 =    7.2/s Avg:  3476 Min:   132 Max: 60041 Err:   654 (9.10%)
+summary +    170 in 00:00:30 =    5.7/s Avg:  3999 Min:  1658 Max: 13345 Err:     0 (0.00%) Active: 21 Started: 25 Finished: 4
+summary =   7353 in 00:17:15 =    7.1/s Avg:  3488 Min:   132 Max: 60041 Err:   654 (8.89%)
+summary +    157 in 00:00:31 =    5.1/s Avg:  3531 Min:  1553 Max: 15363 Err:     0 (0.00%) Active: 19 Started: 25 Finished: 6
+summary =   7510 in 00:17:45 =    7.1/s Avg:  3489 Min:   132 Max: 60041 Err:   654 (8.71%)
+summary +    134 in 00:00:30 =    4.5/s Avg:  4625 Min:  1790 Max: 16568 Err:     0 (0.00%) Active: 19 Started: 25 Finished: 6
+summary =   7644 in 00:18:15 =    7.0/s Avg:  3509 Min:   132 Max: 60041 Err:   654 (8.56%)
+summary +    143 in 00:00:30 =    4.8/s Avg:  3513 Min:  1196 Max:  9960 Err:     0 (0.00%) Active: 10 Started: 25 Finished: 15
+summary =   7787 in 00:18:45 =    6.9/s Avg:  3509 Min:   132 Max: 60041 Err:   654 (8.40%)
+summary +     88 in 00:00:15 =    5.9/s Avg:  1368 Min:   312 Max:  4415 Err:     0 (0.00%) Active: 0 Started: 25 Finished: 25
+summary =   7875 in 00:19:00 =    6.9/s Avg:  3485 Min:   132 Max: 60041 Err:   654 (8.30%)
+Tidying up ...    @ Wed Aug 09 17:28:15 CEST 2017 (1502292495225)
+... end of run
+dhis2-android-dashboard/android-previous2-users25.jtl
+  InitialSyncController (25) - mean elapsed by user: 587918 ms
+  UsageController (25) - mean elapsed by user: 510058 ms
+Run for users: 50
+Input JMX test plan: dhis2-android-dashboard/dhis2-android-dashboard.jmx
+Output JTL results: dhis2-android-dashboard/android-previous2-users50.jtl
+Properties: -J protocol=https -J host=play.dhis2.org -J path_prefix=android-previous2 -J port=443 -J rampup_period=0 -J loop_count=1 -J users=50
+Creating summariser <summary>
+Created the tree successfully using dhis2-android-dashboard/dhis2-android-dashboard.jmx
+Starting the test @ Wed Aug 09 17:28:17 CEST 2017 (1502292497828)
+Waiting for possible Shutdown/StopTestNow/Heapdump message on port 4445
+summary +    101 in 00:02:17 =    0.7/s Avg: 60050 Min: 14609 Max: 61948 Err:   101 (100.00%) Active: 50 Started: 50 Finished: 0
