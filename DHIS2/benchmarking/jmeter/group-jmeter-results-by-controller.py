@@ -20,7 +20,7 @@ def get_jtl_entries(jtl_path):
         elapsed, name, success_info = row[1], row[2], row[4]
         if "Controller" in name:
             match = re.search("in transaction : (\d+), number of failing samples : (\d+)", success_info)
-            success_rate = ((int(match[1]), int(match[2])) if match else 100)
+            success_rate = ((int(match.group(1)), int(match.group(2))) if match else 100)
             yield dict(controller=name, elapsed=int(elapsed), success_rate=success_rate)
 
 def group_by(xs, mapper = None):

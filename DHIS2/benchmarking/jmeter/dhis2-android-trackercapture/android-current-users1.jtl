@@ -1,0 +1,47 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,Latency,IdleTime,Connect
+1502366534755,630,93 /android-current/api/23/me/,200,,ThreadGroup 1-1,text,true,,643,443,1,1,618,0,451
+1502366535388,122,94 /android-current/api/system/info/,200,,ThreadGroup 1-1,text,true,,895,192,1,1,122,0,0
+1502366535511,117,95 /android-current/api/me,200,,ThreadGroup 1-1,text,true,,704,304,1,1,117,0,0
+1502366535629,190,96 /android-current/api/programs/uy2gU8kT1jF,200,,ThreadGroup 1-1,text,true,,8680,743,1,1,189,0,0
+1502366535820,128,97 /android-current/api/programs/q04UBOqq3rp,200,,ThreadGroup 1-1,text,true,,2232,743,1,1,127,0,0
+1502366535949,132,98 /android-current/api/programs/VBqh0ynB2wv,200,,ThreadGroup 1-1,text,true,,2463,743,1,1,131,0,0
+1502366536082,168,99 /android-current/api/programs/eBAyeGv0exc,200,,ThreadGroup 1-1,text,true,,6098,743,1,1,168,0,0
+1502366536251,136,100 /android-current/api/programs/kla3mAPgvCH,200,,ThreadGroup 1-1,text,true,,2219,743,1,1,136,0,0
+1502366536389,130,101 /android-current/api/programs/lxAQ7Zs9VYR,200,,ThreadGroup 1-1,text,true,,2083,743,1,1,130,0,0
+1502366536521,165,102 /android-current/api/programs/IpHINAT79UW,200,,ThreadGroup 1-1,text,true,,7275,743,1,1,164,0,0
+1502366536687,168,103 /android-current/api/programs/ur1Edk5Oe2n,200,,ThreadGroup 1-1,text,true,,7057,743,1,1,168,0,0
+1502366536856,338,104 /android-current/api/programs/WSGAb5XwJ3Y,200,,ThreadGroup 1-1,text,true,,30227,743,1,1,336,0,33
+1502366537195,258,105 /android-current/api/programs/fDd25txQckK,200,,ThreadGroup 1-1,text,true,,9392,743,1,1,258,0,0
+1502366537454,1221,106 /android-current/api/optionSets,200,,ThreadGroup 1-1,text,true,,564021,229,1,1,1061,0,0
+1502366538677,119,107 /android-current/api/constants,200,,ThreadGroup 1-1,text,true,,675,222,1,1,119,0,0
+1502366538798,125,108 /android-current/api/programRules,200,,ThreadGroup 1-1,text,true,,3723,225,1,1,125,0,0
+1502366538924,154,109 /android-current/api/programRuleVariables,200,,ThreadGroup 1-1,text,true,,2361,233,1,1,154,0,37
+1502366539083,118,110 /android-current/api/programRuleActions,200,,ThreadGroup 1-1,text,true,,2915,231,1,1,118,0,0
+1502366539202,115,111 /android-current/api/relationshipTypes,200,,ThreadGroup 1-1,text,true,,684,230,1,1,115,0,0
+1502366539317,616,112 /android-current/api/trackedEntityAttributes/xs8A6tQJY0s/generateAndReserve,200,,ThreadGroup 1-1,text,true,,2668,254,1,1,616,0,0
+1502366534683,5150,InitialSyncController,200,"Number of samples in transaction : 20, number of failing samples : 0",ThreadGroup 1-1,,true,,657015,9993,1,1,4972,101,521
+1502366539935,190,119 /android-current/api/trackedEntityInstances/,200,,ThreadGroup 1-1,text,true,,970,853,1,1,190,0,0
+1502366540126,149,120 /android-current/api/trackedEntityInstances/HhlKo02TH8k,200,,ThreadGroup 1-1,text,true,,403,243,1,1,148,0,0
+1502366540275,217,121 /android-current/api/enrollments/,409,,ThreadGroup 1-1,text,false,,1549,1058,1,1,217,0,0
+1502366540493,482,122 /android-current/api/events/,200,,ThreadGroup 1-1,text,true,,839,852,1,1,482,0,0
+1502366540976,150,123 /android-current/api/system/info/,200,,ThreadGroup 1-1,text,true,,895,192,1,1,149,0,30
+1502366541130,119,124 /android-current/api/system/info/,200,,ThreadGroup 1-1,text,true,,895,192,1,1,119,0,0
+1502366541250,116,125 /android-current/api/me,200,,ThreadGroup 1-1,text,true,,713,332,1,1,116,0,0
+1502366541368,122,126 /android-current/api/programs/q04UBOqq3rp,200,,ThreadGroup 1-1,text,true,,403,798,1,1,122,0,0
+1502366541490,122,127 /android-current/api/programs/kla3mAPgvCH,200,,ThreadGroup 1-1,text,true,,403,798,1,1,122,0,0
+1502366541613,118,128 /android-current/api/programs/uy2gU8kT1jF,200,,ThreadGroup 1-1,text,true,,403,798,1,1,118,0,0
+1502366541733,122,129 /android-current/api/programs/VBqh0ynB2wv,200,,ThreadGroup 1-1,text,true,,403,798,1,1,122,0,0
+1502366541861,120,130 /android-current/api/programs/eBAyeGv0exc,200,,ThreadGroup 1-1,text,true,,403,798,1,1,120,0,0
+1502366541982,122,131 /android-current/api/programs/lxAQ7Zs9VYR,200,,ThreadGroup 1-1,text,true,,403,798,1,1,122,0,0
+1502366542104,120,132 /android-current/api/programs/IpHINAT79UW,200,,ThreadGroup 1-1,text,true,,403,798,1,1,120,0,0
+1502366542225,120,133 /android-current/api/programs/ur1Edk5Oe2n,200,,ThreadGroup 1-1,text,true,,403,798,1,1,120,0,0
+1502366542346,127,134 /android-current/api/programs/WSGAb5XwJ3Y,200,,ThreadGroup 1-1,text,true,,403,798,1,1,127,0,0
+1502366542473,120,135 /android-current/api/programs/fDd25txQckK,200,,ThreadGroup 1-1,text,true,,403,798,1,1,120,0,0
+1502366542594,123,136 /android-current/api/optionSets,200,,ThreadGroup 1-1,text,true,,419,284,1,1,123,0,0
+1502366542718,114,137 /android-current/api/constants,200,,ThreadGroup 1-1,text,true,,418,277,1,1,113,0,0
+1502366542832,121,138 /android-current/api/programRules,200,,ThreadGroup 1-1,text,true,,421,280,1,1,121,0,0
+1502366542954,114,139 /android-current/api/programRuleVariables,200,,ThreadGroup 1-1,text,true,,449,288,1,1,114,0,0
+1502366543069,150,140 /android-current/api/programRuleActions,200,,ThreadGroup 1-1,text,true,,447,286,1,1,150,0,35
+1502366543220,117,141 /android-current/api/relationshipTypes,200,,ThreadGroup 1-1,text,true,,446,285,1,1,117,0,0
+1502366543338,122,142 /android-current/api/system/info/,200,,ThreadGroup 1-1,text,true,,895,192,1,1,122,0,0
+1502366539934,3497,UsageController,,"Number of samples in transaction : 24, number of failing samples : 1",ThreadGroup 1-1,,false,,13789,13594,1,1,3494,30,65
