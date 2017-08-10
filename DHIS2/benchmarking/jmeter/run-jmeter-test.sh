@@ -17,20 +17,37 @@ run_jmeter_test_plan() { local test_plan_file=$1 results_file=$2 properties=$3
   jmeter -n -t "$test_plan_file" -l "$results_file" $cmd_properties
 }
 
-run_for_users() { local name=$1 users_list=$2 test_plan_file=$3 properties=$4
-  local results_file
-  for users in $(echo $users_list | splitcommas); do
-    debug "Run for users: $users"
-    results_file="$(dirname "$test_plan_file")/${name}-users${users}.jtl"
-    rm -f "$results_file"
-    run_jmeter_test_plan "$test_plan_file" "$results_file" "$properties,users=$users"
-    python group-jmeter-results-by-controller.py "$results_file"
+run_for_users() { local test_plan_file=$1 instances=$2 users_list=$3 properties=$4
+  local results_file name directory results_files
+  directory="$(dirname "$test_plan_file")/$(basename "$test_plan_file" ".jmx")"
+  debug "Output directory: $directory"
+  mkdir -p "$directory"
+
+  for instance in $(echo $instances | splitcommas); do
+    results_files=""
+    for users in $(echo $users_list | splitcommas); do
+      debug "Run: instance=$instance, users=$users"
+      name="${instance}-users${users}"
+      results_file="${directory}/${name}.jtl"
+      rm -f "$results_file" "$name-perfmon.jtl"
+      run_jmeter_test_plan "$test_plan_file" "$results_file" \
+        "$properties,path_prefix=$instance,name=$name,users=$users"
+      sh /opt/jmeter/bin/JMeterPluginsCMD.sh --generate-png ${directory}/${name}-perfmon.png \
+        --input-jtl ${name}-perfmon.jtl --plugin-type PerfMon --width 800 --height 600 --granulation 30000
+      results_files="$results_files $results_file"
+    done
+
+    python group-jmeter-results-by-controller.py "${directory}/${instance}-elapsed.png" $results_files
   done
 }
 
 main() {
   if test $# -lt 4; then
-    debug "Usage $(basename "$0") NAME NUSER1[,NUSER2,...] INPUT_TEST_PLAN_JMX_PATH PROP1=VALUE1,PROP2=VALUE2...]"
+    debug "Usage $(basename "$0")"
+    debug "   INPUT_TEST_PLAN_JMX_PATH"
+    debug "   [INSTANCE1,INSTANCE2...]"
+    debug "   NUSER1[,NUSER2,...]"
+    debug "   PROP1=VALUE1,PROP2=VALUE2...]"
     exit 1
   else
     run_for_users "$@"
