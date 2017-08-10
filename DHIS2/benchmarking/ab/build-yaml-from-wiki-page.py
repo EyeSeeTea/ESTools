@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import urllib.request
 from itertools import groupby
 import sys
+import os
 import yaml
 
 def main(args):
@@ -19,11 +20,16 @@ def main(args):
     config = {
         "server": {
           "url": "https://play.dhis2.org/android-previous1",
+          "auth": 'admin:district',
+          "nrequests": 100,
         },
         "services": [dict(method="GET", url=url) for url in service_urls],
     }
-    with open('dhis2-android-dashboard.yaml', 'w') as outfile:
+    name = os.path.basename(os.path.dirname(url))
+    yaml_path = name + '.yaml'
+    with open(yaml_path, 'w') as outfile:
         yaml.dump(config, outfile)
+    print(yaml_path)
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))

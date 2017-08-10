@@ -20,6 +20,14 @@ def debug(s):
 def output(s):
     print(s, file=sys.stdout)
 
+def flatten(foo):
+    for x in foo:
+        if hasattr(x, '__iter__') and not isinstance(x, str):
+            for y in flatten(x):
+                yield y
+        else:
+            yield x
+
 def get_metrics_from_ab(body):
     metrics = {}
     data_lines = itertools.dropwhile(lambda line: "Document Length" not in line, body.splitlines())
@@ -36,16 +44,17 @@ def get_metrics_from_ab(body):
                 metrics[key] = matches
     return metrics
 
-def benchmark(url, method="GET", concurrent_users=1, nrequests=100, auth=None):
-    cmd = [
+def benchmark(url, method="GET", concurrent_users=1, nrequests=100, auth=None, data_path=None):
+    cmd = list(flatten([
         "ab",
         "-q",
         "-A", ":".join((auth or [])),
         "-n", str(nrequests),
+        (["-p", data_path] if method == "POST" and data_path else []),
         "-c", str(concurrent_users),
         "-m", method,
         url,
-    ]
+    ]))
     debug("Benchmarking: {}".format(" ".join(shlex.quote(s) for s in cmd)))
     stdout = subprocess.check_output(cmd)
     return get_metrics_from_ab(stdout.decode("utf8"))
@@ -53,23 +62,21 @@ def benchmark(url, method="GET", concurrent_users=1, nrequests=100, auth=None):
 def to_tabs(objs):
     return "\t".join([str(obj) for obj in objs])
 
-def run_benchmark(yaml_path):
+def run_benchmark(yaml_path, concurrent_users):
     config = yaml.load(open(yaml_path))
     server_url = config["server"]["url"]
     auth = config["server"]["auth"].split(":")
-    nrequests = int(config["server"]["nrequests"])
-    concurrent_users = int(config["server"]["concurrent_users"])
-    #output(to_tabs(["rate (req/sec)", "mean time per req (ms)", "failed requests (%)"]))
+    nrequests = concurrent_users * 2
 
     for service in config["services"]:
-        if service["method"] != "GET":
-            continue
         url = urllib.parse.urljoin(server_url, service["url"].lstrip("/"))
+        data_path = service.get("body-file")
         metrics = benchmark(url,
             method=service["method"],
             auth=auth,
-            nrequests=nrequests,
-            concurrent_users=concurrent_users
+            nrequests=concurrent_users * 2,
+            concurrent_users=concurrent_users,
+            data_path=data_path,
         )
         metrics_info = to_tabs([
             #metrics["requests_per_second"],
@@ -82,7 +89,8 @@ def run_benchmark(yaml_path):
 
 def main(args):
     yaml_path = args[0]
-    run_benchmark(yaml_path)
+    concurrent_users = int(args[1])
+    run_benchmark(yaml_path, concurrent_users)
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
