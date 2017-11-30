@@ -12,87 +12,93 @@ debug() { stderr "[$(date +%Y-%m-%d_%H-%M-%S)] $@"; }
 
 die() { debug "$@" && exit 1; }
 
-export_mysql() { local root_password=$1 output_dump_path=$2
-  debug "Exporting mysql DB: $output_dump_path"
-  mysqldump -u root --password="$root_password" --single-transaction --all-databases > "$output_dump_path"
+export_mysql() { local output_dump_path=$1
+  debug "Export mysql DB: $output_dump_path"
+  mysqldump --single-transaction --all-databases > "$output_dump_path"
 }
 
-export_postgres() { local postgres_password=$1 output_dump_path=$2
-  debug "Exporting postgres DB: $output_dump_path"
-  PGPASSWORD="$postgres_password" pg_dumpall -U postgres > "$output_dump_path"
+export_postgres() { local output_dump_path=$1
+  debug "Export postgres DB: $output_dump_path"
+  pg_dumpall -U postgres > "$output_dump_path"
 }
 
-create_directory() { local output_dir=$1
-  debug "Create output dir: $output_dir"
-  mkdir -p "$output_dir"
+create_directory() { local temporal_dir=$1
+  debug "Create temporal directory: $temporal_dir"
+  mkdir -p "$temporal_dir"
 }
 
-sync_backup() { local output_dir=$1 rdiff_destination=$2
-  debug "Copying files $output_dir -> $rdiff_destination"
-  rdiff-backup "$output_dir/" "$rdiff_destination"
+sync_backup() { local temporal_dir=$1 rdiff_destination=$2
+  debug "Sync: $temporal_dir -> $rdiff_destination"
+  rdiff-backup "$temporal_dir/" "$rdiff_destination"
   rdiff-backup --remove-older-than "1Y" "$rdiff_destination"
 }
 
-backup_files() { local files_from=$1 output_dir=$2
+backup_files() { local files_from=$1 temporal_dir=$2
+  debug "Backup files and directories ($files_from) to $temporal_dir"
   rsync --quiet -avP --delete --recursive --delete-excluded \
     --files-from=<(cat "$files_from" | grep -v "^-") \
     --exclude-from=<(cat "$files_from" | grep "^-") \
-    / "$output_dir/files"
+    / "$temporal_dir/files"
+}
+
+delete_directory() { local dir=$1
+  debug "Remove directory: $dir"
+  rm -rf "$dir"
 }
 
 main() {
-  local usage args output_dir
-  local mysql_password output_dir_arg rdiff_destination files_from
+  local usage args temporal_dir
+  local mysql postgres temporal_dir_arg rdiff_destination files_from
 
   usage="Usage: $(basename "$0") [OPTIONS]
     OPTIONS:
       -h | --help -- Show this help message
 
-      -o OUTPUT_DIRECTORY | --output_dir=OUTPUT_DIRECTORY -- Set output directoy [default: ./output]
+      -t TEMPORAL_DIRECTORY | --temporal_dir=TEMP_DIRECTORY -- Set temporal directory
       --files-from=PATH -- Get file/directories to include in the back from PATH
       -r RSYNC_URI | --destination=RSYNC_URI - Rsync URI to copy the backup to
 
-      --mysql-password=PASS -- MySQL password
-      --postgres-password=PASS -- PostgreSQL password"
+      --mysql -- Export MySQL databases
+      --postgres -- Export PostgreSQL databases"
 
   args="$(getopt \
-    -o "ho:r:" \
-    -l "help,output-dir:,files-from:,destination:,mysql-password:,postgres-password:" \
+    -o "ht:r:" \
+    -l "help,temporal-dir:,files-from:,destination:,mysql,postgres" \
     --name "$0" -- "$@")"
 
   eval set -- "$args"
 
   while true; do
     case "$1" in
-      --mysql-password) mysql_password=$2; shift 2;;
-      --postgres-password) postgres_password=$2; shift 2;;
-      -o|--output-dir) output_dir_arg=$2; shift 2;;
-      --files-from) files_from=$2; shift 2;;
+      -t|--temporal-dir) temporal_dir_arg=$2; shift 2;;
       -r|--destination) rdiff_destination=$2; shift 2;;
       -h|--help) debug "$usage"; exit;;
+      --mysql) mysql=1; shift 1;;
+      --postgres) postgres=1; shift 1;;
+      --files-from) files_from=$2; shift 2;;
       --) shift; break;;
       *) die "Not implemented: $1";;
     esac
   done
 
-  output_dir=$(test "${output_dir_arg+set}" && echo "$output_dir_arg" || mktemp -d)
+  temporal_dir=$(test "${temporal_dir_arg+set}" && echo "$temporal_dir_arg" || mktemp -d)
 
-  create_directory "$output_dir"
+  create_directory "$temporal_dir"
 
   test "${files_from+set}" &&
-    backup_files "$files_from" "$output_dir"
+    backup_files "$files_from" "$temporal_dir"
 
-  test "${mysql_password+set}" &&
-    export_mysql "$mysql_password" "$output_dir/mysql-dump.sql"
+  test "${mysql+set}" &&
+    export_mysql "$temporal_dir/mysql-dump.sql"
 
-  test "${postgres_password+set}" &&
-    export_postgres "$postgres_password" "$output_dir/postgres-dump.sql"
+  test "${postgres+set}" &&
+    export_postgres "$temporal_dir/postgres-dump.sql"
 
   test "${rdiff_destination+set}" &&
-    sync_backup "$output_dir" "$rdiff_destination"
+    sync_backup "$temporal_dir" "$rdiff_destination"
 
-  ! test "${output_dir_arg+set}" &&
-    rm -rf "$output_dir"
+  ! test "${temporal_dir_arg+set}" &&
+    delete_directory "$temporal_dir"
 }
 
 main "$@"
