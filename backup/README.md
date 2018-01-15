@@ -1,4 +1,4 @@
-# Create a backup in servers
+## Backup script
 
 The backup includes:
 
@@ -7,6 +7,8 @@ The backup includes:
 - Any file/directory in the local filesystem specified in a text file (one entry per line)
 
 And can be synced to some destination (local or remote) using efficient incremental backups with [rdiff-backup](http://www.nongnu.org/rdiff-backup/).
+
+## Example
 
 Example that sends the backup to `user@server:dest-directory`:
 
@@ -19,9 +21,27 @@ EOF
 
 $ bash create-backup.sh \
   --files-from=backup-paths.txt \
-  --mysql-password=PASSWORD1 \
-  --postgres-password=PASSWORD2 \
+  --mysql \
+  --postgres \
   --destination user@server::dest-directory
 ```
 
 Note that `rsync-diff` URI needs double colon syntax (`::`).
+
+## Configure databases authentication
+
+### mysql
+
+```
+$ cat ~/.my.cnf
+[client]
+user=USER
+password=PASSWORD
+```
+
+### postgres
+
+```
+$ cat .pgpass
+localhost:5432:*:postgres:PASSWORD
+```
