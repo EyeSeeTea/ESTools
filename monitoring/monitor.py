@@ -25,12 +25,12 @@ webs = []
 processing = []
 storage = []
 backups = []
-# End of variables that need to be filled.
 
 machines = set(webs + processing + storage + backups)
 
 dead = []
 disappeared = []
+# End of variables that need to be filled.
 
 
 status_meaning = {0: 'OK', 1: 'Dead', 2: 'Ping error'}
