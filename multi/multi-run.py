@@ -15,21 +15,11 @@ cnb-copernico cnb-disco-tres cnb-einstein cnb-einstein-dos cnb-euler
 cnb-faraday cnb-galois cnb-hilbert cnb-lagrange cnb-nolan cnb-peano
 cnb-heisenberg cnb-rinchen cnb-rinchen-dos cnb-scipionbox i2pc
 """.split())
+# note: heisenberg and pitagoras are the same
 
-nodes_with_admin = set("""\
-arquimedes behring
-cnb-asimov cnb-asimov-dos cnb-campins cnb-carver cnb-clark-cinco cnb-clark6
-cnb-copernico cnb-euler cnb-faraday cnb-galois cnb-hilbert cnb-lagrange
-cnb-nolan cnb-peano cnb-heisenberg cnb-rinchen cnb-rinchen-dos i2pc
-""".split())
-
-nodes_unreachable = set("""\
-cnb-einstein cnb-einstein-dos cnb-disco-tres
-""".split())
+nodes_unreachable = {'cnb-einstein', 'cnb-einstein-dos', 'cnb-disco-tres'}
 
 nodes_noroot = {'cnb-scipionbox'}
-
-# heisenberg and pitagoras are the same
 
 
 available_commands = {
