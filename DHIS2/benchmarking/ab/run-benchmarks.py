@@ -3,6 +3,7 @@ import sys
 import urllib.parse
 import subprocess
 import re
+import os
 import shlex
 import itertools
 
@@ -62,14 +63,13 @@ def benchmark(url, method="GET", concurrent_users=1, nrequests=100, auth=None, d
 def to_tabs(objs):
     return "\t".join([str(obj) for obj in objs])
 
-def run_benchmark(yaml_path, concurrent_users):
-    config = yaml.load(open(yaml_path))
-    server_url = config["server"]["url"]
+def run_benchmark(config, concurrent_users, server_url):
+    api_url = server_url + "/api/"
     auth = config["server"]["auth"].split(":")
     nrequests = concurrent_users * 2
 
     for service in config["services"]:
-        url = urllib.parse.urljoin(server_url, service["url"].lstrip("/"))
+        url = urllib.parse.urljoin(api_url, service["url"].lstrip("/"))
         data_path = service.get("body-file")
         metrics = benchmark(url,
             method=service["method"],
@@ -78,19 +78,27 @@ def run_benchmark(yaml_path, concurrent_users):
             concurrent_users=concurrent_users,
             data_path=data_path,
         )
-        metrics_info = to_tabs([
+        metrics_info = [
             #metrics["requests_per_second"],
             int(metrics["time_per_request"]),
             "%.2f" % ((metrics["failed_requests"] / nrequests) * 100),
             service["method"],
             url,
-        ])
-        output(" " + metrics_info)
+        ]
+        yield metrics_info
 
 def main(args):
-    yaml_path = args[0]
-    concurrent_users = int(args[1])
-    run_benchmark(yaml_path, concurrent_users)
+    server_url, yaml_path, concurrent_users_list, results_directory = args
+    config = yaml.load(open(yaml_path))
+    name = config["name"]
+    
+    for concurrent_users in concurrent_users_list.split():
+        debug("Concurrent users: {}".format(concurrent_users))
+        metrics = run_benchmark(config, int(concurrent_users), server_url)
+        sorted_metrics = sorted(metrics, key=lambda fields: fields[0], reverse=True)
+        results_file = os.path.join(results_directory, name + "-concurrency-" + concurrent_users + ".txt")
+        open(results_file, "w").write("".join(to_tabs(m) + "\n" for m in sorted_metrics))
+        debug("Saved results: {}".format(results_file))
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))

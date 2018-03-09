@@ -1,5 +1,6 @@
+name: 'dhis2-android-datacapture'
+
 server:
-  url: 'https://play.dhis2.org/android-current/api/'
   auth: 'admin:district'
   
 services:
