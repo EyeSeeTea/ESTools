@@ -2,6 +2,7 @@
 import sys
 import urllib.parse
 import subprocess
+import errno
 import re
 import os
 import shlex
@@ -54,6 +55,7 @@ def benchmark(url, method="GET", concurrent_users=1, nrequests=100, auth=None, d
         (["-p", data_path] if method == "POST" and data_path else []),
         "-c", str(concurrent_users),
         "-m", method,
+        "-s", "1000",
         url,
     ]))
     debug("Benchmarking: {}".format(" ".join(shlex.quote(s) for s in cmd)))
@@ -87,18 +89,33 @@ def run_benchmark(config, concurrent_users, server_url):
         ]
         yield metrics_info
 
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
+
 def main(args):
-    server_url, yaml_path, concurrent_users_list, results_directory = args
-    config = yaml.load(open(yaml_path))
-    name = config["name"]
-    
-    for concurrent_users in concurrent_users_list.split():
-        debug("Concurrent users: {}".format(concurrent_users))
-        metrics = run_benchmark(config, int(concurrent_users), server_url)
-        sorted_metrics = sorted(metrics, key=lambda fields: fields[0], reverse=True)
-        results_file = os.path.join(results_directory, name + "-concurrency-" + concurrent_users + ".txt")
-        open(results_file, "w").write("".join(to_tabs(m) + "\n" for m in sorted_metrics))
-        debug("Saved results: {}".format(results_file))
+    server_urls, yaml_paths, concurrent_users_list, results_directory = args
+    mkdir_p(results_directory)
+
+    for server_url in server_urls.split():
+        for yaml_path in yaml_paths.split():
+            debug("Yaml path: {}".format(yaml_path))
+            config = yaml.load(open(yaml_path))
+            name = config["name"]
+            
+            for concurrent_users in concurrent_users_list.split():
+                debug("Concurrent users: {}".format(concurrent_users))
+                metrics = run_benchmark(config, int(concurrent_users), server_url)
+                sorted_metrics = sorted(metrics, key=lambda fields: fields[0], reverse=True)
+                results_file = os.path.join(results_directory,
+                    os.path.basename(server_url) + "-" + name + "-c" + concurrent_users + ".txt")
+                open(results_file, "w").write("".join(to_tabs(m) + "\n" for m in sorted_metrics))
+                debug("Saved results: {}".format(results_file))
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
