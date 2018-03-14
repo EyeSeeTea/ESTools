@@ -38,7 +38,13 @@ def parse_arguments():
 
 
 def fetch(host, remotename, localname, sudo=False):
+    "scp host:remotename localname, only fancier"
     try:
+        if host == 'localhost':
+            sp.check_output((['sudo'] if sudo else []) +
+                            ['cp', remotename, localname])
+            return
+
         if not sudo:
             sp.check_output(['scp', '%s:%s' % (host, remotename), localname])
         else:
