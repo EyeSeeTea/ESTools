@@ -1,0 +1,331 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,Latency,IdleTime,Connect
+1520996487857,1115,144 /android-dev/api/23/me/,502,Bad Gateway,ThreadGroup 1-6,text,false,,346,439,10,10,1115,0,949
+1520996487856,1119,144 /android-dev/api/23/me/,502,Bad Gateway,ThreadGroup 1-5,text,false,,346,439,10,10,1119,0,951
+1520996487856,1120,144 /android-dev/api/23/me/,502,Bad Gateway,ThreadGroup 1-8,text,false,,346,439,10,10,1120,0,941
+1520996487856,1122,144 /android-dev/api/23/me/,502,Bad Gateway,ThreadGroup 1-3,text,false,,346,439,10,10,1122,0,942
+1520996487856,1123,144 /android-dev/api/23/me/,502,Bad Gateway,ThreadGroup 1-9,text,false,,346,439,10,10,1123,0,942
+1520996487856,1124,144 /android-dev/api/23/me/,502,Bad Gateway,ThreadGroup 1-2,text,false,,346,439,10,10,1124,0,941
+1520996487857,1126,144 /android-dev/api/23/me/,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,439,10,10,1126,0,941
+1520996487851,1133,144 /android-dev/api/23/me/,502,Bad Gateway,ThreadGroup 1-4,text,false,,346,439,10,10,1133,0,947
+1520996487856,1130,144 /android-dev/api/23/me/,502,Bad Gateway,ThreadGroup 1-10,text,false,,346,439,10,10,1130,0,952
+1520996487856,1135,144 /android-dev/api/23/me/,502,Bad Gateway,ThreadGroup 1-7,text,false,,346,439,10,10,1135,0,956
+1520996488973,145,145 /android-dev/api/system/info/,502,Bad Gateway,ThreadGroup 1-6,text,false,,346,188,10,10,145,0,0
+1520996488976,143,145 /android-dev/api/system/info/,502,Bad Gateway,ThreadGroup 1-5,text,false,,346,188,10,10,143,0,0
+1520996488977,144,145 /android-dev/api/system/info/,502,Bad Gateway,ThreadGroup 1-8,text,false,,346,188,10,10,143,0,0
+1520996488978,144,145 /android-dev/api/system/info/,502,Bad Gateway,ThreadGroup 1-3,text,false,,346,188,10,10,144,0,0
+1520996488979,145,145 /android-dev/api/system/info/,502,Bad Gateway,ThreadGroup 1-9,text,false,,346,188,10,10,145,0,0
+1520996488981,145,145 /android-dev/api/system/info/,502,Bad Gateway,ThreadGroup 1-2,text,false,,346,188,10,10,145,0,0
+1520996488983,144,145 /android-dev/api/system/info/,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,188,10,10,144,0,0
+1520996488985,142,145 /android-dev/api/system/info/,502,Bad Gateway,ThreadGroup 1-4,text,false,,346,188,10,10,142,0,0
+1520996488986,143,145 /android-dev/api/system/info/,502,Bad Gateway,ThreadGroup 1-10,text,false,,346,188,10,10,143,0,0
+1520996488992,141,145 /android-dev/api/system/info/,502,Bad Gateway,ThreadGroup 1-7,text,false,,346,188,10,10,141,0,0
+1520996489119,143,146 /android-dev/api/me,502,Bad Gateway,ThreadGroup 1-6,text,false,,346,273,10,10,143,0,0
+1520996489119,145,146 /android-dev/api/me,502,Bad Gateway,ThreadGroup 1-5,text,false,,346,273,10,10,145,0,0
+1520996489121,145,146 /android-dev/api/me,502,Bad Gateway,ThreadGroup 1-8,text,false,,346,273,10,10,145,0,0
+1520996489122,145,146 /android-dev/api/me,502,Bad Gateway,ThreadGroup 1-3,text,false,,346,273,10,10,145,0,0
+1520996489127,142,146 /android-dev/api/me,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,273,10,10,142,0,0
+1520996489124,145,146 /android-dev/api/me,502,Bad Gateway,ThreadGroup 1-9,text,false,,346,273,10,10,145,0,0
+1520996489128,143,146 /android-dev/api/me,502,Bad Gateway,ThreadGroup 1-4,text,false,,346,273,10,10,143,0,0
+1520996489129,144,146 /android-dev/api/me,502,Bad Gateway,ThreadGroup 1-10,text,false,,346,273,10,10,144,0,0
+1520996489126,149,146 /android-dev/api/me,502,Bad Gateway,ThreadGroup 1-2,text,false,,346,273,10,10,149,0,0
+1520996489134,143,146 /android-dev/api/me,502,Bad Gateway,ThreadGroup 1-7,text,false,,346,273,10,10,143,0,0
+1520996489262,143,147 /android-dev/api/programs/uy2gU8kT1jF,502,Bad Gateway,ThreadGroup 1-6,text,false,,346,739,10,10,143,0,0
+1520996489264,143,147 /android-dev/api/programs/uy2gU8kT1jF,502,Bad Gateway,ThreadGroup 1-5,text,false,,346,739,10,10,143,0,0
+1520996489266,143,147 /android-dev/api/programs/uy2gU8kT1jF,502,Bad Gateway,ThreadGroup 1-8,text,false,,346,739,10,10,143,0,0
+1520996489268,143,147 /android-dev/api/programs/uy2gU8kT1jF,502,Bad Gateway,ThreadGroup 1-3,text,false,,346,739,10,10,143,0,0
+1520996489269,143,147 /android-dev/api/programs/uy2gU8kT1jF,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,10,10,143,0,0
+1520996489270,143,147 /android-dev/api/programs/uy2gU8kT1jF,502,Bad Gateway,ThreadGroup 1-9,text,false,,346,739,10,10,143,0,0
+1520996489272,142,147 /android-dev/api/programs/uy2gU8kT1jF,502,Bad Gateway,ThreadGroup 1-4,text,false,,346,739,10,10,142,0,0
+1520996489273,143,147 /android-dev/api/programs/uy2gU8kT1jF,502,Bad Gateway,ThreadGroup 1-10,text,false,,346,739,10,10,143,0,0
+1520996489275,143,147 /android-dev/api/programs/uy2gU8kT1jF,502,Bad Gateway,ThreadGroup 1-2,text,false,,346,739,10,10,143,0,0
+1520996489277,142,147 /android-dev/api/programs/uy2gU8kT1jF,502,Bad Gateway,ThreadGroup 1-7,text,false,,346,739,10,10,142,0,0
+1520996489406,143,148 /android-dev/api/programs/q04UBOqq3rp,502,Bad Gateway,ThreadGroup 1-6,text,false,,346,739,10,10,143,0,0
+1520996489408,143,148 /android-dev/api/programs/q04UBOqq3rp,502,Bad Gateway,ThreadGroup 1-5,text,false,,346,739,10,10,143,0,0
+1520996489410,143,148 /android-dev/api/programs/q04UBOqq3rp,502,Bad Gateway,ThreadGroup 1-8,text,false,,346,739,10,10,143,0,0
+1520996489412,142,148 /android-dev/api/programs/q04UBOqq3rp,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,10,10,142,0,0
+1520996489411,143,148 /android-dev/api/programs/q04UBOqq3rp,502,Bad Gateway,ThreadGroup 1-3,text,false,,346,739,10,10,143,0,0
+1520996489413,143,148 /android-dev/api/programs/q04UBOqq3rp,502,Bad Gateway,ThreadGroup 1-9,text,false,,346,739,10,10,143,0,0
+1520996489415,143,148 /android-dev/api/programs/q04UBOqq3rp,502,Bad Gateway,ThreadGroup 1-4,text,false,,346,739,10,10,143,0,0
+1520996489416,144,148 /android-dev/api/programs/q04UBOqq3rp,502,Bad Gateway,ThreadGroup 1-10,text,false,,346,739,10,10,144,0,0
+1520996489418,143,148 /android-dev/api/programs/q04UBOqq3rp,502,Bad Gateway,ThreadGroup 1-2,text,false,,346,739,10,10,143,0,0
+1520996489420,143,148 /android-dev/api/programs/q04UBOqq3rp,502,Bad Gateway,ThreadGroup 1-7,text,false,,346,739,10,10,143,0,0
+1520996489550,143,149 /android-dev/api/programs/VBqh0ynB2wv,502,Bad Gateway,ThreadGroup 1-6,text,false,,346,739,10,10,143,0,0
+1520996489551,144,149 /android-dev/api/programs/VBqh0ynB2wv,502,Bad Gateway,ThreadGroup 1-5,text,false,,346,739,10,10,144,0,0
+1520996489553,143,149 /android-dev/api/programs/VBqh0ynB2wv,502,Bad Gateway,ThreadGroup 1-8,text,false,,346,739,10,10,143,0,0
+1520996489555,142,149 /android-dev/api/programs/VBqh0ynB2wv,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,10,10,142,0,0
+1520996489555,143,149 /android-dev/api/programs/VBqh0ynB2wv,502,Bad Gateway,ThreadGroup 1-3,text,false,,346,739,10,10,143,0,0
+1520996489557,142,149 /android-dev/api/programs/VBqh0ynB2wv,502,Bad Gateway,ThreadGroup 1-9,text,false,,346,739,10,10,142,0,0
+1520996489558,143,149 /android-dev/api/programs/VBqh0ynB2wv,502,Bad Gateway,ThreadGroup 1-4,text,false,,346,739,10,10,143,0,0
+1520996489560,142,149 /android-dev/api/programs/VBqh0ynB2wv,502,Bad Gateway,ThreadGroup 1-10,text,false,,346,739,10,10,142,0,0
+1520996489562,142,149 /android-dev/api/programs/VBqh0ynB2wv,502,Bad Gateway,ThreadGroup 1-2,text,false,,346,739,10,10,142,0,0
+1520996489563,142,149 /android-dev/api/programs/VBqh0ynB2wv,502,Bad Gateway,ThreadGroup 1-7,text,false,,346,739,10,10,142,0,0
+1520996489693,143,150 /android-dev/api/programs/eBAyeGv0exc,502,Bad Gateway,ThreadGroup 1-6,text,false,,346,739,10,10,143,0,0
+1520996489695,143,150 /android-dev/api/programs/eBAyeGv0exc,502,Bad Gateway,ThreadGroup 1-5,text,false,,346,739,10,10,143,0,0
+1520996489697,143,150 /android-dev/api/programs/eBAyeGv0exc,502,Bad Gateway,ThreadGroup 1-8,text,false,,346,739,10,10,143,0,0
+1520996489700,142,150 /android-dev/api/programs/eBAyeGv0exc,502,Bad Gateway,ThreadGroup 1-9,text,false,,346,739,10,10,142,0,0
+1520996489698,146,150 /android-dev/api/programs/eBAyeGv0exc,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,10,10,146,0,0
+1520996489698,147,150 /android-dev/api/programs/eBAyeGv0exc,502,Bad Gateway,ThreadGroup 1-3,text,false,,346,739,10,10,147,0,0
+1520996489701,146,150 /android-dev/api/programs/eBAyeGv0exc,502,Bad Gateway,ThreadGroup 1-4,text,false,,346,739,10,10,146,0,0
+1520996489703,145,150 /android-dev/api/programs/eBAyeGv0exc,502,Bad Gateway,ThreadGroup 1-10,text,false,,346,739,10,10,145,0,0
+1520996489704,146,150 /android-dev/api/programs/eBAyeGv0exc,502,Bad Gateway,ThreadGroup 1-2,text,false,,346,739,10,10,146,0,0
+1520996489706,145,150 /android-dev/api/programs/eBAyeGv0exc,502,Bad Gateway,ThreadGroup 1-7,text,false,,346,739,10,10,145,0,0
+1520996489837,142,151 /android-dev/api/programs/kla3mAPgvCH,502,Bad Gateway,ThreadGroup 1-6,text,false,,346,739,10,10,142,0,0
+1520996489838,143,151 /android-dev/api/programs/kla3mAPgvCH,502,Bad Gateway,ThreadGroup 1-5,text,false,,346,739,10,10,143,0,0
+1520996489840,142,151 /android-dev/api/programs/kla3mAPgvCH,502,Bad Gateway,ThreadGroup 1-8,text,false,,346,739,10,10,142,0,0
+1520996489842,142,151 /android-dev/api/programs/kla3mAPgvCH,502,Bad Gateway,ThreadGroup 1-9,text,false,,346,739,10,10,142,0,0
+1520996489844,142,151 /android-dev/api/programs/kla3mAPgvCH,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,10,10,142,0,0
+1520996489845,143,151 /android-dev/api/programs/kla3mAPgvCH,502,Bad Gateway,ThreadGroup 1-3,text,false,,346,739,10,10,143,0,0
+1520996489849,141,151 /android-dev/api/programs/kla3mAPgvCH,502,Bad Gateway,ThreadGroup 1-10,text,false,,346,739,10,10,141,0,0
+1520996489847,144,151 /android-dev/api/programs/kla3mAPgvCH,502,Bad Gateway,ThreadGroup 1-4,text,false,,346,739,10,10,144,0,0
+1520996489850,141,151 /android-dev/api/programs/kla3mAPgvCH,502,Bad Gateway,ThreadGroup 1-2,text,false,,346,739,10,10,141,0,0
+1520996489852,140,151 /android-dev/api/programs/kla3mAPgvCH,502,Bad Gateway,ThreadGroup 1-7,text,false,,346,739,10,10,140,0,0
+1520996489983,748,152 /android-dev/api/programs/lxAQ7Zs9VYR,502,Bad Gateway,ThreadGroup 1-8,text,false,,346,739,10,10,748,0,607
+1520996489982,751,152 /android-dev/api/programs/lxAQ7Zs9VYR,502,Bad Gateway,ThreadGroup 1-5,text,false,,346,739,10,10,751,0,610
+1520996489980,755,152 /android-dev/api/programs/lxAQ7Zs9VYR,502,Bad Gateway,ThreadGroup 1-6,text,false,,346,739,10,10,755,0,612
+1520996489986,750,152 /android-dev/api/programs/lxAQ7Zs9VYR,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,10,10,750,0,608
+1520996489984,754,152 /android-dev/api/programs/lxAQ7Zs9VYR,502,Bad Gateway,ThreadGroup 1-9,text,false,,346,739,10,10,753,0,611
+1520996489988,759,152 /android-dev/api/programs/lxAQ7Zs9VYR,502,Bad Gateway,ThreadGroup 1-3,text,false,,346,739,10,10,759,0,618
+1520996489990,765,152 /android-dev/api/programs/lxAQ7Zs9VYR,502,Bad Gateway,ThreadGroup 1-10,text,false,,346,739,10,10,765,0,623
+1520996489992,767,152 /android-dev/api/programs/lxAQ7Zs9VYR,502,Bad Gateway,ThreadGroup 1-2,text,false,,346,739,10,10,767,0,625
+1520996489991,770,152 /android-dev/api/programs/lxAQ7Zs9VYR,502,Bad Gateway,ThreadGroup 1-4,text,false,,346,739,10,10,770,0,627
+1520996489993,769,152 /android-dev/api/programs/lxAQ7Zs9VYR,502,Bad Gateway,ThreadGroup 1-7,text,false,,346,739,10,10,769,0,627
+1520996490733,143,153 /android-dev/api/programs/IpHINAT79UW,502,Bad Gateway,ThreadGroup 1-5,text,false,,346,739,10,10,143,0,0
+1520996490737,141,153 /android-dev/api/programs/IpHINAT79UW,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,10,10,141,0,0
+1520996490735,144,153 /android-dev/api/programs/IpHINAT79UW,502,Bad Gateway,ThreadGroup 1-6,text,false,,346,739,10,10,144,0,0
+1520996490738,141,153 /android-dev/api/programs/IpHINAT79UW,502,Bad Gateway,ThreadGroup 1-9,text,false,,346,739,10,10,141,0,0
+1520996490739,141,153 /android-dev/api/programs/IpHINAT79UW,502,Bad Gateway,ThreadGroup 1-8,text,false,,346,739,10,10,141,0,0
+1520996490747,140,153 /android-dev/api/programs/IpHINAT79UW,502,Bad Gateway,ThreadGroup 1-3,text,false,,346,739,10,10,140,0,0
+1520996490755,142,153 /android-dev/api/programs/IpHINAT79UW,502,Bad Gateway,ThreadGroup 1-10,text,false,,346,739,10,10,142,0,0
+1520996490760,142,153 /android-dev/api/programs/IpHINAT79UW,502,Bad Gateway,ThreadGroup 1-2,text,false,,346,739,10,10,141,0,0
+1520996490761,142,153 /android-dev/api/programs/IpHINAT79UW,502,Bad Gateway,ThreadGroup 1-4,text,false,,346,739,10,10,142,0,0
+1520996490763,142,153 /android-dev/api/programs/IpHINAT79UW,502,Bad Gateway,ThreadGroup 1-7,text,false,,346,739,10,10,141,0,0
+1520996490877,142,154 /android-dev/api/programs/ur1Edk5Oe2n,502,Bad Gateway,ThreadGroup 1-5,text,false,,346,739,10,10,142,0,0
+1520996490878,142,154 /android-dev/api/programs/ur1Edk5Oe2n,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,10,10,141,0,0
+1520996490880,140,154 /android-dev/api/programs/ur1Edk5Oe2n,502,Bad Gateway,ThreadGroup 1-8,text,false,,346,739,10,10,140,0,0
+1520996490880,142,154 /android-dev/api/programs/ur1Edk5Oe2n,502,Bad Gateway,ThreadGroup 1-9,text,false,,346,739,10,10,142,0,0
+1520996490879,144,154 /android-dev/api/programs/ur1Edk5Oe2n,502,Bad Gateway,ThreadGroup 1-6,text,false,,346,739,10,10,144,0,0
+1520996490888,141,154 /android-dev/api/programs/ur1Edk5Oe2n,502,Bad Gateway,ThreadGroup 1-3,text,false,,346,739,10,10,141,0,0
+1520996490897,142,154 /android-dev/api/programs/ur1Edk5Oe2n,502,Bad Gateway,ThreadGroup 1-10,text,false,,346,739,10,10,142,0,0
+1520996490902,142,154 /android-dev/api/programs/ur1Edk5Oe2n,502,Bad Gateway,ThreadGroup 1-2,text,false,,346,739,10,10,142,0,0
+1520996490903,142,154 /android-dev/api/programs/ur1Edk5Oe2n,502,Bad Gateway,ThreadGroup 1-4,text,false,,346,739,10,10,142,0,0
+1520996490905,142,154 /android-dev/api/programs/ur1Edk5Oe2n,502,Bad Gateway,ThreadGroup 1-7,text,false,,346,739,10,10,142,0,0
+1520996491020,60145,155 /android-dev/api/programs/WSGAb5XwJ3Y,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,739,10,10,60145,0,0
+1520996491021,60144,155 /android-dev/api/programs/WSGAb5XwJ3Y,504,Gateway Time-out,ThreadGroup 1-8,text,false,,361,739,10,10,60144,0,0
+1520996491019,60146,155 /android-dev/api/programs/WSGAb5XwJ3Y,504,Gateway Time-out,ThreadGroup 1-5,text,false,,361,739,10,10,60146,0,0
+1520996491022,60145,155 /android-dev/api/programs/WSGAb5XwJ3Y,504,Gateway Time-out,ThreadGroup 1-9,text,false,,361,739,10,10,60145,0,0
+1520996491023,60145,155 /android-dev/api/programs/WSGAb5XwJ3Y,504,Gateway Time-out,ThreadGroup 1-6,text,false,,361,739,10,10,60145,0,0
+1520996491029,60144,155 /android-dev/api/programs/WSGAb5XwJ3Y,504,Gateway Time-out,ThreadGroup 1-3,text,false,,361,739,10,10,60144,0,0
+1520996491039,60145,155 /android-dev/api/programs/WSGAb5XwJ3Y,504,Gateway Time-out,ThreadGroup 1-10,text,false,,361,739,10,10,60145,0,0
+1520996491044,60144,155 /android-dev/api/programs/WSGAb5XwJ3Y,504,Gateway Time-out,ThreadGroup 1-2,text,false,,361,739,10,10,60144,0,0
+1520996491046,60143,155 /android-dev/api/programs/WSGAb5XwJ3Y,504,Gateway Time-out,ThreadGroup 1-4,text,false,,361,739,10,10,60143,0,0
+1520996491047,60145,155 /android-dev/api/programs/WSGAb5XwJ3Y,504,Gateway Time-out,ThreadGroup 1-7,text,false,,361,739,10,10,60145,0,0
+1520996551189,21518,156 /android-dev/api/programs/fDd25txQckK,200,,ThreadGroup 1-2,text,true,,10335,739,10,10,21517,0,733
+1520996551168,21570,156 /android-dev/api/programs/fDd25txQckK,200,,ThreadGroup 1-8,text,true,,10335,739,10,10,21569,0,787
+1520996551169,21578,156 /android-dev/api/programs/fDd25txQckK,200,,ThreadGroup 1-6,text,true,,10335,739,10,10,21577,0,761
+1520996551166,21598,156 /android-dev/api/programs/fDd25txQckK,200,,ThreadGroup 1-5,text,true,,10335,739,10,10,21598,0,769
+1520996551192,21574,156 /android-dev/api/programs/fDd25txQckK,200,,ThreadGroup 1-7,text,true,,10335,739,10,10,21574,0,760
+1520996551190,21579,156 /android-dev/api/programs/fDd25txQckK,200,,ThreadGroup 1-4,text,true,,10335,739,10,10,21578,0,755
+1520996551166,21608,156 /android-dev/api/programs/fDd25txQckK,200,,ThreadGroup 1-1,text,true,,10335,739,10,10,21607,0,778
+1520996551185,21591,156 /android-dev/api/programs/fDd25txQckK,200,,ThreadGroup 1-10,text,true,,10335,739,10,10,21591,0,773
+1520996551167,21629,156 /android-dev/api/programs/fDd25txQckK,200,,ThreadGroup 1-9,text,true,,10335,739,10,10,21628,0,775
+1520996551173,21627,156 /android-dev/api/programs/fDd25txQckK,200,,ThreadGroup 1-3,text,true,,10335,739,10,10,21627,0,752
+1520996572706,47023,157 /android-dev/api/optionSets,200,,ThreadGroup 1-2,text,true,,568406,225,10,10,45897,0,603
+1520996572767,47357,157 /android-dev/api/optionSets,200,,ThreadGroup 1-7,text,true,,568398,225,10,10,46235,0,601
+1520996572764,47719,157 /android-dev/api/optionSets,200,,ThreadGroup 1-5,text,true,,568398,225,10,10,46588,0,599
+1520996572800,47932,157 /android-dev/api/optionSets,200,,ThreadGroup 1-3,text,true,,568405,225,10,10,46806,0,604
+1520996619730,1080,158 /android-dev/api/constants,200,,ThreadGroup 1-2,text,true,,716,218,10,10,1080,0,756
+1520996572776,48045,157 /android-dev/api/optionSets,200,,ThreadGroup 1-10,text,true,,568413,225,10,10,46925,0,607
+1520996572746,48080,157 /android-dev/api/optionSets,200,,ThreadGroup 1-6,text,true,,568414,225,10,10,46962,0,608
+1520996572774,48073,157 /android-dev/api/optionSets,200,,ThreadGroup 1-1,text,true,,568406,225,10,10,46940,0,605
+1520996620124,910,158 /android-dev/api/constants,200,,ThreadGroup 1-7,text,true,,716,218,10,10,909,0,603
+1520996620811,395,159 /android-dev/api/programRules,200,,ThreadGroup 1-2,text,true,,3743,221,10,10,395,0,0
+1520996572769,48486,157 /android-dev/api/optionSets,200,,ThreadGroup 1-4,text,true,,568398,225,10,10,47362,0,606
+1520996572796,48464,157 /android-dev/api/optionSets,200,,ThreadGroup 1-9,text,true,,568397,225,10,10,47338,0,607
+1520996572737,48525,157 /android-dev/api/optionSets,200,,ThreadGroup 1-8,text,true,,568398,225,10,10,47391,0,604
+1520996621034,436,159 /android-dev/api/programRules,200,,ThreadGroup 1-7,text,true,,3743,221,10,10,436,0,0
+1520996620483,996,158 /android-dev/api/constants,200,,ThreadGroup 1-5,text,true,,716,218,10,10,996,0,609
+1520996620731,910,158 /android-dev/api/constants,200,,ThreadGroup 1-3,text,true,,716,218,10,10,910,0,603
+1520996621207,435,160 /android-dev/api/programRuleVariables,200,,ThreadGroup 1-2,text,true,,2436,229,10,10,435,0,0
+1520996620821,926,158 /android-dev/api/constants,200,,ThreadGroup 1-10,text,true,,716,218,10,10,926,0,607
+1520996620846,1091,158 /android-dev/api/constants,200,,ThreadGroup 1-1,text,true,,716,218,10,10,1091,0,610
+1520996621471,467,160 /android-dev/api/programRuleVariables,200,,ThreadGroup 1-7,text,true,,2436,229,10,10,467,0,0
+1520996620827,1112,158 /android-dev/api/constants,200,,ThreadGroup 1-6,text,true,,716,218,10,10,1112,0,609
+1520996621479,487,159 /android-dev/api/programRules,200,,ThreadGroup 1-5,text,true,,3743,221,10,10,487,0,0
+1520996621643,403,161 /android-dev/api/programRuleActions,200,,ThreadGroup 1-2,text,true,,2989,227,10,10,403,0,0
+1520996621641,497,159 /android-dev/api/programRules,200,,ThreadGroup 1-3,text,true,,3743,221,10,10,496,0,0
+1520996621748,407,159 /android-dev/api/programRules,200,,ThreadGroup 1-10,text,true,,3743,221,10,10,407,0,0
+1520996621255,1078,158 /android-dev/api/constants,200,,ThreadGroup 1-4,text,true,,716,218,10,10,1078,0,609
+1520996621261,1073,158 /android-dev/api/constants,200,,ThreadGroup 1-9,text,true,,716,218,10,10,1073,0,609
+1520996621263,1103,158 /android-dev/api/constants,200,,ThreadGroup 1-8,text,true,,716,218,10,10,1103,0,611
+1520996621967,469,160 /android-dev/api/programRuleVariables,200,,ThreadGroup 1-5,text,true,,2436,229,10,10,469,0,0
+1520996621939,525,161 /android-dev/api/programRuleActions,200,,ThreadGroup 1-7,text,true,,2989,227,10,10,525,0,0
+1520996621939,536,159 /android-dev/api/programRules,200,,ThreadGroup 1-6,text,true,,3743,221,10,10,536,0,0
+1520996621937,587,159 /android-dev/api/programRules,200,,ThreadGroup 1-1,text,true,,3743,221,10,10,586,0,0
+1520996622155,408,160 /android-dev/api/programRuleVariables,200,,ThreadGroup 1-10,text,true,,2436,229,10,10,408,0,0
+1520996622138,463,160 /android-dev/api/programRuleVariables,200,,ThreadGroup 1-3,text,true,,2436,229,10,10,463,0,0
+1520996622436,348,161 /android-dev/api/programRuleActions,200,,ThreadGroup 1-5,text,true,,2989,227,10,10,348,0,0
+1520996622475,333,160 /android-dev/api/programRuleVariables,200,,ThreadGroup 1-6,text,true,,2436,229,10,10,333,0,0
+1520996622333,488,159 /android-dev/api/programRules,200,,ThreadGroup 1-4,text,true,,3743,221,10,10,488,0,0
+1520996622334,525,159 /android-dev/api/programRules,200,,ThreadGroup 1-9,text,true,,3743,221,10,10,525,0,0
+1520996622367,564,159 /android-dev/api/programRules,200,,ThreadGroup 1-8,text,true,,3743,221,10,10,564,0,0
+1520996622602,383,161 /android-dev/api/programRuleActions,200,,ThreadGroup 1-3,text,true,,2989,227,10,10,383,0,0
+1520996622524,480,160 /android-dev/api/programRuleVariables,200,,ThreadGroup 1-1,text,true,,2436,229,10,10,480,0,0
+1520996622564,479,161 /android-dev/api/programRuleActions,200,,ThreadGroup 1-10,text,true,,2989,227,10,10,479,0,0
+1520996622046,1034,162 /android-dev/api/relationshipTypes,200,,ThreadGroup 1-2,text,true,,727,226,10,10,1034,0,610
+1520996487766,135216,InitialSyncController,,"Number of samples in transaction : 19, number of failing samples : 12",ThreadGroup 1-2,,false,,593519,9636,10,10,134088,99,4268
+1520996622822,335,160 /android-dev/api/programRuleVariables,200,,ThreadGroup 1-4,text,true,,2436,229,10,10,335,0,0
+1520996622809,405,161 /android-dev/api/programRuleActions,200,,ThreadGroup 1-6,text,true,,2989,227,10,10,405,0,0
+1520996622860,633,160 /android-dev/api/programRuleVariables,200,,ThreadGroup 1-9,text,true,,2436,229,10,10,633,0,0
+1520996622932,664,160 /android-dev/api/programRuleVariables,200,,ThreadGroup 1-8,text,true,,2436,229,10,10,664,0,0
+1520996622464,1173,162 /android-dev/api/relationshipTypes,200,,ThreadGroup 1-7,text,true,,727,226,10,10,1173,0,605
+1520996487822,135771,InitialSyncController,,"Number of samples in transaction : 19, number of failing samples : 12",ThreadGroup 1-7,,false,,593511,9636,10,10,134647,45,4152
+1520996623157,484,161 /android-dev/api/programRuleActions,200,,ThreadGroup 1-4,text,true,,2989,227,10,10,484,0,0
+1520996622784,1067,162 /android-dev/api/relationshipTypes,200,,ThreadGroup 1-5,text,true,,727,226,10,10,1067,0,603
+1520996487793,135989,InitialSyncController,,"Number of samples in transaction : 19, number of failing samples : 12",ThreadGroup 1-5,,false,,593511,9636,10,10,134858,70,4141
+1520996622985,1000,162 /android-dev/api/relationshipTypes,200,,ThreadGroup 1-3,text,true,,727,226,10,10,1000,0,606
+1520996487771,136126,InitialSyncController,,"Number of samples in transaction : 19, number of failing samples : 12",ThreadGroup 1-3,,false,,593518,9636,10,10,134999,89,4125
+1520996623043,1006,162 /android-dev/api/relationshipTypes,200,,ThreadGroup 1-10,text,true,,727,226,10,10,1006,0,603
+1520996487836,136188,InitialSyncController,,"Number of samples in transaction : 19, number of failing samples : 12",ThreadGroup 1-10,,false,,593526,9636,10,10,135068,26,4165
+1520996623004,1148,161 /android-dev/api/programRuleActions,200,,ThreadGroup 1-1,text,true,,2989,227,10,10,1148,0,612
+1520996623215,1006,162 /android-dev/api/relationshipTypes,200,,ThreadGroup 1-6,text,true,,727,226,10,10,1006,0,609
+1520996487807,136355,InitialSyncController,,"Number of samples in transaction : 19, number of failing samples : 12",ThreadGroup 1-6,,false,,593527,9636,10,10,135236,60,4148
+1520996624152,494,162 /android-dev/api/relationshipTypes,200,,ThreadGroup 1-1,text,true,,727,226,10,10,493,0,0
+1520996487770,136786,InitialSyncController,,"Number of samples in transaction : 19, number of failing samples : 12",ThreadGroup 1-1,,false,,593519,9636,10,10,135649,91,4154
+1520996623494,1164,161 /android-dev/api/programRuleActions,200,,ThreadGroup 1-9,text,true,,2989,227,10,10,1164,0,600
+1520996623597,1151,161 /android-dev/api/programRuleActions,200,,ThreadGroup 1-8,text,true,,2989,227,10,10,1151,0,600
+1520996623642,1196,162 /android-dev/api/relationshipTypes,200,,ThreadGroup 1-4,text,true,,727,226,10,10,1196,0,604
+1520996487779,136979,InitialSyncController,,"Number of samples in transaction : 19, number of failing samples : 12",ThreadGroup 1-4,,false,,593511,9636,10,10,135854,82,4148
+1520996624658,647,162 /android-dev/api/relationshipTypes,200,,ThreadGroup 1-9,text,true,,727,226,10,10,647,0,0
+1520996487830,137442,InitialSyncController,,"Number of samples in transaction : 19, number of failing samples : 12",ThreadGroup 1-9,,false,,593510,9636,10,10,136314,34,4144
+1520996624749,558,162 /android-dev/api/relationshipTypes,200,,ThreadGroup 1-8,text,true,,727,226,10,10,558,0,0
+1520996487826,137431,InitialSyncController,,"Number of samples in transaction : 19, number of failing samples : 12",ThreadGroup 1-8,,false,,593511,9636,10,10,136295,51,4150
+1520996624221,2198,163 /android-dev/api/events/,200,,ThreadGroup 1-6,text,true,,921,462,10,10,2198,0,0
+1520996623081,3485,163 /android-dev/api/events/,500,,ThreadGroup 1-2,text,false,,506,462,10,10,3485,0,0
+1520996623851,2716,163 /android-dev/api/events/,500,,ThreadGroup 1-5,text,false,,506,462,10,10,2716,0,0
+1520996623985,2592,163 /android-dev/api/events/,500,,ThreadGroup 1-3,text,false,,506,462,10,10,2592,0,0
+1520996624049,2528,163 /android-dev/api/events/,500,,ThreadGroup 1-10,text,false,,506,462,10,10,2528,0,0
+1520996623637,2941,163 /android-dev/api/events/,500,,ThreadGroup 1-7,text,false,,506,462,10,10,2941,0,0
+1520996624646,1935,163 /android-dev/api/events/,500,,ThreadGroup 1-1,text,false,,506,462,10,10,1935,0,0
+1520996624839,1747,163 /android-dev/api/events/,500,,ThreadGroup 1-4,text,false,,506,462,10,10,1747,0,0
+1520996625307,1639,163 /android-dev/api/events/,500,,ThreadGroup 1-8,text,false,,506,462,10,10,1639,0,0
+1520996625305,1652,163 /android-dev/api/events/,200,,ThreadGroup 1-9,text,true,,921,462,10,10,1652,0,0
+1520996626419,1392,164 /android-dev/api/events/Sg5AuUlfyok,200,,ThreadGroup 1-6,text,true,,796,223,10,10,1392,0,604
+1520996626586,1271,164 /android-dev/api/events/Sg5AuUlfyok,200,,ThreadGroup 1-4,text,true,,796,223,10,10,1271,0,617
+1520996626578,1297,164 /android-dev/api/events/Sg5AuUlfyok,200,,ThreadGroup 1-7,text,true,,796,223,10,10,1297,0,605
+1520996626567,1308,164 /android-dev/api/events/Sg5AuUlfyok,200,,ThreadGroup 1-5,text,true,,796,223,10,10,1308,0,603
+1520996626577,1308,164 /android-dev/api/events/Sg5AuUlfyok,200,,ThreadGroup 1-3,text,true,,796,223,10,10,1308,0,609
+1520996626582,1330,164 /android-dev/api/events/Sg5AuUlfyok,200,,ThreadGroup 1-1,text,true,,796,223,10,10,1330,0,622
+1520996626577,1336,164 /android-dev/api/events/Sg5AuUlfyok,200,,ThreadGroup 1-10,text,true,,796,223,10,10,1336,0,600
+1520996626566,1367,164 /android-dev/api/events/Sg5AuUlfyok,200,,ThreadGroup 1-2,text,true,,796,223,10,10,1367,0,610
+1520996626947,1153,164 /android-dev/api/events/Sg5AuUlfyok,200,,ThreadGroup 1-8,text,true,,796,223,10,10,1153,0,632
+1520996626957,1144,164 /android-dev/api/events/Sg5AuUlfyok,200,,ThreadGroup 1-9,text,true,,796,223,10,10,1144,0,627
+1520996627876,1422,165 /android-dev/api/events/,200,,ThreadGroup 1-7,text,true,,923,549,10,10,1422,0,0
+1520996627813,1519,165 /android-dev/api/events/,500,,ThreadGroup 1-6,text,false,,506,549,10,10,1519,0,0
+1520996627886,1481,165 /android-dev/api/events/,500,,ThreadGroup 1-3,text,false,,506,549,10,10,1481,0,0
+1520996627858,1529,165 /android-dev/api/events/,500,,ThreadGroup 1-4,text,false,,506,549,10,10,1529,0,0
+1520996627914,1535,165 /android-dev/api/events/,500,,ThreadGroup 1-10,text,false,,506,549,10,10,1535,0,0
+1520996627876,1576,165 /android-dev/api/events/,500,,ThreadGroup 1-5,text,false,,506,549,10,10,1576,0,0
+1520996627913,1582,165 /android-dev/api/events/,500,,ThreadGroup 1-1,text,false,,506,549,10,10,1582,0,0
+1520996627934,1598,165 /android-dev/api/events/,500,,ThreadGroup 1-2,text,false,,506,549,10,10,1598,0,0
+1520996628103,1474,165 /android-dev/api/events/,500,,ThreadGroup 1-9,text,false,,506,549,10,10,1474,0,0
+1520996628101,1546,165 /android-dev/api/events/,500,,ThreadGroup 1-8,text,false,,506,549,10,10,1546,0,0
+1520996629299,962,166 /android-dev/api/events/qi2lv5kE8U3,200,,ThreadGroup 1-7,text,true,,790,223,10,10,962,0,606
+1520996629368,996,166 /android-dev/api/events/qi2lv5kE8U3,200,,ThreadGroup 1-3,text,true,,790,223,10,10,996,0,604
+1520996629332,1095,166 /android-dev/api/events/qi2lv5kE8U3,200,,ThreadGroup 1-6,text,true,,790,223,10,10,1095,0,604
+1520996629388,1057,166 /android-dev/api/events/qi2lv5kE8U3,200,,ThreadGroup 1-4,text,true,,790,223,10,10,1057,0,609
+1520996629453,1227,166 /android-dev/api/events/qi2lv5kE8U3,200,,ThreadGroup 1-5,text,true,,790,223,10,10,1227,0,603
+1520996629449,1257,166 /android-dev/api/events/qi2lv5kE8U3,200,,ThreadGroup 1-10,text,true,,790,223,10,10,1257,0,601
+1520996629496,1300,166 /android-dev/api/events/qi2lv5kE8U3,200,,ThreadGroup 1-1,text,true,,790,223,10,10,1300,0,607
+1520996629533,1287,166 /android-dev/api/events/qi2lv5kE8U3,200,,ThreadGroup 1-2,text,true,,790,223,10,10,1287,0,606
+1520996629577,1270,166 /android-dev/api/events/qi2lv5kE8U3,200,,ThreadGroup 1-9,text,true,,790,223,10,10,1270,0,603
+1520996629648,1243,166 /android-dev/api/events/qi2lv5kE8U3,200,,ThreadGroup 1-8,text,true,,790,223,10,10,1243,0,612
+1520996630261,1113,191 /android-dev/api/events/,200,,ThreadGroup 1-7,text,true,,922,549,10,10,1113,0,0
+1520996630445,1256,191 /android-dev/api/events/,500,,ThreadGroup 1-4,text,false,,506,549,10,10,1256,0,0
+1520996630427,1319,191 /android-dev/api/events/,500,,ThreadGroup 1-6,text,false,,506,549,10,10,1319,0,0
+1520996630365,1416,191 /android-dev/api/events/,500,,ThreadGroup 1-3,text,false,,506,549,10,10,1416,0,0
+1520996630681,1165,191 /android-dev/api/events/,500,,ThreadGroup 1-5,text,false,,506,549,10,10,1165,0,0
+1520996630706,1398,191 /android-dev/api/events/,200,,ThreadGroup 1-10,text,true,,922,549,10,10,1397,0,0
+1520996630847,1291,191 /android-dev/api/events/,200,,ThreadGroup 1-9,text,true,,922,549,10,10,1290,0,0
+1520996630820,1325,191 /android-dev/api/events/,200,,ThreadGroup 1-2,text,true,,922,549,10,10,1325,0,0
+1520996630796,1354,191 /android-dev/api/events/,200,,ThreadGroup 1-1,text,true,,922,549,10,10,1354,0,0
+1520996630891,1322,191 /android-dev/api/events/,200,,ThreadGroup 1-8,text,true,,922,549,10,10,1322,0,0
+1520996631375,914,192 /android-dev/api/events/LTKbdCxy3G4,200,,ThreadGroup 1-7,text,true,,794,223,10,10,913,0,610
+1520996631702,920,192 /android-dev/api/events/LTKbdCxy3G4,200,,ThreadGroup 1-4,text,true,,794,223,10,10,920,0,600
+1520996631747,914,192 /android-dev/api/events/LTKbdCxy3G4,200,,ThreadGroup 1-6,text,true,,794,223,10,10,913,0,603
+1520996631782,931,192 /android-dev/api/events/LTKbdCxy3G4,200,,ThreadGroup 1-3,text,true,,794,223,10,10,931,0,612
+1520996632289,476,193 /android-dev/api/system/info/,200,,ThreadGroup 1-7,text,true,,942,188,10,10,476,0,0
+1520996631847,934,192 /android-dev/api/events/LTKbdCxy3G4,200,,ThreadGroup 1-5,text,true,,794,223,10,10,933,0,599
+1520996632622,403,193 /android-dev/api/system/info/,200,,ThreadGroup 1-4,text,true,,941,188,10,10,403,0,0
+1520996632661,480,193 /android-dev/api/system/info/,200,,ThreadGroup 1-6,text,true,,941,188,10,10,480,0,0
+1520996632104,1119,192 /android-dev/api/events/LTKbdCxy3G4,200,,ThreadGroup 1-10,text,true,,794,223,10,10,1119,0,610
+1520996632713,566,193 /android-dev/api/system/info/,200,,ThreadGroup 1-3,text,true,,942,188,10,10,566,0,0
+1520996632781,517,193 /android-dev/api/system/info/,200,,ThreadGroup 1-5,text,true,,941,188,10,10,517,0,0
+1520996632138,1171,192 /android-dev/api/events/LTKbdCxy3G4,200,,ThreadGroup 1-9,text,true,,794,223,10,10,1171,0,600
+1520996632150,1166,192 /android-dev/api/events/LTKbdCxy3G4,200,,ThreadGroup 1-1,text,true,,794,223,10,10,1166,0,606
+1520996632145,1173,192 /android-dev/api/events/LTKbdCxy3G4,200,,ThreadGroup 1-2,text,true,,794,223,10,10,1173,0,603
+1520996632214,1136,192 /android-dev/api/events/LTKbdCxy3G4,200,,ThreadGroup 1-8,text,true,,794,223,10,10,1136,0,605
+1520996633223,504,193 /android-dev/api/system/info/,200,,ThreadGroup 1-10,text,true,,941,188,10,10,504,0,0
+1520996633309,484,193 /android-dev/api/system/info/,200,,ThreadGroup 1-9,text,true,,942,188,10,10,484,0,0
+1520996633350,444,193 /android-dev/api/system/info/,200,,ThreadGroup 1-8,text,true,,942,188,10,10,444,0,0
+1520996633316,695,193 /android-dev/api/system/info/,200,,ThreadGroup 1-1,text,true,,941,188,10,10,695,0,0
+1520996633318,772,193 /android-dev/api/system/info/,200,,ThreadGroup 1-2,text,true,,940,188,10,10,772,0,0
+1520996633142,1025,194 /android-dev/api/events,200,,ThreadGroup 1-6,text,true,,6217,261,10,10,1025,0,0
+1520996633280,898,194 /android-dev/api/events,200,,ThreadGroup 1-3,text,true,,6217,261,10,10,897,0,0
+1520996633025,1175,194 /android-dev/api/events,200,,ThreadGroup 1-4,text,true,,6217,261,10,10,1175,0,0
+1520996632766,1436,194 /android-dev/api/events,200,,ThreadGroup 1-7,text,true,,6217,261,10,10,1436,0,0
+1520996633298,1042,194 /android-dev/api/events,200,,ThreadGroup 1-5,text,true,,6217,261,10,10,1042,0,0
+1520996633728,765,194 /android-dev/api/events,200,,ThreadGroup 1-10,text,true,,6217,261,10,10,765,0,0
+1520996633793,712,194 /android-dev/api/events,200,,ThreadGroup 1-9,text,true,,6217,261,10,10,711,0,0
+1520996633795,835,194 /android-dev/api/events,200,,ThreadGroup 1-8,text,true,,6217,261,10,10,835,0,0
+1520996634012,757,194 /android-dev/api/events,200,,ThreadGroup 1-1,text,true,,6217,261,10,10,757,0,0
+1520996634091,688,194 /android-dev/api/events,200,,ThreadGroup 1-2,text,true,,6217,261,10,10,687,0,0
+1520996634178,1288,195 /android-dev/api/events,200,,ThreadGroup 1-3,text,true,,9144,261,10,10,1288,0,607
+1520996634202,1280,195 /android-dev/api/events,200,,ThreadGroup 1-7,text,true,,9144,261,10,10,1280,0,602
+1520996634200,1304,195 /android-dev/api/events,200,,ThreadGroup 1-4,text,true,,9144,261,10,10,1304,0,609
+1520996634168,1337,195 /android-dev/api/events,200,,ThreadGroup 1-6,text,true,,9144,261,10,10,1337,0,604
+1520996634341,1187,195 /android-dev/api/events,200,,ThreadGroup 1-5,text,true,,9144,261,10,10,1186,0,608
+1520996634505,1267,195 /android-dev/api/events,200,,ThreadGroup 1-9,text,true,,9144,261,10,10,1266,0,608
+1520996634494,1330,195 /android-dev/api/events,200,,ThreadGroup 1-10,text,true,,9144,261,10,10,1330,0,602
+1520996635505,524,196 /android-dev/api/events,200,,ThreadGroup 1-4,text,true,,474,261,10,10,523,0,0
+1520996634631,1435,195 /android-dev/api/events,200,,ThreadGroup 1-8,text,true,,9144,261,10,10,1435,0,599
+1520996635528,663,196 /android-dev/api/events,200,,ThreadGroup 1-5,text,true,,474,261,10,10,663,0,0
+1520996634779,1495,195 /android-dev/api/events,200,,ThreadGroup 1-2,text,true,,9144,261,10,10,1495,0,599
+1520996635824,467,196 /android-dev/api/events,200,,ThreadGroup 1-10,text,true,,474,261,10,10,467,0,0
+1520996635772,597,196 /android-dev/api/events,200,,ThreadGroup 1-9,text,true,,474,261,10,10,596,0,0
+1520996634769,1622,195 /android-dev/api/events,200,,ThreadGroup 1-1,text,true,,9144,261,10,10,1621,0,603
+1520996635467,938,196 /android-dev/api/events,200,,ThreadGroup 1-3,text,true,,474,261,10,10,938,0,0
+1520996635482,943,196 /android-dev/api/events,200,,ThreadGroup 1-7,text,true,,474,261,10,10,943,0,0
+1520996635505,975,196 /android-dev/api/events,200,,ThreadGroup 1-6,text,true,,474,261,10,10,975,0,0
+1520996636067,531,196 /android-dev/api/events,200,,ThreadGroup 1-8,text,true,,474,261,10,10,531,0,0
+1520996636191,486,197 /android-dev/api/events,200,,ThreadGroup 1-5,text,true,,1190,261,10,10,486,0,0
+1520996636029,691,197 /android-dev/api/events,200,,ThreadGroup 1-4,text,true,,1190,261,10,10,691,0,0
+1520996636291,482,197 /android-dev/api/events,200,,ThreadGroup 1-10,text,true,,1190,261,10,10,482,0,0
+1520996636275,564,196 /android-dev/api/events,200,,ThreadGroup 1-2,text,true,,474,261,10,10,564,0,0
+1520996636391,483,196 /android-dev/api/events,200,,ThreadGroup 1-1,text,true,,474,261,10,10,483,0,0
+1520996636369,550,197 /android-dev/api/events,200,,ThreadGroup 1-9,text,true,,1190,261,10,10,550,0,0
+1520996636598,520,197 /android-dev/api/events,200,,ThreadGroup 1-8,text,true,,1190,261,10,10,519,0,0
+1520996636405,1016,197 /android-dev/api/events,200,,ThreadGroup 1-3,text,true,,1190,261,10,10,1016,0,604
+1520996636481,982,197 /android-dev/api/events,200,,ThreadGroup 1-6,text,true,,1190,261,10,10,982,0,603
+1520996636426,1118,197 /android-dev/api/events,200,,ThreadGroup 1-7,text,true,,1190,261,10,10,1118,0,607
+1520996636677,940,198 /android-dev/api/events,200,,ThreadGroup 1-5,text,true,,1503,261,10,10,940,0,604
+1520996623851,13761,UsageController,,"Number of samples in transaction : 12, number of failing samples : 3",ThreadGroup 1-5,,false,,23367,3722,10,10,13759,4,3017
+1520996636720,1017,198 /android-dev/api/events,200,,ThreadGroup 1-4,text,true,,1503,261,9,9,1017,0,605
+1520996624839,12894,UsageController,,"Number of samples in transaction : 12, number of failing samples : 3",ThreadGroup 1-4,,false,,23367,3722,9,9,12893,3,3040
+1520996637421,524,198 /android-dev/api/events,200,,ThreadGroup 1-3,text,true,,1503,261,8,8,524,0,0
+1520996623985,13954,UsageController,,"Number of samples in transaction : 12, number of failing samples : 3",ThreadGroup 1-3,,false,,23368,3722,8,8,13953,6,3036
+1520996636840,1137,197 /android-dev/api/events,200,,ThreadGroup 1-2,text,true,,1190,261,7,7,1137,0,605
+1520996636874,1163,197 /android-dev/api/events,200,,ThreadGroup 1-1,text,true,,1190,261,7,7,1163,0,601
+1520996637464,578,198 /android-dev/api/events,200,,ThreadGroup 1-6,text,true,,1503,261,7,7,578,0,0
+1520996624221,13814,UsageController,,"Number of samples in transaction : 12, number of failing samples : 2",ThreadGroup 1-6,,false,,23782,3722,7,7,13813,6,3018
+1520996636773,1270,198 /android-dev/api/events,200,,ThreadGroup 1-10,text,true,,1503,261,6,6,1270,0,614
+1520996624049,13991,UsageController,,"Number of samples in transaction : 12, number of failing samples : 2",ThreadGroup 1-10,,false,,23783,3722,6,6,13990,2,3027
+1520996637544,571,198 /android-dev/api/events,200,,ThreadGroup 1-7,text,true,,1503,261,5,5,571,0,0
+1520996623637,14473,UsageController,,"Number of samples in transaction : 12, number of failing samples : 1",ThreadGroup 1-7,,false,,24201,3722,5,5,14472,4,3030
+1520996636920,1272,198 /android-dev/api/events,200,,ThreadGroup 1-9,text,true,,1503,261,4,4,1272,0,604
+1520996625305,12884,UsageController,,"Number of samples in transaction : 12, number of failing samples : 1",ThreadGroup 1-9,,false,,24199,3722,4,4,12880,3,3042
+1520996637118,1137,198 /android-dev/api/events,200,,ThreadGroup 1-8,text,true,,1503,261,3,3,1137,0,606
+1520996625307,12941,UsageController,,"Number of samples in transaction : 12, number of failing samples : 2",ThreadGroup 1-8,,false,,23784,3722,3,3,12940,7,3054
+1520996638038,377,198 /android-dev/api/events,200,,ThreadGroup 1-1,text,true,,1503,261,2,2,376,0,0
+1520996624646,13764,UsageController,,"Number of samples in transaction : 12, number of failing samples : 2",ThreadGroup 1-1,,false,,23783,3722,2,2,13762,4,3039
+1520996637977,451,198 /android-dev/api/events,200,,ThreadGroup 1-2,text,true,,1503,261,1,1,451,0,0
+1520996623080,15342,UsageController,,"Number of samples in transaction : 12, number of failing samples : 2",ThreadGroup 1-2,,false,,23782,3722,1,1,15341,5,3023

@@ -1,0 +1,34 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,Latency,IdleTime,Connect
+1520996465111,1071,144 /android-dev/api/23/me/,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,439,1,1,1070,0,899
+1520996466184,144,145 /android-dev/api/system/info/,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,188,1,1,144,0,0
+1520996466331,143,146 /android-dev/api/me,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,273,1,1,143,0,0
+1520996466475,144,147 /android-dev/api/programs/uy2gU8kT1jF,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,1,1,144,0,0
+1520996466620,143,148 /android-dev/api/programs/q04UBOqq3rp,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,1,1,142,0,0
+1520996466763,143,149 /android-dev/api/programs/VBqh0ynB2wv,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,1,1,143,0,0
+1520996466906,143,150 /android-dev/api/programs/eBAyeGv0exc,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,1,1,143,0,0
+1520996467049,143,151 /android-dev/api/programs/kla3mAPgvCH,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,1,1,143,0,0
+1520996467196,743,152 /android-dev/api/programs/lxAQ7Zs9VYR,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,1,1,743,0,602
+1520996467940,141,153 /android-dev/api/programs/IpHINAT79UW,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,1,1,141,0,0
+1520996468082,141,154 /android-dev/api/programs/ur1Edk5Oe2n,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,1,1,141,0,0
+1520996468227,141,155 /android-dev/api/programs/WSGAb5XwJ3Y,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,1,1,141,0,0
+1520996468369,141,156 /android-dev/api/programs/fDd25txQckK,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,739,1,1,141,0,0
+1520996468511,142,157 /android-dev/api/optionSets,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,225,1,1,142,0,0
+1520996468655,143,158 /android-dev/api/constants,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,218,1,1,143,0,0
+1520996468799,142,159 /android-dev/api/programRules,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,221,1,1,142,0,0
+1520996468942,141,160 /android-dev/api/programRuleVariables,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,229,1,1,141,0,0
+1520996469084,140,161 /android-dev/api/programRuleActions,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,227,1,1,140,0,0
+1520996469225,748,162 /android-dev/api/relationshipTypes,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,226,1,1,748,0,606
+1520996465060,4837,InitialSyncController,,"Number of samples in transaction : 19, number of failing samples : 19",ThreadGroup 1-1,,false,,6574,9636,1,1,4835,76,2107
+1520996469974,144,163 /android-dev/api/events/,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,462,1,1,144,0,0
+1520996470118,141,164 /android-dev/api/events/Sg5AuUlfyok,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,223,1,1,141,0,0
+1520996470260,141,165 /android-dev/api/events/,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,549,1,1,141,0,0
+1520996470402,142,166 /android-dev/api/events/qi2lv5kE8U3,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,223,1,1,142,0,0
+1520996470545,141,191 /android-dev/api/events/,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,549,1,1,141,0,0
+1520996470687,141,192 /android-dev/api/events/LTKbdCxy3G4,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,223,1,1,141,0,0
+1520996470830,142,193 /android-dev/api/system/info/,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,188,1,1,142,0,0
+1520996470973,141,194 /android-dev/api/events,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,261,1,1,141,0,0
+1520996471115,142,195 /android-dev/api/events,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,261,1,1,141,0,0
+1520996471259,755,196 /android-dev/api/events,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,261,1,1,755,0,613
+1520996472015,143,197 /android-dev/api/events,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,261,1,1,143,0,0
+1520996472159,142,198 /android-dev/api/events,502,Bad Gateway,ThreadGroup 1-1,text,false,,346,261,1,1,142,0,0
+1520996469973,2315,UsageController,,"Number of samples in transaction : 12, number of failing samples : 12",ThreadGroup 1-1,,false,,4152,3722,1,1,2314,14,613
