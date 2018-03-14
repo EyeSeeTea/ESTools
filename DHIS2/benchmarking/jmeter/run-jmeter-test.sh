@@ -17,9 +17,9 @@ run_jmeter_test_plan() { local test_plan_file=$1 results_file=$2 properties=$3
   jmeter -n -t "$test_plan_file" -l "$results_file" $cmd_properties
 }
 
-run_for_users() { local test_plan_file=$1 instances=$2 users_list=$3 properties=$4
+run_for_users() { local test_plan_file=$1 instances=$2 users_list=$3 properties=$4 output_dir=$5
   local results_file name directory results_files
-  directory="$(dirname "$test_plan_file")/$(basename "$test_plan_file" ".jmx")"
+  directory="$output_dir/$(dirname "$test_plan_file")/$(basename "$test_plan_file" ".jmx")"
   debug "Output directory: $directory"
   mkdir -p "$directory"
 
@@ -42,12 +42,13 @@ run_for_users() { local test_plan_file=$1 instances=$2 users_list=$3 properties=
 }
 
 main() {
-  if test $# -lt 4; then
+  if test $# -lt 5; then
     debug "Usage $(basename "$0")"
     debug "   INPUT_TEST_PLAN_JMX_PATH"
     debug "   [INSTANCE1,INSTANCE2...]"
     debug "   NUSER1[,NUSER2,...]"
     debug "   PROP1=VALUE1,PROP2=VALUE2...]"
+    debug "   OUTPUT_DIRECTORY"
     exit 1
   else
     run_for_users "$@"
