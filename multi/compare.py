@@ -56,6 +56,25 @@ def fetch(host, remotename, localname, sudo=False):
         sys.exit('%s\nMaybe try with/without the "--sudo" argument?' % e)
 
 
+def push(localname, host, remotename, sudo=False, backup=True):
+    "scp localname host:remotename, only fancier"
+    try:
+        if not sudo:
+            sp.check_output(['scp', localname, '%s:%s' % (host, remotename)])
+        else:
+            tempname = '_pushed_%s' % remotename.split('/')[-1]
+            sp.check_output(['scp', localname, '%s:%s' % (host, tempname)])
+
+            commands = ''
+            if backup:
+                commands += 'sudo cp %s %s.backup\n' % (remotename, remotename)
+            commands += 'sudo mv %s %s' % (tempname, remotename)
+            out = sp.check_output(['ssh', host, '/bin/sh'], stderr=sp.STDOUT,
+                                  input=command, universal_newlines=True)
+    except sp.CalledProcessError as e:
+        sys.exit('%s\nMaybe try with/without the "--sudo" argument?' % e)
+
+
 
 if __name__ == '__main__':
     main()
