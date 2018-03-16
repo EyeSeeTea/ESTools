@@ -7,53 +7,77 @@ Run command on all the accessible nodes at CNB.
 import sys
 import subprocess as sp
 from concurrent.futures import ThreadPoolExecutor as Pool
-
-nodes_all = set("""\
-arquimedes behring
-cnb-asimov cnb-asimov-dos cnb-campins cnb-carver cnb-clark-cinco cnb-clark6
-cnb-copernico cnb-disco-tres cnb-einstein cnb-einstein-dos cnb-euler
-cnb-faraday cnb-galois cnb-hilbert cnb-lagrange cnb-nolan cnb-peano
-cnb-heisenberg cnb-rinchen cnb-rinchen-dos cnb-scipionbox i2pc
-""".split())
-# note: heisenberg and pitagoras are the same
-
-nodes_unreachable = {'cnb-einstein', 'cnb-einstein-dos', 'cnb-disco-tres'}
-
-nodes_noroot = {'cnb-scipionbox'}
-
-
-available_commands = {
-    'get_zabbix_id': 'id zabbix',
-    'create_zabbix': 'useradd --create-home --shell /bin/false zabbix',
-    'create_admin': """
-        useradd --create-home --shell /bin/bash admin
-        usermod --append --groups sudo admin""",
-    'find_guybrush': 'grep -o guybrush .ssh/authorized_keys',
-    'version': 'cat /etc/debian_version',
-    'create_authorized_keys': """
-        mkdir -m 700 /home/admin/.ssh
-        chown admin.admin /home/admin/.ssh
-        touch /home/admin/.ssh/authorized_keys
-        chown admin.admin /home/admin/.ssh/authorized_keys
-        chmod 600 /home/admin/.ssh/authorized_keys""",
-}
-
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
 
 
 def main():
-    command = get_command()
-    nodes = nodes_all - nodes_unreachable - nodes_noroot
-    for node, out in associate(command, nodes).items():
-        print('%-20s %s' % (node, out))
+    args = parse_arguments()
+    command = get_command(args.command, args.commands_file, args.literal)
+    nodes = get_nodes(args.hosts_file)
+
+    outputs = associate(command, nodes)
+
+    for node in nodes:
+        print('%-20s %s' % (node, outputs[node]))
 
 
-def get_command():
+def parse_arguments():
+    parser = ArgumentParser(description=__doc__, formatter_class=fmt)
+    add = parser.add_argument  # shortcut
+    add('command', help='command to run')
+    add('--literal', action='store_true', help='run the command literally')
+    add('--commands-file', default='multirun_commands.txt',
+        help='file with available commands')
+    add('--hosts-file', default='multirun_hosts.txt',
+        help='file with hosts to run command on')
+    return parser.parse_args()
+
+
+def get_command(command, commands_file, literal):
     "Return function that runs a command in a given hostname"
-    if len(sys.argv) < 2 or sys.argv[1] not in available_commands:
-        sys.exit('usage: %s <%s>' % (sys.argv[0],
-                                     '|'.join(available_commands.keys())))
-    command_str = available_commands[sys.argv[1]]
+    if literal:
+        command_str = command
+    else:
+        available_commands = parse_commands(commands_file)
+        if command not in available_commands:
+            sys.exit('available commands (from %s):\n  %s' %
+                     (commands_file, '|'.join(available_commands.keys())))
+        command_str = available_commands[command]
     return lambda node: run(node, command_str)
+
+
+def parse_commands(fname):
+    "Return dict with command name and command string, parsed from fname"
+    commands = {}
+    current_command = None
+    command_str = ''
+    new_command = lambda txt: len(txt) > 1 and txt[0] not in [' ', '\t', '\n']
+
+    for line in open(fname):
+        if len(line.strip()) == 0 or line.lstrip().startswith('#'):
+            continue
+        if new_command(line):
+            if current_command:
+                commands[current_command] = command_str
+            command_str = ''
+            current_command = line.strip()
+        else:
+            command_str += line.lstrip()
+    if current_command:
+        commands[current_command] = command_str
+    command_str = ''
+
+    return commands
+
+
+def get_nodes(fname):
+    "Return list of nodes read from fname"
+    nodes = []
+    for line in open(fname):
+        if len(line.strip()) == 0 or line.lstrip().startswith('#'):
+            continue
+        nodes.append(line.strip())
+    return nodes
 
 
 def run(node, command_str):
