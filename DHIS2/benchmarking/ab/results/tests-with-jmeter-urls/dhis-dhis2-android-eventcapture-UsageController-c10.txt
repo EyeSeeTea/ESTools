@@ -1,0 +1,10 @@
+  ms/sec    failed (%)  method    url
+    1353             0  GET       http://dev.eyeseetea.com:8081/dhis/api/events?fields=%5B%3Aall%5D&orgUnit=DiszpKrYNg8&page=0&pageSize=50&program=VBqh0ynB2wv
+    1256             0  GET       http://dev.eyeseetea.com:8081/dhis/api/events?fields=%5B%3Aall%5D&orgUnit=DiszpKrYNg8&page=0&pageSize=50&program=eBAyeGv0exc
+     915             0  GET       http://dev.eyeseetea.com:8081/dhis/api/events/Sg5AuUlfyok?fields=created%252ClastUpdated
+     892             0  GET       http://dev.eyeseetea.com:8081/dhis/api/events?fields=%5B%3Aall%5D&orgUnit=DiszpKrYNg8&page=0&pageSize=50&program=q04UBOqq3rp
+     875             0  GET       http://dev.eyeseetea.com:8081/dhis/api/events?fields=%5B%3Aall%5D&orgUnit=DiszpKrYNg8&page=0&pageSize=50&program=lxAQ7Zs9VYR
+     854             0  GET       http://dev.eyeseetea.com:8081/dhis/api/events?fields=%5B%3Aall%5D&orgUnit=DiszpKrYNg8&page=0&pageSize=50&program=kla3mAPgvCH
+     810             0  GET       http://dev.eyeseetea.com:8081/dhis/api/events/qi2lv5kE8U3?fields=created%252ClastUpdated
+     754             0  GET       http://dev.eyeseetea.com:8081/dhis/api/events/LTKbdCxy3G4?fields=created%252ClastUpdated
+     729             0  GET       http://dev.eyeseetea.com:8081/dhis/api/system/info/
