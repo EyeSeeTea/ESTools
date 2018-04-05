@@ -30,7 +30,7 @@ create_directory() { local temporal_dir=$1
 sync_backup() { local temporal_dir=$1 rdiff_destination=$2
   debug "Sync: $temporal_dir -> $rdiff_destination"
   rdiff-backup "$temporal_dir/" "$rdiff_destination"
-  rdiff-backup --remove-older-than "1Y" "$rdiff_destination"
+  rdiff-backup --force --remove-older-than "1M" "$rdiff_destination"
 }
 
 backup_files() { local files_from=$1 temporal_dir=$2
@@ -43,7 +43,7 @@ backup_files() { local files_from=$1 temporal_dir=$2
 
 delete_directory() { local dir=$1
   debug "Remove directory: $dir"
-  rm -rf "$dir"
+  test "$dir" && rm -rf "$dir"
 }
 
 main() {
