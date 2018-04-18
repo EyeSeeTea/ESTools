@@ -18,7 +18,7 @@ run_jmeter_test_plan() { local test_plan_file=$1 results_file=$2 properties=$3
 }
 
 run_for_users() { local test_plan_file=$1 instances=$2 users_list=$3 properties=$4 output_dir=$5
-  local results_file name directory results_files
+  local results_file name directory results_files path_prefix
   directory="$output_dir/$(dirname "$test_plan_file")/$(basename "$test_plan_file" ".jmx")"
   debug "Output directory: $directory"
   mkdir -p "$directory"
@@ -30,14 +30,15 @@ run_for_users() { local test_plan_file=$1 instances=$2 users_list=$3 properties=
       name="${instance}-users${users}"
       results_file="${directory}/${name}.jtl"
       rm -f "$results_file" "$name-perfmon.jtl"
+      path_prefix="/${instance}"
       run_jmeter_test_plan "$test_plan_file" "$results_file" \
-        "$properties,path_prefix=$instance,name=$name,users=$users"
+        "$properties,path_prefix=$path_prefix,name=$name,users=$users"
       sh /opt/jmeter/bin/JMeterPluginsCMD.sh --generate-png ${directory}/${name}-perfmon.png \
         --input-jtl ${name}-perfmon.jtl --plugin-type PerfMon --width 800 --height 600 --granulation 30000
       results_files="$results_files $results_file"
     done
 
-    python group-jmeter-results-by-controller.py "${directory}/${instance}-elapsed.png" $results_files
+    ./group-jmeter-results-by-controller.py "${directory}/${instance}-elapsed.png" $results_files
   done
 }
 

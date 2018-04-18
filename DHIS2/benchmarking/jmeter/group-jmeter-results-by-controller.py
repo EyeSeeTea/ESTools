@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Group controllers in JMeter JML file and show mean time by user
 #
