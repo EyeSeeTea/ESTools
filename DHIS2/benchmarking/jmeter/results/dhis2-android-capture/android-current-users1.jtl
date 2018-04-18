@@ -1,0 +1,28 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,Latency,IdleTime,Connect
+1524046917638,1457,462 /android-current/api/me,200,,ThreadGroup 1-1,text,true,,942,717,1,1,1456,0,1180
+1524046919097,247,463 /android-current/api/system/info,200,,ThreadGroup 1-1,text,true,,936,246,1,1,247,0,0
+1524046919345,250,464 /android-current/api/me,200,,ThreadGroup 1-1,text,true,,1256,605,1,1,250,0,0
+1524046919596,266,465 /android-current/api/categories,200,,ThreadGroup 1-1,text,true,,6292,521,1,1,266,0,0
+1524046919863,948,466 /android-current/api/categoryCombos,200,,ThreadGroup 1-1,text,true,,12002,491,1,1,947,0,612
+1524046920812,267,467 /android-current/api/programs,200,,ThreadGroup 1-1,text,true,,659,240,1,1,267,0,0
+1524046921081,334,468 /android-current/api/programs,200,,ThreadGroup 1-1,text,true,,17005,2782,1,1,333,0,0
+1524046921416,667,469 /android-current/api/programStages,200,,ThreadGroup 1-1,text,true,,44799,1647,1,1,527,0,0
+1524046922084,860,470 /android-current/api/trackedEntityTypes,200,,ThreadGroup 1-1,text,true,,600,384,1,1,860,0,607
+1524046922945,262,471 /android-current/api/organisationUnits/DiszpKrYNg8,200,,ThreadGroup 1-1,text,true,,1145,527,1,1,262,0,0
+1524046923208,2067,472 /android-current/api/optionSets,200,,ThreadGroup 1-1,text,true,,487486,1201,1,1,1495,0,0
+1524046925276,875,475 /android-current/api/dataSets,200,,ThreadGroup 1-1,text,true,,793,240,1,1,875,0,607
+1524046926152,298,476 /android-current/api/dataSets,200,,ThreadGroup 1-1,text,true,,9908,1089,1,1,298,0,0
+1524046926453,146,477 /android-current/api/dataElements,Non HTTP response code: org.apache.http.client.ClientProtocolException,Non HTTP response message: null,ThreadGroup 1-1,text,false,,2350,0,1,1,0,0,0
+1524046926600,859,478 /android-current/api/indicators,200,,ThreadGroup 1-1,text,true,,1621,597,1,1,859,0,605
+1524046927459,249,479 /android-current/api/indicatorTypes,200,,ThreadGroup 1-1,text,true,,608,332,1,1,249,0,0
+1524046927708,247,480 /android-current/api/system/info,200,,ThreadGroup 1-1,text,true,,935,246,1,1,247,0,0
+1524046927956,299,481 /android-current/api/events,200,,ThreadGroup 1-1,text,true,,8384,469,1,1,299,0,0
+1524046928257,278,482 /android-current/api/events,200,,ThreadGroup 1-1,text,true,,8047,523,1,1,278,0,0
+1524046928536,279,483 /android-current/api/events,200,,ThreadGroup 1-1,text,true,,7634,523,1,1,279,0,0
+1524046928815,889,484 /android-current/api/events,200,,ThreadGroup 1-1,text,true,,8692,523,1,1,889,0,610
+1524046929705,281,485 /android-current/api/events,200,,ThreadGroup 1-1,text,true,,10656,523,1,1,280,0,0
+1524046929986,285,486 /android-current/api/events,200,,ThreadGroup 1-1,text,true,,7985,523,1,1,284,0,0
+1524046930271,246,487 /android-current/api/system/info,200,,ThreadGroup 1-1,text,true,,935,246,1,1,246,0,0
+1524046930518,4926,488 /android-current/api/trackedEntityInstances,200,,ThreadGroup 1-1,text,true,,26617,996,1,1,4925,0,0
+1524046935445,5662,489 /android-current/api/trackedEntityInstances,200,,ThreadGroup 1-1,text,true,,28489,996,1,1,5661,0,606
+1524046917583,23444,InitialSyncController,,"Number of samples in transaction : 26, number of failing samples : 1",ThreadGroup 1-1,,false,,696776,17187,1,1,22579,80,4827
