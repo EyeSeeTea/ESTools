@@ -9,6 +9,7 @@ import shlex
 import itertools
 
 import yaml
+from tabulate import tabulate
 
 def int_or_float(s):
     try:
@@ -114,7 +115,11 @@ def main(args):
                 sorted_metrics = sorted(metrics, key=lambda fields: fields[0], reverse=True)
                 results_file = os.path.join(results_directory,
                     os.path.basename(server_url) + "-" + name + "-c" + concurrent_users + ".txt")
-                open(results_file, "w").write("".join(to_tabs(m) + "\n" for m in sorted_metrics))
+
+                headers = ["ms/sec", "failed (%)", "method", "url"]
+                data = tabulate(sorted_metrics, headers=headers, tablefmt="plain")
+
+                open(results_file, "w").write(data)
                 debug("Saved results: {}".format(results_file))
 
 if __name__ == '__main__':
