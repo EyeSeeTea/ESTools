@@ -10,6 +10,7 @@ import time
 import logging
 import subprocess as sp
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
+from configparser import ConfigParser, ParsingError
 
 import daemonize
 
@@ -20,8 +21,6 @@ STATUSFILE = os.path.join(PATH, 'last_space_status.txt')
 # The following variables would need to be properly filled to run it.
 EMAIL_USER = ''
 EMAIL_PASSWD = ''
-
-ZFS_DATASET = ''
 
 mails_datasets = {}
 datasets = mails_datasets.keys()
@@ -41,12 +40,22 @@ last_notification_time = {space: 0 for space in mails_all.keys()}
 
 def main():
     args = parse_arguments()
+    cfg = read_config(args.config)
+
+    ### DEBUG
+    print(cfg)
+    print(dict(cfg['auth']))
+    print(dict(cfg['datasets']))
+    print(dict(cfg['users']))
+    sys.exit()
+    ### END OF DEBUG
+
     if not args.no_daemon:
         daemonize.daemonize()
     start_logging(args.logfile, args.loglevel)
-    notify = choose_notify_function(args.notify)
+    notify = choose_notify_function(args.notify, cfg['auth'])
     check_periodically(args.interval, args.throttle_days, args.warning_level,
-                       notify)
+                       notify, cfg['datasets'], cfg['users'])
 
 
 def parse_arguments():
@@ -55,13 +64,29 @@ def parse_arguments():
     add('--no-daemon', action='store_true', help='keep attached to the console')
     add('--logfile', default=LOGFILE, help='path of the file with the logs')
     add('--loglevel', default=logging.DEBUG, help='logger verbosity level')
-    add('--throttle-days', default=7, help='number of days between warning reminders')
+    add('--throttle-days', default=7, help='number of days between reminders')
     add('--notify', choices=['email', 'print'], default='email',
         help='method used for notification')
     add('--interval', type=int, default=60, help='time (in s) between checks')
     add('--warning-level', type=float, default=0.80,
         help='fraction of space used above which we send a warning')
+    add('--config', default='space_monitor.cfg',
+        help='file with auth, datasets and users configuration')
     return parser.parse_args()
+
+
+def read_config(fname):
+    "Return parser with the parameters read from configuration file fname"
+    logging.info('Reading config file %s ...' % fname)
+    cp = ConfigParser()
+    try:
+        cp.read_file(open(fname))
+        for section in ['auth', 'datasets', 'users']:
+            assert section in cp, 'Missing section [%s]' % section
+    except (FileNotFoundError, AssertionError,
+            ValueError, ParsingError) as e:
+        sys.exit('Error in file %s: %s' % (fname, e))
+    return cp
 
 
 def start_logging(logfile, loglevel):
@@ -71,16 +96,16 @@ def start_logging(logfile, loglevel):
     logging.debug('Current directory is %s' % os.getcwd())
 
 
-def choose_notify_function(method):
+def choose_notify_function(method, auth_config):
     "Return a function used to notify"
     if method == 'email':
-        return lambda mail, text: send_email(recipients=[mail],
-                                             subject='space status', body=text)
+        return lambda mail, text: send_email(recipients=[mail], subject='space status',
+                                             body=text, auth_config=auth_config)
     elif method == 'print':
         return print  # the print function
 
 
-def check_periodically(interval, throttle_days, warning_level, notify):
+def check_periodically(interval, throttle_days, warning_level, notify, datasets, users):
     "Check status of the machines every interval seconds, notify if necessary"
     s_per_day = 60 * 60 * 24  # seconds in a day
 
@@ -88,7 +113,7 @@ def check_periodically(interval, throttle_days, warning_level, notify):
     try:
         last_status = load_last_status()
     except Exception:  # anyone, really, just be robust
-        last_status = get_status(warning_level)
+        last_status = get_status(warning_level, datasets, users)
 
     while True:
         logging.debug('Checking space status...')
@@ -110,7 +135,7 @@ def check_periodically(interval, throttle_days, warning_level, notify):
         time.sleep(interval)
 
 
-def get_status(warning_level):
+def get_status(warning_level, datasets, users):
     "Return dict with dataset/user and its status (ok, warn, undefined)"
     # ok if less than 80% of space used, warn if more.
     status = {}
@@ -138,7 +163,7 @@ def get_ratio_datasets():
 def get_ratio_user(user):
     "Return used/quota ratio for the given user"
     def get(field):
-        args = ['-Hp', 'user%s@%s' % (field, user), ZFS_DATASET]
+        args = ['-Hp', 'user%s@%s' % (field, user), 'pool_cnb/bioinfo']
         return int(run(['zfs', 'get'] + args).split()[2])
     try:
         return get('used') / get('quota')
@@ -173,11 +198,11 @@ Sincerely,
     """ % (space, last_status, status)
 
 
-def send_email(recipients, subject, body):
+def send_email(recipients, subject, body, auth_config):
     "Send email to recipients with the given subject and body text"
     sp.call(['sendEmail', '-s', 'smtp.gmail.com:587', '-o', 'tls=yes',
-             '-xu', EMAIL_USER, '-xp', EMAIL_PASSWD,
-             '-f', EMAIL_USER, '-u', subject, '-m', body] +
+             '-xu', auth_config['user'], '-xp', auth_config['password'],
+             '-f', auth_config['user'], '-u', subject, '-m', body] +
             ['-t'] + recipients, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
 
 
