@@ -18,37 +18,14 @@ PATH = os.path.dirname(os.path.realpath(__file__))
 LOGFILE = os.path.join(PATH, 'space_monitor.log')
 STATUSFILE = os.path.join(PATH, 'last_space_status.txt')
 
-# The following variables would need to be properly filled to run it.
-EMAIL_USER = ''
-EMAIL_PASSWD = ''
+TRIGGER_FRACTION = 0.80  # if more used, we start pestering
 
-mails_datasets = {}
-datasets = mails_datasets.keys()
-
-mails_users = {}
-users = mails_users.keys()
-
-mails_all = {}
-mails_all.update(mails_datasets)
-mails_all.update(mails_users)
-spaces = mails_all.keys()
-
-last_notification_time = {space: 0 for space in mails_all.keys()}
-# End of variables that need to be filled.
-
+last_notification_time = {}
 
 
 def main():
     args = parse_arguments()
     cfg = read_config(args.config)
-
-    ### DEBUG
-    print(cfg)
-    print(dict(cfg['auth']))
-    print(dict(cfg['datasets']))
-    print(dict(cfg['users']))
-    sys.exit()
-    ### END OF DEBUG
 
     if not args.no_daemon:
         daemonize.daemonize()
@@ -68,8 +45,6 @@ def parse_arguments():
     add('--notify', choices=['email', 'print'], default='email',
         help='method used for notification')
     add('--interval', type=int, default=60, help='time (in s) between checks')
-    add('--warning-level', type=float, default=0.80,
-        help='fraction of space used above which we send a warning')
     add('--config', default='space_monitor.cfg',
         help='file with auth, datasets and users configuration')
     return parser.parse_args()
@@ -99,34 +74,40 @@ def start_logging(logfile, loglevel):
 def choose_notify_function(method, auth_config):
     "Return a function used to notify"
     if method == 'email':
-        return lambda mail, text: send_email(recipients=[mail], subject='space status',
-                                             body=text, auth_config=auth_config)
+        return lambda recipient, text: send_email([recipient], 'space status',
+                                                  text, auth_config)
     elif method == 'print':
         return print  # the print function
 
 
-def check_periodically(interval, throttle_days, warning_level, notify, datasets, users):
+def check_periodically(interval, throttle_days, notify, datasets, users):
     "Check status of the machines every interval seconds, notify if necessary"
     s_per_day = 60 * 60 * 24  # seconds in a day
 
     logging.debug('Getting initial status...')
     try:
         last_status = load_last_status()
-    except Exception:  # anyone, really, just be robust
-        last_status = get_status(warning_level, datasets, users)
+    except Exception as e:  # anyone, really, just be robust
+        logging.info('Could not read last status: %s' % e)
+        last_status = get_status(datasets, users)
+
+    last_notification_time = {space: 0 for space in last_status}
 
     while True:
         logging.debug('Checking space status...')
-        status = get_status(warning_level)
+        status = get_status()
         for space in status:
+            dt = time.time() - last_notification_time[space]
             if (status[space] != last_status[space] or
-                (status[space] == 'warn' and
-                 time.time() - last_notification_time[space] > throttle_days * s_per_day)):
+                (status[space] == 'warn' and dt > throttle_days * s_per_day)):
                 if status[space] != last_status[space]:
-                    logging.warn('Changes found in space "%s". Notifying.' % space)
+                    logging.warn('Changes found in space "%s". Notifying.'
+                                 % space)
                 else:
-                    logging.warn('Unreported warning in space "%s". Notifying.' % space)
-                notify(mails_all[space], describe(space, status[space], last_status[space]))
+                    logging.warn('Unreported warning in space "%s". Notifying.'
+                                 % space)
+                notify(mails_all[space], describe(space, status[space],
+                                                  last_status[space]))
                 last_notification_time[space] = time.time()
             else:
                 logging.debug('Nothing to report on space "%s".' % space)
@@ -135,16 +116,17 @@ def check_periodically(interval, throttle_days, warning_level, notify, datasets,
         time.sleep(interval)
 
 
-def get_status(warning_level, datasets, users):
+def get_status(datasets, users):
     "Return dict with dataset/user and its status (ok, warn, undefined)"
     # ok if less than 80% of space used, warn if more.
     status = {}
     for dataset, ratio in get_ratio_datasets().items():
         if dataset in datasets:
-            status[dataset] = 'ok' if ratio < warning_level else 'warn'
+            status[dataset] = 'ok' if ratio < TRIGGER_FRACTION else 'warn'
     for user in users:
         try:
-            status[user] = 'ok' if get_ratio_user(user) < warning_level else 'warn'
+            status[user] = ('ok' if get_ratio_user(user) < TRIGGER_FRACTION
+                            else 'warn')
         except ZeroDivisionError:
             status[user] = 'undefined'
     return status
@@ -187,11 +169,11 @@ This is a friendly warning about the usage of space "%s".
   Previous status: %s
   Current status: %s
 
-If you are using too much space, please consider freeing some of it or asking for
-more space before it's too late.
+If you are using too much space, please consider freeing some of it or asking
+for more space before it's too late.
 
-If you receive this mail because your usage went back to normal, congratulations,
-enjoy it.
+If you receive this mail because your usage went back to normal,
+congratulations, enjoy it.
 
 Sincerely,
   The space monitor
