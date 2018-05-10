@@ -28,10 +28,11 @@ def main():
     cfg = read_config(args.config)
 
     if not args.no_daemon:
+        print('Becoming a daemon. For more info check: %s' % LOGFILE)
         daemonize.daemonize()
     start_logging(args.logfile, args.loglevel)
     notify = choose_notify_function(args.notify, cfg['auth'])
-    check_periodically(args.interval, args.throttle_days, args.warning_level,
+    check_periodically(args.interval, args.throttle_days,
                        notify, cfg['datasets'], cfg['users'])
 
 
@@ -40,7 +41,8 @@ def parse_arguments():
     add = parser.add_argument  # shortcut
     add('--no-daemon', action='store_true', help='keep attached to the console')
     add('--logfile', default=LOGFILE, help='path of the file with the logs')
-    add('--loglevel', default=logging.DEBUG, help='logger verbosity level')
+    add('--loglevel', choices=['error', 'warning', 'info', 'debug'],
+        default='warning', help='logger verbosity level')
     add('--throttle-days', default=7, help='number of days between reminders')
     add('--notify', choices=['email', 'print'], default='email',
         help='method used for notification')
@@ -52,7 +54,7 @@ def parse_arguments():
 
 def read_config(fname):
     "Return parser with the parameters read from configuration file fname"
-    logging.info('Reading config file %s ...' % fname)
+    print('Reading config file %s ...' % fname)
     cp = ConfigParser()
     try:
         cp.read_file(open(fname))
@@ -65,7 +67,8 @@ def read_config(fname):
 
 
 def start_logging(logfile, loglevel):
-    logging.basicConfig(filename=logfile, level=loglevel,
+    level = {'error': 40, 'warning': 30, 'info': 20, 'debug': 10}[loglevel]
+    logging.basicConfig(filename=logfile, level=level,
                         format='%(asctime)s [%(levelname)s] %(message)s')
     logging.info('Starting.')
     logging.debug('Current directory is %s' % os.getcwd())
@@ -95,7 +98,7 @@ def check_periodically(interval, throttle_days, notify, datasets, users):
 
     while True:
         logging.debug('Checking space status...')
-        status = get_status()
+        status = get_status(datasets, users)
         for space in status:
             dt = time.time() - last_notification_time[space]
             if (status[space] != last_status[space] or
