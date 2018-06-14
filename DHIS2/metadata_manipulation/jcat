@@ -20,17 +20,7 @@ INDENT_STEP = 2
 
 
 def main():
-    parser = ArgumentParser(description=__doc__, formatter_class=fmt)
-    add = parser.add_argument  # shortcut
-    add('file', nargs='?', help='input file (read from stdin if not given)')
-    add('-o', '--output', help='output file (write to stdout if not given')
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument('--filters', nargs='+',
-                       help='part:field:regexp selection filters')
-    group.add_argument('--filters-file', help='file with selection patterns')
-    add('-q', '--quick', action='store_true', help='skip paranoid steps')
-    add('-c', '--compact', action='store_true', help='output a compacted json')
-    args = parser.parse_args()
+    args = get_args()
 
     if args.filters:
         filters = [f.split(':', 2) for f in args.filters]
@@ -55,6 +45,21 @@ def main():
             fout.write(text)
     else:
         print(text, end='')
+
+
+def get_args():
+    "Parse command-line arguments and return them"
+    parser = ArgumentParser(description=__doc__, formatter_class=fmt)
+    add = parser.add_argument  # shortcut
+    add('file', nargs='?', help='input file (read from stdin if not given)')
+    add('-o', '--output', help='output file (write to stdout if not given')
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--filters', nargs='+',
+                       help='part:field:regexp selection filters')
+    group.add_argument('--filters-file', help='file with selection patterns')
+    add('-q', '--quick', action='store_true', help='skip paranoid steps')
+    add('-c', '--compact', action='store_true', help='output a compacted json')
+    return parser.parse_args()
 
 
 def read_filters(fname):
@@ -85,18 +90,24 @@ def filter_parts(text, part, field, regexp):
     # For the given field in the given part.
     # The text must be an expanded json.
     text_filtered = ''
-    indent = 0
-    in_part = False
-    current_region = ''
-    current_field = ''
+    indent = 0  # indentation level of the part we will filter
+    in_part = False  # are we in the part we want to filter?
+    current_region = ''  # region we are scanning and may not include
+    current_field = ''  # field that is being defined (like "name":...)
+    just_filtered = False  # did we just filter out something?
     for line in text.splitlines():
         if not in_part and line.lstrip().startswith('"%s":' % part):  # start
             in_part = True
+            just_filtered = False
             indent = len(line) - len(line.lstrip())
             text_filtered += line + '\n'
         elif not in_part:
+            just_filtered = False
             text_filtered += line + '\n'
         elif len(line) - len(line.lstrip()) <= indent:  # end
+            if just_filtered and text_filtered[-2] == ',':
+                text_filtered = text_filtered[:-2] + '\n'
+            just_filtered = False
             text_filtered += line + '\n'
             in_part = False
         elif line.startswith(' ' * (indent + INDENT_STEP) + '}'):
@@ -104,13 +115,18 @@ def filter_parts(text, part, field, regexp):
             current_region += line + '\n'
             if re.search(regexp, current_field):
                 text_filtered += current_region
+                just_filtered = False
+            else:
+                just_filtered = True
             current_region = ''
             current_field = ''
         elif line.lstrip().startswith('"%s":' % field):
             current_region += line + '\n'
             current_field = line.split('"')[3]
+            just_filtered = False
         else:
             current_region += line + '\n'
+            just_filtered = False
 
     return text_filtered
 
