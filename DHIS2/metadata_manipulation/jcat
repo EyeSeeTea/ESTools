@@ -13,7 +13,7 @@ so it can be later on imported in another instance.
 
 import sys
 import re
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
+from argparse import ArgumentParser, RawDescriptionHelpFormatter as fmt
 import zipfile
 
 INDENT_STEP = 2
@@ -22,29 +22,16 @@ INDENT_STEP = 2
 def main():
     args = get_args()
 
-    if args.filters:
-        filters = [f.split(':', 2) for f in args.filters]
-    elif args.filters_file:
-        filters = read_filters(args.filters_file)
-    else:
-        filters = []
+    text = read(args.file)
+    text = expand(compact(text))  # normalize spacing
 
-    text = zread(args.file)
+    filters = get_filters(args.filters, args.filters_file)
+    text = apply_filters(text, filters, args.multi)
 
-    if not args.quick:
-        text = compact(text)
-
-    text = expand(text)
-    for part, field, regexp in filters:
-        text = filter_parts(text, part, field, regexp)
     if args.compact:
         text = compact(text)
 
-    if args.output:
-        with open(args.output, 'wt') as fout:
-            fout.write(text)
-    else:
-        print(text, end='')
+    write(args.output, text)
 
 
 def get_args():
@@ -54,12 +41,23 @@ def get_args():
     add('file', nargs='?', help='input file (read from stdin if not given)')
     add('-o', '--output', help='output file (write to stdout if not given')
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('--filters', nargs='+',
+    group.add_argument('--filters', nargs='+', metavar='FILTER',
                        help='part:field:regexp selection filters')
     group.add_argument('--filters-file', help='file with selection patterns')
-    add('-q', '--quick', action='store_true', help='skip paranoid steps')
+    add('-m', '--multi', action='store_true',
+        help='allow multiple matches for field (uses the last match)')
     add('-c', '--compact', action='store_true', help='output a compacted json')
     return parser.parse_args()
+
+
+def get_filters(filters_expressions, filters_file):
+    "Return list of filters [(part, field, regexp), ...]"
+    if filters_expressions:
+        return [f.split(':', 2) for f in filters_expressions]
+    elif filters_file:
+        return read_filters(filters_file)
+    else:
+        return []
 
 
 def read_filters(fname):
@@ -72,20 +70,39 @@ def read_filters(fname):
     return filters
 
 
-def zread(fname):
+def read(fname):
     "Return contents of file, which works also for single zip files"
     if not fname:
-        return sys.stdin.read()
+        try:
+            return sys.stdin.read()
+        except KeyboardInterrupt:
+            sys.exit(130)  # same as cat
     elif zipfile.is_zipfile(fname):
         zf = zipfile.ZipFile(fname)
         assert len(zf.filelist) == 1, \
-            'zip file "%s" should contain only one file' % fname
-        return zf.open(zf.filelist[0]).read().decode('utf8')
+            'Zip file "%s" should contain only one file' % fname
+        with zf.open(zf.filelist[0]) as fin:
+            return fin.read().decode('utf8')
     else:
-        return open(fname).read()
+        with open(fname) as fin:
+            return fin.read()
 
 
-def filter_parts(text, part, field, regexp):
+def write(fname, text):
+    if fname:
+        with open(fname, 'wt') as fout:
+            fout.write(text)
+    else:
+        print(text, end='')
+
+
+def apply_filters(text, filters, multi):
+    for part, field, regexp in filters:
+        text = filter_parts(text, part, field, regexp, multi)
+    return text
+
+
+def filter_parts(text, part, field, regexp, multi):
     "Return a json text with only the elements that match regexp"
     # For the given field in the given part.
     # The text must be an expanded json.
@@ -102,13 +119,13 @@ def filter_parts(text, part, field, regexp):
                 indent = len(line) - len(line.lstrip())
             just_filtered = False
             text_filtered += line + '\n'
-        elif len(line) - len(line.lstrip()) <= indent:  # end
+        elif len(line) - len(line.lstrip()) <= indent:  # end part
             if just_filtered and text_filtered[-2] == ',':
                 text_filtered = text_filtered[:-2] + '\n'
             just_filtered = False
             text_filtered += line + '\n'
             in_part = False
-        elif line.startswith(' ' * (indent + INDENT_STEP) + '}'):
+        elif line.startswith(' ' * (indent + INDENT_STEP) + '}'):  # end region
             current_region += line + '\n'
             if re.search(regexp, current_field):
                 text_filtered += current_region
@@ -117,11 +134,14 @@ def filter_parts(text, part, field, regexp):
                 just_filtered = True
             current_region = ''
             current_field = ''
-        elif line.lstrip().startswith('"%s":' % field):
+        elif line.lstrip().startswith('"%s":' % field):  # find field
             current_region += line + '\n'
-            current_field = line.split('"')[3]
+            if not multi and current_field != '':
+                sys.exit('Error: multiple fields named "%s" in %s (run with '
+                         '--multi to allow for it)' % (field, part))
+            current_field = line.split('"')[3]  #   "field_name":"field_value"
             just_filtered = False
-        else:
+        else:  # keep adding to region
             current_region += line + '\n'
             just_filtered = False
 
