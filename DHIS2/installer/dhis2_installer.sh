@@ -90,6 +90,10 @@ is_http() { local path_or_url=$1
   echo "$path_or_url" | grep -q "^https\?://"
 }
 
+startswith() { local text=$1 begin=$2
+  echo "$text" | grep -q "^$begin"
+}
+
 ### App
 
 # Global variables
@@ -102,8 +106,19 @@ declare -g profile
 download() { local destdir=$1 url=$2
   local filename
   filename="$destdir/$(basename "$url")"
-  if ! is_http "$url"; then # local file
-    echo "$url"
+  if ! is_http "$url"; then
+    if startswith "$url" "ssh:"; then
+      local remote_path
+      remote_path=$(echo "$url" | sed "s/^ssh://")
+      if scp -q "$remote_path" "$destdir"; then
+        debug "scp: $url"
+        echo $filename
+      else
+        debug "Could not scp: $url"
+        return 1
+      fi
+    else # local file
+      echo "$url"
   elif wget -q -O "$filename" "$url"; then # http file
     debug "Downloaded: $url"
     echo $filename
@@ -327,6 +342,7 @@ update() {
 
   dbfile=$(download_from_fileurl_or_repository "$datadir" "${args[db-source]}" "${args[hard]-}")
   import_database "$dbfile" "${args[db-name]}"
+  # TODO: change this to iterate over all the files that could be mentioned in db-source
 
   if test "${args[hard]-}"; then
     warfile=$(download "$datadir" "${args[war-source]}")
