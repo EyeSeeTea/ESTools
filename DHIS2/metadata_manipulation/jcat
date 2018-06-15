@@ -96,12 +96,10 @@ def filter_parts(text, part, field, regexp):
     current_field = ''  # field that is being defined (like "name":...)
     just_filtered = False  # did we just filter out something?
     for line in text.splitlines():
-        if not in_part and line.lstrip().startswith('"%s":' % part):  # start
-            in_part = True
-            just_filtered = False
-            indent = len(line) - len(line.lstrip())
-            text_filtered += line + '\n'
-        elif not in_part:
+        if not in_part:
+            if line.startswith(' ' * INDENT_STEP + '"%s":' % part):  # start
+                in_part = True
+                indent = len(line) - len(line.lstrip())
             just_filtered = False
             text_filtered += line + '\n'
         elif len(line) - len(line.lstrip()) <= indent:  # end
@@ -111,7 +109,6 @@ def filter_parts(text, part, field, regexp):
             text_filtered += line + '\n'
             in_part = False
         elif line.startswith(' ' * (indent + INDENT_STEP) + '}'):
-            # we could read the step from the indentation of the second line...
             current_region += line + '\n'
             if re.search(regexp, current_field):
                 text_filtered += current_region
