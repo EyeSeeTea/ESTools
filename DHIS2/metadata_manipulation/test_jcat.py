@@ -3,50 +3,118 @@ Test functions in jcat.
 """
 
 import tempfile
+import pytest
 
 import jcat
 
 
 json_text = """\
 {
-  "resources":[
+  "planets":[
     {
-      "displayName":"Dashboard Items",
-      "singular":"dashboardItem",
-      "plural":"dashboardItems",
-      "href":"http://who-dev.essi.upc.edu:8081/api/dashboardItems"
+      "name":"mercury",
+      "position":"1",
+      "satellites":[
+      ]
     },
     {
-      "displayName":"Dashboards",
-      "singular":"dashboard",
-      "plural":"dashboards",
-      "href":"http://who-dev.essi.upc.edu:8081/api/dashboards"
+      "name":"venus",
+      "position":"2",
+      "satellites":[
+      ]
+    },
+    {
+      "name":"earth",
+      "position":"3",
+      "satellites":[
+        {
+          "name":"moon"
+        }
+      ]
+    }
+  ],
+  "stars":[
+    {
+      "name":"sun",
+      "class":"G"
+    },
+    {
+      "name":"proxima centauri",
+      "class":"K"
     }
   ]
 }
 """
 
-json_text_filtered = """\
+json_text_filtered_stars = """\
 {
-  "resources":[
+  "planets":[
     {
-      "displayName":"Dashboard Items",
-      "singular":"dashboardItem",
-      "plural":"dashboardItems",
-      "href":"http://who-dev.essi.upc.edu:8081/api/dashboardItems"
+      "name":"mercury",
+      "position":"1",
+      "satellites":[
+      ]
+    },
+    {
+      "name":"venus",
+      "position":"2",
+      "satellites":[
+      ]
+    },
+    {
+      "name":"earth",
+      "position":"3",
+      "satellites":[
+        {
+          "name":"moon"
+        }
+      ]
+    }
+  ],
+  "stars":[
+    {
+      "name":"sun",
+      "class":"G"
+    }
+  ]
+}
+"""
+
+json_text_filtered_planets = """\
+{
+  "planets":[
+    {
+      "name":"mercury",
+      "position":"1",
+      "satellites":[
+      ]
+    },
+    {
+      "name":"earth",
+      "position":"3",
+      "satellites":[
+        {
+          "name":"moon"
+        }
+      ]
+    }
+  ],
+  "stars":[
+    {
+      "name":"sun",
+      "class":"G"
+    },
+    {
+      "name":"proxima centauri",
+      "class":"K"
     }
   ]
 }
 """
 
 filters = """\
-userRoles:name:^HEP
-users:username:(^(hep|sarah|yvan|ignacio|jordi)\.|\.dataentry$)
-userGroups:name:^HEP
-indicators:name:^HEP_
-programIndicators:displayName:^HEP
-validationRules:name:^HEP
-indicatorGroups:name:^HEP
+stars:class:^G$
+planets:name:^m
 """
 
 
@@ -71,11 +139,15 @@ def test_expand():
 
 
 def test_filter_parts():
-    part, field, regexp =  'resources', 'displayName', 'Items'
+    part, field, regexp =  'stars', 'class', '^G$'
     assert (jcat.filter_parts(json_text, part, field, regexp) ==
-            json_text_filtered)
+            json_text_filtered_stars)
 
 
-# TODO:
-# def test_multi():
-#    pass
+def test_multi():
+    part, field, regexp =  'planets', 'name', '^m'
+    with pytest.raises(SystemExit):
+        jcat.filter_parts(json_text, part, field, regexp)
+
+    assert (jcat.filter_parts(json_text, part, field, regexp, multi=True) ==
+            json_text_filtered_planets)
