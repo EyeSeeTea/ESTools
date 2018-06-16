@@ -162,6 +162,7 @@ def expand(text):
 
         if c in '}]' and not in_string:
             indent_level -= 1
+            text_nice = text_nice.rstrip()
             text_nice += '\n' + ' ' * INDENT_STEP * indent_level
 
         text_nice += c
