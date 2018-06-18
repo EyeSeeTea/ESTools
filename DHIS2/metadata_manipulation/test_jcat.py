@@ -40,7 +40,7 @@ json_text = """\
     },
     {
       "name":"proxima centauri",
-      "class":"K"
+      "class":"M"
     }
   ]
 }
