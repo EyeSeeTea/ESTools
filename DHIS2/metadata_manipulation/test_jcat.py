@@ -106,7 +106,7 @@ json_text_filtered_planets = """\
     },
     {
       "name":"proxima centauri",
-      "class":"K"
+      "class":"M"
     }
   ]
 }
