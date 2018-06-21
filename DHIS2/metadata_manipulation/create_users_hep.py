@@ -5,34 +5,37 @@ Create a lot of data entry users for HEP.
 """
 
 import random
-import requests
 import json
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
 
+import dhis2 as d2
+
 
 def main():
-    args = get_args()
-    countries = get_countries(args)
-    for country_name, country_id in countries[:5]:  ###
-        post_user(args, country_name, country_id)
+    initialize_dhis2()
+
+    countries = get_countries()
+    for country_name, country_id in countries:
+        create_user(country_name, country_id)
 
 
-def get_args():
+def initialize_dhis2():
     parser = ArgumentParser(description=__doc__, formatter_class=fmt)
     add = parser.add_argument  # shortcut
-    add('-u', '--user', help='user name and password for server authentication')
-    add('--api-url', default='http://who-dev.essi.upc.edu:8081/api/',
-        help='base url to make api queries')
-    return parser.parse_args()
+    add('-u', '--user', metavar='USER:PASSWORD', required=True,
+        help='username and password for server authentication')
+    add('--url-base', default='http://who-dev.essi.upc.edu:8081/',
+        help='base url to make queries')
+    args = parser.parse_args()
+
+    d2.USER = args.user
+    d2.URLBASE = args.url_base
 
 
-def get_countries(args):
-    print("- Retrieving countries...")
-    url = args.api_url + ('organisationUnits.json' +
-                          '?level=3&fields=id,shortName&paging=false')
-    user, passwd = args.user.split(':', 1)
-    response = requests.get(url, auth=requests.auth.HTTPBasicAuth(user, passwd))
-    data = json.loads(response.text)
+def get_countries():
+    print("Retrieving countries...")
+    data = d2.get("organisationUnits.json?"
+                  "level=3&fields=id,shortName&paging=false")
     return [pretty_country(x) for x in data['organisationUnits']]
 
 
@@ -41,15 +44,10 @@ def pretty_country(country_dict):
     return name, country_dict['id']
 
 
-def post_user(args, country_name, country_id):
-    print("- Creating user for %s (%s)..." % (country_name, country_id))
-    user, passwd = args.user.split(':', 1)
-    response = requests.post(args.api_url + 'users',
-                             json=generate_user(country_name, country_id),
-                             auth=requests.auth.HTTPBasicAuth(user, passwd))
-    data = json.loads(response.text)
-    print(data['status'])
-    print(data['stats'])
+def create_user(country_name, country_id):
+    print("Creating user for %s (%s)..." % (country_name, country_id))
+    data = d2.post("users", generate_user(country_name, country_id))
+    print("  %6s  %s" % (data['status'], data['stats']))
 
 
 def generate_user(country_name, country_id):
@@ -129,6 +127,11 @@ user_template = """\
     "dataViewOrganisationUnits":[
         {
             "id":"H8RixfF8ugH"
+        }
+    ],
+    "userGroups":[
+        {
+            "id":"uEYpW1usu0E"
         }
     ]
 }
