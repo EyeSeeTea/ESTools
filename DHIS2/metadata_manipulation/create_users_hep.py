@@ -7,6 +7,7 @@ Create a lot of data entry users for HEP.
 import random
 import json
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
+import unicodedata
 
 import dhis2 as d2
 
@@ -40,22 +41,35 @@ def get_countries():
 
 
 def pretty_country(country_dict):
-    name = country_dict['shortName'].lower().replace(',', '').replace(' ', '_')
+    name = remove_accents(country_dict['shortName'])
+    name = name.lower().replace(',', '').replace(' ', '_')
+    if '_(' in name:
+        name = name.split('_(', 1)[0]
     return name, country_dict['id']
+
+
+def remove_accents(name):
+    return ''.join(c for c in unicodedata.normalize('NFD', name)
+                   if unicodedata.category(c) != 'Mn')
 
 
 def create_user(country_name, country_id):
     print("Creating user for %s (%s)..." % (country_name, country_id))
     data = d2.post("users", generate_user(country_name, country_id))
     print("  %6s  %s" % (data['status'], data['stats']))
+    import pprint
+    pprint.pprint(data)
 
 
 def generate_user(country_name, country_id):
+    password = country_name.capitalize() + "2018!"
+    if len(password) > 15 and '_' in password:
+        password = password.split('_', 1)[0] + "2018!"
     data = {
         'user_id': generate_uid(),
         'user_creds_id': generate_uid(),
         'country_name': country_name,
-        'country_Name': country_name.capitalize(),
+        'password': password,
         'country_id': country_id}
     return json.loads(user_template % data)
 
@@ -88,7 +102,7 @@ user_template = """\
         "invitation":false,
         "selfRegistered":false,
         "username":"%(country_name)s.dataentry",
-        "password":"%(country_Name)s2018!",
+        "password":"%(password)s",
         "userInfo":{
             "id":"%(user_id)s"
         },
