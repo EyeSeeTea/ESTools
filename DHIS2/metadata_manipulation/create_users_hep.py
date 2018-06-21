@@ -25,27 +25,27 @@ def initialize_dhis2():
     add = parser.add_argument  # shortcut
     add('-u', '--user', metavar='USER:PASSWORD', required=True,
         help='username and password for server authentication')
-    add('--url-base', default='http://who-dev.essi.upc.edu:8081/',
+    add('--url-base', default='http://who-dev.essi.upc.edu:8081',
         help='base url to make queries')
     args = parser.parse_args()
 
     d2.USER = args.user
-    d2.URLBASE = args.url_base
+    d2.URLBASE = args.url_base.rstrip('/')
 
 
 def get_countries():
     print("Retrieving countries...")
     data = d2.get("organisationUnits.json?"
                   "level=3&fields=id,shortName&paging=false")
-    return [pretty_country(x) for x in data['organisationUnits']]
+    return [(pretty_name(x['shortName']), x['id'])
+            for x in data['organisationUnits']]
 
 
-def pretty_country(country_dict):
-    name = remove_accents(country_dict['shortName'])
-    name = name.lower().replace(',', '').replace(' ', '_')
+def pretty_name(name):
+    name = remove_accents(name).lower().replace(',', '').replace(' ', '_')
     if '_(' in name:
         name = name.split('_(', 1)[0]
-    return name, country_dict['id']
+    return name
 
 
 def remove_accents(name):
@@ -57,8 +57,6 @@ def create_user(country_name, country_id):
     print("Creating user for %s (%s)..." % (country_name, country_id))
     data = d2.post("users", generate_user(country_name, country_id))
     print("  %6s  %s" % (data['status'], data['stats']))
-    import pprint
-    pprint.pprint(data)
 
 
 def generate_user(country_name, country_id):
