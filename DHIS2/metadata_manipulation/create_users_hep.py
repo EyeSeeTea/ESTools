@@ -4,8 +4,6 @@
 Create a lot of data entry users for HEP.
 """
 
-import random
-import json
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
 import unicodedata
 
@@ -54,100 +52,66 @@ def remove_accents(name):
 
 
 def create_user(country_name, country_id):
-    print("Creating user for %s (%s)..." % (country_name, country_id))
-    data = d2.post("users", generate_user(country_name, country_id))
+    user = generate_user(country_name, country_id)
+    print("Creating user for %s (%s): %s:%s (%s)" %
+          (country_name, country_id, user['userCredentials']['username'],
+           user['userCredentials']['password'], user['id']))
+    data = d2.post("users", user)
     print("  %6s  %s" % (data['status'], data['stats']))
 
 
 def generate_user(country_name, country_id):
-    password = country_name.capitalize() + "2018!"
-    if len(password) > 15 and '_' in password:
-        password = password.split('_', 1)[0] + "2018!"
-    data = {
-        'user_id': generate_uid(),
-        'user_creds_id': generate_uid(),
-        'country_name': country_name,
-        'password': password,
-        'country_id': country_id}
-    return json.loads(user_template % data)
-
-
-def generate_uid():
-    "Return a uid that can be used for dhis2"
-    # From the doc on "Generate identifieres" at
-    # https://docs.dhis2.org/2.28/en/developer/html/webapi_system_resource.html
-    # they need to be 11 A-Za-z0-9 characters long, starting with A-Za-z only.
-    gen_chars = lambda c, n: ''.join(chr(i) for i in range(ord(c), ord(c)+n))
-    AZaz = gen_chars('A', 26) + gen_chars('a', 26)
-    AZaz09 = AZaz + gen_chars('0', 10)
-    return (random.choice(AZaz) +
-            ''.join(random.choice(AZaz09) for i in range(10)))
-
-
-
-user_template = """\
-{
-    "id":"%(user_id)s",
-    "firstName":"DataEntry Template",
-    "surname":"HEP",
-    "userCredentials":{
-        "id":"%(user_creds_id)s",
-        "name":"DataEntry Template HEP",
-        "displayName":"DataEntry Template HEP",
-        "externalAuth":false,
-        "externalAccess":false,
-        "disabled":false,
-        "invitation":false,
-        "selfRegistered":false,
-        "username":"%(country_name)s.dataentry",
-        "password":"%(password)s",
-        "userInfo":{
-            "id":"%(user_id)s"
+    user_id = d2.generate_uid()
+    user_creds_id = d2.generate_uid()
+    username = country_name + ".dataentry"
+    password = generate_password(country_name)
+    return {
+        'id': user_id,
+        'firstName': "DataEntry Template",
+        'surname': "HEP",
+        'userCredentials': {
+            'id': user_creds_id,
+            'name': "DataEntry Template HEP",
+            'displayName': "DataEntry Template HEP",
+            'externalAuth': False,
+            'externalAccess': False,
+            'disabled': False,
+            'invitation': False,
+            'selfRegistered': False,
+            'username': username,
+            'password': password,
+            'userInfo': {
+                'id': user_id
+            },
+            'user': {
+                'id': 'H4atNsEuKxP'
+            },
+            'userRoles': [
+                { 'id': 'iWHyG5sDqRg' },
+                { 'id': 'npKeda939aZ' },
+                { 'id': 'PRR8faFzBmY' },
+                { 'id': 'v0uKy6gA1YY' },
+                { 'id': 'AgVHSpEo2pn' },
+                { 'id': 'quenh5Es9sT' },
+                { 'id': 'aanuJbyZXdj' }
+            ]
         },
-        "user":{
-            "id":"H4atNsEuKxP"
-        },
-        "userRoles":[
-            {
-                "id":"iWHyG5sDqRg"
-            },
-            {
-                "id":"npKeda939aZ"
-            },
-            {
-                "id":"PRR8faFzBmY"
-            },
-            {
-                "id":"v0uKy6gA1YY"
-            },
-            {
-                "id":"AgVHSpEo2pn"
-            },
-            {
-                "id":"quenh5Es9sT"
-            },
-            {
-                "id":"aanuJbyZXdj"
-            }
+        'organisationUnits': [
+            { 'id': country_id }
+        ],
+        'dataViewOrganisationUnits': [
+            { 'id': 'H8RixfF8ugH' }
+        ],
+        'userGroups': [
+            { 'id': 'uEYpW1usu0E' }
         ]
-    },
-    "organisationUnits":[
-        {
-            "id":"%(country_id)s"
-        }
-    ],
-    "dataViewOrganisationUnits":[
-        {
-            "id":"H8RixfF8ugH"
-        }
-    ],
-    "userGroups":[
-        {
-            "id":"uEYpW1usu0E"
-        }
-    ]
-}
-"""
+    }
+
+
+def generate_password(name):
+    if len(name) > 20 and '_' in name:
+        name = name.split('_', 1)[0]
+    return name.capitalize() + "2018!"
 
 
 
