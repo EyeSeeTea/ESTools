@@ -333,7 +333,7 @@ load_args_for_update_command() { local profile_or_first_option=${1:-}
 }
 
 update() {
-  local dbfile warfile datadir
+  local dbfile warfile datadir db_source
 
   load_args_for_update_command "$@"
 
@@ -342,9 +342,10 @@ update() {
 
   stop_dhis_server "${args[stop-command]}"
 
-  dbfile=$(download_from_fileurl_or_repository "$datadir" "${args[db-source]}" "${args[hard]-}")
-  import_database "$dbfile" "${args[db-name]}"
-  # TODO: change this to iterate over all the files that could be mentioned in db-source
+  for db_source in ${args[db-source]}; do
+    dbfile=$(download_from_fileurl_or_repository "$datadir" "$db-source" "${args[hard]-}")
+    import_database "$dbfile" "${args[db-name]}"
+  done
 
   if test "${args[hard]-}"; then
     warfile=$(download "$datadir" "${args[war-source]}")
