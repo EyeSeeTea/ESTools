@@ -386,9 +386,9 @@ Commands:
 
 <update> options:
 
-  --nodb  Do not touch the DB, re-install a fresh one and update DHIS war [default]
+  --nodb  Do not touch the DB, update DHIS war [default]
   --soft  Drop current DB and re-install, but do not touch the DHIS war
-  --hard  Drop current DB, re-install a fresh one and update DHIS war
+  --hard  Drop current DB and re-install, and update DHIS war
 
   --data-directory=DIRECTORY  Directory to store downloaded files and repos
   --logs-directory=DIRECTORY  Directory to store logs
