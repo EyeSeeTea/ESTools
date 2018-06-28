@@ -279,7 +279,7 @@ set_data_directory() { local directory=$1 profile=$2
 load_args_for_update_command() { local profile_or_first_option=${1:-}
   local required_opts
   local options=(
-    "soft" "hard"
+    "nodb" "soft" "hard"
     "data-directory:" "logs-directory:"
     "db-name:|n:" "db-source:"
     "start-command:" "stop-command:"
@@ -300,8 +300,10 @@ load_args_for_update_command() { local profile_or_first_option=${1:-}
   # Validate arguments
   if test "${args[hard]-}"; then  # hard update
     required_opts=("db-name" "db-source" "start-command" "stop-command" "war-source" "war-destination")
-  else # soft update
+  elif test "${args[soft]-}"; then # soft update
     required_opts=("db-name" "db-source" "start-command" "stop-command")
+  else # nodb
+    required_opts=("start-command" "stop-command" "war-source" "war-destination")
   fi
 
   for opt in ${required_opts[*]}; do
@@ -325,10 +327,12 @@ update() {
 
   stop_dhis_server "${args[stop-command]}"
 
-  dbfile=$(download_from_fileurl_or_repository "$datadir" "${args[db-source]}" "${args[hard]-}")
-  import_database "$dbfile" "${args[db-name]}"
+  if test "${args[hard]-}" || test "${args[soft]-}"; then
+    dbfile=$(download_from_fileurl_or_repository "$datadir" "${args[db-source]}" "${args[hard]-}")
+    import_database "$dbfile" "${args[db-name]}"
+  fi
 
-  if test "${args[hard]-}"; then
+  if test "${args[hard]-}" || test "${args[nodb]-}"; then
     warfile=$(download "$datadir" "${args[war-source]}")
     install_dhis_war "$warfile" "${args[war-destination]}"
   fi
@@ -382,8 +386,9 @@ Commands:
 
 <update> options:
 
-  --soft  Drop current DB and re-install [default]
-  --hard  Drop current DB, re-install a fresh one and update DHIS war
+  --nodb  Do not touch the DB, update DHIS war [default]
+  --soft  Drop current DB and re-install, but do not touch the DHIS war
+  --hard  Drop current DB and re-install, and update DHIS war
 
   --data-directory=DIRECTORY  Directory to store downloaded files and repos
   --logs-directory=DIRECTORY  Directory to store logs
