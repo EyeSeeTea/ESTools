@@ -300,7 +300,7 @@ load_args_for_update_command() { local profile_or_first_option=${1:-}
   # Validate arguments
   if test "${args[hard]-}"; then  # hard update
     required_opts=("db-name" "db-source" "start-command" "stop-command" "war-source" "war-destination")
-  elif test "${args[soft]-}" # soft update
+  elif test "${args[soft]-}"; then # soft update
     required_opts=("db-name" "db-source" "start-command" "stop-command")
   else # nodb
     required_opts=("start-command" "stop-command")
