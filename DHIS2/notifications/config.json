@@ -1,0 +1,9 @@
+{
+    "api": {
+        "url": "http://localhost:8080/api/",
+        "auth": {
+            "username": "admin",
+            "password": "district"
+        }
+    }
+}
