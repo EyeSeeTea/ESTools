@@ -73,9 +73,9 @@ def is_good_db_uri(uri):
 
 def run(cmd):
     print(magenta(cmd))
-#    ret = os.system(cmd)
-#    if ret != 0:
-#        sys.exit(ret)
+   ret = os.system(cmd)
+   if ret != 0:
+       sys.exit(ret)
 
 
 def magenta(txt):
