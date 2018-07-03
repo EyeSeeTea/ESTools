@@ -5,9 +5,11 @@ DHIS2 API and helpers.
 Example:
 
     >> import dhis2api
-    >> api = dhis2api.Dhis2Api("http://localhost:8080/api", username="admin", password="district")
+    >> api = dhis2apis.Dhis2Api("http://localhost:8080/api", username="admin", password="district")
     >> dhis2api.enable_users(api, ["android", "district"])
 """
+from __future__ import print_function
+
 import argparse
 import requests
 import sys
