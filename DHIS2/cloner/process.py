@@ -5,8 +5,9 @@ DHIS2 API and helpers.
 Example:
 
     >> import dhis2api
+    >> import process
     >> api = dhis2apis.Dhis2Api("http://localhost:8080/api", username="admin", password="district")
-    >> dhis2api.enable_users(api, usernames=["android", "district"], user_group_names=["Administrators"])
+    >> process.enable_users(api, usernames=["android", "district"], user_group_names=["Administrators"])
 """
 
 from __future__ import print_function

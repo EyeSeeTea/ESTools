@@ -1,0 +1,12 @@
+[
+  {
+    "userGroups": ["_DATASET_M and E Officer"],
+    "userTemplate": "district",
+    "extraUserRoles": ["Facility tracker"]
+  },
+  {
+    "userGroups": ["Administrators"],
+    "userTemplate": "android",
+    "extraUserRoles": ["role1"]
+  }
+]
