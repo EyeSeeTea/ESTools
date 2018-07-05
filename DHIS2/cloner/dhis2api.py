@@ -4,7 +4,7 @@ class Dhis2Api:
     """
     Dhis2 API wrapper.
 
-        >> api = Dhis2Api("http://localhost:8080/api", username="admin", password="district")
+        >> api = Dhis2Api("http://localhost:8080/", username="admin", password="district")
         >> api.get("/users")
         >> api.get("/users/1", {"fields": "id, displayName, created"})
         >> api.post("/users/1", ...)
@@ -12,14 +12,11 @@ class Dhis2Api:
         >> api.patch("/users/3", ...)
     """
     def __init__(self, url, username="admin", password="district"):
-        self.url = url.rstrip("/")
+        self.api_url = url.rstrip("/") + "/api"
         self.auth = requests.auth.HTTPBasicAuth(username, password)
 
-    def _get_url(self, path):
-        return self.url + path
-
     def _request(self, method, path, **kwargs):
-        url = self._get_url(path)
+        url = self.api_url + path
         request_method = getattr(requests, method)
         response = request_method(url, auth=self.auth, **kwargs)
         response.raise_for_status()
