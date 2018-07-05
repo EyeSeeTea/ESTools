@@ -7,8 +7,12 @@ Clone a dhis2 installation from another server.
 import sys
 import os
 import time
+import json
+import requests
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
-from ConfigParser import ConfigParser, ParsingError
+
+import dhis2api
+import process
 
 TIME = time.strftime('%Y-%m-%d_%H:%M')
 
@@ -16,6 +20,8 @@ TIME = time.strftime('%Y-%m-%d_%H:%M')
 def main():
     cfg = get_config()
     war_path = '%s/webapps/%s' % (cfg['server_dir'], cfg['war'])
+    api_config = cfg["api_local"]
+    api = dhis2api.Dhis2Api(api_config["url"], api_config["username"], api_config["password"])
 
     stop_tomcat(cfg['server_dir'])
     backup_db(backups_dir=cfg['backups_dir'], db_local=cfg['db_local'])
@@ -23,36 +29,57 @@ def main():
     get_war(war_path)
     get_db(db_local=cfg['db_local'], db_remote=cfg['db_remote'])
     start_tomcat(cfg['server_dir'])
+    wait_for_server(api)
+    postprocess(api, cfg["postprocess"])
 
+
+def wait_for_server(api, timeout=300):
+    start_time = time.time()
+    print('Check active API: %s' % api.api_url)
+
+    while True:
+        try:
+            api.get("/me")
+        except requests.exceptions.ConnectionError:
+            if time.time() - start_time > timeout:
+                raise RuntimeError("Timeout: could not connect to the API")
+            time.sleep(1)
+        else:
+            break
+
+def postprocess(api, postprocess_config):
+    enable_users_config = postprocess_config.get("enableUsers", {})
+    add_users_config = postprocess_config.get("addUserRoles", [])
+
+    process.enable_users(api,
+        usernames=enable_users_config.get("usernames", []),
+        user_group_names=enable_users_config.get("userGroups", []))
+
+    process.add_user_roles(api, add_users_config)
 
 def get_config():
     "Return dict with the options read from configuration file"
     args = get_args()
     print('Reading from config file %s ...' % args.config)
-    cp = ConfigParser()
-    try:
-        cp.readfp(open(args.config))
-        check_config(cp)
-    except (AssertionError, IOError, ParsingError) as e:
-        sys.exit('Error reading config file %s: %s' % (args.config, e))
-    return dict(cp.items('clone'))
+    with open(args.config) as fd:
+        config = json.load(fd)
+    check_config(config)
+    return config
 
 
 def get_args():
     "Return arguments"
     parser = ArgumentParser(description=__doc__, formatter_class=fmt)
-    parser.add_argument('--config', default='dhis2_clone.cfg',
+    parser.add_argument('--config', default='dhis2_clone.json',
                         help='file with configuration')
     # We may have more fancy stuff in the future. For the moment it's
     # just the config file (and a nice "-h" option).
     return parser.parse_args()
 
 
-def check_config(cp):
+def check_config(cfg):
     "Assert all the options in configuration exist and have reasonable values"
-    assert cp.has_section('clone'), 'Missing section [clone]'
-    cfg = dict(cp.items('clone'))
-    for option in ['backups_dir', 'server_dir', 'db_local', 'db_remote', 'war']:
+    for option in ['backups_dir', 'server_dir', 'db_local', 'db_remote', 'war', 'api_local', 'postprocess']:
         assert option in cfg, 'Missing option "%s"' % option
     for path in ['backups_dir', 'server_dir']:
         assert os.path.isdir(cfg[path]), \
