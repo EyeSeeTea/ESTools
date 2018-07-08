@@ -112,6 +112,21 @@ json_text_filtered_planets = """\
 }
 """
 
+json_text_selected_stars = """\
+{
+  "stars":[
+    {
+      "name":"sun",
+      "class":"G"
+    },
+    {
+      "name":"proxima centauri",
+      "class":"M"
+    }
+  ]
+}
+"""
+
 filters = """\
 stars:class:^G$
 planets:name:^m
@@ -136,6 +151,10 @@ def test_compact():
 
 def test_expand():
     assert jcat.expand(jcat.compact(json_text)) == json_text
+
+
+def test_select():
+    assert jcat.select(json_text, ['stars']) == json_text_selected_stars
 
 
 def test_filter_parts():

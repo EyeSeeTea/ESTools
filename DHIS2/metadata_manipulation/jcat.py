@@ -25,6 +25,9 @@ def main():
     text = read(args.file)
     text = expand(compact(text))  # normalize spacing
 
+    if args.selections:
+        text = select(text, args.selections)
+
     filters = get_filters(args.filters, args.filters_file)
     text = apply_filters(text, filters, args.multi)
 
@@ -40,6 +43,7 @@ def get_args():
     add = parser.add_argument  # shortcut
     add('file', nargs='?', help='input file (read from stdin if not given)')
     add('-o', '--output', help='output file (write to stdout if not given')
+    add('--selections', nargs='+', metavar='SECTION', help='sections to select')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--filters', nargs='+', metavar='FILTER',
                        help='part:field:regexp selection filters')
@@ -94,6 +98,25 @@ def write(fname, text):
             fout.write(text)
     else:
         print(text, end='')
+
+
+def select(text, selections):
+    "Return a json text with only the sections that appear in selections"
+    text_selected = ''
+    current_section = ''
+    for line in text.splitlines():
+        added = False
+        if len(line) - len(line.lstrip()) < INDENT_STEP:
+            text_selected += line + '\n'
+            added = True
+
+        if line.startswith(' ' * INDENT_STEP + '"'):
+            current_section = line.split('"', 2)[1]
+
+        if not added and current_section in selections:
+            text_selected += line + '\n'
+
+    return text_selected
 
 
 def apply_filters(text, filters, multi):
