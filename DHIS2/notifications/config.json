@@ -1,9 +1,23 @@
 {
+    "publicUrl": "http://localhost:8080",
+    "cacheFilePath": ".notifications-cache.json",
     "api": {
         "url": "http://localhost:8080/api/",
         "auth": {
             "username": "admin",
             "password": "district"
+        }
+    },
+    "dataStore": {
+      "namespace": "notifications",
+      "keyPrefix": "ev-"
+    },
+    "smtp": {
+        "host": "smtp.gmail.com",
+        "port": 465,
+        "auth": {
+            "user": "someuser@gmail.com",
+            "pass": "password"
         }
     }
 }

@@ -1,23 +1,18 @@
 const bluebird = require("bluebird");
 const fs = require("fs");
 const util = require("util");
-const nconf = require('nconf');
+const _ = require('lodash');
 
 function debug(object) {
     if (typeof object === "string") {
         console.error(`[DEBUG] ${object}`);
     } else {
-        console.error(`[DEBUG] ${util.inspect(object)}`);
+        console.error(`[DEBUG] ${util.inspect(object, false, null)}`);
     }
 }
 
 function concurrent(values, mapper, {concurrency = 5} = {}) {
     return bluebird.map(values, mapper, {concurrency: concurrency});
-}
-
-function getOptionsFromArgsAndConfigFile(configPath) {
-    const config = nconf.argv().file({file: configPath});
-    return config.get();
 }
 
 function fileRead(path, defaultValue) {
@@ -26,7 +21,7 @@ function fileRead(path, defaultValue) {
     } else if (defaultValue !== undefined) {
         return defaultValue;
     } else {
-        throw new Error(`File not found: ${defaultValue}`);
+        throw new Error(`File not found: ${path}`);
     }
 }
 
@@ -38,4 +33,31 @@ function merge(obj1, obj2) {
     return Object.assign({}, obj1, obj2);
 }
 
-Object.assign(exports, {debug, concurrent, getOptionsFromArgsAndConfigFile, fileRead, fileWrite, merge});
+function sendMessage(api, subject, body, recipients) {
+    const recipientsByModel = _(recipients)
+        .groupBy("type")
+        .mapValues(models => models.map(model => ({id: model.id})))
+        .value();
+    const message = {
+        subject: subject,
+        text: body,
+        users: recipientsByModel.user,
+        userGroups: recipientsByModel.userGroup,
+        organisationUnits: recipientsByModel.organisationUnit,
+    };
+
+    if (_.isEmpty(recipients)) {
+        return Promise.resolve();
+    } else {
+        return api.post("/messageConversations", message);
+    }
+}
+
+Object.assign(exports, {
+    debug,
+    concurrent,
+    fileRead,
+    fileWrite,
+    merge,
+    sendMessage,
+});

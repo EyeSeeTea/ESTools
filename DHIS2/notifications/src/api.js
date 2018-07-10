@@ -1,5 +1,7 @@
 const request = require("request-promise");
 const basicAuth = require("basic-authorization-header");
+const { debug } = require('./helpers');
+const util = require("util");
 
 class Dhis2Api {
     constructor(options) {
@@ -16,12 +18,27 @@ class Dhis2Api {
         return this.baseUrl.replace(/\/+$/, '') + "/" + path.replace(/^\/+/, '');
     }
 
-    get(path, options = {}) {
+    get(path, options = null) {
         const url = this._getUrl(path);
+        debug(`GET ${url}`);
+
         return request({
             method: "GET",
             url: url,
             qs: options,
+            headers: this.headers,
+            json: true,
+        });
+    }
+
+    post(path, data) {
+        const url = this._getUrl(path);
+        debug(`POST ${url}`);
+        
+        return request({
+            method: POST,
+            url: url,
+            body: data,
             headers: this.headers,
             json: true,
         });

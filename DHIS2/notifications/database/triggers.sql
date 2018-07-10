@@ -1,4 +1,9 @@
--- Triggers to insert a dataStore value (namespace = 'notifications', key = 'ev-TIMESTAMP-ID') on:
+-- Insert event in DHIS2 datastore on interpretation events:
+--
+--   - namespace = 'notifications'
+--   - key = 'ev-TIMESTAMP-ID'
+--
+-- Events:
 --
 --   - Interpretation creation:
 --       {"model": "interpretation", "type": "insert", "interpretationId": ID, created: TIMESTAMP}
@@ -10,9 +15,9 @@
 --       {"model": "comment", "type": "insert", "interpretationId": ID, "commentId": CID, created: TIMESTAMP}
 --
 --   - Comment update:
---       {"model": "comment", "type": "update", "interpretationId": ID, "commentId": CID2, created: TIMESTAMP}
+--       {"model": "comment", "type": "update", "interpretationId": ID, "commentId": CID, created: TIMESTAMP}
 
--- Event helpers
+-- Helpers
 
 CREATE OR REPLACE FUNCTION insert_event(VARIADIC params text[]) RETURNS SETOF keyjsonvalue AS $$
   BEGIN
@@ -46,7 +51,7 @@ CREATE OR REPLACE FUNCTION insert_event(VARIADIC params text[]) RETURNS SETOF ke
   END;
 $$ LANGUAGE PLPGSQL;
 
--- Interpretation
+-- Interpretations
 
 CREATE OR REPLACE FUNCTION event_interpretation_insert() RETURNS trigger AS $$
   BEGIN
@@ -89,7 +94,7 @@ CREATE TRIGGER event_interpretation_update_trigger
   FOR EACH ROW
   EXECUTE PROCEDURE event_interpretation_update();
 
--- Commment
+-- Commments
 
 CREATE OR REPLACE FUNCTION comment_event(type text, comment_id int) RETURNS keyjsonvalue AS $$
   DECLARE
@@ -129,8 +134,7 @@ CREATE OR REPLACE FUNCTION event_comment_update() RETURNS trigger AS $$
   END;
 $$ LANGUAGE PLPGSQL;
 
--- Create the trigger on comment insert in the <interpretation_comments> join table instead of
--- interpretationcomment, as we have no reference to the interpretation when the comment is created.
+-- Triggers
 
 DROP TRIGGER IF EXISTS event_comment_insert_trigger ON interpretation_comments;
 CREATE TRIGGER event_comment_insert_trigger
@@ -138,6 +142,9 @@ CREATE TRIGGER event_comment_insert_trigger
   ON interpretation_comments
   FOR EACH ROW
   EXECUTE PROCEDURE event_comment_insert();
+
+-- Create the comment insertion trigger in `interpretation_comments` table instead of
+-- interpretationcomment, since we have no reference to the interpretation at this point.
 
 DROP TRIGGER IF EXISTS event_comment_update_trigger ON interpretationcomment;
 CREATE TRIGGER event_comment_update_trigger
