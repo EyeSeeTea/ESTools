@@ -28,6 +28,8 @@ def main():
     text = read(args.file)
     text = expand(compact(text))  # normalize spacing
 
+    text = apply_replacements(text, args.replacements)
+
     if args.selections:
         text = select(text, args.selections)
 
@@ -46,15 +48,29 @@ def get_args():
     add = parser.add_argument  # shortcut
     add('file', nargs='?', help='input file (read from stdin if not given)')
     add('-o', '--output', help='output file (write to stdout if not given')
+    add('--replacements', nargs='+', metavar='FROM TO', default=[],
+        help='text to replace')
     add('--selections', nargs='+', metavar='SECTION', help='sections to select')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--filters', nargs='+', metavar='FILTER',
-                       help='part:field:regexp selection filters')
+                       help='::...:part:field:regexp selection filters')
     group.add_argument('--filters-file', help='file with selection patterns')
     add('-m', '--multi', action='store_true',
         help='allow multiple matches for field (uses the last match)')
     add('-c', '--compact', action='store_true', help='output a compacted json')
     return parser.parse_args()
+
+
+def apply_replacements(text, replacements):
+    "Return text with all the pairs of FROM TO replacements applied"
+    n = len(replacements)
+    if n % 2 != 0:
+        sys.exit('Error: uneven number of replacements (%d), but replacements '
+                 'should come in pairs (from, to)' % n)
+    pairs = [(replacements[2 * i], replacements[2 * i + 1]) for i in range(n // 2)]
+    for x, y in pairs:
+        text = text.replace(x, y)
+    return text
 
 
 def get_filters(filters_expressions, filters_file):
@@ -140,8 +156,8 @@ def apply_filters(text, filters, multi):
 
 
 def filter_parts(text, jfilter, multi=False):
-    "Return a json text with only the elements that match regexp"
-    # For the given field in the given part.
+    "Return a json text with only the elements that pass the jfilter filter"
+    # That is, that match the regexp for the given field in the given part.
     # The text must be an expanded json.
     text_filtered = ''
     indent = 0  # indentation level of the part we will filter

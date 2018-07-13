@@ -294,3 +294,15 @@ def test_apply_filters():
     filters = jcat.get_filters(filters_exps.splitlines(), None)
     assert (jcat.apply_filters(json_text, filters, multi=True) ==
             json_text_all_filters)
+
+
+def test_replacements():
+    with pytest.raises(SystemExit):
+        jcat.apply_replacements(json_text, ['from'])
+
+    with pytest.raises(SystemExit):
+        jcat.apply_replacements(json_text, ['from', 'to', 'alone'])
+
+    assert (jcat.apply_replacements('a message from earth',
+                                    ['earth', 'mars', 'message', 'kiss']) ==
+            'a kiss from mars')
