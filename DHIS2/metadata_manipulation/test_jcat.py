@@ -31,6 +31,18 @@ json_text = """\
           "name":"moon"
         }
       ]
+    },
+    {
+      "name":"mars",
+      "position":"4",
+      "satellites":[
+        {
+          "name":"phobos"
+        },
+        {
+          "name":"deimos"
+        }
+      ]
     }
   ],
   "stars":[
@@ -45,6 +57,7 @@ json_text = """\
   ]
 }
 """
+
 
 json_text_filtered_stars = """\
 {
@@ -69,6 +82,18 @@ json_text_filtered_stars = """\
           "name":"moon"
         }
       ]
+    },
+    {
+      "name":"mars",
+      "position":"4",
+      "satellites":[
+        {
+          "name":"phobos"
+        },
+        {
+          "name":"deimos"
+        }
+      ]
     }
   ],
   "stars":[
@@ -80,7 +105,8 @@ json_text_filtered_stars = """\
 }
 """
 
-json_text_filtered_planets = """\
+
+json_text_filtered_planets_multi = """\
 {
   "planets":[
     {
@@ -112,6 +138,7 @@ json_text_filtered_planets = """\
 }
 """
 
+
 json_text_selected_stars = """\
 {
   "stars":[
@@ -127,18 +154,97 @@ json_text_selected_stars = """\
 }
 """
 
-filters = """\
+
+json_text_filtered_satellites = """\
+{
+  "planets":[
+    {
+      "name":"mercury",
+      "position":"1",
+      "satellites":[
+      ]
+    },
+    {
+      "name":"venus",
+      "position":"2",
+      "satellites":[
+      ]
+    },
+    {
+      "name":"earth",
+      "position":"3",
+      "satellites":[
+        {
+          "name":"moon"
+        }
+      ]
+    },
+    {
+      "name":"mars",
+      "position":"4",
+      "satellites":[
+        {
+          "name":"phobos"
+        }
+      ]
+    }
+  ],
+  "stars":[
+    {
+      "name":"sun",
+      "class":"G"
+    },
+    {
+      "name":"proxima centauri",
+      "class":"M"
+    }
+  ]
+}
+"""
+
+
+json_text_all_filters = """\
+{
+  "planets":[
+    {
+      "name":"mercury",
+      "position":"1",
+      "satellites":[
+      ]
+    },
+    {
+      "name":"earth",
+      "position":"3",
+      "satellites":[
+        {
+          "name":"moon"
+        }
+      ]
+    }
+  ],
+  "stars":[
+    {
+      "name":"sun",
+      "class":"G"
+    }
+  ]
+}
+"""
+
+
+filters_exps = """\
 stars:class:^G$
 planets:name:^m
+::satellites:name:(moon|phobos)
 """
 
 
 def test_get_filters():
     with tempfile.NamedTemporaryFile('wt') as tmp:
-        tmp.write(filters)
+        tmp.write(filters_exps)
         tmp.flush()
 
-        assert (jcat.get_filters(filters.splitlines(), None) ==
+        assert (jcat.get_filters(filters_exps.splitlines(), None) ==
                 jcat.get_filters(None, tmp.name))
 
 
@@ -155,18 +261,36 @@ def test_expand():
 
 def test_select():
     assert jcat.select(json_text, ['stars']) == json_text_selected_stars
+    assert jcat.select(json_text, ['planets']).endswith(']\n}\n')  # and no ','
 
 
 def test_filter_parts():
-    part, field, regexp =  'stars', 'class', '^G$'
-    assert (jcat.filter_parts(json_text, part, field, regexp) ==
-            json_text_filtered_stars)
+    jfilter = jcat.Filter(nesting=1, part='stars', field='class', regexp='^G$')
+    assert jcat.filter_parts(json_text, jfilter) == json_text_filtered_stars
 
 
 def test_multi():
-    part, field, regexp =  'planets', 'name', '^m'
+    jfilter = jcat.Filter(nesting=1, part='planets', field='name', regexp='^m')
     with pytest.raises(SystemExit):
-        jcat.filter_parts(json_text, part, field, regexp)
+        jcat.filter_parts(json_text, jfilter)
 
-    assert (jcat.filter_parts(json_text, part, field, regexp, multi=True) ==
-            json_text_filtered_planets)
+    assert (jcat.filter_parts(json_text, jfilter, multi=True) ==
+            json_text_filtered_planets_multi)
+
+
+def test_nesting():
+    filters = jcat.get_filters(filters_exps.splitlines(), None)
+
+    assert filters[0].nesting == 1 and filters[1].nesting == 1
+
+    satellite_filter = filters[2]
+    assert satellite_filter.nesting == 3
+
+    assert (jcat.filter_parts(json_text, satellite_filter) ==
+            json_text_filtered_satellites)
+
+
+def test_apply_filters():
+    filters = jcat.get_filters(filters_exps.splitlines(), None)
+    assert (jcat.apply_filters(json_text, filters, multi=True) ==
+            json_text_all_filters)

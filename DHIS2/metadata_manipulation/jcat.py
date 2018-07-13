@@ -13,8 +13,11 @@ so it can be later on imported in another instance.
 
 import sys
 import re
+from collections import namedtuple
 from argparse import ArgumentParser, RawDescriptionHelpFormatter as fmt
 import zipfile
+
+Filter = namedtuple('Filter', ['nesting', 'part', 'field', 'regexp'])
 
 INDENT_STEP = 2
 
@@ -55,13 +58,21 @@ def get_args():
 
 
 def get_filters(filters_expressions, filters_file):
-    "Return list of filters [(part, field, regexp), ...]"
+    "Return list of filters [(nesting, part, field, regexp), ...]"
     if filters_expressions:
-        return [f.split(':', 2) for f in filters_expressions]
+        return [decode_filter(f) for f in filters_expressions]
     elif filters_file:
         return read_filters(filters_file)
     else:
         return []
+
+
+def decode_filter(expression):
+    "Return a Filter tuple from an expression like ::...:part:field:regexp"
+    expression_stripped = expression.lstrip(':')
+    nesting = len(expression) - len(expression_stripped) + 1
+    part, field, regexp = expression_stripped.split(':', 2)
+    return Filter(nesting, part, field, regexp)
 
 
 def read_filters(fname):
@@ -70,7 +81,7 @@ def read_filters(fname):
     for line_dirty in open(fname):
         line = line_dirty.strip()
         if line and not line.startswith('#'):
-            filters.append(line.split(':', 2))
+            filters.append(decode_filter(line))
     return filters
 
 
@@ -116,16 +127,19 @@ def select(text, selections):
         if not added and current_section in selections:
             text_selected += line + '\n'
 
+    if text_selected.endswith(',\n}\n'):
+        text_selected = text_selected[:-4] + '\n}\n'
+
     return text_selected
 
 
 def apply_filters(text, filters, multi):
-    for part, field, regexp in filters:
-        text = filter_parts(text, part, field, regexp, multi)
+    for jfilter in filters:
+        text = filter_parts(text, jfilter, multi)
     return text
 
 
-def filter_parts(text, part, field, regexp, multi=False):
+def filter_parts(text, jfilter, multi=False):
     "Return a json text with only the elements that match regexp"
     # For the given field in the given part.
     # The text must be an expanded json.
@@ -137,7 +151,8 @@ def filter_parts(text, part, field, regexp, multi=False):
     just_filtered = False  # did we just filter out something?
     for line in text.splitlines():
         if not in_part:
-            if line.startswith(' ' * INDENT_STEP + '"%s":' % part):  # start
+            spaces = ' ' * INDENT_STEP * jfilter.nesting
+            if line.startswith('%s"%s":' % (spaces, jfilter.part)):  # start
                 in_part = True
                 indent = len(line) - len(line.lstrip())
             just_filtered = False
@@ -150,18 +165,18 @@ def filter_parts(text, part, field, regexp, multi=False):
             in_part = False
         elif line.startswith(' ' * (indent + INDENT_STEP) + '}'):  # end region
             current_region += line + '\n'
-            if re.search(regexp, current_field):
+            if re.search(jfilter.regexp, current_field):
                 text_filtered += current_region
                 just_filtered = False
             else:
                 just_filtered = True
             current_region = ''
             current_field = ''
-        elif line.lstrip().startswith('"%s":' % field):  # find field
+        elif line.lstrip().startswith('"%s":' % jfilter.field):  # find field
             current_region += line + '\n'
             if not multi and current_field != '':
-                sys.exit('Error: multiple fields named "%s" in %s (run with '
-                         '--multi to allow for it)' % (field, part))
+                sys.exit('Error: multiple fields named "%s" in %s (you may run '
+                         'with --multi)' % (jfilter.field, jfilter.part))
             current_field = line.split('"')[3]  #   "field_name":"field_value"
             just_filtered = False
         else:  # keep adding to region
