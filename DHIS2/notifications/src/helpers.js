@@ -29,10 +29,6 @@ function fileWrite(path, contents) {
     return fs.writeFileSync(path, contents, "utf8");
 }
 
-function merge(obj1, obj2) {
-    return Object.assign({}, obj1, obj2);
-}
-
 function sendMessage(api, subject, body, recipients) {
     const recipientsByModel = _(recipients)
         .groupBy("type")
@@ -58,6 +54,5 @@ Object.assign(exports, {
     concurrent,
     fileRead,
     fileWrite,
-    merge,
     sendMessage,
 });

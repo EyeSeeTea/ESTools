@@ -1,0 +1,39 @@
+<html>
+  <body>
+    <table>
+      <tr>
+        <td>
+          <span style="font-size: 1.5em; font-weight: bold">
+            <%= i18n.t("newsletter_title") %>
+          </span>
+        </td>
+
+        <td style="text-align: right">
+          <img width="100" height="100" src="http://dev.eyeseetea.com/dhis2-newsletter/psi-logo.png" />
+          <img width="159" height="65" src="http://dev.eyeseetea.com/dhis2-newsletter/dhis2-logo.png" />
+        <td>
+      </tr>
+
+      <tr style="line-height: 50px">
+        <td style="background-color: #fe8500; color: #fff">
+          <%= i18n.t("from_date_to_date", {startDate, endDate}) %>
+        </td>
+        <td style="background-color: #ff9510; color: #fff">
+          <%= i18n.t("n_interpretations_and_comments_on_m_favorites", {n: _.size(data.events), m: _.size(data.objects)}) %>
+        </td>
+      </tr>
+    </table>
+
+    <% entries.forEach(entry => { %>
+      <% if (entry.model === "interpretation") { %>
+        <%- include('./interpretation', {entry}); %>
+      <% } else if (entry.model === "comment") { %>
+        <%- include('./comment', {entry}); %>
+      <% } %>
+    <% }) %>
+  </body>
+
+  <div>
+    footer
+  </div> 
+</html>
