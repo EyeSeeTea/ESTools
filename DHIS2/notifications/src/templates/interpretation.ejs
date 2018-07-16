@@ -13,7 +13,7 @@
     <td style="font-size: 1.2em">
       <%= i18n.t(`section_interpretation`) %>
       <a style="text-decoration: underline; text-decoration-skip-ink: none; font-weight: bold; color: #222"
-         href="${routes.object(entry.object)}">
+         target="_blank" href="<%= routes.object(entry.object) %>">
         <%= entry.object.name %>:
       </a>
     </td>
@@ -40,7 +40,7 @@
           <%= event.interpretation.text %>
 
           <a href="<%= routes.interpretation(event.interpretation) %>" target="_blank">
-            <img width="28" height="28" src="http://dev.eyeseetea.com/dhis2-newsletter/icon-open.png" />
+            <img width="28" height="28" src="img/icon-open.png" />
           </a>
         </div>
 
@@ -51,7 +51,7 @@
                 </td>
 
                 <td>
-                  <img width="28" height="28" src="http://dev.eyeseetea.com/dhis2-newsletter/icon-talk.png" />
+                  <img width="28" height="28" src="img/icon-talk.png" />
 
                   <span style="color: #222; font-weight: bold">
                     <%= comment.user.displayName %>

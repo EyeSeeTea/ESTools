@@ -18,16 +18,17 @@ class Dhis2Api {
         return this.baseUrl.replace(/\/+$/, '') + "/" + path.replace(/^\/+/, '');
     }
 
-    get(path, options = null) {
+    get(path, params = null, options = {}) {
         const url = this._getUrl(path);
         debug(`GET ${url}`);
 
         return request({
             method: "GET",
             url: url,
-            qs: options,
+            qs: params,
             headers: this.headers,
             json: true,
+            ...options,
         });
     }
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const _ = require("lodash");
 const fs = require("fs");
+const util = require('util');
 const path = require("path");
 const properties = require("properties-file");
 const nodemailer = require('nodemailer');
@@ -10,6 +11,8 @@ const moment = require('moment');
 
 const {Dhis2Api} = require('./api');
 const {debug, fileRead, fileWrite, concurrent} = require('./helpers');
+
+const exec = util.promisify(require('child_process').exec);
 
 const objectsInfo = [
     {
@@ -49,7 +52,9 @@ const objectsInfo = [
     },
 ];
 
-const translations = loadTranslations("i18n");
+const templateSettings = {
+    interpolate: /{{([\s\S]+?)}}/g,  /* {{variable}} */
+};
 
 function getObjectFromInterpretation(interpretation) {
     const matchingInfo = objectsInfo.find(info => info.type === interpretation.type);
@@ -72,10 +77,6 @@ function getObjectUrl(object, publicUrl) {
 }
 
 function loadTranslations(directory) {
-    const templateSettings = {
-        interpolate: /{{([\s\S]+?)}}/g,  /* {{interpolateThisString}} */
-    };
-
     return _(fs.readdirSync(path.join(__dirname, directory)))
         .filter(filename => filename.endsWith(".properties"))
         .map(filename => {
@@ -93,17 +94,12 @@ function loadTranslations(directory) {
         .value();
 }
 
-function getI18nForUser(userId) {
-    return translations["en"];
-}
-
-function getMessages(event, publicUrl, interpretationsById, usersById, text) {
+function getMessages(i18n, event, publicUrl, interpretationsById, usersById, text) {
     const interpretation = interpretationsById[event.interpretationId];
     if (!interpretation)
         return null;
     const interpretationUrl = getInterpretationUrl(interpretation, publicUrl);
     const getMessageForUser = (userId) => {
-        const i18n = getI18nForUser(userId);
         const user = usersById[userId] || {};
         const subject = [
             interpretation.user.displayName,
@@ -208,9 +204,11 @@ async function getDataForTriggerEvents(api, triggerEvents) {
 }
 
 function sendNotifications(options) {
-    const {dataStore, publicUrl, smtp} = options;
+    const {dataStore, publicUrl, smtp, locale} = options;
     const api = new Dhis2Api(options.api);
     const mailer = nodemailer.createTransport(smtp);
+    const translations = loadTranslations("i18n");
+    const i18n = translations[locale || "en"];
 
     return getNewTriggerEvents(api, options, async (triggerEvents) => {
         const data = await getDataForTriggerEvents(api, triggerEvents);
@@ -219,10 +217,10 @@ function sendNotifications(options) {
             switch (event.model) {
                 case "interpretation":
                     const interpretation = data.interpretations[event.interpretationId];
-                    return interpretation ? getMessages(event, publicUrl, data.interpretations, data.users, interpretation.text) : null;
+                    return interpretation ? getMessages(i18n, event, publicUrl, data.interpretations, data.users, interpretation.text) : null;
                 case "comment":
                     const comment = data.comments[event.commentId];
-                    return comment ? getMessages(event, publicUrl, data.interpretations, data.users, comment.text) : null;
+                    return comment ? getMessages(i18n, event, publicUrl, data.interpretations, data.users, comment.text) : null;
                 default:
                     debug(`Unknown event model: ${event.model}`)
                     return [];
@@ -241,7 +239,7 @@ async function getNewTriggerEvents(api, options, action) {
     const allKeys = await api.get(`/dataStore/${dataStore.namespace}`);
 
     // TODO: Group events by day or week.
-    
+
     const eventKeys = _(allKeys).filter(key => key.startsWith(dataStore.keyPrefix)).sortBy().value();
 
     let newEventKeys;
@@ -254,80 +252,99 @@ async function getNewTriggerEvents(api, options, action) {
 
     const newTriggerEvents = await concurrent(newEventKeys,
         eventKey => api.get(`/dataStore/${dataStore.namespace}/${eventKey}`));
-    const actionResult = action(newTriggerEvents);
+    const actionResult = await action(newTriggerEvents);
     const newCache = {...cache, lastKey: _.last(eventKeys)};
 
     fileWrite(cacheFilePath, JSON.stringify(newCache) + "\n");
     return actionResult;
 }
 
-function getObjectVisualization(object, publicUrl, {date} = {}) {
-    const params = _.omitBy({
-        date: date ? moment(date).format("YYYY-MM-DD") : null,
-    }, _.isNull);
-    const queryString = _(params).isEmpty() ? "" : `?${_(params).map((v, k) => `${k}=${v}`).join("&")}`;
+async function getObjectVisualization(api, assets, object, options = {}) {
+    const {width, height, date} = _.defaults(options, {
+        width: 500,
+        height: 350,
+        date: null,
+    });
 
+    if (!assets)
+        throw new Error("No assets configuration");
+
+    const baseParams = date ? {date: moment(date).format("YYYY-MM-DD")} : {};
     switch (object.extraInfo.visualizationType) {
         case "image":
-            const imageUrl = `${publicUrl}/api/${object.extraInfo.apiModel}/${object.id}/data` + queryString;
-            return `<img width="500" height="350" src="${imageUrl}" />`
-        default:
+            const imageUrl = `/${object.extraInfo.apiModel}/${object.id}/data.png`;
+            const imageParams = {...baseParams, width, height};
+            const imageData = await api.get(imageUrl, imageParams, {encoding: null});
+            const imageFilename = _(["image", object.id, date]).compact().join("-") + ".png";
+            const uploadTemplate = _.template(assets.upload, templateSettings);
+            const uploadCommand = uploadTemplate({files: [imageFilename].join(" ")});
+            fileWrite(imageFilename, imageData);
+            debug(`Upload: ${uploadCommand}`);
+            await exec(uploadCommand);
+            return `<img width="500" height="350" src="${assets.url}/${imageFilename}" />`
+        case "html":
+            const tableUrl = `/${object.extraInfo.apiModel}/${object.id}/data.html`;
+            const tableHtml = await api.get(tableUrl, baseParams);
+            return `<div style="display: block; overflow: auto; height: ${height}px">${tableHtml}</div>`;
+        case "none":
             return "";
+        default:
+            throw new Error(`Unsupported visualization type: ${object.extraInfo.visualizationType}`);
     }
 }
 
-async function sendNewsletters(options) {
-    const {dataStore, publicUrl, smtp} = options;
-    const api = new Dhis2Api(options.api);
-    const mailer = nodemailer.createTransport(smtp);
+async function getCachedVisualizationFun(api, assets, entries) {
+    // Package ejs doesn't support async functions in views, we must pre-load all visualizations beforehand.
+    // Build array of objects {args: [object, date], value: html} for all entries, clone logic from views.
+    const cachedEntries = _.flatten(await concurrent(entries, async (entry) => {
+        switch (entry.model) {
+            case "interpretation":
+                return [
+                    {
+                        args: [entry.object, undefined],
+                        value: await getObjectVisualization(api, assets, entry.object),
+                    },
+                    ...await concurrent(entry.events.filter(event => event.type === "update"), async (event) => ({
+                        args: [entry.object, event.interpretation.created],
+                        value: await getObjectVisualization(api, assets, entry.object, {date: event.interpretation.created}),
+                    })),
+                ];
+            case "comment":
+                return [
+                    {
+                        args: [entry.object, entry.interpretation.created],
+                        value: await getObjectVisualization(api, assets, entry.object, {date: entry.interpretation.created}),
+                    },
+                ];
+        }
+    }));
 
-    const i18n = translations["en"];
-    moment.locale('en');
+    return (object, date) => {
+        const cachedEntry = cachedEntries.find(entry => _.isEqual(entry.args, [object, date]));
+
+        if (cachedEntry) {
+            return cachedEntry.value;
+        } else {
+            debug({cachedEntries});
+            throw new Error(`Cannot find cached visualization for args: objectId=${object.id}, date=${date}`);
+        }
+    };
+}
+
+async function sendNewsletters(options, api, triggerEvents) {
+    const {dataStore, publicUrl, smtp, locale, assets} = options;
+    moment.locale(locale);
+    const translations = loadTranslations("i18n");
+    const i18n = translations[locale || "en"];
+
+    const mailer = nodemailer.createTransport(smtp);
     const templatePath = path.join(__dirname, "templates/newsletter.ejs");
     const templateStr = fs.readFileSync(templatePath, "utf8");
     const template = ejs.compile(templateStr, {filename: templatePath});
-    const startDate = moment(new Date(2017, 1, 1)).format('L');
+    const startDate = moment(new Date(2017, 1, 1)).format('L'); // TODO
     const endDate = moment().format('L');
 
-    const triggerEvents = [
-        {
-          "type": "update",
-          "model": "interpretation",
-          "interpretationId": "BR11Oy1Q4yR",
-          "created": "2018-07-10T13:52:39Z"
-        },
-        {
-          "type": "insert",
-          "model": "interpretation",
-          "interpretationId": "h5rF6km1STK",
-          "ts": "2018-07-10T13:52:39Z",
-          "created": "2018-07-10T13:52:39Z"
-        },
-        {
-          "type": "update",
-          "model": "interpretation",
-          "interpretationId": "h5rF6km1STK",
-          "ts": "2018-07-10T13:52:39Z",
-          "created": "2018-07-10T13:52:39Z"
-        },
-        {
-          "model": "comment",
-          "type": "update",
-          "commentId": "oRmqfmnCLsQ",
-          "interpretationId": "BR11Oy1Q4yR",
-          "created": "2018-07-10T13:52:39Z"
-        },
-        {
-          "model": "comment",
-          "type": "insert",
-          "commentId": "xoH3XG0tkQZ",
-          "interpretationId": "BR11Oy1Q4yR",
-          "created": "2018-07-10T13:52:39Z"
-        },
-    ];
-
     const data = await getDataForTriggerEvents(api, triggerEvents);
-    
     const interpretationEvents = data.events.filter(event => event.model === "interpretation");
     const interpretationIds = new Set(interpretationEvents.map(ev => ev.interpretationId));
     const commentEvents = data.events.filter(event =>
@@ -363,6 +380,8 @@ async function sendNewsletters(options) {
         ])
         .value();
 
+    const getCachedVisualization = await getCachedVisualizationFun(api, assets, entries);
+
     const namespace = {
         _,
         startDate,
@@ -377,7 +396,7 @@ async function sendNewsletters(options) {
             objectImage: object => getObjectImage(object, publicUrl),
         },
         helpers: {
-            getObjectVisualization: (object, date) => getObjectVisualization(object, publicUrl, {date}),
+            getObjectVisualization: getCachedVisualization,
             getLikes: interpretation => {
                 const nlikes = interpretation.likes || 0;
                 switch (nlikes) {
@@ -396,7 +415,7 @@ function loadConfigOptions(yargs) {
     return JSON.parse(fileRead(yargs.argv.configFile));
 }
 
-function main() {
+async function main() {
     yargs
         .help('help', 'Display this help message and exit')
         .option('config-file', {alias: 'c', default: "config.json"})
@@ -404,9 +423,12 @@ function main() {
             const options = loadConfigOptions(yargs);
             sendNotifications(options);
         })
-        .command('send-newsletters', 'Send newsletter emails to subscribers', (yargs) => {
+        .command('send-newsletters', 'Send newsletter emails to subscribers', async (yargs) => {
             const options = loadConfigOptions(yargs);
-            sendNewsletters(options);
+            const api = new Dhis2Api(options.api);
+            await getNewTriggerEvents(api, options, async (triggerEvents) => {
+                sendNewsletters(options, api, triggerEvents);
+            });
         })
         .demandCommand()
         .strict()
