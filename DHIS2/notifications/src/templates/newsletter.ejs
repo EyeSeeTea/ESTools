@@ -19,7 +19,10 @@
           <%= i18n.t("from_date_to_date", {startDate, endDate}) %>
         </td>
         <td style="background-color: #ff9510; color: #fff">
-          <%= i18n.t("n_interpretations_and_comments_on_m_favorites", {n: _.size(data.events), m: _.size(data.objects)}) %>
+          <%= i18n.t("n_interpretations_and_comments_on_m_favorites", {
+                n: helpers._.size(data.events),
+                m: helpers._.size(data.objects),
+              }) %>
         </td>
       </tr>
     </table>

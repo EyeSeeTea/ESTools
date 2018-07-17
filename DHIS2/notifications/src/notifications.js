@@ -8,11 +8,12 @@ const nodemailer = require('nodemailer');
 const yargs = require('yargs');
 const ejs = require('ejs');
 const moment = require('moment');
+const child_process = require('child_process');
 
 const {Dhis2Api} = require('./api');
 const {debug, fileRead, fileWrite, concurrent} = require('./helpers');
 
-const exec = util.promisify(require('child_process').exec);
+const exec = util.promisify(child_process.exec);
 
 const objectsInfo = [
     {
@@ -69,7 +70,8 @@ function getObjectFromInterpretation(interpretation) {
 
 function getInterpretationUrl(interpretation, publicUrl) {
     const object = interpretation.object;
-    return `${publicUrl}/${object.extraInfo.appPath}/index.html?id=${object.id}&interpretationid=${interpretation.id}`;
+    const {appPath} = object.extraInfo;
+    return `${publicUrl}/${appPath}/index.html?id=${object.id}&interpretationid=${interpretation.id}`;
 }
 
 function getObjectUrl(object, publicUrl) {
@@ -83,7 +85,6 @@ function loadTranslations(directory) {
             const locale = filename.split(".")[0];
             const obj = properties.parse(fileRead(path.join(__dirname, directory, filename)));
             const objWithTemplates = _.mapValues(obj, s => _.template(s, templateSettings));
-
             const t = (key, namespace = {}) =>
                 (objWithTemplates[key] || (() => `**${key}**`))(namespace);
             const i18nObj = {t, formatDate: date => moment(date).format('L')};
@@ -98,6 +99,7 @@ function getMessages(i18n, event, publicUrl, interpretationsById, usersById, tex
     const interpretation = interpretationsById[event.interpretationId];
     if (!interpretation)
         return null;
+
     const interpretationUrl = getInterpretationUrl(interpretation, publicUrl);
     const getMessageForUser = (userId) => {
         const user = usersById[userId] || {};
@@ -158,7 +160,8 @@ async function getDataForTriggerEvents(api, triggerEvents) {
     });
 
     const interpretationsByIdWithObject = _(interpretations)
-        .map(interpretation => ({...interpretation, object: getObjectFromInterpretation(interpretation)}))
+        .map(interpretation =>
+            ({...interpretation, object: getObjectFromInterpretation(interpretation)}))
         .keyBy("id")
         .value();
 
@@ -211,16 +214,17 @@ function sendNotifications(options) {
     const i18n = translations[locale || "en"];
 
     return getNewTriggerEvents(api, options, async (triggerEvents) => {
-        const data = await getDataForTriggerEvents(api, triggerEvents);
+        const {events, interpretations, users, comments} =
+            await getDataForTriggerEvents(api, triggerEvents);
 
         const messages = _(events).flatMap(event => {
             switch (event.model) {
                 case "interpretation":
-                    const interpretation = data.interpretations[event.interpretationId];
-                    return interpretation ? getMessages(i18n, event, publicUrl, data.interpretations, data.users, interpretation.text) : null;
+                    const interpretation = interpretations[event.interpretationId];
+                    return getMessages(i18n, event, publicUrl, interpretations, users, interpretation.text);
                 case "comment":
-                    const comment = data.comments[event.commentId];
-                    return comment ? getMessages(i18n, event, publicUrl, data.interpretations, data.users, comment.text) : null;
+                    const comment = comments[event.commentId];
+                    return getMessages(i18n, event, publicUrl, interpretations, users, comment.text);
                 default:
                     debug(`Unknown event model: ${event.model}`)
                     return [];
@@ -273,17 +277,19 @@ async function getObjectVisualization(api, assets, object, options = {}) {
     switch (object.extraInfo.visualizationType) {
         case "image":
             const imageUrl = `/${object.extraInfo.apiModel}/${object.id}/data.png`;
+            debug(`Get image visualization: ${imageUrl}`);
             const imageParams = {...baseParams, width, height};
             const imageData = await api.get(imageUrl, imageParams, {encoding: null});
             const imageFilename = _(["image", object.id, date]).compact().join("-") + ".png";
             const uploadTemplate = _.template(assets.upload, templateSettings);
             const uploadCommand = uploadTemplate({files: [imageFilename].join(" ")});
             fileWrite(imageFilename, imageData);
-            debug(`Upload: ${uploadCommand}`);
+            debug(`Upload visualization image: ${uploadCommand}`);
             await exec(uploadCommand);
             return `<img width="500" height="350" src="${assets.url}/${imageFilename}" />`
         case "html":
             const tableUrl = `/${object.extraInfo.apiModel}/${object.id}/data.html`;
+            debug(`Get table visualization: ${tableUrl}`);
             const tableHtml = await api.get(tableUrl, baseParams);
             return `<div style="display: block; overflow: auto; height: ${height}px">${tableHtml}</div>`;
         case "none":
@@ -294,39 +300,31 @@ async function getObjectVisualization(api, assets, object, options = {}) {
 }
 
 async function getCachedVisualizationFun(api, assets, entries) {
-    // Package ejs doesn't support async functions in views, we must pre-load all visualizations beforehand.
-    // Build array of objects {args: [object, date], value: html} for all entries, clone logic from views.
-    const cachedEntries = _.flatten(await concurrent(entries, async (entry) => {
+    // Package ejs doesn't support calling async functions, so we preload visualizations beforehand.
+    const getArgsForEntry = entry => {
         switch (entry.model) {
             case "interpretation":
-                return [
-                    {
-                        args: [entry.object, undefined],
-                        value: await getObjectVisualization(api, assets, entry.object),
-                    },
-                    ...await concurrent(entry.events.filter(event => event.type === "update"), async (event) => ({
-                        args: [entry.object, event.interpretation.created],
-                        value: await getObjectVisualization(api, assets, entry.object, {date: event.interpretation.created}),
-                    })),
-                ];
+                return entry.events
+                    .map(event => ({object: entry.object, date: event.interpretation.created}));
             case "comment":
-                return [
-                    {
-                        args: [entry.object, entry.interpretation.created],
-                        value: await getObjectVisualization(api, assets, entry.object, {date: entry.interpretation.created}),
-                    },
-                ];
+                return [{object: entry.object, date: entry.interpretation.created}];
         }
+    };
+    const argsList = _(entries).flatMap(getArgsForEntry).uniqWith(_.isEqual).value();
+    // Build array of objects {args: {object, date}, value: html} for all entries.
+    const cachedEntries = await concurrent(argsList, async (args) => ({
+        args: args,
+        value: await getObjectVisualization(api, assets, args.object, {date: args.date}),
     }));
 
     return (object, date) => {
-        const cachedEntry = cachedEntries.find(entry => _.isEqual(entry.args, [object, date]));
+        const cachedEntry = cachedEntries.find(entry => _.isEqual(entry.args, {object, date}));
 
         if (cachedEntry) {
             return cachedEntry.value;
         } else {
             debug({cachedEntries});
-            throw new Error(`Cannot find cached visualization for args: objectId=${object.id}, date=${date}`);
+            throw new Error(`No cached visualization for objectId=${object.id} and date=${date}`);
         }
     };
 }
@@ -374,21 +372,16 @@ async function sendNewsletters(options, api, triggerEvents) {
 
     const entries = _(interpretationEntries)
         .concat(commentEntries)
-        .sortBy(entry => [
-            entry.object.name,
-            entry.model !== "interpretation",
-        ])
+        .sortBy(entry => [entry.object.name, entry.model !== "interpretation"])
         .value();
 
     const getCachedVisualization = await getCachedVisualizationFun(api, assets, entries);
 
     const namespace = {
-        _,
         startDate,
         endDate,
         data,
         entries,
-
         i18n: i18n,
         routes: {
             object: object => getObjectUrl(object, publicUrl),
@@ -396,6 +389,7 @@ async function sendNewsletters(options, api, triggerEvents) {
             objectImage: object => getObjectImage(object, publicUrl),
         },
         helpers: {
+            _,
             getObjectVisualization: getCachedVisualization,
             getLikes: interpretation => {
                 const nlikes = interpretation.likes || 0;

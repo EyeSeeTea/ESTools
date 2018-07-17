@@ -42,7 +42,7 @@ main() { local apiurl=$1 auth=$2 db=$3 setup_file=$4
   curl -f -sS -u $auth -d "Comment:$(date +%s)" -H 'Content-Type: text/plain' -X POST \
     "$apiurl/interpretations/$interpretation_id/comments" | jq
 
-  echo "select * from keyjsonvalue WHERE namespace = 'notifications' order by created desc limit 5;" | sql "$db"
+  echo "select * from keyjsonvalue WHERE namespace = 'notifications' order by created desc;" | sql "$db"
 }
 
 main "http://localhost:8080/api" "admin:district" "demo230" "$(dirname "$0")/triggers.sql"

@@ -1,7 +1,7 @@
 <table style="margin-top: 30px; border: 1px solid #ccc; padding: 10px">
   <tr>
     <td colspan="2">
-      <%- helpers.getObjectVisualization(entry.object) %>
+      <%- helpers.getObjectVisualization(entry.object, helpers._.last(entry.events).interpretation.created) %>
     </td>
   </tr>
 
@@ -11,7 +11,8 @@
     </td>
 
     <td style="font-size: 1.2em">
-      <%= i18n.t(`section_interpretation`) %>
+      <%= i18n.t(`section_${entry.events.length === 1 ? "one_" : ""}interpretation`) %>
+
       <a style="text-decoration: underline; text-decoration-skip-ink: none; font-weight: bold; color: #222"
          target="_blank" href="<%= routes.object(entry.object) %>">
         <%= entry.object.name %>:
@@ -45,7 +46,7 @@
         </div>
 
         <table>
-            <% _(event.interpretation.comments).sortBy("created").each(comment => { %>
+            <% helpers._(event.interpretation.comments).sortBy("created").each(comment => { %>
               <tr>
                 <td style="width: 30px">
                 </td>
