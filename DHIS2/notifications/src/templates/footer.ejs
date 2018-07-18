@@ -1,0 +1,20 @@
+<table width="100%" border="0" cellspacing="0" cellpadding="0"
+       style="background-color: #eee; padding: 20px; margin: 10px 0px">
+  <tr style="line-height: 2em">
+    <td align="center">
+      <%= i18n.t("you_have_received", {publicUrl}) %>
+    </td>
+  </tr>
+
+  <tr style="line-height: 2em">
+    <td align="center">
+      <a href="TODO"><%= i18n.t("privacy_policy") %></a>
+    </td>
+  </tr>
+
+  <tr style="line-height: 2em">
+    <td align="center">
+      <%= endDate.format("YYYY") %> - <%= footerText %>
+    </td>
+  </tr>
+</table>

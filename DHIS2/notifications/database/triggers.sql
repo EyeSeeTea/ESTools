@@ -1,33 +1,44 @@
--- Insert event in DHIS2 datastore on interpretation events:
+-- Interpretation triggers for postgreSQL (>= 9.5)
+--
+-- Insert interpretations event in DHIS2 data store as JSON. For efficiency on retrieving, group
+-- events into time-slot buckets, each bucket containing an array of event objects sorted by date.
 --
 --   - namespace = 'notifications'
---   - key = 'ev-TIMESTAMP-ID'
+--   - key = 'ev-month-YYYY-MM'
 --
 -- Events:
 --
---   - Interpretation creation:
---       {"model": "interpretation", "type": "insert", "interpretationId": ID, created: TIMESTAMP}
+--   - Interpretations:
 --
---   - Interpretation update:
---       {"model": "interpretation", "type": "update", "interpretationId": ID, created: TIMESTAMP}
+--       {
+--         "model": "interpretation",
+--         "type": "insert" | "update",
+--         "interpretationId": ID,
+--         "created": TIMESTAMP (YYYY-MM-DDTHH24:MI:SSZ)
+--       }
 --
---   - Comment creation:
---       {"model": "comment", "type": "insert", "interpretationId": ID, "commentId": CID, created: TIMESTAMP}
+--   - Comments:
 --
---   - Comment update:
---       {"model": "comment", "type": "update", "interpretationId": ID, "commentId": CID, created: TIMESTAMP}
+--       {
+--         "model": "comment",
+--         "type": "insert" | "update",
+--         "interpretationId": ID,
+--         "commentId": CID,
+--         "created": TIMESTAMP (YYYY-MM-DDTHH24:MI:SSZ)
+--       }
 
 -- Helpers
 
 CREATE OR REPLACE FUNCTION insert_event(VARIADIC params text[]) RETURNS SETOF keyjsonvalue AS $$
   BEGIN
     DECLARE
+      now timestamp := now() at time zone 'utc';
       hibernate_sequence int := nextval ('hibernate_sequence');
       namespace varchar := 'notifications';
-      key_prefix varchar := 'ev-';
-      now timestamp := NOW();
+      bucket_key text := concat('ev-month-', to_char(now, 'YYYY-MM'));
       timestamp_iso8601 text := to_char(now, 'YYYY-MM-DD"T"HH24:MI:SS"Z"');
       params_with_timestamp text[] := array_cat(params, Array['created', timestamp_iso8601]);
+      payload text := json_build_object(VARIADIC params_with_timestamp);
     BEGIN
       INSERT INTO keyjsonvalue (
         keyjsonvalueid,
@@ -44,9 +55,12 @@ CREATE OR REPLACE FUNCTION insert_event(VARIADIC params text[]) RETURNS SETOF ke
         now,
         FALSE,
         namespace,
-        CONCAT(key_prefix, timestamp_iso8601, '-', hibernate_sequence),
-        json_build_object(VARIADIC params_with_timestamp)
-      );
+        bucket_key,
+        json_build_array(payload)
+      )
+      ON CONFLICT ON CONSTRAINT keyjsonvalue_unique_key_in_namespace DO UPDATE
+        SET value = keyjsonvalue.value::jsonb || payload::jsonb,
+            lastupdated = now;
     END;
   END;
 $$ LANGUAGE PLPGSQL;
@@ -58,8 +72,7 @@ CREATE OR REPLACE FUNCTION event_interpretation_insert() RETURNS trigger AS $$
     PERFORM insert_event(
       'type', 'insert',
       'model', 'interpretation',
-      'interpretationId', NEW.uid,
-      'ts', to_char(NEW.created, 'YYYY-MM-DD"T"HH24:MI:SS"Z"')
+      'interpretationId', NEW.uid
     );
      
     RETURN NEW;
@@ -134,7 +147,8 @@ CREATE OR REPLACE FUNCTION event_comment_update() RETURNS trigger AS $$
   END;
 $$ LANGUAGE PLPGSQL;
 
--- Triggers
+-- Create the comment insertion trigger in `interpretation_comments` table instead of
+-- interpretationcomment, since we have no reference to the interpretation at this point.
 
 DROP TRIGGER IF EXISTS event_comment_insert_trigger ON interpretation_comments;
 CREATE TRIGGER event_comment_insert_trigger
@@ -142,9 +156,6 @@ CREATE TRIGGER event_comment_insert_trigger
   ON interpretation_comments
   FOR EACH ROW
   EXECUTE PROCEDURE event_comment_insert();
-
--- Create the comment insertion trigger in `interpretation_comments` table instead of
--- interpretationcomment, since we have no reference to the interpretation at this point.
 
 DROP TRIGGER IF EXISTS event_comment_update_trigger ON interpretationcomment;
 CREATE TRIGGER event_comment_update_trigger

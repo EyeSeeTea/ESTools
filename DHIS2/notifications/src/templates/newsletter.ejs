@@ -9,34 +9,27 @@
         </td>
 
         <td style="text-align: right">
-          <img width="100" height="100" src="img/psi-logo.png" />
-          <img width="159" height="65" src="img/dhis2-logo.png" />
+          <img width="100" height="100" src="<%= assetsUrl %>/img/psi-logo.png" />
+          <img width="159" height="65" src="<%= assetsUrl %>/img/dhis2-logo.png" />
         <td>
       </tr>
 
       <tr style="line-height: 50px">
         <td style="background-color: #fe8500; color: #fff">
-          <%= i18n.t("from_date_to_date", {startDate, endDate}) %>
+          <%= i18n.t("from_date_to_date", {startDate: startDate.format("L"), endDate: endDate.format("L")}) %>
         </td>
         <td style="background-color: #ff9510; color: #fff">
-          <%= i18n.t("n_interpretations_and_comments_on_m_favorites", {
-                n: helpers._.size(data.events),
-                m: helpers._.size(data.objects),
-              }) %>
+          <%= details_title %>
         </td>
       </tr>
     </table>
 
     <% entries.forEach(entry => { %>
-      <% if (entry.model === "interpretation") { %>
-        <%- include('./interpretation', {entry}); %>
-      <% } else if (entry.model === "comment") { %>
-        <%- include('./comment', {entry}); %>
-      <% } %>
+      <%- include('./' + entry.model, {entry}) %>
     <% }) %>
   </body>
 
   <div>
-    footer
+    <%- include('./footer') %>
   </div>
 </html>

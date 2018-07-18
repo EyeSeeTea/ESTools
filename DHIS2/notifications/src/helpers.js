@@ -2,6 +2,9 @@ const bluebird = require("bluebird");
 const fs = require("fs");
 const util = require("util");
 const _ = require('lodash');
+const path = require('path');
+const properties = require("properties-file");
+const moment = require('moment');
 
 function debug(object) {
     if (typeof object === "string") {
@@ -11,7 +14,7 @@ function debug(object) {
     }
 }
 
-function concurrent(values, mapper, {concurrency = 5} = {}) {
+function concurrent(values, mapper, {concurrency = 1} = {}) {
     return bluebird.map(values, mapper, {concurrency: concurrency});
 }
 
@@ -49,10 +52,46 @@ function sendMessage(api, subject, body, recipients) {
     }
 }
 
-Object.assign(exports, {
+function getMonthDatesBetween(dateStart, dateEnd) {
+    const dateEndOfMonth = dateEnd.clone().endOf("month");
+    let currentDate = dateStart.clone();
+    let dates = [];
+
+    while (currentDate.isBefore(dateEndOfMonth)) {
+       dates.push(currentDate.clone().startOf('month'));
+       currentDate.add(1, 'month');
+    }
+
+    return dates;
+}
+
+function loadTranslations(directory) {
+    const templateSettings = {
+        interpolate: /{{([\s\S]+?)}}/g,  /* {{variable}} */
+    };
+
+    return _(fs.readdirSync(directory))
+        .filter(filename => filename.endsWith(".properties"))
+        .map(filename => {
+            const locale = filename.split(".")[0];
+            const obj = properties.parse(fileRead(path.join(directory, filename)));
+            const objWithTemplates = _.mapValues(obj, s => _.template(s, templateSettings));
+            const t = (key, namespace = {}) =>
+                (objWithTemplates[key] || (() => `**${key}**`))(namespace);
+            const i18nObj = {t, formatDate: date => moment(date).format('L')};
+
+            return [locale, i18nObj];
+        })
+        .fromPairs()
+        .value();
+}
+
+Object.assign(module.exports, {
     debug,
     concurrent,
     fileRead,
     fileWrite,
     sendMessage,
+    getMonthDatesBetween,
+    loadTranslations,
 });

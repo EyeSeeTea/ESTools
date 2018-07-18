@@ -3,7 +3,6 @@ const _ = require("lodash");
 const fs = require("fs");
 const util = require('util');
 const path = require("path");
-const properties = require("properties-file");
 const nodemailer = require('nodemailer');
 const yargs = require('yargs');
 const ejs = require('ejs');
@@ -11,47 +10,10 @@ const moment = require('moment');
 const child_process = require('child_process');
 
 const {Dhis2Api} = require('./api');
-const {debug, fileRead, fileWrite, concurrent} = require('./helpers');
+const {debug, fileRead, fileWrite, concurrent, getMonthDatesBetween, loadTranslations} = require('./helpers');
+const {objectsInfo} = require('./objects-info');
 
 const exec = util.promisify(child_process.exec);
-
-const objectsInfo = [
-    {
-        type: "MAP",
-        field: "map",
-        appPath: "dhis-web-mapping",
-        visualizationType: "image",
-        apiModel: "maps",
-    },
-    {
-        type: "REPORT_TABLE",
-        field: "reportTable",
-        appPath: "dhis-web-pivot",
-        apiModel: "reportTables",
-        visualizationType: "html",
-    },
-    {
-        type: "CHART",
-        field: "chart",
-        appPath: "dhis-web-visualizer",
-        apiModel: "charts",
-        visualizationType: "image",
-    },
-    {
-        type: "EVENT_REPORT",
-        field: "eventReport",
-        appPath: "dhis-web-event-reports",
-        apiModel: "eventReports",
-        visualizationType: "none",
-    },
-    {
-        type: "EVENT_CHART",
-        field: "eventChart",
-        appPath: "dhis-web-event-visualizer",
-        apiModel: "eventCharts",
-        visualizationType: "image",
-    },
-];
 
 const templateSettings = {
     interpolate: /{{([\s\S]+?)}}/g,  /* {{variable}} */
@@ -78,24 +40,7 @@ function getObjectUrl(object, publicUrl) {
     return `${publicUrl}/${object.extraInfo.appPath}/index.html?id=${object.id}`;
 }
 
-function loadTranslations(directory) {
-    return _(fs.readdirSync(path.join(__dirname, directory)))
-        .filter(filename => filename.endsWith(".properties"))
-        .map(filename => {
-            const locale = filename.split(".")[0];
-            const obj = properties.parse(fileRead(path.join(__dirname, directory, filename)));
-            const objWithTemplates = _.mapValues(obj, s => _.template(s, templateSettings));
-            const t = (key, namespace = {}) =>
-                (objWithTemplates[key] || (() => `**${key}**`))(namespace);
-            const i18nObj = {t, formatDate: date => moment(date).format('L')};
-
-            return [locale, i18nObj];
-        })
-        .fromPairs()
-        .value();
-}
-
-function getMessages(i18n, event, publicUrl, interpretationsById, usersById, text) {
+function getNotificationMessages(i18n, event, publicUrl, interpretationsById, usersById, text) {
     const interpretation = interpretationsById[event.interpretationId];
     if (!interpretation)
         return null;
@@ -107,7 +52,7 @@ function getMessages(i18n, event, publicUrl, interpretationsById, usersById, tex
             interpretation.user.displayName,
             i18n.t(`${event.model}_${event.type}`),
         ].join(" ");
-        const body = [
+        const bodyText = [
             [
                 interpretation.user.displayName,
                 `(${interpretation.user.userCredentials.username})`,
@@ -118,15 +63,15 @@ function getMessages(i18n, event, publicUrl, interpretationsById, usersById, tex
             text,
         ].join("\n\n");
 
-        return user.email ? {subject, body, recipients: [user.email]} : null;
+        return user.email ? {subject, text: bodyText, recipients: [user.email]} : null;
     };
 
     return _(interpretation.object.subscribers).toArray().map(getMessageForUser).compact().value();
 }
 
-function sendEmail(mailer, {subject, body, recipients}) {
+function sendEmail(mailer, {subject, text, html, recipients}) {
     debug("Send email to " + recipients.join(", ") + ": " + subject);
-    mailer.sendMail({to: recipients, subject, text: body});
+    return mailer.sendMail({to: recipients, subject, text, html});
 }
 
 async function getDataForTriggerEvents(api, triggerEvents) {
@@ -206,74 +151,40 @@ async function getDataForTriggerEvents(api, triggerEvents) {
     };
 }
 
-function sendNotifications(options) {
-    const {dataStore, publicUrl, smtp, locale} = options;
-    const api = new Dhis2Api(options.api);
-    const mailer = nodemailer.createTransport(smtp);
-    const translations = loadTranslations("i18n");
-    const i18n = translations[locale || "en"];
-
-    return getNewTriggerEvents(api, options, async (triggerEvents) => {
-        const {events, interpretations, users, comments} =
-            await getDataForTriggerEvents(api, triggerEvents);
-
-        const messages = _(events).flatMap(event => {
-            switch (event.model) {
-                case "interpretation":
-                    const interpretation = interpretations[event.interpretationId];
-                    return getMessages(i18n, event, publicUrl, interpretations, users, interpretation.text);
-                case "comment":
-                    const comment = comments[event.commentId];
-                    return getMessages(i18n, event, publicUrl, interpretations, users, comment.text);
-                default:
-                    debug(`Unknown event model: ${event.model}`)
-                    return [];
-            }
-        }).value();
-        debug(`${messages.length} messages to send`);
-
-        return messages.map(message => sendEmail(mailer, message));
+async function getNewTriggerEvents(api, cacheKey, options, action) {
+    const {cacheFilePath, namespace, maxTimeWindow, ignoreCache} = _.defaults(options, {
+        cacheFilePath: ".notifications-cache.json",
+        namespace: "notifications",
+        ignoreCache: false,
+        maxTimeWindow: [1, "hour"],
     });
-}
+    const cache = JSON.parse(fileRead(cacheFilePath, JSON.stringify({})));
+    const lastTime = ignoreCache ? null : cache[cacheKey];
+    const getBucketFromTime = (time) => "ev-month-" + time.format("YYYY-MM");
+    const defaultStartTime = moment().subtract(...maxTimeWindow);
+    const startTime = lastTime ? moment.max(moment(lastTime), defaultStartTime) : defaultStartTime;
+    const endTime = moment();
 
-async function getNewTriggerEvents(api, options, action) {
-    const {cacheFilePath, dataStore} = options;
-    const initialCache = {lastKey: null};
-    const cache = JSON.parse(fileRead(cacheFilePath, JSON.stringify(initialCache)));
-    const allKeys = await api.get(`/dataStore/${dataStore.namespace}`);
+    debug(`startTime=${startTime}, endTime=${endTime}`);
+    const buckets = getMonthDatesBetween(startTime, endTime).map(getBucketFromTime);
+    const eventsInBuckets = await concurrent(buckets,
+        bucket => api.get(`/dataStore/${namespace}/${bucket}`).catch(err => []));
+    const newTriggerEvents = _(eventsInBuckets)
+        .flatten()
+        .filter(event => moment(event.created) >= startTime && moment(event.created) < endTime)
+        .sortBy("created");
 
-    // TODO: Group events by day or week.
+    const actionResult = await action(newTriggerEvents, startTime, endTime);
 
-    const eventKeys = _(allKeys).filter(key => key.startsWith(dataStore.keyPrefix)).sortBy().value();
-
-    let newEventKeys;
-    if (cache.lastKey) {
-        const splitIndex = _(eventKeys).findIndex(key => key > cache.lastKey);
-        newEventKeys = splitIndex >= 0 ? eventKeys.slice(splitIndex) : [];
-    } else {
-        newEventKeys = eventKeys;
-    }
-
-    const newTriggerEvents = await concurrent(newEventKeys,
-        eventKey => api.get(`/dataStore/${dataStore.namespace}/${eventKey}`));
-    const actionResult = await action(newTriggerEvents);
-    const newCache = {...cache, lastKey: _.last(eventKeys)};
-
-    fileWrite(cacheFilePath, JSON.stringify(newCache) + "\n");
+    const newCache = {...cache, [cacheKey]: endTime};
+    fileWrite(cacheFilePath, JSON.stringify(newCache, null, 4) + "\n");
     return actionResult;
 }
 
-async function getObjectVisualization(api, assets, object, options = {}) {
-    const {width, height, date} = _.defaults(options, {
-        width: 500,
-        height: 350,
-        date: null,
-    });
+async function getObjectVisualization(api, assets, object, date) {
+    const [width, height] = [500, 350];
+    const baseParams = {date: moment(date).format("YYYY-MM-DD")};
 
-    if (!assets)
-        throw new Error("No assets configuration");
-
-    const baseParams = date ? {date: moment(date).format("YYYY-MM-DD")} : {};
     switch (object.extraInfo.visualizationType) {
         case "image":
             const imageUrl = `/${object.extraInfo.apiModel}/${object.id}/data.png`;
@@ -281,12 +192,15 @@ async function getObjectVisualization(api, assets, object, options = {}) {
             const imageParams = {...baseParams, width, height};
             const imageData = await api.get(imageUrl, imageParams, {encoding: null});
             const imageFilename = _(["image", object.id, date]).compact().join("-") + ".png";
+            const imagePath = path.join(__dirname, imageFilename);
             const uploadTemplate = _.template(assets.upload, templateSettings);
-            const uploadCommand = uploadTemplate({files: [imageFilename].join(" ")});
-            fileWrite(imageFilename, imageData);
+            const uploadCommand = uploadTemplate({files: [imagePath].join(" ")});
+            fileWrite(imagePath, imageData);
             debug(`Upload visualization image: ${uploadCommand}`);
             await exec(uploadCommand);
-            return `<img width="500" height="350" src="${assets.url}/${imageFilename}" />`
+            debug(`Remove temporal file: ${imagePath}`);
+            fs.unlinkSync(imagePath);
+            return `<img width="500" height="350" src="${assets.url}/resources/${imageFilename}" />`
         case "html":
             const tableUrl = `/${object.extraInfo.apiModel}/${object.id}/data.html`;
             debug(`Get table visualization: ${tableUrl}`);
@@ -299,22 +213,16 @@ async function getObjectVisualization(api, assets, object, options = {}) {
     }
 }
 
-async function getCachedVisualizationFun(api, assets, entries) {
+async function getCachedVisualizationFun(api, assets, events) {
     // Package ejs doesn't support calling async functions, so we preload visualizations beforehand.
-    const getArgsForEntry = entry => {
-        switch (entry.model) {
-            case "interpretation":
-                return entry.events
-                    .map(event => ({object: entry.object, date: event.interpretation.created}));
-            case "comment":
-                return [{object: entry.object, date: entry.interpretation.created}];
-        }
-    };
-    const argsList = _(entries).flatMap(getArgsForEntry).uniqWith(_.isEqual).value();
+    const argsList = _(events)
+        .map(event => ({object: event.object, date: event.interpretation.created}))
+        .uniqWith(_.isEqual)
+        .value();
     // Build array of objects {args: {object, date}, value: html} for all entries.
     const cachedEntries = await concurrent(argsList, async (args) => ({
         args: args,
-        value: await getObjectVisualization(api, assets, args.object, {date: args.date}),
+        value: await getObjectVisualization(api, assets, args.object, args.date),
     }));
 
     return (object, date) => {
@@ -329,23 +237,71 @@ async function getCachedVisualizationFun(api, assets, entries) {
     };
 }
 
-async function sendNewsletters(options, api, triggerEvents) {
+function getLikes(i18n, interpretation) {
+    const nlikes = interpretation.likes || 0;
+
+    switch (nlikes) {
+        case 0: return "";
+        case 1: return " (" + i18n.t("1_like") + ")";
+        default: return " (" + i18n.t("n_likes", {n: nlikes}) + ")";
+    }
+}
+
+async function sendNewslettersForEvents(options, api, triggerEvents, startDate, endDate) {
     const {dataStore, publicUrl, smtp, locale, assets} = options;
-    moment.locale(locale);
-    const translations = loadTranslations("i18n");
+    moment.locale(locale || "en");
+    const translations = loadTranslations(path.join(__dirname, "i18n"));
     const i18n = translations[locale || "en"];
 
     const mailer = nodemailer.createTransport(smtp);
     const templatePath = path.join(__dirname, "templates/newsletter.ejs");
     const templateStr = fs.readFileSync(templatePath, "utf8");
     const template = ejs.compile(templateStr, {filename: templatePath});
-    const startDate = moment(new Date(2017, 1, 1)).format('L'); // TODO
-    const endDate = moment().format('L');
 
     const data = await getDataForTriggerEvents(api, triggerEvents);
-    const interpretationEvents = data.events.filter(event => event.model === "interpretation");
+    const eventsByUsers = _(data.events)
+        .flatMap(event => _(event.object.subscribers).toArray().map(userId => ({userId, event})).value())
+        .groupBy("userId")
+        .map((objs, userId) => ({user: data.users[userId], events: objs.map(obj => obj.event)}))
+        .filter(({user}) => user.email)
+        .value();
+
+    const baseNamespace = {
+        startDate,
+        endDate,
+        i18n: i18n,
+        footerText: options.footer.text,
+        publicUrl,
+        assetsUrl: assets.url,
+
+        routes: {
+            object: object => getObjectUrl(object, publicUrl),
+            interpretation: interpretation => getInterpretationUrl(interpretation, publicUrl),
+            objectImage: object => getObjectImage(object, publicUrl),
+        },
+        helpers: {
+            _,
+            getObjectVisualization: await getCachedVisualizationFun(api, assets, data.events),
+            getLikes: interpretation => getLikes(i18n, interpretation),
+        },
+    };
+
+    return concurrent(eventsByUsers, async ({user, events}) => {
+        const html = await buildNewsletterForUser(i18n, baseNamespace, template, assets, user, events, data);
+        const message = {
+            subject: i18n.t("newsletter_title"),
+            recipients: [user.email],
+            html,
+        };
+        return sendEmail(mailer, message);
+    });
+}
+
+async function buildNewsletterForUser(i18n, baseNamespace, template, assets, user, events, data) {
+    const interpretationEvents = events.filter(event => event.model === "interpretation");
     const interpretationIds = new Set(interpretationEvents.map(ev => ev.interpretationId));
-    const commentEvents = data.events.filter(event =>
+
+    const commentEvents = events.filter(event =>
         event.model === "comment" && interpretationIds.has(event.interpretationId));
 
     const interpretationEntries = _(interpretationEvents)
@@ -375,55 +331,89 @@ async function sendNewsletters(options, api, triggerEvents) {
         .sortBy(entry => [entry.object.name, entry.model !== "interpretation"])
         .value();
 
-    const getCachedVisualization = await getCachedVisualizationFun(api, assets, entries);
+    const details_title = i18n.t("n_interpretations_and_comments_on_m_favorites", {
+        n: _.size(events),
+        m: _(events).map("object").uniqBy("id").size(),
+    });
 
-    const namespace = {
-        startDate,
-        endDate,
-        data,
-        entries,
-        i18n: i18n,
-        routes: {
-            object: object => getObjectUrl(object, publicUrl),
-            interpretation: interpretation => getInterpretationUrl(interpretation, publicUrl),
-            objectImage: object => getObjectImage(object, publicUrl),
-        },
-        helpers: {
-            _,
-            getObjectVisualization: getCachedVisualization,
-            getLikes: interpretation => {
-                const nlikes = interpretation.likes || 0;
-                switch (nlikes) {
-                    case 0: return "";
-                    case 1: return " (" + i18n.t("1_like") + ")";
-                    default: return " (" + i18n.t("n_likes", {n: nlikes}) + ")";
-                }
-            },
-        },
-    };
-    const html = template(namespace);
-    console.log(html);
+    const namespace = {...baseNamespace, entries, details_title};
+
+    return template(namespace);
 }
 
-function loadConfigOptions(yargs) {
-    return JSON.parse(fileRead(yargs.argv.configFile));
+function loadConfigOptions(args) {
+    return JSON.parse(fileRead(args.configFile));
+}
+
+async function sendNotificationsForEvents(api, i18n, triggerEvents, options) {
+    const {smtp, publicUrl} = options;
+    const mailer = nodemailer.createTransport(smtp);
+
+    const {events, interpretations, users, comments} =
+        await getDataForTriggerEvents(api, triggerEvents);
+
+    const messages = _(events).flatMap(event => {
+        switch (event.model) {
+            case "interpretation":
+                const interpretation = interpretations[event.interpretationId];
+                return getNotificationMessages(i18n, event, publicUrl, interpretations, users, interpretation.text);
+            case "comment":
+                const comment = comments[event.commentId];
+                return getNotificationMessages(i18n, event, publicUrl, interpretations, users, comment.text);
+            default:
+                debug(`Unknown event model: ${event.model}`)
+                return [];
+        }
+    }).value();
+    debug(`${messages.length} messages to send`);
+    await concurrent(messages, message => sendEmail(mailer, message));
+}
+
+/* Main functions */
+
+async function sendNotifications(argv) {
+    const options = loadConfigOptions(argv);
+    const {dataStore, cacheFilePath, locale} = options;
+    const api = new Dhis2Api(options.api);
+    const translations = loadTranslations(path.join(__dirname, "i18n"));
+    const i18n = translations[locale || "en"];
+    const triggerOptions = {
+        cacheFilePath: cacheFilePath,
+        namespace: dataStore.namespace,
+        ignoreCache: argv.ignoreCache,
+        maxTimeWindow: [1, "hour"],
+    };
+
+    return getNewTriggerEvents(api, "notifications", triggerOptions, async (triggerEvents) => {
+        sendNotificationsForEvents(api, i18n, triggerEvents, options);
+        debug("Done");
+    });
+}
+
+async function sendNewsletters(argv) {
+    const options = loadConfigOptions(argv);
+    const api = new Dhis2Api(options.api);
+    const triggerOptions = {
+        cacheFilePath: options.cacheFilePath,
+        namespace: options.dataStore.namespace,
+        ignoreCache: argv.ignoreCache,
+        maxTimeWindow: [7, "days"],
+    };
+    return getNewTriggerEvents(api, "newsletter", triggerOptions, async (triggerEvents, startDate, endDate) => {
+        sendNewslettersForEvents(options, api, triggerEvents, startDate, endDate);
+        debug("Done");
+    });
 }
 
 async function main() {
     yargs
         .help('help', 'Display this help message and exit')
-        .option('config-file', {alias: 'c', default: "config.json"})
-        .command('send-instant-notifications', 'Send instant email notifications to subscribers', (yargs) => {
-            const options = loadConfigOptions(yargs);
-            sendNotifications(options);
-        })
-        .command('send-newsletters', 'Send newsletter emails to subscribers', async (yargs) => {
-            const options = loadConfigOptions(yargs);
-            const api = new Dhis2Api(options.api);
-            await getNewTriggerEvents(api, options, async (triggerEvents) => {
-                sendNewsletters(options, api, triggerEvents);
-            });
-        })
+        .option('config-file', {alias: 'c', type: 'string', default: "config.json"})
+        .option('ignore-cache', {default: false})
+        .command('send-notifications', 'Send instant email notifications to subscribers',
+            yargs => yargs, sendNotifications)
+        .command('send-newsletters', 'Send newsletter emails to subscribers',
+            yargs => yargs, sendNewsletters)
         .demandCommand()
         .strict()
         .argv;

@@ -36,7 +36,7 @@
           <%= event.interpretation.text %>
 
           <a href="<%= routes.interpretation(event.interpretation) %>" target="_blank">
-            <img width="28" height="28" src="img/icon-open.png" />
+            <img width="28" height="28" src="<%= assetsUrl %>/img/icon-open.png" />
           </a>
         </div>
 
@@ -47,7 +47,7 @@
                 </td>
 
                 <td>
-                  <img width="28" height="28" src="img/icon-talk.png" />
+                  <img width="28" height="28" src="<%= assetsUrl %>/img/icon-talk.png" />
 
                   <span style="background-color: #05a; color: #fff"><%= i18n.t(`type_${event.type}`).toUpperCase() -%></span>
 

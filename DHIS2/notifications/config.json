@@ -14,14 +14,16 @@
         }
     },
     "dataStore": {
-      "namespace": "notifications",
-      "keyPrefix": "ev-"
+      "namespace": "notifications"
+    },
+    "footer": {
+        "text": "Population services international (PSI)"
     },
     "smtp": {
         "host": "smtp.gmail.com",
         "port": 465,
         "auth": {
-            "user": "someuser@gmail.com",
+            "user": "user@gmail.com",
             "pass": "password"
         }
     }
