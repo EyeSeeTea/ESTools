@@ -247,18 +247,16 @@ function getLikes(i18n, interpretation) {
     }
 }
 
-async function sendNewslettersForEvents(options, api, triggerEvents, startDate, endDate) {
+async function sendNewslettersForEvents(api, triggerEvents, startDate, endDate, options) {
     const {dataStore, publicUrl, smtp, locale, assets} = options;
-    moment.locale(locale || "en");
     const translations = loadTranslations(path.join(__dirname, "i18n"));
     const i18n = translations[locale || "en"];
-
     const mailer = nodemailer.createTransport(smtp);
     const templatePath = path.join(__dirname, "templates/newsletter.ejs");
     const templateStr = fs.readFileSync(templatePath, "utf8");
     const template = ejs.compile(templateStr, {filename: templatePath});
-
     const data = await getDataForTriggerEvents(api, triggerEvents);
+    
     const eventsByUsers = _(data.events)
         .flatMap(event => _(event.object.subscribers).toArray().map(userId => ({userId, event})).value())
         .groupBy("userId")
@@ -341,8 +339,8 @@ async function buildNewsletterForUser(i18n, baseNamespace, template, assets, use
     return template(namespace);
 }
 
-function loadConfigOptions(args) {
-    return JSON.parse(fileRead(args.configFile));
+function loadConfigOptions(configFile) {
+    return JSON.parse(fileRead(configFile));
 }
 
 async function sendNotificationsForEvents(api, i18n, triggerEvents, options) {
@@ -372,9 +370,9 @@ async function sendNotificationsForEvents(api, i18n, triggerEvents, options) {
 /* Main functions */
 
 async function sendNotifications(argv) {
-    const options = loadConfigOptions(argv);
-    const {dataStore, cacheFilePath, locale} = options;
-    const api = new Dhis2Api(options.api);
+    const options = loadConfigOptions(argv.configFile);
+    const {api: apiOptions, dataStore, cacheFilePath, locale} = options;
+    const api = new Dhis2Api(apiOptions);
     const translations = loadTranslations(path.join(__dirname, "i18n"));
     const i18n = translations[locale || "en"];
     const triggerOptions = {
@@ -384,35 +382,35 @@ async function sendNotifications(argv) {
         maxTimeWindow: [1, "hour"],
     };
 
-    return getNewTriggerEvents(api, "notifications", triggerOptions, async (triggerEvents) => {
-        sendNotificationsForEvents(api, i18n, triggerEvents, options);
-        debug("Done");
-    });
+    return getNewTriggerEvents(api, "notifications", triggerOptions, async (triggerEvents) =>
+        sendNotificationsForEvents(api, i18n, triggerEvents, options)
+    );
 }
 
 async function sendNewsletters(argv) {
-    const options = loadConfigOptions(argv);
-    const api = new Dhis2Api(options.api);
+    const options = loadConfigOptions(argv.configFile);
+    const {cacheFilePath, dataStore, api: apiOptions, locale} = options;
+    const api = new Dhis2Api(apiOptions);
+    moment.locale(locale || "en");
     const triggerOptions = {
-        cacheFilePath: options.cacheFilePath,
-        namespace: options.dataStore.namespace,
+        cacheFilePath: cacheFilePath,
+        namespace: dataStore.namespace,
         ignoreCache: argv.ignoreCache,
         maxTimeWindow: [7, "days"],
     };
-    return getNewTriggerEvents(api, "newsletter", triggerOptions, async (triggerEvents, startDate, endDate) => {
-        sendNewslettersForEvents(options, api, triggerEvents, startDate, endDate);
-        debug("Done");
-    });
+    return getNewTriggerEvents(api, "newsletter", triggerOptions, async (triggerEvents, startDate, endDate) =>
+        sendNewslettersForEvents(api, triggerEvents, startDate, endDate, options)
+    );
 }
 
 async function main() {
     yargs
         .help('help', 'Display this help message and exit')
         .option('config-file', {alias: 'c', type: 'string', default: "config.json"})
-        .option('ignore-cache', {default: false})
-        .command('send-notifications', 'Send instant email notifications to subscribers',
+        .option('ignore-cache', {type: 'boolean', default: false})
+        .command('send-notifications', 'Send e-mail notifications on recent activity to subscribers',
             yargs => yargs, sendNotifications)
-        .command('send-newsletters', 'Send newsletter emails to subscribers',
+        .command('send-newsletters', 'Send e-mail weekly newsletter to subscribers',
             yargs => yargs, sendNewsletters)
         .demandCommand()
         .strict()

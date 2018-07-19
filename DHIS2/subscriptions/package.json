@@ -1,8 +1,11 @@
 {
-  "name": "dhis2-newsletter",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "dhis2-subscriptions",
+  "version": "0.0.1",
+  "description": "Subscription utils for DHIS2 instances",
+  "main": "src/cli.js",
+  "bin": {
+    "dhis2-subscriptions" : "src/cli.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "mkdir -p build && mkdir -p build/resources && cp -a src/templates/img build/"
