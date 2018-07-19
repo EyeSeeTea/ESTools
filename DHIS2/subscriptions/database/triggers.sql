@@ -14,7 +14,7 @@
 --         "model": "interpretation",
 --         "type": "insert" | "update",
 --         "interpretationId": ID,
---         "created": TIMESTAMP (YYYY-MM-DDTHH24:MI:SSZ)
+--         "created": TIMESTAMP ("YYYY-MM-DDTHH24:MI:SSZ")
 --       }
 --
 --   - Comments:
@@ -24,7 +24,7 @@
 --         "type": "insert" | "update",
 --         "interpretationId": ID,
 --         "commentId": CID,
---         "created": TIMESTAMP (YYYY-MM-DDTHH24:MI:SSZ)
+--         "created": TIMESTAMP ("YYYY-MM-DDTHH24:MI:SSZ")
 --       }
 
 -- Helpers
@@ -38,7 +38,7 @@ CREATE OR REPLACE FUNCTION insert_event(VARIADIC params text[]) RETURNS SETOF ke
       bucket_key text := concat('ev-month-', to_char(now, 'YYYY-MM'));
       timestamp_iso8601 text := to_char(now, 'YYYY-MM-DD"T"HH24:MI:SS"Z"');
       params_with_timestamp text[] := array_cat(params, Array['created', timestamp_iso8601]);
-      payload text := json_build_object(VARIADIC params_with_timestamp);
+      payload jsonb := json_build_object(VARIADIC params_with_timestamp);
     BEGIN
       INSERT INTO keyjsonvalue (
         keyjsonvalueid,
@@ -59,7 +59,7 @@ CREATE OR REPLACE FUNCTION insert_event(VARIADIC params text[]) RETURNS SETOF ke
         json_build_array(payload)
       )
       ON CONFLICT ON CONSTRAINT keyjsonvalue_unique_key_in_namespace DO UPDATE
-        SET value = keyjsonvalue.value::jsonb || payload::jsonb,
+        SET value = keyjsonvalue.value::jsonb || payload,
             lastupdated = now;
     END;
   END;

@@ -6,12 +6,20 @@ const path = require('path');
 const properties = require("properties-file");
 const moment = require('moment');
 
+let DEBUG_ENABLED = false;
+
 function debug(object) {
-    if (typeof object === "string") {
+    if (!DEBUG_ENABLED) {
+        return;
+    } else if (typeof object === "string") {
         console.error(`[DEBUG] ${object}`);
     } else {
         console.error(`[DEBUG] ${util.inspect(object, false, null)}`);
     }
+}
+
+function setDebug(isEnabled) {
+    DEBUG_ENABLED = isEnabled;
 }
 
 function concurrent(values, mapper, {concurrency = 1} = {}) {
@@ -88,6 +96,7 @@ function loadTranslations(directory) {
 
 Object.assign(module.exports, {
     debug,
+    setDebug,
     concurrent,
     fileRead,
     fileWrite,

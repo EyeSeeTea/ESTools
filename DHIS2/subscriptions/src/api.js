@@ -2,6 +2,7 @@ const request = require("request-promise");
 const basicAuth = require("basic-authorization-header");
 const { debug } = require('./helpers');
 const util = require("util");
+const _ = require('lodash');
 
 class Dhis2Api {
     constructor(options) {
@@ -32,16 +33,43 @@ class Dhis2Api {
         });
     }
 
-    post(path, data) {
+    post(path, options = {}) {
         const url = this._getUrl(path);
         debug(`POST ${url}`);
-        
-        return request({
-            method: POST,
+        const defaultOptions = {
+            method: "POST",
             url: url,
-            body: data,
+            body: null,
             headers: this.headers,
             json: true,
+        };
+        const fullOptions = _.merge(defaultOptions, options);
+        return request(fullOptions);
+    }
+
+    put(path, options = {}) {
+        const url = this._getUrl(path);
+        debug(`PUT ${url}`);
+        const defaultOptions = {
+            method: "PUT",
+            url: url,
+            body: null,
+            headers: this.headers,
+            json: true,
+        };
+        const fullOptions = _.merge(defaultOptions, options);
+        return request(fullOptions);
+    }
+
+    delete(path, options = {}) {
+        const url = this._getUrl(path);
+        debug(`DELETE ${url}`);
+
+        return request({
+            method: "DELETE",
+            url: url,
+            headers: this.headers,
+            ...options,
         });
     }
 }

@@ -1,0 +1,6 @@
+.notifications-cache.json
+config-mine.json
+.npmignore
+bak/
+build/
+node_modules/
