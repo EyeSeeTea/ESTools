@@ -1,5 +1,5 @@
-.notifications-cache.json
-config-mine.json
+.notifications-cache*.json
+config-*.json
 .npmignore
 bak/
 build/

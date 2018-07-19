@@ -94,6 +94,12 @@ function loadTranslations(directory) {
         .value();
 }
 
+function sendEmail(mailer, {subject, text, html, recipients}) {
+    debug("Send email to " + recipients.join(", ") + ": " + subject);
+    return mailer.sendMail({to: recipients, subject, text, html});
+}
+
+
 Object.assign(module.exports, {
     debug,
     setDebug,
@@ -103,4 +109,5 @@ Object.assign(module.exports, {
     sendMessage,
     getMonthDatesBetween,
     loadTranslations,
+    sendEmail,
 });

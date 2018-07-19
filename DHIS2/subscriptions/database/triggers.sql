@@ -36,7 +36,7 @@ CREATE OR REPLACE FUNCTION insert_event(VARIADIC params text[]) RETURNS SETOF ke
       hibernate_sequence int := nextval ('hibernate_sequence');
       namespace varchar := 'notifications';
       bucket_key text := concat('ev-month-', to_char(now, 'YYYY-MM'));
-      timestamp_iso8601 text := to_char(now, 'YYYY-MM-DD"T"HH24:MI:SS"Z"');
+      timestamp_iso8601 text := to_char(now, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"');
       params_with_timestamp text[] := array_cat(params, Array['created', timestamp_iso8601]);
       payload jsonb := json_build_object(VARIADIC params_with_timestamp);
     BEGIN

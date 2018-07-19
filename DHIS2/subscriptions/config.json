@@ -2,7 +2,7 @@
     "locale": "en",
     "assets": {
         "url": "resources",
-        "upload": "cp {{files}} build/resources/"
+        "upload": "cp {{files}} /path/to/build/resources/"
     },
     "publicUrl": "http://localhost:8080",
     "cacheFilePath": ".notifications-cache.json",

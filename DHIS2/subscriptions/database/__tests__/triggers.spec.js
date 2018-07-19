@@ -6,10 +6,9 @@ const exec = util.promisify(child_process.exec);
 const moment = require('moment');
 const _ = require('lodash');
 
-const helpers = require('../../src/helpers');
 const {Dhis2Api} = require('../../src/api.js');
-
-helpers.DEBUG_ENABLED = false;
+const {createInterpretation, createComment, updateInterpretation, updateComment} =
+  require('../../src/test-helpers.js');
 
 function setup() {
   const configFile = process.env.CONFIG_FILE;
@@ -26,28 +25,11 @@ function setup() {
   }
 }
 
-async function createInterpretation(api) {
-  const bucket = "ev-month-" + moment().format("YYYY-MM");
-  const response = await api.post("/interpretations/chart/R9A0rvAydpn",
-    {body: "My interpretation", headers: {"content-type": "text/plain"}, resolveWithFullResponse: true});
-  const interpretationPath = response.headers.location;
-  const interpretationId = _.last(interpretationPath.split("/"));
-  return {id: interpretationId, path: interpretationPath, bucket};
-}
-
-async function createComment(api, interpretation) {
-  const bucket = "ev-month-" + moment().format("YYYY-MM");
-  const response = await api.post(`/interpretations/${interpretation.id}/comments`,
-    {body: "My comment", headers: {"content-type": "text/plain"}, resolveWithFullResponse: true});
-  const commentPath = response.headers.location;
-  const commentId = _.last(commentPath.split("/"));
-  return {id: commentId, path: commentPath, bucket};
-}
+const objectPath = "chart/R9A0rvAydpn";
 
 describe("Database triggers", () => {
   let config = setup();
-  let interpretation;
-  let comment;
+  let interpretation, comment;
 
   beforeAll(() => {
     const triggersFile = path.join(__dirname, "..", "triggers.sql");
@@ -56,7 +38,7 @@ describe("Database triggers", () => {
 
   describe("interpretation creation", () => {
     beforeAll(async () => {
-      interpretation = await createInterpretation(config.api);
+      interpretation = await createInterpretation(config.api, objectPath);
     });
 
     afterAll(() => {
@@ -76,9 +58,8 @@ describe("Database triggers", () => {
 
   describe("interpretation update", () => {
     beforeAll(async () => {
-      interpretation = await createInterpretation(config.api);
-      await config.api.put(`/interpretations/${interpretation.id}`,
-        {body: "My edited interpretation", headers: {"content-type": "text/plain"}});
+      interpretation = await createInterpretation(config.api, objectPath);
+      await updateInterpretation(config.api, interpretation, "My edited interpretation");
     });
 
     afterAll(() => {
@@ -98,7 +79,7 @@ describe("Database triggers", () => {
 
   describe("comment creation", () => {
     beforeAll(async () => {
-      interpretation = await createInterpretation(config.api);
+      interpretation = await createInterpretation(config.api, objectPath);
       comment = await createComment(config.api, interpretation);
     });
 
@@ -120,10 +101,9 @@ describe("Database triggers", () => {
 
   describe("comment update", () => {
     beforeAll(async () => {
-      interpretation = await createInterpretation(config.api);
+      interpretation = await createInterpretation(config.api, objectPath);
       comment = await createComment(config.api, interpretation);
-      const response = await config.api.put(`/interpretations/${interpretation.id}/comments/${comment.id}`,
-        {body: "My edited comment", headers: {"content-type": "text/plain"}, resolveWithFullResponse: true});
+      await updateComment(config.api, interpretation, comment, "My edited comment");
     });
 
     afterAll(() => {
