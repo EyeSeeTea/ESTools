@@ -39,14 +39,16 @@ function getObjectUrl(object, publicUrl) {
     return `${publicUrl}/${object.extraInfo.appPath}/index.html?id=${object.id}`;
 }
 
-function getNotificationMessages(i18n, event, publicUrl, interpretationsById, usersById, text) {
+function getNotificationMessages(i18n, event, publicUrl, interpretationsById, usersById, interpretationOrComment) {
     const interpretation = interpretationsById[event.interpretationId];
-    if (!interpretation)
-        return null;
+    if (!interpretation || !interpretationOrComment)
+        return [];
+    const text = interpretationOrComment.text;
 
     const interpretationUrl = getInterpretationUrl(interpretation, publicUrl);
     const getMessageForUser = (userId) => {
         const user = usersById[userId] || {};
+        const isSameUser = (interpretationOrComment.user.id === user.id);
         const subject = [
             interpretation.user.displayName,
             i18n.t(`${event.model}_${event.type}`),
@@ -62,7 +64,7 @@ function getNotificationMessages(i18n, event, publicUrl, interpretationsById, us
             text,
         ].join("\n\n");
 
-        return user.email ? {subject, text: bodyText, recipients: [user.email]} : null;
+        return user.email && !isSameUser ? {subject, text: bodyText, recipients: [user.email]} : null;
     };
 
     const subscribers = interpretation.object.subscribers || [];
@@ -351,10 +353,10 @@ async function sendNotificationsForEvents(api, i18n, triggerEvents, options) {
         switch (event.model) {
             case "interpretation":
                 const interpretation = interpretations[event.interpretationId];
-                return getNotificationMessages(i18n, event, publicUrl, interpretations, users, interpretation.text);
+                return getNotificationMessages(i18n, event, publicUrl, interpretations, users, interpretation);
             case "comment":
                 const comment = comments[event.commentId];
-                return getNotificationMessages(i18n, event, publicUrl, interpretations, users, comment.text);
+                return getNotificationMessages(i18n, event, publicUrl, interpretations, users, comment);
             default:
                 debug(`Unknown event model: ${event.model}`)
                 return [];
