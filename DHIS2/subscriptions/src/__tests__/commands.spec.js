@@ -30,98 +30,92 @@ function clearCache(configOptions, key) {
 };
 
 let config = setup();
-let currentUser, interpretations;
+let user, interpretations;
 
-async function setupObjects(config, cacheKey) {
-  jest.setTimeout(30000);
-  helpers.sendEmail = jest.fn(() => Promise.resolve(true));
+async function createInterpretationForObject(config, user, objectPath) {
+  const [model, objectId] = objectPath.split("/");
+  const objectPluralPath = `${model}s/${objectId}`;
 
-  const objectPath = "chart/R9A0rvAydpn";
-  currentUser = await config.api.get("/me");
+  await config.api.post(`/${objectPluralPath}/subscriber`);
+  const interpretation = await createInterpretation(config.api, objectPath, "Interpretation");
+  const comment = await createComment(config.api, interpretation, "Comment");
+  //await updateInterpretation(config.api, interpretation, "Interpretation-updated");
+  //await updateComment(config.api, interpretation, comment, "Comment-updated");
 
-  await config.api.post(`/charts/R9A0rvAydpn/subscriber`);
-  const interpretation1 = await createInterpretation(config.api, objectPath, "Interpretation1");
-  const comment1 = await createComment(config.api, interpretation1, "Comment");
-
-  clearCache(config.configOptions, cacheKey);
-
-  await updateInterpretation(config.api, interpretation1, "Interpretation1-updated");
-  await updateComment(config.api, interpretation1, comment1, "Comment-updated");
-
-  const interpretation2 = await createInterpretation(config.api, objectPath, "Interpretation2");
-  await updateInterpretation(config.api, interpretation2, "Interpretation2-updated");
-  const comment2 = await createComment(config.api, interpretation2, "Comment2");
-  await updateComment(config.api, interpretation2, comment2, "Comment2-updated");
-
-  return {1: interpretation1, 2: interpretation2};
+  return interpretation;
 }
 
 async function deleteInterpretations() {
-  await helpers.concurrent(_.values(interpretations), (interpretation) => {
+  await helpers.mapPromise(interpretations, interpretation => {
     return config.api.delete(interpretation.path);
   });
-  interpretations = {};
+  interpretations = [];
 }
+
+jest.setTimeout(30000);
 
 describe("commands", () => {
   describe("sendNotifications", () => {
     beforeAll(async () => {
-      interpretations = await setupObjects(config, "notifications");
+      helpers.sendEmail = jest.fn(() => Promise.resolve(true));
+      clearCache(config.configOptions, "notifications");
+      user = await config.api.get("/me");
+      const interpretation = await createInterpretationForObject(config, user, "chart/R9A0rvAydpn");
+      interpretations = [interpretation];
       await commands.sendNotifications({configFile: config.configFile});
     });
 
     afterAll(deleteInterpretations);
 
-    it("sends 4 emails", () => {
-      expect(helpers.sendEmail).toHaveBeenCalledTimes(4);
+    it("sends as many emails as events", () => {
+      expect(helpers.sendEmail).toHaveBeenCalledTimes(2);
     });
 
     it("sends emails to subscribers on interpretation created", () => {
       expect(helpers.sendEmail).toBeCalledWith(expect.any(Object), expect.objectContaining({
-        "recipients": [currentUser.email],
+        "recipients": [user.email],
         "subject": "John Traore created an interpretation",
-        "text": expect.stringContaining(`/dhis-web-visualizer/index.html?id=R9A0rvAydpn&interpretationid=${interpretations[2].id}`),
-      }));
-    });
-
-    it("sends emails to subscribers on interpretation update", () => {
-      expect(helpers.sendEmail).toBeCalledWith(expect.any(Object), expect.objectContaining({
-        "recipients": [currentUser.email],
-        "subject": "John Traore updated an interpretation",
-        "text": expect.stringContaining(`/dhis-web-visualizer/index.html?id=R9A0rvAydpn&interpretationid=${interpretations[1].id}`),
+        "text": expect.stringContaining(`/dhis-web-visualizer/index.html?id=R9A0rvAydpn&interpretationid=${interpretations[0].id}`),
       }));
     });
 
     it("sends emails to subscribers on comment created", () => {
       expect(helpers.sendEmail).toBeCalledWith(expect.any(Object), expect.objectContaining({
-        "recipients": [currentUser.email],
+        "recipients": [user.email],
         "subject": "John Traore created an interpretation comment",
-        "text": expect.stringContaining(`/dhis-web-visualizer/index.html?id=R9A0rvAydpn&interpretationid=${interpretations[2].id}`),
-      }));
-    });
-
-    it("sends emails to subscribers on comment update", () => {
-      expect(helpers.sendEmail).toBeCalledWith(expect.any(Object), expect.objectContaining({
-        "recipients": [currentUser.email],
-        "subject": "John Traore updated an interpretation comment",
-        "text": expect.stringContaining(`/dhis-web-visualizer/index.html?id=R9A0rvAydpn&interpretationid=${interpretations[1].id}`),
+        "text": expect.stringContaining(`/dhis-web-visualizer/index.html?id=R9A0rvAydpn&interpretationid=${interpretations[0].id}`),
       }));
     });
   });
 
   describe("sendNewsletters", () => {
     beforeAll(async () => {
-      interpretations = await setupObjects(config, "newsletter");
+      helpers.sendEmail = jest.fn(() => Promise.resolve(true));
+      clearCache(config.configOptions, "newsletter");
+      user = await config.api.get("/me");
+      const objectPaths = [
+        "chart/R9A0rvAydpn",
+        "map/zDP78aJU8nX",
+        "reportTable/qfMh2IjOxvw",
+        "eventReport/YZzuVprU7aZ",
+        "eventChart/WIxuUpm5m4U",
+      ];
+      interpretations = await helpers.mapPromise(objectPaths, objectPath => {
+        return createInterpretationForObject(config, user, objectPath);
+      });
+
       await commands.sendNewsletters({configFile: config.configFile});
     });
 
     afterAll(deleteInterpretations);
 
-    it("sends 1 email", () => {
+    it("sends as many emails as subscribers", () => {
       expect(helpers.sendEmail).toHaveBeenCalledTimes(1);
+    });
 
+    it("sends newsletter to subscriber", () => {
       expect(helpers.sendEmail).toBeCalledWith(expect.any(Object), expect.objectContaining({
-        "recipients": [currentUser.email],
+        "recipients": [user.email],
         "subject": "DHIS2 Interpretations Digest",
       }));
     });

@@ -22,7 +22,7 @@ function setDebug(isEnabled) {
     DEBUG_ENABLED = isEnabled;
 }
 
-function concurrent(values, mapper, {concurrency = 1} = {}) {
+function mapPromise(values, mapper, {concurrency = 1} = {}) {
     return bluebird.map(values, mapper, {concurrency: concurrency});
 }
 
@@ -103,7 +103,7 @@ function sendEmail(mailer, {subject, text, html, recipients}) {
 Object.assign(module.exports, {
     debug,
     setDebug,
-    concurrent,
+    mapPromise,
     fileRead,
     fileWrite,
     sendMessage,

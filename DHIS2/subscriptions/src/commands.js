@@ -164,7 +164,7 @@ async function getNewTriggerEvents(api, cacheKey, options, action) {
 
     debug(`startTime=${startTime}, endTime=${endTime}`);
     const buckets = helpers.getMonthDatesBetween(startTime, endTime).map(getBucketFromTime);
-    const eventsInBuckets = await helpers.concurrent(buckets,
+    const eventsInBuckets = await helpers.mapPromise(buckets,
         bucket => api.get(`/dataStore/${namespace}/${bucket}`).catch(err => []));
     const newTriggerEvents = _(eventsInBuckets)
         .flatten()
@@ -218,7 +218,7 @@ async function getCachedVisualizationFun(api, assets, events) {
         .uniqWith(_.isEqual)
         .value();
     // Build array of objects {args: {object, date}, value: html} for all entries.
-    const cachedEntries = await helpers.concurrent(argsList, async (args) => ({
+    const cachedEntries = await helpers.mapPromise(argsList, async (args) => ({
         args: args,
         value: await getObjectVisualization(api, assets, args.object, args.date),
     }));
@@ -281,7 +281,7 @@ async function sendNewslettersForEvents(api, triggerEvents, startDate, endDate, 
         },
     };
 
-    return helpers.concurrent(eventsByUsers, async ({user, events}) => {
+    return helpers.mapPromise(eventsByUsers, async ({user, events}) => {
         const html = await buildNewsletterForUser(i18n, baseNamespace, template, assets, user, events, data);
         const message = {
             subject: i18n.t("newsletter_title"),
@@ -361,7 +361,7 @@ async function sendNotificationsForEvents(api, i18n, triggerEvents, options) {
         }
     }).value();
     debug(`${messages.length} messages to send`);
-    await helpers.concurrent(messages, message => helpers.sendEmail(mailer, message));
+    await helpers.mapPromise(messages, message => helpers.sendEmail(mailer, message));
 }
 
 /* Main functions */
