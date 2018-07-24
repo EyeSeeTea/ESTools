@@ -33,6 +33,22 @@ def post(command, payload):
     return json.loads(response.text)
 
 
+def put(endpoint, payload):
+    check_initialization()
+    url = URLBASE + "/api/" + endpoint
+    auth = requests.auth.HTTPBasicAuth(*USER.split(':', 1))
+    response = requests.put(url, json=payload, auth=auth)
+    return json.loads(response.text)
+
+
+def delete(endpoint):
+    check_initialization()
+    url = URLBASE + "/api/" + endpoint
+    auth = requests.auth.HTTPBasicAuth(*USER.split(':', 1))
+    response = requests.delete(url, auth=auth)
+    return json.loads(response.text)
+
+
 def check_initialization():
     assert USER is not None and ':' in USER, "Must specify user (username:pass)"
     assert URLBASE is not None, "Must specify base url"
