@@ -2,7 +2,7 @@ const request = require("request-promise");
 const basicAuth = require("basic-authorization-header");
 const { debug } = require('./helpers');
 const util = require("util");
-const _ = require('lodash');
+const { merge } = require('lodash/fp');
 
 class Dhis2Api {
     constructor(options) {
@@ -44,7 +44,7 @@ class Dhis2Api {
             headers: this.headers,
             json: true,
         };
-        const fullOptions = _.merge(defaultOptions, options);
+        const fullOptions = merge(defaultOptions, options);
         return request(fullOptions);
     }
 
@@ -58,7 +58,21 @@ class Dhis2Api {
             headers: this.headers,
             json: true,
         };
-        const fullOptions = _.merge(defaultOptions, options);
+        const fullOptions = merge(defaultOptions, options);
+        return request(fullOptions);
+    }
+
+    patch(path, options = {}) {
+        const url = this._getUrl(path);
+        debug(`PATCH ${url}`);
+        const defaultOptions = {
+            method: "PATCH",
+            url: url,
+            body: null,
+            headers: this.headers,
+            json: true,
+        };
+        const fullOptions = merge(defaultOptions, options);
         return request(fullOptions);
     }
 

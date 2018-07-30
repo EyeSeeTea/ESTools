@@ -5,7 +5,7 @@ const _ = require('lodash');
 
 const helpers = require('../../src/helpers.js');
 const {Dhis2Api} = require('../../src/api.js');
-const {createInterpretation, createComment, updateInterpretation, updateComment} =
+const {createInterpretation, createComment} =
   require('../../src/test-helpers.js');
 
 function setup() {
@@ -29,6 +29,14 @@ function clearCache(configOptions, key) {
   fs.writeFileSync(configOptions.cacheFilePath, JSON.stringify({[key]: startDate}));
 };
 
+const users = {
+  kamara: {
+    username: "kamara",
+    id: "N3PZBUlN8vq",
+    email: "johnkamara@hmail.com",
+  },
+};
+
 let config = setup();
 let user, interpretations;
 
@@ -36,11 +44,9 @@ async function createInterpretationForObject(config, user, objectPath) {
   const [model, objectId] = objectPath.split("/");
   const objectPluralPath = `${model}s/${objectId}`;
 
-  await config.api.post(`/${objectPluralPath}/subscriber`);
+  await config.api.patch(`/${objectPluralPath}/subscribers`, { body: { subscribers: [users.kamara.id] } });
   const interpretation = await createInterpretation(config.api, objectPath, "Interpretation");
   const comment = await createComment(config.api, interpretation, "Comment");
-  //await updateInterpretation(config.api, interpretation, "Interpretation-updated");
-  //await updateComment(config.api, interpretation, comment, "Comment-updated");
 
   return interpretation;
 }
@@ -73,7 +79,7 @@ describe("commands", () => {
 
     it("sends emails to subscribers on interpretation created", () => {
       expect(helpers.sendEmail).toBeCalledWith(expect.any(Object), expect.objectContaining({
-        "recipients": [user.email],
+        "recipients": [users.kamara.email],
         "subject": "John Traore created an interpretation",
         "text": expect.stringContaining(`/dhis-web-visualizer/index.html?id=R9A0rvAydpn&interpretationid=${interpretations[0].id}`),
       }));
@@ -81,7 +87,7 @@ describe("commands", () => {
 
     it("sends emails to subscribers on comment created", () => {
       expect(helpers.sendEmail).toBeCalledWith(expect.any(Object), expect.objectContaining({
-        "recipients": [user.email],
+        "recipients": [users.kamara.email],
         "subject": "John Traore created an interpretation comment",
         "text": expect.stringContaining(`/dhis-web-visualizer/index.html?id=R9A0rvAydpn&interpretationid=${interpretations[0].id}`),
       }));
@@ -113,9 +119,9 @@ describe("commands", () => {
       expect(helpers.sendEmail).toHaveBeenCalledTimes(1);
     });
 
-    it("sends newsletter to subscriber", () => {
+    it("sends newsletter to subscribers", () => {
       expect(helpers.sendEmail).toBeCalledWith(expect.any(Object), expect.objectContaining({
-        "recipients": [user.email],
+        "recipients": [users.kamara.email],
         "subject": "DHIS2 Interpretations Digest",
       }));
     });
