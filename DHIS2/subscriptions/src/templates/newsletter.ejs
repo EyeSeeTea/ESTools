@@ -1,0 +1,35 @@
+<html>
+  <body>
+    <table>
+      <tr>
+        <td>
+          <span style="font-size: 1.5em; font-weight: bold">
+            <%= i18n.t("newsletter_title") %>
+          </span>
+        </td>
+
+        <td style="text-align: right">
+          <img width="100" height="100" src="<%= assetsUrl %>/img/psi-logo.png" />
+          <img width="159" height="65" src="<%= assetsUrl %>/img/dhis2-logo.png" />
+        <td>
+      </tr>
+
+      <tr style="line-height: 50px">
+        <td style="background-color: #fe8500; color: #fff">
+          <%= i18n.t("from_date_to_date", {startDate: startDate.format("L"), endDate: endDate.format("L")}) %>
+        </td>
+        <td style="background-color: #ff9510; color: #fff">
+          <%= details_title %>
+        </td>
+      </tr>
+    </table>
+
+    <% entries.forEach(entry => { %>
+      <%- include('./' + entry.model, {entry}) %>
+    <% }) %>
+  </body>
+
+  <div>
+    <%- include('./footer') %>
+  </div>
+</html>

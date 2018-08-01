@@ -1,0 +1,30 @@
+{
+    "locale": "en",
+    "assets": {
+        "url": "resources",
+        "upload": "cp {{files}} /path/to/build/resources/"
+    },
+    "publicUrl": "http://localhost:8080",
+    "cacheFilePath": ".notifications-cache.json",
+    "api": {
+        "url": "http://localhost:8080/api/",
+        "auth": {
+            "username": "admin",
+            "password": "district"
+        }
+    },
+    "dataStore": {
+      "namespace": "notifications"
+    },
+    "footer": {
+        "text": "Population services international (PSI)"
+    },
+    "smtp": {
+        "host": "smtp.gmail.com",
+        "port": 465,
+        "auth": {
+            "user": "user@gmail.com",
+            "pass": "password"
+        }
+    }
+}
