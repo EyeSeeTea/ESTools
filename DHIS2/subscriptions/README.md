@@ -5,7 +5,7 @@
 * Install the PostgreSQL triggers that create an event whenever an interpretation/comment is created/edited:
 
 ```
-$ cat database/triggers.sql | psql [-U USER]
+$ cat database/triggers.sql | psql [DATABASE_NAME] [-U USER]
 ```
 
 * Build the assets:
