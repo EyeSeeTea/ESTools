@@ -21,7 +21,7 @@ def main():
 
     program = describe_program(args.program)
     if args.output:
-        open(args.output, 'wt').write(program)
+        open(args.output, 'wt').write(program + '\n')
     else:
         print(program)
 
