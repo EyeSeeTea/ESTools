@@ -8,6 +8,7 @@ the URLBASE and USER variables.
 from random import choice
 import requests
 import json
+import functools
 
 URLBASE = None
 USER = None
@@ -60,3 +61,26 @@ def generate_uid():
     # https://docs.dhis2.org/2.28/en/developer/html/webapi_system_resource.html
     # they need to be 11 A-Za-z0-9 characters long, starting with A-Za-z only.
     return choice(AZaz) + ''.join(choice(AZaz09) for i in range(10))
+
+
+# From https://wiki.python.org/moin/PythonDecoratorLibrary#Memoize
+def memoize(f):
+    "Decorator to remember the outputs for already given inputs"
+    cache = f.cache = {}
+    @functools.wraps(f)
+    def memoizer(*args, **kwargs):
+        key = str(args) + str(kwargs)
+        if key not in cache:
+            cache[key] = f(*args, **kwargs)
+        return cache[key]
+    return memoizer
+
+
+@memoize
+def get_object(oid):
+    try:
+        href = get('identifiableObjects/%s' % oid)['href']
+        url = '/'.join(href.rsplit('/', 2)[-2:])
+        return get(url)
+    except KeyError:
+        raise RuntimeError('Cannot get information from object id %s' % oid)
