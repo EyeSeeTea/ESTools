@@ -6,6 +6,7 @@ Create a lot of data entry users for HEP.
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
 import unicodedata
+import json
 
 import dhis2 as d2
 
@@ -14,8 +15,10 @@ def main():
     initialize_dhis2()
 
     countries = get_countries()
+    users = []
     for country_name, country_id in countries:
-        create_user(country_name, country_id)
+        users.append(generate_user(country_name, country_id))
+    print(json.dumps({'users': users}, indent=2))
 
 
 def initialize_dhis2():
@@ -32,7 +35,6 @@ def initialize_dhis2():
 
 
 def get_countries():
-    print("Retrieving countries...")
     data = d2.get("organisationUnits.json?"
                   "level=3&fields=id,shortName&paging=false")
     return [(pretty_name(x['shortName']), x['id'])
