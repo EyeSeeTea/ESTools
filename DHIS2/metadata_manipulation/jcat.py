@@ -58,7 +58,17 @@ def get_args():
     add('-m', '--multi', action='store_true',
         help='allow multiple matches for field (uses the last match)')
     add('-c', '--compact', action='store_true', help='output a compacted json')
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    if file_arg_maybe_misplaced(args.file, args.filters):
+        print('Warning: no file given, but one of the filters looks '
+              'like a filename.')
+
+    return args
+
+
+def file_arg_maybe_misplaced(fname, filters):
+    return not fname and filters and not all(':' in x for x in filters)
 
 
 def apply_replacements(text, replacements):
