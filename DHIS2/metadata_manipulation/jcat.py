@@ -227,10 +227,12 @@ def expand(text):
         if c in '}]' and not in_string:
             indent_level -= 1
             text_nice = text_nice.rstrip()
-            text_nice += '\n' + ' ' * INDENT_STEP * indent_level
-
+            if last_c not in '{[':
+                text_nice += '\n' + ' ' * INDENT_STEP * indent_level
         text_nice += c
 
+        if c == ':' and not in_string:
+            text_nice += ' '
         if c == ',' and not in_string:
             text_nice += '\n' + ' ' * INDENT_STEP * indent_level
         if c in '{[' and not in_string:
