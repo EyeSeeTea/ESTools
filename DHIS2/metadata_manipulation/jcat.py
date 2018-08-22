@@ -146,6 +146,9 @@ def select(text, selections):
     text_selected = '{\n'
     current_section = ''
     for line in text.splitlines():
+        if not line.startswith(' '):
+            continue  # avoid initial and final {}
+
         if line.startswith(' ' * INDENT_STEP + '"'):
             current_section = line.split('"', 2)[1]
 
