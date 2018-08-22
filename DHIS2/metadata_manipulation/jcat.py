@@ -143,19 +143,16 @@ def write(fname, text):
 
 def select(text, selections):
     "Return a json text with only the sections that appear in selections"
-    text_selected = ''
+    text_selected = '{\n'
     current_section = ''
     for line in text.splitlines():
-        added = False
-        if len(line) - len(line.lstrip()) < INDENT_STEP:
-            text_selected += line + '\n'
-            added = True
-
         if line.startswith(' ' * INDENT_STEP + '"'):
             current_section = line.split('"', 2)[1]
 
-        if not added and current_section in selections:
+        if current_section in selections:
             text_selected += line + '\n'
+
+    text_selected += '}\n'
 
     if text_selected.endswith(',\n}\n'):
         text_selected = text_selected[:-4] + '\n}\n'
