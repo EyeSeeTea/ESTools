@@ -36,6 +36,9 @@ def main():
     filters = get_filters(args.filters, args.filters_file)
     text = apply_filters(text, filters, args.multi)
 
+    if args.sort:
+        text = jsort(text)
+
     if args.compact:
         text = compact(text)
 
@@ -58,6 +61,7 @@ def get_args():
     add('-m', '--multi', action='store_true',
         help='allow multiple matches for field (uses the last match)')
     add('-c', '--compact', action='store_true', help='output a compacted json')
+    add('-s', '--sort', action='store_true', help='output a sorted json')
     args = parser.parse_args()
 
     if file_arg_maybe_misplaced(args.file, args.filters):
@@ -254,6 +258,48 @@ def compact(text):
             text_compact += c
         last_c = c
     return text_compact
+
+
+def jsort(text):
+    "Return json text sorted"
+    import json
+    data = json.loads(text)
+    return expand(sort(data))
+
+
+def sort(x):
+    "Return a string that represents object x as a sorted json"
+    if type(x) == str:
+        return jstr(x)
+    elif type(x) == dict:
+        return '{%s}' % ','.join('%s:%s' % (jstr(k), sort(x[k]))
+                                  for k in sorted(x.keys()))
+    elif type(x) == list:
+        return '[%s]' % ','.join(sort(xi) for xi in sorted(x, key=sort_key))
+    elif type(x) == bool:
+        return 'true' if x else 'false'
+    else:
+        return str(x)
+
+
+def jstr(x):
+    "Return a json representation of the given string"
+    return '"%s"' % x.replace('"', '\\"')
+
+
+def sort_key(x):
+    "Return a sorting key depending on the type of x"
+    if type(x) == dict:
+        if 'name' in x:
+            return x['name']
+        elif 'id' in x:
+            return x['id']
+        else:
+            return 'A'
+    elif type(x) == str:
+        return x
+    else:
+        return 'A'
 
 
 

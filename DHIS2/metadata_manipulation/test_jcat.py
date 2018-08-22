@@ -224,6 +224,55 @@ json_text_all_filters = """\
 """
 
 
+json_text_sorted = """\
+{
+  "planets": [
+    {
+      "name": "earth",
+      "position": "3",
+      "satellites": [
+        {
+          "name": "moon"
+        }
+      ]
+    },
+    {
+      "name": "mars",
+      "position": "4",
+      "satellites": [
+        {
+          "name": "deimos"
+        },
+        {
+          "name": "phobos"
+        }
+      ]
+    },
+    {
+      "name": "mercury",
+      "position": "1",
+      "satellites": []
+    },
+    {
+      "name": "venus",
+      "position": "2",
+      "satellites": []
+    }
+  ],
+  "stars": [
+    {
+      "class": "M",
+      "name": "proxima centauri"
+    },
+    {
+      "class": "G",
+      "name": "sun"
+    }
+  ]
+}
+"""
+
+
 filters_exps = """\
 stars:class:^G$
 planets:name:^m
@@ -298,3 +347,7 @@ def test_replacements():
     assert (jcat.apply_replacements('a message from earth',
                                     ['earth', 'mars', 'message', 'kiss']) ==
             'a kiss from mars')
+
+
+def test_sort():
+    assert jcat.jsort(json_text) == json_text_sorted
