@@ -10,49 +10,47 @@ import jcat
 
 json_text = """\
 {
-  "planets":[
+  "planets": [
     {
-      "name":"mercury",
-      "position":"1",
-      "satellites":[
-      ]
+      "name": "mercury",
+      "position": "1",
+      "satellites": []
     },
     {
-      "name":"venus",
-      "position":"2",
-      "satellites":[
-      ]
+      "name": "venus",
+      "position": "2",
+      "satellites": []
     },
     {
-      "name":"earth",
-      "position":"3",
-      "satellites":[
+      "name": "earth",
+      "position": "3",
+      "satellites": [
         {
-          "name":"moon"
+          "name": "moon"
         }
       ]
     },
     {
-      "name":"mars",
-      "position":"4",
-      "satellites":[
+      "name": "mars",
+      "position": "4",
+      "satellites": [
         {
-          "name":"phobos"
+          "name": "phobos"
         },
         {
-          "name":"deimos"
+          "name": "deimos"
         }
       ]
     }
   ],
-  "stars":[
+  "stars": [
     {
-      "name":"sun",
-      "class":"G"
+      "name": "sun",
+      "class": "G"
     },
     {
-      "name":"proxima centauri",
-      "class":"M"
+      "name": "proxima centauri",
+      "class": "M"
     }
   ]
 }
@@ -61,45 +59,43 @@ json_text = """\
 
 json_text_filtered_stars = """\
 {
-  "planets":[
+  "planets": [
     {
-      "name":"mercury",
-      "position":"1",
-      "satellites":[
-      ]
+      "name": "mercury",
+      "position": "1",
+      "satellites": []
     },
     {
-      "name":"venus",
-      "position":"2",
-      "satellites":[
-      ]
+      "name": "venus",
+      "position": "2",
+      "satellites": []
     },
     {
-      "name":"earth",
-      "position":"3",
-      "satellites":[
+      "name": "earth",
+      "position": "3",
+      "satellites": [
         {
-          "name":"moon"
+          "name": "moon"
         }
       ]
     },
     {
-      "name":"mars",
-      "position":"4",
-      "satellites":[
+      "name": "mars",
+      "position": "4",
+      "satellites": [
         {
-          "name":"phobos"
+          "name": "phobos"
         },
         {
-          "name":"deimos"
+          "name": "deimos"
         }
       ]
     }
   ],
-  "stars":[
+  "stars": [
     {
-      "name":"sun",
-      "class":"G"
+      "name": "sun",
+      "class": "G"
     }
   ]
 }
@@ -108,31 +104,30 @@ json_text_filtered_stars = """\
 
 json_text_filtered_planets_multi = """\
 {
-  "planets":[
+  "planets": [
     {
-      "name":"mercury",
-      "position":"1",
-      "satellites":[
-      ]
+      "name": "mercury",
+      "position": "1",
+      "satellites": []
     },
     {
-      "name":"earth",
-      "position":"3",
-      "satellites":[
+      "name": "earth",
+      "position": "3",
+      "satellites": [
         {
-          "name":"moon"
+          "name": "moon"
         }
       ]
     }
   ],
-  "stars":[
+  "stars": [
     {
-      "name":"sun",
-      "class":"G"
+      "name": "sun",
+      "class": "G"
     },
     {
-      "name":"proxima centauri",
-      "class":"M"
+      "name": "proxima centauri",
+      "class": "M"
     }
   ]
 }
@@ -141,14 +136,14 @@ json_text_filtered_planets_multi = """\
 
 json_text_selected_stars = """\
 {
-  "stars":[
+  "stars": [
     {
-      "name":"sun",
-      "class":"G"
+      "name": "sun",
+      "class": "G"
     },
     {
-      "name":"proxima centauri",
-      "class":"M"
+      "name": "proxima centauri",
+      "class": "M"
     }
   ]
 }
@@ -157,46 +152,44 @@ json_text_selected_stars = """\
 
 json_text_filtered_satellites = """\
 {
-  "planets":[
+  "planets": [
     {
-      "name":"mercury",
-      "position":"1",
-      "satellites":[
-      ]
+      "name": "mercury",
+      "position": "1",
+      "satellites": []
     },
     {
-      "name":"venus",
-      "position":"2",
-      "satellites":[
-      ]
+      "name": "venus",
+      "position": "2",
+      "satellites": []
     },
     {
-      "name":"earth",
-      "position":"3",
-      "satellites":[
+      "name": "earth",
+      "position": "3",
+      "satellites": [
         {
-          "name":"moon"
+          "name": "moon"
         }
       ]
     },
     {
-      "name":"mars",
-      "position":"4",
-      "satellites":[
+      "name": "mars",
+      "position": "4",
+      "satellites": [
         {
-          "name":"phobos"
+          "name": "phobos"
         }
       ]
     }
   ],
-  "stars":[
+  "stars": [
     {
-      "name":"sun",
-      "class":"G"
+      "name": "sun",
+      "class": "G"
     },
     {
-      "name":"proxima centauri",
-      "class":"M"
+      "name": "proxima centauri",
+      "class": "M"
     }
   ]
 }
@@ -205,27 +198,26 @@ json_text_filtered_satellites = """\
 
 json_text_all_filters = """\
 {
-  "planets":[
+  "planets": [
     {
-      "name":"mercury",
-      "position":"1",
-      "satellites":[
-      ]
+      "name": "mercury",
+      "position": "1",
+      "satellites": []
     },
     {
-      "name":"earth",
-      "position":"3",
-      "satellites":[
+      "name": "earth",
+      "position": "3",
+      "satellites": [
         {
-          "name":"moon"
+          "name": "moon"
         }
       ]
     }
   ],
-  "stars":[
+  "stars": [
     {
-      "name":"sun",
-      "class":"G"
+      "name": "sun",
+      "class": "G"
     }
   ]
 }
