@@ -3,12 +3,36 @@
 """
 Like cat on steroids to manipulate json files.
 
-It can read json from a file (even if it's a zip file) or from stdin,
-filter the different parts (letting only elements in them whose selected
-field matches the given regular expression), and compact the output.
+Its main utility is to read json data like the one produced by the
+metadata export app in dhis2, and filter the different parts.
 
-It can be handy for example to manipulate metadata exported from dhis2,
-so it can be later on imported in another instance.
+It can read json from a file (even if it's a zip file) or from stdin,
+select a subset of sections, make string replacements, filter the
+different parts (letting only elements in them whose selected field
+matches the given regular expression), sort and compact the output.
+
+A simple filter would look like:
+  userGroups:name:HEP
+which would select from the "userGroups" section only the elements that
+have the letters "HEP" in some subfield called "name".
+
+Instead of "HEP" one can use any regular expression, for example "^HEP"
+if we want the name to start with "HEP", or "\.(dataentry|validator)$"
+if we want it to end exactly with ".dataentry" or ".validator".
+
+If instead of filtering sections we want to filter elements from
+subsections, the filter will have as many ":" at the beginning as the
+depth of the subsection. For example, to filter userGroupAccesses
+(which may be inside a userGroup) and select only those with a
+displayName that starts with HEP, the filter would look like:
+  ::userGroupAccesses:displayName:^HEP
+
+The filters can be either given with the --filters argument or read
+from a file that contains one filter per line, with the --filters-file
+argument.
+
+It can be handy to manipulate metadata exported from dhis2, so it can
+be imported in another instance.
 """
 
 import sys
@@ -51,17 +75,17 @@ def get_args():
     add = parser.add_argument  # shortcut
     add('file', nargs='?', help='input file (read from stdin if not given)')
     add('-o', '--output', help='output file (write to stdout if not given')
-    add('--replacements', nargs='+', metavar='FROM TO', default=[],
-        help='text to replace')
-    add('--selections', nargs='+', metavar='SECTION', help='sections to select')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--filters', nargs='+', metavar='FILTER',
                        help='::...:part:field:regexp selection filters')
     group.add_argument('--filters-file', help='file with selection patterns')
     add('-m', '--multi', action='store_true',
         help='allow multiple matches for field (uses the last match)')
-    add('-c', '--compact', action='store_true', help='output a compacted json')
+    add('--selections', nargs='+', metavar='SECTION', help='sections to select')
+    add('--replacements', nargs='+', metavar='FROM TO', default=[],
+        help='text to replace')
     add('-s', '--sort', action='store_true', help='output a sorted json')
+    add('-c', '--compact', action='store_true', help='output a compacted json')
     args = parser.parse_args()
 
     if file_arg_maybe_misplaced(args.file, args.filters):
