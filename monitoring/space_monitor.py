@@ -4,6 +4,15 @@
 Alert whenever more than 80% of the quota (or available space) is used.
 """
 
+# ZFS concepts:
+# https://en.wikipedia.org/wiki/ZFS#Terminology_and_storage_structure
+#
+# We want to watch out the space being used in the different
+# "datasets" defined (in zfs terminology, a dataset is a file
+# system). In addition to checking on the space used by datasets (zfs
+# list), we want to check on the user quotas within the
+# pool_cnb/bioinfo dataset (zfs get userquota@user pool_cnb/bioinfo).
+
 import sys
 import os
 import time
@@ -20,20 +29,18 @@ STATUSFILE = os.path.join(PATH, 'last_space_status.txt')
 
 TRIGGER_FRACTION = 0.80  # if more used, we start pestering
 
-last_notification_time = {}
-
 
 def main():
     args = parse_arguments()
-    cfg = read_config(args.config)
+    auth, datasets, users, emails = read_config(args.config)
 
     if not args.no_daemon:
         print('Becoming a daemon. For more info check: %s' % LOGFILE)
         daemonize.daemonize()
     start_logging(args.logfile, args.loglevel)
-    notify = choose_notify_function(args.notify, cfg['auth'])
-    check_periodically(args.interval, args.throttle_days,
-                       notify, cfg['datasets'], cfg['users'])
+    notify = choose_notify_function(args.notify, emails, auth)
+    check_periodically(args.interval, args.reminder_days,
+                       notify, datasets, users)
 
 
 def parse_arguments():
@@ -43,7 +50,7 @@ def parse_arguments():
     add('--logfile', default=LOGFILE, help='path of the file with the logs')
     add('--loglevel', choices=['error', 'warning', 'info', 'debug'],
         default='warning', help='logger verbosity level')
-    add('--throttle-days', default=7, help='number of days between reminders')
+    add('--reminder-days', default=7, help='number of days between reminders')
     add('--notify', choices=['email', 'print'], default='email',
         help='method used for notification')
     add('--interval', type=int, default=60, help='time (in s) between checks')
@@ -53,17 +60,25 @@ def parse_arguments():
 
 
 def read_config(fname):
-    "Return parser with the parameters read from configuration file fname"
+    "Return parameters read from configuration file fname"
     print('Reading config file %s ...' % fname)
     cp = ConfigParser()
     try:
         cp.read_file(open(fname))
         for section in ['auth', 'datasets', 'users']:
             assert section in cp, 'Missing section [%s]' % section
+        for x in ['mail', 'password']:
+            assert x in cp['auth'], 'Missing field "%s" in section [auth]' % x
     except (FileNotFoundError, AssertionError,
             ValueError, ParsingError) as e:
         sys.exit('Error in file %s: %s' % (fname, e))
-    return cp
+
+    auth = cp['auth']
+    datasets = list(cp['datasets'].keys())
+    users = list(cp['users'].keys())
+    emails = {space: email for space, email in
+              list(cp['datasets'].items()) + list(cp['users'].items())}
+    return auth, datasets, users, emails
 
 
 def start_logging(logfile, loglevel):
@@ -74,49 +89,78 @@ def start_logging(logfile, loglevel):
     logging.debug('Current directory is %s' % os.getcwd())
 
 
-def choose_notify_function(method, auth_config):
+def choose_notify_function(method, emails, auth_config):
     "Return a function used to notify"
     if method == 'email':
-        return lambda recipient, text: send_email([recipient], 'space status',
-                                                  text, auth_config)
+        def notify_by_email(space, status_new, status_old):
+            subject = 'Space at %s: %s' % (os.uname().nodename, status_new)
+            text = describe(space, status_new, status_old)
+            send_email([emails[space]], subject, text, auth_config)
+        return notify_by_email
     elif method == 'print':
         return print  # the print function
 
 
-def check_periodically(interval, throttle_days, notify, datasets, users):
+def check_periodically(interval, reminder_days, notify, datasets, users):
     "Check status of the machines every interval seconds, notify if necessary"
-    s_per_day = 60 * 60 * 24  # seconds in a day
+    t_reminder = reminder_days * (60 * 60 * 24)  # in seconds
 
-    logging.debug('Getting initial status...')
-    try:
-        last_status = load_last_status()
-    except Exception as e:  # anyone, really, just be robust
-        logging.info('Could not read last status: %s' % e)
-        last_status = get_status(datasets, users)
-
+    last_status = get_last_status(datasets, users)
     last_notification_time = {space: 0 for space in last_status}
 
     while True:
         logging.debug('Checking space status...')
         status = get_status(datasets, users)
         for space in status:
+            status_new, status_old = status[space], last_status[space]
             dt = time.time() - last_notification_time[space]
-            if (status[space] != last_status[space] or
-                (status[space] == 'warn' and dt > throttle_days * s_per_day)):
-                if status[space] != last_status[space]:
-                    logging.warn('Changes found in space "%s". Notifying.'
-                                 % space)
-                else:
-                    logging.warn('Unreported warning in space "%s". Notifying.'
-                                 % space)
-                notify(mails_all[space], describe(space, status[space],
-                                                  last_status[space]))
+            if alert(space, status_new, status_old, remind=(dt > t_reminder)):
+                notify(space, status_new, status_old)
                 last_notification_time[space] = time.time()
-            else:
-                logging.debug('Nothing to report on space "%s".' % space)
         last_status = status
         save_status(status)
         time.sleep(interval)
+
+
+def get_last_status(datasets, users):
+    logging.debug('Getting initial status...')
+    try:
+        return load_last_status()
+    except Exception as e:  # anyone, really, just be robust
+        logging.info('Could not read last status: %s' % e)
+        return get_status(datasets, users)
+
+
+def load_last_status():
+    "Return status as loaded from disk"
+    status = {}
+    for line in open(STATUSFILE):
+        s, m = line.strip().split(' ', 1)
+        status[m] = s
+    return status
+
+
+def save_status(status):
+    "Save the given status to disk"
+    with open(STATUSFILE, 'wt') as f:
+        for m, s in status.items():
+            f.write('%s %s\n' % (s, m))
+
+
+def alert(space, status_new, status_old, remind):
+    "Return True if the status of the space requires a notification"
+    if status_new == status_old != 'warn':
+        logging.debug('Nothing to report on space "%s".' % space)
+        return False
+    elif status_new != status_old:
+        logging.warn('Changes found in space "%s". Notifying.' % space)
+        return True
+    elif status_new == 'warn' and remind:
+        logging.warn('Error persists in space "%s". Notifying.' % space)
+        return True
+    else:
+        logging.debug('Status of space "%s": %s' % (space, status_new))
+        return False
 
 
 def get_status(datasets, users):
@@ -153,7 +197,7 @@ def get_ratio_user(user):
     try:
         return get('used') / get('quota')
     except ValueError as e:
-        logging.error('%s - Maybe you not running as root?' % e)
+        logging.error('%s - Maybe you are not running as root?' % e)
         sys.exit('Unrecoverable error. Please check the log file.')
 
 
@@ -162,49 +206,35 @@ def run(command):
     return sp.check_output(command, universal_newlines=True)
 
 
-def describe(space, status, last_status):
+def describe(space, status_new, status_old):
     "Return a text explaining the status"
+    too_much = ('You seem to be using too much space, please consider freeing '
+                'some of it or asking for more space before it is too late.')
+    all_cool = ('You received this mail because your usage went back to normal. '
+                'Congratulations, enjoy it.')
     return """\
 Hello,
 
-This is a friendly warning about the usage of space "%s".
+This mail concerns the usage of space "%s".
 
   Previous status: %s
   Current status: %s
 
-If you are using too much space, please consider freeing some of it or asking
-for more space before it's too late.
-
-If you receive this mail because your usage went back to normal,
-congratulations, enjoy it.
+%s
 
 Sincerely,
-  The space monitor
-    """ % (space, last_status, status)
+  The space monitor at %s
+    """ % (space, status_old, status_new,
+           too_much if status_new == 'warn' else all_cool,
+           os.uname().nodename)
 
 
 def send_email(recipients, subject, body, auth_config):
     "Send email to recipients with the given subject and body text"
     sp.call(['sendEmail', '-s', 'smtp.gmail.com:587', '-o', 'tls=yes',
-             '-xu', auth_config['user'], '-xp', auth_config['password'],
-             '-f', auth_config['user'], '-u', subject, '-m', body] +
+             '-xu', auth_config['mail'], '-xp', auth_config['password'],
+             '-f', auth_config['mail'], '-u', subject, '-m', body] +
             ['-t'] + recipients, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
-
-
-def save_status(status):
-    "Save the given status to disk"
-    with open(STATUSFILE, 'wt') as f:
-        for m, s in status.items():
-            f.write('%s %s\n' % (s, m))
-
-
-def load_last_status():
-    "Return status as loaded from disk"
-    status = {}
-    for line in open(STATUSFILE):
-        s, m = line.strip().split(' ', 1)
-        status[m] = s
-    return status
 
 
 
