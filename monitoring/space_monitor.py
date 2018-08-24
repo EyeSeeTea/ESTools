@@ -107,7 +107,7 @@ def check_periodically(interval, reminder_days, notify, datasets, users):
 
     spaces = datasets + users
 
-    last_status = get_last_status()
+    last_status = load_last_status()
     for space in set(spaces) - set(last_status.keys()):
         logging.warning('Space "%s" was not in last status.' % space)
         last_status[space] = 'ok'
@@ -128,22 +128,18 @@ def check_periodically(interval, reminder_days, notify, datasets, users):
         time.sleep(interval)
 
 
-def get_last_status():
+def load_last_status():
+    "Return status as loaded from disk"
     logging.debug('Getting initial status...')
     try:
-        return load_last_status()
+        status = {}
+        for line in open(STATUSFILE):
+            s, m = line.strip().split(' ', 1)
+            status[m] = s
+        return status
     except Exception as e:  # anyone, really, just be robust
         logging.info('Could not read last status: %s' % e)
         return {}
-
-
-def load_last_status():
-    "Return status as loaded from disk"
-    status = {}
-    for line in open(STATUSFILE):
-        s, m = line.strip().split(' ', 1)
-        status[m] = s
-    return status
 
 
 def save_status(status):
