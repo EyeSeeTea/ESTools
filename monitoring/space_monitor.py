@@ -105,13 +105,19 @@ def check_periodically(interval, reminder_days, notify, datasets, users):
     "Check status of the machines every interval seconds, notify if necessary"
     t_reminder = reminder_days * (60 * 60 * 24)  # in seconds
 
-    last_status = get_last_status(datasets, users)
-    last_notification_time = {space: 0 for space in last_status}
+    spaces = datasets + users
+
+    last_status = get_last_status()
+    for space in set(spaces) - set(last_status.keys()):
+        logging.warning('Space "%s" was not in last status.' % space)
+        last_status[space] = 'ok'
+
+    last_notification_time = {space: 0 for space in spaces}
 
     while True:
         logging.debug('Checking space status...')
         status = get_status(datasets, users)
-        for space in status:
+        for space in spaces:
             status_new, status_old = status[space], last_status[space]
             dt = time.time() - last_notification_time[space]
             if alert(space, status_new, status_old, remind=(dt > t_reminder)):
@@ -122,13 +128,13 @@ def check_periodically(interval, reminder_days, notify, datasets, users):
         time.sleep(interval)
 
 
-def get_last_status(datasets, users):
+def get_last_status():
     logging.debug('Getting initial status...')
     try:
         return load_last_status()
     except Exception as e:  # anyone, really, just be robust
         logging.info('Could not read last status: %s' % e)
-        return get_status(datasets, users)
+        return {}
 
 
 def load_last_status():
@@ -215,7 +221,7 @@ def describe(space, status_new, status_old):
     return """\
 Hello,
 
-This mail concerns the usage of space "%s".
+This message concerns the usage of space "%s".
 
   Previous status: %s
   Current status: %s
