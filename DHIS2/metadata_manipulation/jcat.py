@@ -54,8 +54,8 @@ def main():
 
     text = apply_replacements(text, args.replacements)
 
-    if args.selections:
-        text = select(text, args.selections)
+    if args.include or args.exclude:
+        text = select(text, args.include, args.exclude)
 
     filters = get_filters(args.filters, args.filters_file)
     text = apply_filters(text, filters, args.multi)
@@ -77,11 +77,12 @@ def get_args():
     add('-o', '--output', help='output file (write to stdout if not given')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--filters', nargs='+', metavar='FILTER',
-                       help='::...:part:field:regexp selection filters')
+                       help='part:field:regexp selection filters')
     group.add_argument('--filters-file', help='file with selection patterns')
     add('-m', '--multi', action='store_true',
         help='allow multiple matches for field (uses the last match)')
-    add('--selections', nargs='+', metavar='SECTION', help='sections to select')
+    add('--include', nargs='+', metavar='SECTION', help='sections to include')
+    add('--exclude', nargs='+', metavar='SECTION', help='sections to exclude')
     add('--replacements', nargs='+', metavar='FROM TO', default=[],
         help='text to replace')
     add('-s', '--sort', action='store_true', help='output a sorted json')
@@ -165,8 +166,8 @@ def write(fname, text):
         print(text, end='')
 
 
-def select(text, selections):
-    "Return a json text with only the sections that appear in selections"
+def select(text, include, exclude):
+    "Return a json text with only the selected sections"
     text_selected = '{\n'
     current_section = ''
     for line in text.splitlines():
@@ -176,7 +177,8 @@ def select(text, selections):
         if line.startswith(' ' * INDENT_STEP + '"'):
             current_section = line.split('"', 2)[1]
 
-        if current_section in selections:
+        if ((include and current_section in include) or
+            (not include and current_section not in exclude)):
             text_selected += line + '\n'
 
     text_selected += '}\n'
