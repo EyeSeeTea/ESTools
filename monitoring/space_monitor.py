@@ -32,13 +32,13 @@ TRIGGER_FRACTION = 0.80  # if more used, we start pestering
 
 def main():
     args = parse_arguments()
-    auth, datasets, users, emails = read_config(args.config)
+    mail_config, datasets, users, emails = read_config(args.config)
 
     if not args.no_daemon:
         print('Becoming a daemon. For more info check: %s' % LOGFILE)
         daemonize.daemonize()
     start_logging(args.logfile, args.loglevel)
-    notify = choose_notify_function(args.notify, emails, auth)
+    notify = choose_notify_function(args.notify, emails, mail_config)
     check_periodically(args.interval, args.reminder_days,
                        notify, datasets, users)
 
@@ -65,20 +65,20 @@ def read_config(fname):
     cp = ConfigParser()
     try:
         cp.read_file(open(fname))
-        for section in ['auth', 'datasets', 'users']:
+        for section in ['mail', 'datasets', 'users']:
             assert section in cp, 'Missing section [%s]' % section
-        for x in ['mail', 'password']:
-            assert x in cp['auth'], 'Missing field "%s" in section [auth]' % x
+        for x in ['from', 'password', 'cc']:
+            assert x in cp['mail'], 'Missing field "%s" in section [mail]' % x
     except (FileNotFoundError, AssertionError,
             ValueError, ParsingError) as e:
         sys.exit('Error in file %s: %s' % (fname, e))
 
-    auth = cp['auth']
+    mail_config = cp['mail']
     datasets = list(cp['datasets'].keys())
     users = list(cp['users'].keys())
-    emails = {space: email for space, email in
+    emails = {space: emails.split() for space, emails in
               list(cp['datasets'].items()) + list(cp['users'].items())}
-    return auth, datasets, users, emails
+    return mail_config, datasets, users, emails
 
 
 def start_logging(logfile, loglevel):
@@ -89,13 +89,13 @@ def start_logging(logfile, loglevel):
     logging.debug('Current directory is %s' % os.getcwd())
 
 
-def choose_notify_function(method, emails, auth_config):
+def choose_notify_function(method, emails, mail_config):
     "Return a function used to notify"
     if method == 'email':
         def notify_by_email(space, status_new, status_old):
             subject = 'Space at %s: %s' % (os.uname().nodename, status_new)
             text = describe(space, status_new, status_old)
-            send_email([emails[space]], subject, text, auth_config)
+            send_email(emails[space], subject, text, mail_config)
         return notify_by_email
     elif method == 'print':
         return print  # the print function
@@ -231,12 +231,14 @@ Sincerely,
            os.uname().nodename)
 
 
-def send_email(recipients, subject, body, auth_config):
+def send_email(recipients, subject, body, mail_config):
     "Send email to recipients with the given subject and body text"
+    cc = mail_config['cc'].split()
+    to = ['-t'] + recipients + ((['-cc'] + cc) if cc else [])
     sp.call(['sendEmail', '-s', 'smtp.gmail.com:587', '-o', 'tls=yes',
-             '-xu', auth_config['mail'], '-xp', auth_config['password'],
-             '-f', auth_config['mail'], '-u', subject, '-m', body] +
-            ['-t'] + recipients, stdout=sp.DEVNULL, stderr=sp.DEVNULL)
+             '-xu', mail_config['from'], '-xp', mail_config['password'],
+             '-f', mail_config['from'], '-u', subject, '-m', body] + to,
+            stdout=sp.DEVNULL, stderr=sp.DEVNULL)
 
 
 
