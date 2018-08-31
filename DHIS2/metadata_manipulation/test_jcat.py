@@ -301,8 +301,9 @@ def test_expand():
 
 
 def test_select():
-    assert jcat.select(json_text, ['stars']) == json_text_selected_stars
-    assert jcat.select(json_text, ['planets']).endswith(']\n}\n')  # and no ','
+    assert jcat.select(json_text, ['stars'], []) == json_text_selected_stars
+    assert jcat.select(json_text, [], ['planets']) == json_text_selected_stars
+    assert jcat.select(json_text, ['planets'], []).endswith(']\n}\n')  # no ','
 
 
 def test_filter_parts():
