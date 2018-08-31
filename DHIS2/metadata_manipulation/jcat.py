@@ -316,14 +316,15 @@ def jstr(x):
 def sort_key(x):
     "Return a sorting key depending on the type of x"
     if type(x) == dict:
-        if 'name' in x:
-            return x['name']
-        elif 'id' in x:
-            return x['id']
+        for field in ['name', 'id', 'property']:
+            if field in x and type(x[field]) == str:
+                return x[field]
         else:
-            return 'A'
+            return str(len(x))
     elif type(x) == str:
         return x
+    elif type(x) == list:
+        return str(len(x))
     else:
         return 'A'
 
