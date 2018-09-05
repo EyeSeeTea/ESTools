@@ -98,7 +98,7 @@ def choose_notify_function(method, emails, mail_config):
             send_email(emails[space], subject, text, mail_config)
         return notify_by_email
     elif method == 'print':
-        return print  # the print function
+        return print  # the print function (useful for debugging)
 
 
 def check_periodically(interval, reminder_days, notify, datasets, users):
@@ -109,8 +109,13 @@ def check_periodically(interval, reminder_days, notify, datasets, users):
 
     last_status = load_last_status()
     for space in set(spaces) - set(last_status.keys()):
-        logging.warning('Space "%s" was not in last status.' % space)
+        logging.warn('Space "%s" was not in last status.' % space)
         last_status[space] = 'ok'
+
+    unknown_spaces = set(spaces) - set(get_status(datasets, users).keys())
+    if unknown_spaces:
+        logging.error('Unknown spaces: %s' % ' '.join(unknown_spaces))
+        sys.exit('Unrecoverable error. Please check the log file.')
 
     last_notification_time = {space: 0 for space in spaces}
 
