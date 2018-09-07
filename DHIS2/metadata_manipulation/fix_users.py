@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 """
-
 Take the metadata export from dev, export users, select the right users with
 something like
 
@@ -14,6 +13,9 @@ Possible ways to fix them:
 * put the right dataViewOrganisationUnits
 * put a nicer name
 """
+
+# TO DO: clean things up, right now it is mostly a mix of different
+# ways to fix the users that we used before.
 
 import sys
 import json
