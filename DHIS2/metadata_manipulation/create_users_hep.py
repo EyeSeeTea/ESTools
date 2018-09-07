@@ -305,7 +305,7 @@ def generate_user_dataentry(country_name, country_id):
             { 'id': country_id }
         ],
         'dataViewOrganisationUnits': [
-            { 'id': 'H8RixfF8ugH' }
+            { 'id': country_id }
         ],
         'userGroups': [
             { 'id': 'uEYpW1usu0E' }  # though it doesn't add it
