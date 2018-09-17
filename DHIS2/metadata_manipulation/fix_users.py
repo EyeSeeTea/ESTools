@@ -96,8 +96,37 @@ def fix_user(user, new_name, country_id):
 
     if user['firstName'].endswith('Template'):
         user['firstName'] = new_name
-    if user['displayName'].endswith('Template HEP'):
-        user['displayName'] = new_name
+    if creds['displayName'].endswith('Template HEP'):
+        creds['displayName'] = new_name
+
+    if creds['username'].split('.')[1] == 'dataentry':
+        creds['userRoles'] = [
+            {
+                "id": "AgVHSpEo2pn"
+            },
+            {
+                "id": "PRR8faFzBmY"
+            },
+            {
+                "id": "aanuJbyZXdj"
+            },
+            {
+                "id": "fKz9iwxYs28"
+            },
+            {
+                "id": "iWHyG5sDqRg"
+            },
+            {
+                "id": "npKeda939aZ"
+            },
+            {
+                "id": "quenh5Es9sT"
+            },
+            {
+                "id": "v0uKy6gA1YY"
+            }
+        ]
+
     # if user['surname'] == 'HEP':
     #     user['surname'] = new_name
 
