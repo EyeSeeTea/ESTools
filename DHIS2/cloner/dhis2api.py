@@ -39,6 +39,9 @@ class Dhis2Api:
         response.raise_for_status()
         return response.json()
 
+    def _set_auth(self, username="admin", password="district"):
+        self.auth = request.auth.HTTPBasicAuth(username, password)
+
     def get(self, path, params=None):
         return self._request("get", path, params=params)
 
@@ -64,7 +67,7 @@ def debug(*args, **kwargs):
     if DEBUG_ENABLED:
         print(*args, file=sys.stderr, **kwargs)
 
-def enable_users(api, usernames):
+def enable_users(api, usernames, passwords):
     """Enable Dhis2 users by settings user.userCredentials.disabled = false."""
     debug("GET users: {}".format(", ".join(usernames)))
     users_response = api.get("/users", {
@@ -85,21 +88,45 @@ def enable_users(api, usernames):
     debug("Users updated: {}".format(", ".join([user["userCredentials"]["username"] for user in users])))
     return users
 
+def check_users(api, usernames, passwords):
+    """Check Dhis2 users in a system by calling to /api/me with their credentials."""
+    debug("GET me: {}".format(", ".join(usernames)))
+    failingUsers = []
+    for user,password in usernames,passwords:
+        api._set_auth(user, password)
+        debug("Checking {}".format(user))
+        users_response = api.get("/me", {})
+        if res["status"] != "OK":
+            failingUsers.append(user)
+            debug("FAILED!")
+        else:
+            debug("OK!")
+    debug("Failing users: {}".format(", ".join(failingUsers)))
+    return failingUsers
+
+
 def main(args):
     parser = argparse.ArgumentParser()
     parser.add_argument('--url', required=True, help='API endpoint URL')
     parser.add_argument('--username', required=True, help='API username')
     parser.add_argument('--password', required=True, help='API password')
+    parser.add_argument('--enable-users')
+    parser.add_argument('--check-users')
 
     subparsers = parser.add_subparsers()
-    parser_enable_users = subparsers.add_parser('enable-users', help='Enable users')
-    parser_enable_users.add_argument('usernames', type=str, nargs='+', help='Usernames')
+    parser_enable_users = subparsers.add_parser('--enable-users', help='Enable users')
+    parser_enable_users.add_argument('--usernames', dest='usernames', type=str, nargs='*', help='Usernames')
     parser_enable_users.set_defaults(func=enable_users)
 
-    args = parser.parse_args()
+    parser_check_users = subparsers.add_parser('--check-users', help='Check users')
+    parser_check_users.add_argument('--usernames', dest='usernames', type=str, nargs='*', help='Usernames')
+    parser_check_users.add_argument('--passwords', dest='passwords', type=str, nargs='*', help='Passwords')
+    parser_check_users.set_defaults(func=check_users)
 
+    args = parser.parse_args()
     api = Dhis2Api(args.url, args.username, args.password)
-    args.func(api, args.usernames)
+    args.func(api, args.usernames, args.passwords)
+
     return 0
 
 
