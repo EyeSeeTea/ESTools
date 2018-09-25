@@ -20,19 +20,29 @@ def main():
     args = get_args()
     cfg = get_config(args.config)
 
-    server_dir, backups_dir = cfg['server_dir'], cfg['backups_dir']
-    backup_name = cfg['backup_name']
-    war_local_path = '%s/webapps/%s' % (server_dir, cfg['war_local'])
+    dir_local, dir_remote = cfg['server_dir_local'], cfg['server_dir_remote']
     db_local, db_remote = cfg['db_local'], cfg['db_remote']
 
-    stop_tomcat(server_dir)
-    backup_db(backups_dir, backup_name, db_local)
-    backup_war(backups_dir, war_local_path)
-    get_webapps(server_dir, cfg['war_local'], cfg['war_remote'])
-    get_db(db_local=db_local, db_remote=db_remote)
+    if not args.manual_restart:
+        stop_tomcat(dir_local)
+
+    if not args.no_backups:
+        backup_db(cfg['backups_dir'], cfg['backup_name'], db_local)
+        backup_war(cfg['backups_dir'], dir_local, cfg['war_local'])
+
+    if not args.no_webapps:
+        route_local = '%s/webapps' % dir_local
+        route_remote = '%s:%s/webapps' % (cfg['hostname_remote'], dir_remote)
+        get_webapps(route_local, cfg['war_local'],
+                    route_remote, cfg['war_remote'])
+
+    get_db(db_local, db_remote, cfg['hostname_remote'])
+
     if args.no_data:
         delete_data(db_local)
-    start_tomcat(server_dir)
+
+    if not args.manual_restart:
+        start_tomcat(dir_local)
 
 
 def get_config(fname):
@@ -50,11 +60,12 @@ def get_config(fname):
 def get_args():
     "Return arguments"
     parser = ArgumentParser(description=__doc__, formatter_class=fmt)
-    parser.add_argument('--config', default='dhis2_clone.cfg',
-                        help='file with configuration')
-    parser.add_argument('--no-data', action='store_true',
-                        help='copy only metadata (copy no data)')
-    # We may have more fancy stuff in the future.
+    add = parser.add_argument  # shortcut
+    add('--config', default='dhis2_clone.cfg', help='file with configuration')
+    add('--no-data', action='store_true', help='copy only metadata, no data')
+    add('--no-webapps', action='store_true', help="don't clone the webapps")
+    add('--no-backups', action='store_true', help="don't make backups")
+    add('--manual-restart', action='store_true', help="don't stop/start tomcat")
     return parser.parse_args()
 
 
@@ -62,16 +73,17 @@ def check_config(cp):
     "Assert all the options in configuration exist and have reasonable values"
     assert cp.has_section('clone'), 'Missing section [clone]'
     cfg = dict(cp.items('clone'))
-    for option in ['backups_dir', 'backup_name', 'server_dir',
+    for option in ['backups_dir', 'backup_name', 'hostname_remote',
+                   'server_dir_local', 'server_dir_remote',
                    'db_local', 'db_remote', 'war_local', 'war_remote']:
         assert option in cfg, 'Missing option "%s"' % option
-    for path in ['backups_dir', 'server_dir']:
+    for path in ['backups_dir', 'server_dir_local']:
         assert os.path.isdir(cfg[path]), \
             '%s is not a directory: %s' % (path, cfg[path])
-    assert (os.path.isfile(cfg['server_dir'] + '/bin/startup.sh') and
-            os.path.isfile(cfg['server_dir'] + '/bin/shutdown.sh')), \
+    assert (os.path.isfile(cfg['server_dir_local'] + '/bin/startup.sh') and
+            os.path.isfile(cfg['server_dir_local'] + '/bin/shutdown.sh')), \
             ('%s should be a directory with start/stop scripts in bin: %s' %
-             ('server_dir', cfg['server_dir']))
+             ('server_dir_local', cfg['server_dir_local']))
     for uri in ['db_local', 'db_remote']:
         assert is_good_db_uri(cfg[uri]), 'bad %s uri: %s' % (uri, cfg[uri])
     for war in ['war_local', 'war_remote']:
@@ -84,7 +96,7 @@ def is_good_db_uri(uri):
 
 
 def run(cmd):
-    print(magenta(cmd))
+    print(magenta('[%s] %s' % (time.strftime('%Y-%m-%d %T'), cmd)))
     ret = os.system(cmd)
     if ret != 0:
         sys.exit(ret)
@@ -108,34 +120,37 @@ def backup_db(backups_dir, backup_name, db_local):
                                                             db_local))
 
 
-def backup_war(backups_dir, war_path):
-    warname = war_path.split('/')[-1][:-4]
-    backup_file = '%s/%s_%s.war' % (backups_dir, warname, TIME)
-    run('cp %s %s' % (war_path, backup_file))
+def backup_war(backups_dir, dir_local, war_local):
+    backup_file = '%s/%s_%s.war' % (backups_dir, war_local[:-4], TIME)
+    run('cp %s/webapps/%s %s' % (dir_local, war_local, backup_file))
 
 
-def get_webapps(server_dir, war_local, war_remote):
-    path = '%s/webapps' % server_dir
-    run('rm -rf %s/*' % path)
-    run("scp -r 'prod:%s/*' %s" % (path, path))
+def get_webapps(route_local, war_local, route_remote, war_remote):
+    run('rm -rf %s/*' % route_local)
+    run("scp -r '%s/*' %s" % (route_remote, route_local))
     if war_local != war_remote:
-        run('mv %s/%s %s/%s' % (path, war_remote, path, war_local))
-        run('mv %s/%s %s/%s' % (path, war_remote[:-4], path, war_local[:-4]))
+        run(('cd %s; ' % route_local) +
+            ('mv %s %s; ' % (war_remote, war_local)) +  # the war file itself
+            ('mv %s %s' % (war_remote[:-4], war_local[:-4])))  # the directory
 
 
-def get_db(db_local, db_remote):
+def get_db(db_local, db_remote, hostname_remote):
     empty_db(db_local)
     exclude = ("--exclude-table 'aggregated*' --exclude-table 'analytics*' "
                "--exclude-table 'completeness*' --exclude-schema sys")
     dump = ("pg_dump -d '%s' --no-owner %s" %
             (db_remote, exclude))
-    run("ssh prod %s | psql -d '%s'" % (dump, db_local))
-    # I'd prefer to do it with:
+    run("ssh %s %s | psql -d '%s'" % (hostname_remote, dump, db_local))
+
+    # We could skip the "ssh hostname_remote" part if we can access the
+    # remote DB from the local machine, but we keep it in case we can't.
+
+    # I'd prefer to do it with postgres custom format and pg_restore:
     #    dump = ("pg_dump -d '%s' --format custom --clean --no-owner %s" %
     #            (db_remote, exclude))
     #    user = db_local[len('postgresql://'):].split(':')[0]
-    #    run("ssh prod %s | pg_restore -d '%s' --no-owner --role %s" %
-    #        (dump, db_local, user))
+    #    run("ssh %s %s | pg_restore -d '%s' --no-owner --role %s" %
+    #        (hostname_remote, dump, db_local, user))
     # but it causes problems with the user role.
 
 
