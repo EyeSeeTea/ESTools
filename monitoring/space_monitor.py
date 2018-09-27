@@ -16,16 +16,13 @@ Alert whenever more than 80% of the quota (or available space) is used.
 import sys
 import os
 import time
-import logging
+import json
 import subprocess as sp
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
 from configparser import ConfigParser, ParsingError
 
-import daemonize
-
 PATH = os.path.dirname(os.path.realpath(__file__))
-LOGFILE = os.path.join(PATH, 'space_monitor.log')
-STATUSFILE = os.path.join(PATH, 'last_space_status.txt')
+SAVED_DATA_FILE = os.path.join(PATH, 'space_monitor_saved_data.txt')
 
 TRIGGER_FRACTION = 0.80  # if more used, we start pestering
 
@@ -34,26 +31,17 @@ def main():
     args = parse_arguments()
     mail_config, datasets, users, emails = read_config(args.config)
 
-    if not args.no_daemon:
-        print('Becoming a daemon. For more info check: %s' % LOGFILE)
-        daemonize.daemonize()
-    start_logging(args.logfile, args.loglevel)
     notify = choose_notify_function(args.notify, emails, mail_config)
-    check_periodically(args.interval, args.reminder_days,
-                       notify, datasets, users)
+
+    check(datasets, users, notify, args.reminder_days)
 
 
 def parse_arguments():
     parser = ArgumentParser(description=__doc__, formatter_class=fmt)
     add = parser.add_argument  # shortcut
-    add('--no-daemon', action='store_true', help='keep attached to the console')
-    add('--logfile', default=LOGFILE, help='path of the file with the logs')
-    add('--loglevel', choices=['error', 'warning', 'info', 'debug'],
-        default='warning', help='logger verbosity level')
     add('--reminder-days', default=7, help='number of days between reminders')
     add('--notify', choices=['email', 'print'], default='email',
         help='method used for notification')
-    add('--interval', type=int, default=60, help='time (in s) between checks')
     add('--config', default='space_monitor.cfg',
         help='file with auth, datasets and users configuration')
     return parser.parse_args()
@@ -81,14 +69,6 @@ def read_config(fname):
     return mail_config, datasets, users, emails
 
 
-def start_logging(logfile, loglevel):
-    level = {'error': 40, 'warning': 30, 'info': 20, 'debug': 10}[loglevel]
-    logging.basicConfig(filename=logfile, level=level,
-                        format='%(asctime)s [%(levelname)s] %(message)s')
-    logging.info('Starting.')
-    logging.debug('Current directory is %s' % os.getcwd())
-
-
 def choose_notify_function(method, emails, mail_config):
     "Return a function used to notify"
     if method == 'email':
@@ -101,73 +81,81 @@ def choose_notify_function(method, emails, mail_config):
         return print  # the print function (useful for debugging)
 
 
-def check_periodically(interval, reminder_days, notify, datasets, users):
-    "Check status of the machines every interval seconds, notify if necessary"
+def check(datasets, users, notify, reminder_days):
+    "Check status of the machines, notify if necessary"
     t_reminder = reminder_days * (60 * 60 * 24)  # in seconds
 
     spaces = datasets + users
 
-    last_status = load_last_status()
-    for space in set(spaces) - set(last_status.keys()):
-        logging.warn('Space "%s" was not in last status.' % space)
-        last_status[space] = 'ok'
+    last_status, last_notification_time = load_data()
+    fill_missing_data(last_status, last_notification_time, spaces)
 
-    unknown_spaces = set(spaces) - set(get_status(datasets, users).keys())
+    status = get_status(datasets, users)
+
+    unknown_spaces = set(spaces) - set(status.keys())
     if unknown_spaces:
-        logging.error('Unknown spaces: %s' % ' '.join(unknown_spaces))
-        sys.exit('Unrecoverable error. Please check the log file.')
+        sys.exit('Error: Unknown spaces: %s' % ' '.join(unknown_spaces))
 
-    last_notification_time = {space: 0 for space in spaces}
+    for space in spaces:
+        status_new, status_old = status[space], last_status[space]
+        dt = time.time() - last_notification_time[space]
+        if alert(space, status_new, status_old, remind=(dt > t_reminder)):
+            notify(space, status_new, status_old)
+            last_notification_time[space] = time.time()
 
-    while True:
-        logging.debug('Checking space status...')
-        status = get_status(datasets, users)
-        for space in spaces:
-            status_new, status_old = status[space], last_status[space]
-            dt = time.time() - last_notification_time[space]
-            if alert(space, status_new, status_old, remind=(dt > t_reminder)):
-                notify(space, status_new, status_old)
-                last_notification_time[space] = time.time()
-        last_status = status
-        save_status(status)
-        time.sleep(interval)
+    save_data(status, last_notification_time)
 
 
-def load_last_status():
-    "Return status as loaded from disk"
-    logging.debug('Getting initial status...')
+def load_data():
+    "Return last_status, last_notification_time as loaded from disk"
+    print('Loading saved data...')
     try:
-        status = {}
-        for line in open(STATUSFILE):
-            s, m = line.strip().split(' ', 1)
-            status[m] = s
-        return status
+        with open(SAVED_DATA_FILE) as f:
+            last_status, last_notification_time = json.load(f)
+            assert all(is_valid_status(s) for s in last_status.values())
+            t_now = time.time()
+            assert all(t < t_now for t in last_notification_time.values())
+            return last_status, last_notification_time
     except Exception as e:  # anyone, really, just be robust
-        logging.info('Could not read last status: %s' % e)
-        return {}
+        print('Warning: problem reading saved data, will reset: %s' % e)
+        return {}, {}
 
 
-def save_status(status):
-    "Save the given status to disk"
-    with open(STATUSFILE, 'wt') as f:
-        for m, s in status.items():
-            f.write('%s %s\n' % (s, m))
+def is_valid_status(status):
+    return status in ['ok', 'warn', 'undefined']
+
+
+def fill_missing_data(last_status, last_notification_time, spaces):
+    "Put default values for status and times of spaces that don't have them set"
+    for space in set(spaces) - set(last_status.keys()):
+        print('Setting status for space %s' % space)
+        last_status[space] = 'ok'
+    for space in set(spaces) - set(last_notification_time.keys()):
+        print('Setting last notification time for space %s' % space)
+        last_notification_time[space] = 0.0
+
+
+def save_data(status, last_notification_time):
+    "Save status and last_notification_time to disk in json format"
+    with open(SAVED_DATA_FILE, 'wt') as f:
+        json.dump([status, last_notification_time], f)
 
 
 def alert(space, status_new, status_old, remind):
     "Return True if the status of the space requires a notification"
-    if status_new == status_old != 'warn':
-        logging.debug('Nothing to report on space "%s".' % space)
+    if status_new != 'warn' and status_old != 'warn':
+        print('Status of space "%s": %s (no report)' % (space, status_new))
         return False
-    elif status_new != status_old:
-        logging.warn('Changes found in space "%s". Notifying.' % space)
-        return True
-    elif status_new == 'warn' and remind:
-        logging.warn('Error persists in space "%s". Notifying.' % space)
-        return True
+    elif status_new == status_old == 'warn':
+        if remind:  # redundant for clarity
+            print('Warning: Error persists in space "%s". Notifying.' % space)
+            return True
+        else:
+            print('Warning: Error persists in space "%s" (no report).' % space)
+            return False
     else:
-        logging.debug('Status of space "%s": %s' % (space, status_new))
-        return False
+        print('Warning: Changes found in space "%s". Notifying.' % space)
+        return True
 
 
 def get_status(datasets, users):
@@ -204,12 +192,11 @@ def get_ratio_user(user):
     try:
         return get('used') / get('quota')
     except ValueError as e:
-        logging.error('%s - Maybe you are not running as root?' % e)
-        sys.exit('Unrecoverable error. Please check the log file.')
+        sys.exit('Error: %s - Maybe you are not running as root?' % e)
 
 
 def run(command):
-    logging.debug('Running: %s' % ' '.join(command))
+    print('Running: %s' % ' '.join(command))
     return sp.check_output(command, universal_newlines=True)
 
 
