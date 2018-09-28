@@ -45,6 +45,8 @@ Filter = namedtuple('Filter', ['nesting', 'part', 'field', 'regexp'])
 
 INDENT_STEP = 2
 
+sort_fields = []
+
 
 def main():
     args = get_args()
@@ -60,17 +62,25 @@ def main():
     filters = get_filters(args.filters, args.filters_file)
     text = apply_filters(text, filters, args.multi)
 
+    if args.remove:
+        for field in args.remove:
+            text = remove_field(text, field)
+
     if args.sort:
         text = jsort(text)
 
     if args.compact:
         text = compact(text)
 
+    text = fix(text)
+
     write(args.output, text)
 
 
 def get_args():
     "Parse command-line arguments and return them"
+    global sort_fields
+
     parser = ArgumentParser(description=__doc__, formatter_class=fmt)
     add = parser.add_argument  # shortcut
     add('file', nargs='?', help='input file (read from stdin if not given)')
@@ -83,11 +93,17 @@ def get_args():
         help='allow multiple matches for field (uses the last match)')
     add('--include', nargs='+', metavar='SECTION', help='sections to include')
     add('--exclude', nargs='+', metavar='SECTION', help='sections to exclude')
+    add('--remove', nargs='+', metavar='FIELD', help='sections to remove')
     add('--replacements', nargs='+', metavar='FROM TO', default=[],
         help='text to replace')
     add('-s', '--sort', action='store_true', help='output a sorted json')
+    add('--sort-fields', nargs='+', metavar='FIELD',
+        default=['name', 'id', 'property'],
+        help='fields to use for sorting the elements')
     add('-c', '--compact', action='store_true', help='output a compacted json')
     args = parser.parse_args()
+
+    sort_fields = args.sort_fields
 
     if file_arg_maybe_misplaced(args.file, args.filters):
         print('Warning: no file given, but one of the filters looks '
@@ -195,6 +211,27 @@ def apply_filters(text, filters, multi):
     return text
 
 
+def remove_field(text, field):
+    "Removed all the appearances of the given field in text"
+    text_filtered = ''
+    in_field = False
+    for line in text.splitlines():
+        line_stripped = line.lstrip()
+        if not in_field:
+            if line_stripped.startswith('"%s":' % field):
+                indent = len(line) - len(line.lstrip())
+                in_field = True
+            else:
+                text_filtered += line + '\n'
+        else:
+            if len(line) - len(line_stripped) <= indent:
+                in_field = False
+                if (len(line) - len(line_stripped) < indent or
+                    line_stripped[0] not in ['}', ']']):
+                    text_filtered += line + '\n'
+    return text_filtered
+
+
 def filter_parts(text, jfilter, multi=False):
     "Return a json text with only the elements that pass the jfilter filter"
     # That is, that match the regexp for the given field in the given part.
@@ -204,28 +241,20 @@ def filter_parts(text, jfilter, multi=False):
     in_part = False  # are we in the part we want to filter?
     current_region = ''  # region we are scanning and may not include
     current_field = ''  # field that is being defined (like "name":...)
-    just_filtered = False  # did we just filter out something?
     for line in text.splitlines():
         if not in_part:
             spaces = ' ' * INDENT_STEP * jfilter.nesting
             if line.startswith('%s"%s":' % (spaces, jfilter.part)):  # start
                 in_part = True
                 indent = len(line) - len(line.lstrip())
-            just_filtered = False
             text_filtered += line + '\n'
         elif len(line) - len(line.lstrip()) <= indent:  # end part
-            if just_filtered and text_filtered[-2] == ',':
-                text_filtered = text_filtered[:-2] + '\n'
-            just_filtered = False
             text_filtered += line + '\n'
             in_part = False
         elif line.startswith(' ' * (indent + INDENT_STEP) + '}'):  # end region
             current_region += line + '\n'
             if re.search(jfilter.regexp, current_field):
                 text_filtered += current_region
-                just_filtered = False
-            else:
-                just_filtered = True
             current_region = ''
             current_field = ''
         elif line.lstrip().startswith('"%s":' % jfilter.field):  # find field
@@ -234,12 +263,14 @@ def filter_parts(text, jfilter, multi=False):
                 sys.exit('Error: multiple fields named "%s" in %s (you may run '
                          'with --multi)' % (jfilter.field, jfilter.part))
             current_field = line.split('"')[3]  #   "field_name":"field_value"
-            just_filtered = False
         else:  # keep adding to region
             current_region += line + '\n'
-            just_filtered = False
-
     return text_filtered
+
+
+def fix(text):
+    "Return text without the trailing commas before end of lists/dicts"
+    return re.sub(',(\s*(]|}))', r'\1', text)
 
 
 def expand(text):
@@ -315,8 +346,9 @@ def jstr(x):
 
 def sort_key(x):
     "Return a sorting key depending on the type of x"
+    global sort_fields
     if type(x) == dict:
-        for field in ['name', 'id', 'property']:
+        for field in sort_fields:
             if field in x and type(x[field]) == str:
                 return x[field]
         else:

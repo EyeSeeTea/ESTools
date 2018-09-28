@@ -273,6 +273,40 @@ json_text_sorted = """\
 """
 
 
+json_no_satellites = """\
+{
+  "planets": [
+    {
+      "name": "mercury",
+      "position": "1"
+    },
+    {
+      "name": "venus",
+      "position": "2"
+    },
+    {
+      "name": "earth",
+      "position": "3"
+    },
+    {
+      "name": "mars",
+      "position": "4"
+    }
+  ],
+  "stars": [
+    {
+      "name": "sun",
+      "class": "G"
+    },
+    {
+      "name": "proxima centauri",
+      "class": "M"
+    }
+  ]
+}
+"""
+
+
 filters_exps = """\
 stars:class:^G$
 planets:name:^m
@@ -308,7 +342,8 @@ def test_select():
 
 def test_filter_parts():
     jfilter = jcat.Filter(nesting=1, part='stars', field='class', regexp='^G$')
-    assert jcat.filter_parts(json_text, jfilter) == json_text_filtered_stars
+    broken_json = jcat.filter_parts(json_text, jfilter)
+    assert jcat.fix(broken_json) == json_text_filtered_stars
 
 
 def test_multi():
@@ -316,8 +351,8 @@ def test_multi():
     with pytest.raises(SystemExit):
         jcat.filter_parts(json_text, jfilter)
 
-    assert (jcat.filter_parts(json_text, jfilter, multi=True) ==
-            json_text_filtered_planets_multi)
+    broken_json = jcat.filter_parts(json_text, jfilter, multi=True)
+    assert jcat.fix(broken_json) == json_text_filtered_planets_multi
 
 
 def test_nesting():
@@ -328,14 +363,14 @@ def test_nesting():
     satellite_filter = filters[2]
     assert satellite_filter.nesting == 3
 
-    assert (jcat.filter_parts(json_text, satellite_filter) ==
-            json_text_filtered_satellites)
+    broken_json = jcat.filter_parts(json_text, satellite_filter)
+    assert jcat.fix(broken_json) == json_text_filtered_satellites
 
 
 def test_apply_filters():
     filters = jcat.get_filters(filters_exps.splitlines(), None)
-    assert (jcat.apply_filters(json_text, filters, multi=True) ==
-            json_text_all_filters)
+    broken_json = jcat.apply_filters(json_text, filters, multi=True)
+    assert jcat.fix(broken_json) == json_text_all_filters
 
 
 def test_replacements():
@@ -350,5 +385,11 @@ def test_replacements():
             'a kiss from mars')
 
 
+def test_remove_fields():
+    broken_json = jcat.remove_field(json_text, 'satellites')
+    assert jcat.fix(broken_json) == json_no_satellites
+
+
 def test_sort():
+    jcat.sort_fields = ['name', 'id', 'property']
     assert jcat.jsort(json_text) == json_text_sorted
