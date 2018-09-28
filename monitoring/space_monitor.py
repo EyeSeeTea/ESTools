@@ -22,7 +22,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
 from configparser import ConfigParser, ParsingError
 
 PATH = os.path.dirname(os.path.realpath(__file__))
-SAVED_DATA_FILE = os.path.join(PATH, 'space_monitor_saved_data.txt')
+SAVED_DATA_FILE = os.path.join(PATH, 'space_monitor_saved_data.json')
 
 TRIGGER_FRACTION = 0.80  # if more used, we start pestering
 
@@ -138,7 +138,7 @@ def fill_missing_data(last_status, last_notification_time, spaces):
 def save_data(status, last_notification_time):
     "Save status and last_notification_time to disk in json format"
     with open(SAVED_DATA_FILE, 'wt') as f:
-        json.dump([status, last_notification_time], f)
+        json.dump([status, last_notification_time], f, indent=True)
 
 
 def alert(space, status_new, status_old, remind):
