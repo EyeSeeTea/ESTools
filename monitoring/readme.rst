@@ -30,5 +30,11 @@ space_monitor.py
 Monitors the space left in a ZFS system and alerts whenever more than
 80% of the quota (or available space) is used.
 
-Use with a configuration file (`space_monitor.cfg` is included as an
-example).
+It reads the datasets and the users to check from a configuration
+file, that has an email associated to each space where it should send
+alerts. The file `space_monitor.cfg` is included as an example.
+
+If we want to check periodically every 5 minutes, we can add the
+following line to the crontab::
+
+  */5 * * * * /path/to/space_monitor.py --config /path/to/space_monitor.cfg >> /path/to/space_monitor.log 2>&1
