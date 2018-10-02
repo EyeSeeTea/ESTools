@@ -31,9 +31,8 @@ def main():
         backup_war(cfg['backups_dir'], dir_local, cfg['war_local'])
 
     if not args.no_webapps:
-        route_local = '%s/webapps' % dir_local
-        route_remote = '%s:%s/webapps' % (cfg['hostname_remote'], dir_remote)
-        get_webapps(route_local, cfg['war_local'],
+        route_remote = '%s:%s' % (cfg['hostname_remote'], dir_remote)
+        get_webapps(dir_local, cfg['war_local'],
                     route_remote, cfg['war_remote'])
 
     get_db(db_local, db_remote, cfg['hostname_remote'])
@@ -41,13 +40,16 @@ def main():
     if args.no_data:
         delete_data(db_local)
 
+    if args.post_sql:
+        run_sql(db_local, args.post_sql)
+
     if not args.manual_restart:
         start_tomcat(dir_local)
 
 
 def get_config(fname):
     "Return dict with the options read from configuration file"
-    print('Reading from config file %s ...' % fname)
+    log('Reading from config file %s ...' % fname)
     cp = ConfigParser()
     try:
         cp.readfp(open(fname))
@@ -66,6 +68,7 @@ def get_args():
     add('--no-webapps', action='store_true', help="don't clone the webapps")
     add('--no-backups', action='store_true', help="don't make backups")
     add('--manual-restart', action='store_true', help="don't stop/start tomcat")
+    add('--post-sql', nargs='+', default=[], help='sql files to run post-clone')
     return parser.parse_args()
 
 
@@ -96,10 +99,15 @@ def is_good_db_uri(uri):
 
 
 def run(cmd):
-    print(magenta('[%s] %s' % (time.strftime('%Y-%m-%d %T'), cmd)))
+    log(cmd)
     ret = os.system(cmd)
     if ret != 0:
         sys.exit(ret)
+
+
+def log(txt):
+    print(magenta('[%s] %s' % (time.strftime('%Y-%m-%d %T'), txt)))
+    sys.stdout.flush()
 
 
 def magenta(txt):
@@ -126,11 +134,14 @@ def backup_war(backups_dir, dir_local, war_local):
 
 
 def get_webapps(route_local, war_local, route_remote, war_remote):
-    run('rm -rf %s/*' % route_local)
-    run("scp -r '%s/*' %s" % (route_remote, route_local))
+    for subdir in ['webapps', 'files']:
+        run("rsync -a --delete '%s/%s/*' %s/%s" % (route_remote, subdir,
+                                                   route_local, subdir))
+
     if war_local != war_remote:
-        run(('cd %s; ' % route_local) +
+        run(('cd %s/webapps; ' % route_local) +
             ('mv %s %s; ' % (war_remote, war_local)) +  # the war file itself
+            ('rm -rf %s' % war_local[:-4]) +
             ('mv %s %s' % (war_remote[:-4], war_local[:-4])))  # the directory
 
 
@@ -138,9 +149,11 @@ def get_db(db_local, db_remote, hostname_remote):
     empty_db(db_local)
     exclude = ("--exclude-table 'aggregated*' --exclude-table 'analytics*' "
                "--exclude-table 'completeness*' --exclude-schema sys")
-    dump = ("pg_dump -d '%s' --no-owner %s" %
-            (db_remote, exclude))
-    run("ssh %s %s | psql -d '%s'" % (hostname_remote, dump, db_local))
+    dump = "pg_dump -d '%s' --no-owner %s" % (db_remote, exclude)
+    cmd = "ssh %s %s | psql -d '%s'" % (hostname_remote, dump, db_local)
+    run(cmd + " 2>&1 | paste - - - | uniq -c")  # run with more compact output
+    # Errors like 'ERROR: role "u_dhis2" does not exist' are expected
+    # and safe to ignore.
 
     # We could skip the "ssh hostname_remote" part if we can access the
     # remote DB from the local machine, but we keep it in case we can't.
@@ -159,32 +172,35 @@ def empty_db(db_local):
     db_name = db_local.split('/')[-1]
     with psycopg2.connect(db_local) as conn:
         with conn.cursor() as cur:
+            # Drop views.
             cur.execute("SELECT table_name FROM information_schema.views "
                         "WHERE table_schema='public' "
                         "AND table_catalog='%s'" % db_name)
             results = cur.fetchall()
             views = zip(*results)[0] if results else []
-            print(magenta("Dropping %d views ..." % len(views)))
+            log("Dropping %d views ..." % len(views))
             for view in views:
                 cur.execute("DROP VIEW IF EXISTS %s CASCADE" % view)
                 conn.commit()
 
+            # Drop tables.
             cur.execute("SELECT table_name FROM information_schema.tables "
                         "WHERE table_schema='public' "
                         "AND table_catalog='%s'" % db_name)
             results = cur.fetchall()
             tables = zip(*results)[0] if results else []
-            print(magenta("Dropping %d tables ..." % len(tables)))
+            log("Dropping %d tables ..." % len(tables))
             for table in tables:
                 cur.execute("DROP TABLE IF EXISTS %s CASCADE" % table)
                 conn.commit()
 
+            # Drop sequences.
             cur.execute("SELECT sequence_name FROM information_schema.sequences "
                         "WHERE sequence_schema='public' "
                         "AND sequence_catalog='%s'" % db_name)
             results = cur.fetchall()
             sequences = zip(*results)[0] if results else []
-            print(magenta("Dropping %d sequences ..." % len(sequences)))
+            log("Dropping %d sequences ..." % len(sequences))
             for sequence in sequences:
                 cur.execute("DROP SEQUENCE IF EXISTS %s CASCADE" % sequence)
                 conn.commit()
@@ -246,10 +262,14 @@ programstageinstance
     with psycopg2.connect(db_local) as conn:
         with conn.cursor() as cur:
             for table in data_tables:
-                print(magenta("Deleting contents of table %s ..." % table))
+                log("Deleting contents of table %s ..." % table)
                 cur.execute("DELETE FROM %s" % table)
                 conn.commit()
 
+
+def run_sql(db_local, post_sql):
+    for fname in post_sql:
+        run("psql -d '%s' < %s" % (db_local, fname))
 
 
 if __name__ == '__main__':
