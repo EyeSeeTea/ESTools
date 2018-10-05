@@ -14,11 +14,17 @@ import psycopg2
 
 
 TIME = time.strftime('%Y-%m-%d_%H%M')
+COLOR = True
 
 
 def main():
+    global COLOR
+
     args = get_args()
     cfg = get_config(args.config)
+
+    if args.no_color or not os.isatty(sys.stdout.fileno()):
+        COLOR = False
 
     dir_local, dir_remote = cfg['server_dir_local'], cfg['server_dir_remote']
     db_local, db_remote = cfg['db_local'], cfg['db_remote']
@@ -69,6 +75,7 @@ def get_args():
     add('--no-backups', action='store_true', help="don't make backups")
     add('--manual-restart', action='store_true', help="don't stop/start tomcat")
     add('--post-sql', nargs='+', default=[], help='sql files to run post-clone')
+    add('--no-color', action='store_true', help="don't use colored output")
     return parser.parse_args()
 
 
@@ -106,7 +113,8 @@ def run(cmd):
 
 
 def log(txt):
-    print(magenta('[%s] %s' % (time.strftime('%Y-%m-%d %T'), txt)))
+    out = '[%s] %s' % (time.strftime('%Y-%m-%d %T'), txt)
+    print(magenta(out) if COLOR else out)
     sys.stdout.flush()
 
 
@@ -213,6 +221,8 @@ def empty_db(db_local):
 
 def delete_data(db_local):
     "Delete data from the tables with values"
+    # TODO: Take automatically the tables that end with "value(s)" or
+    #       "audit".
     data_tables = """\
 organisationunitattributevalues
 programattributevalues
@@ -270,6 +280,7 @@ programstageinstance
 def run_sql(db_local, post_sql):
     for fname in post_sql:
         run("psql -d '%s' < %s" % (db_local, fname))
+
 
 
 if __name__ == '__main__':
