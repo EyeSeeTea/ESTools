@@ -1,0 +1,34 @@
+{
+    "backups_dir": "/home/user/backups",
+    "backup_name": "TRAINING",
+    "server_dir_local": "/home/user/server",
+    "server_dir_remote": "/home/user/server",
+    "hostname_remote": "prod",
+    "db_local": "postgresql://user:pass@server_local:5432/db",
+    "db_remote": "postgresql://user:pass@server_remote:5432/db",
+    "war_local": "dhis2-demo.war",
+    "war_remote": "dhis2.war",
+    "api_remote": {
+        "url": "http://localhost:8080",
+        "username": "system",
+        "password": "System123"
+    },
+    "postprocess": {
+        "enableUsers": {
+            "userGroups": ["Administrators", "Malaria program"],
+            "usernames": ["guest", "district"]
+        },
+        "addUserRoles": [
+            {
+                "userGroups": ["_DATASET_M and E Officer"],
+                "userTemplate": "district",
+                "extraUserRoles": ["Facility tracker"]
+            },
+            {
+                "userGroups": ["Administrators"],
+                "userTemplate": "android",
+                "extraUserRoles": ["Guest"]
+            }
+        ]
+    }
+}

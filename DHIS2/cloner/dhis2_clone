@@ -7,10 +7,14 @@ Clone a dhis2 installation from another server.
 import sys
 import os
 import time
+import json
+import requests
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
-from ConfigParser import ConfigParser, ParsingError
 
 import psycopg2
+
+import dhis2api
+import process
 
 
 TIME = time.strftime('%Y-%m-%d_%H%M')
@@ -22,6 +26,10 @@ def main():
 
     args = get_args()
     cfg = get_config(args.config)
+
+    api_config = cfg['api_local']
+    api = dhis2api.Dhis2Api(api_config['url'], api_config['username'],
+                            api_config['password'])
 
     if args.no_color or not os.isatty(sys.stdout.fileno()):
         COLOR = False
@@ -52,17 +60,44 @@ def main():
     if not args.manual_restart:
         start_tomcat(dir_local)
 
+    wait_for_server(api)
+    postprocess(api, cfg['postprocess'])
+
+
+def wait_for_server(api, timeout=300):
+    start_time = time.time()
+    print('Check active API: %s' % api.api_url)
+
+    while True:
+        try:
+            api.get('/me')
+            break
+        except requests.exceptions.ConnectionError:
+            if time.time() - start_time > timeout:
+                raise RuntimeError('Timeout: could not connect to the API')
+            time.sleep(1)
+
+
+def postprocess(api, config):
+    conf_enable = config.get('enableUsers', {})
+    process.enable_users(api,
+                         usernames=conf_enable.get('usernames', []),
+                         user_group_names=conf_enable.get('userGroups', []))
+
+    conf_add =  config.get('addUserRoles', [])
+    process.add_user_roles(api, conf_add)
+
 
 def get_config(fname):
     "Return dict with the options read from configuration file"
     log('Reading from config file %s ...' % fname)
-    cp = ConfigParser()
     try:
-        cp.readfp(open(fname))
-        check_config(cp)
+        with open(fname) as f:
+            config = json.load(f)
+        check_config(config)
     except (AssertionError, IOError, ParsingError) as e:
         sys.exit('Error reading config file %s: %s' % (fname, e))
-    return dict(cp.items('clone'))
+    return config
 
 
 def get_args():
@@ -79,13 +114,12 @@ def get_args():
     return parser.parse_args()
 
 
-def check_config(cp):
+def check_config(cfg):
     "Assert all the options in configuration exist and have reasonable values"
-    assert cp.has_section('clone'), 'Missing section [clone]'
-    cfg = dict(cp.items('clone'))
     for option in ['backups_dir', 'backup_name', 'hostname_remote',
                    'server_dir_local', 'server_dir_remote',
-                   'db_local', 'db_remote', 'war_local', 'war_remote']:
+                   'db_local', 'db_remote', 'war_local', 'war_remote',
+                   'api_local', 'postprocess']:
         assert option in cfg, 'Missing option "%s"' % option
     for path in ['backups_dir', 'server_dir_local']:
         assert os.path.isdir(cfg[path]), \
@@ -180,38 +214,25 @@ def empty_db(db_local):
     db_name = db_local.split('/')[-1]
     with psycopg2.connect(db_local) as conn:
         with conn.cursor() as cur:
-            # Drop views.
-            cur.execute("SELECT table_name FROM information_schema.views "
-                        "WHERE table_schema='public' "
-                        "AND table_catalog='%s'" % db_name)
-            results = cur.fetchall()
-            views = zip(*results)[0] if results else []
-            log("Dropping %d views ..." % len(views))
-            for view in views:
-                cur.execute("DROP VIEW IF EXISTS %s CASCADE" % view)
-                conn.commit()
+            def fetch(col, name):
+                cur.execute(
+                    "SELECT %s FROM information_schema.%s "
+                    "WHERE table_schema='public' "
+                    "AND table_catalog='%s'" % (col, name, db_name))
+                results = cur.fetchall()
+                return zip(*results)[0] if results else []
 
-            # Drop tables.
-            cur.execute("SELECT table_name FROM information_schema.tables "
-                        "WHERE table_schema='public' "
-                        "AND table_catalog='%s'" % db_name)
-            results = cur.fetchall()
-            tables = zip(*results)[0] if results else []
-            log("Dropping %d tables ..." % len(tables))
-            for table in tables:
-                cur.execute("DROP TABLE IF EXISTS %s CASCADE" % table)
-                conn.commit()
+            def drop(col, name):
+                xs = fetch(col, name)
+                log("Dropping %d %s..." % (len(xs), name))
+                view = name[:-1].upper()  # "tables" -> "TABLE"
+                for x in xs:
+                    cur.execute("DROP %s IF EXISTS %s CASCADE" % (view, x))
+                    conn.commit()
 
-            # Drop sequences.
-            cur.execute("SELECT sequence_name FROM information_schema.sequences "
-                        "WHERE sequence_schema='public' "
-                        "AND sequence_catalog='%s'" % db_name)
-            results = cur.fetchall()
-            sequences = zip(*results)[0] if results else []
-            log("Dropping %d sequences ..." % len(sequences))
-            for sequence in sequences:
-                cur.execute("DROP SEQUENCE IF EXISTS %s CASCADE" % sequence)
-                conn.commit()
+            drop('table_name', 'views')
+            drop('table_name', 'tables')
+            drop('sequence_name', 'sequences')
 
             # If we had permissions, it would be as simple as a
             #   DROP DATABASE dbname
@@ -221,8 +242,23 @@ def empty_db(db_local):
 
 def delete_data(db_local):
     "Delete data from the tables with values"
-    # TODO: Take automatically the tables that end with "value(s)" or
-    #       "audit".
+    # We'd like to get all the relevant tables with something similar to:
+    #   db_name = db_local.split('/')[-1]
+    #   with psycopg2.connect(db_local) as conn:
+    #       with conn.cursor() as cur:
+    #           cur.execute(
+    #               "SELECT table_name FROM information_schema.tables "
+    #               "WHERE table_schema='public' "
+    #               "AND (table_name LIKE '%values' OR "
+    #               "     table_name LIKE '%value' OR "
+    #               "     table_name LIKE '%audit' OR "
+    #               "     table_name LIKE '%instance%') "
+    #               "AND table_catalog='%s'" % db_name)
+    #           results = cur.fetchall()
+    #           data_tables = zip(*results)[0] if results else []
+    # but we have to delete the tables in a specific order so constraints
+    # are satisfied.
+
     data_tables = """\
 organisationunitattributevalues
 programattributevalues
