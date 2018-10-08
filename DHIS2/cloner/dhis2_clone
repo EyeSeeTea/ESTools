@@ -246,66 +246,16 @@ def empty_db(db_local):
 
 def delete_data(db_local):
     "Delete data from the tables with values"
-    # We'd like to get all the relevant tables with something similar to:
-    #   db_name = db_local.split('/')[-1]
-    #   with psycopg2.connect(db_local) as conn:
-    #       with conn.cursor() as cur:
-    #           cur.execute(
-    #               "SELECT table_name FROM information_schema.tables "
-    #               "WHERE table_schema='public' "
-    #               "AND (table_name LIKE '%values' OR "
-    #               "     table_name LIKE '%value' OR "
-    #               "     table_name LIKE '%audit' OR "
-    #               "     table_name LIKE '%instance%') "
-    #               "AND table_catalog='%s'" % db_name)
-    #           results = cur.fetchall()
-    #           data_tables = zip(*results)[0] if results else []
-    # but we have to delete the tables in a specific order so constraints
-    # are satisfied.
-
+    # We delete the tables in a specific order so constraints are satisfied.
     data_tables = """\
-organisationunitattributevalues
-programattributevalues
-datasetattributevalues
-categoryoptioncomboattributevalues
-categoryoptiongroupattributevalues
-constantattributevalues
-dataelementattributevalues
-dataelementcategoryoptionattributevalues
-dataelementgroupattributevalues
-documentattributevalues
-indicatorattributevalues
-indicatorgroupattributevalues
-legendsetattributevalues
-optionattributevalues
-optiongroupattributevalues
-optionsetattributevalues
-orgunitgroupattributevalues
-orgunitgroupsetattributevalues
-programindicatorattributevalues
-programindicatorgroupattributevalues
-programstageattributevalues
-sectionattributevalues
-sqlviewattributevalues
-trackedentityattributeattributevalues
-trackedentityattributereservedvalue
-trackedentityattributevalueaudit
-trackedentityattributevalue
-trackedentityattributevalues
-userattributevalues
-usergroupattributevalues
-attributevalue
-optionvaluetranslations
-optionvalue
 trackedentitydatavalueaudit
 trackedentitydatavalue
-keyjsonvalue
-userkeyjsonvalue
 datavalueaudit
 datavalue
 programstageinstance_messageconversation
 programstageinstancecomments
 programstageinstance
+trackedentityinstance
 """.split()
 
     db_name = db_local.split('/')[-1]
