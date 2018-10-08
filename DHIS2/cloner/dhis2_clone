@@ -95,7 +95,7 @@ def get_config(fname):
         with open(fname) as f:
             config = json.load(f)
         check_config(config)
-    except (AssertionError, IOError, ParsingError) as e:
+    except (AssertionError, IOError, ValueError) as e:
         sys.exit('Error reading config file %s: %s' % (fname, e))
     return config
 
