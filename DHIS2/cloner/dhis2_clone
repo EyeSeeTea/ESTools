@@ -79,12 +79,12 @@ def wait_for_server(api, timeout=300):
 
 
 def postprocess(api, config):
-    conf_enable = config.get('enableUsers', {})
+    conf_enable = config.get('enable', {})
     process.enable_users(api,
-                         usernames=conf_enable.get('usernames', []),
-                         user_group_names=conf_enable.get('userGroups', []))
+                         usernames=conf_enable.get('users', []),
+                         user_group_names=conf_enable.get('groups', []))
 
-    conf_add =  config.get('addUserRoles', [])
+    conf_add = config.get('addUserRoles', [])
     process.add_user_roles(api, conf_add)
 
 

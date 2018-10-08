@@ -8,15 +8,15 @@
     "db_remote": "postgresql://user:pass@server_remote:5432/db",
     "war_local": "dhis2-demo.war",
     "war_remote": "dhis2.war",
-    "api_remote": {
+    "api_local": {
         "url": "http://localhost:8080",
         "username": "system",
         "password": "System123"
     },
     "postprocess": {
-        "enableUsers": {
-            "userGroups": ["Administrators", "Malaria program"],
-            "usernames": ["guest", "district"]
+        "enable": {
+            "users": ["guest", "district"],
+            "groups": ["Administrators", "Malaria program"]
         },
         "addUserRoles": [
             {
