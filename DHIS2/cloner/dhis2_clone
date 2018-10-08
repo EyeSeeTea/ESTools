@@ -214,25 +214,29 @@ def empty_db(db_local):
     db_name = db_local.split('/')[-1]
     with psycopg2.connect(db_local) as conn:
         with conn.cursor() as cur:
-            def fetch(col, name):
+            def fetch(name):
+                prefix = {'views': 'table',
+                          'tables': 'table',
+                          'sequences': 'sequence'}[name]
                 cur.execute(
-                    "SELECT %s FROM information_schema.%s "
-                    "WHERE table_schema='public' "
-                    "AND table_catalog='%s'" % (col, name, db_name))
+                    "SELECT %(prefix)s_name FROM information_schema.%(name)s "
+                    "WHERE %(prefix)s_schema='public' "
+                    "AND %(prefix)s_catalog='%(db_name)s'" % {
+                        'prefix': prefix, 'name': name, 'db_name': db_name})
                 results = cur.fetchall()
                 return zip(*results)[0] if results else []
 
-            def drop(col, name):
-                xs = fetch(col, name)
+            def drop(name):
+                xs = fetch(name)
                 log("Dropping %d %s..." % (len(xs), name))
                 view = name[:-1].upper()  # "tables" -> "TABLE"
                 for x in xs:
                     cur.execute("DROP %s IF EXISTS %s CASCADE" % (view, x))
                     conn.commit()
 
-            drop('table_name', 'views')
-            drop('table_name', 'tables')
-            drop('sequence_name', 'sequences')
+            drop('views')
+            drop('tables')
+            drop('sequences')
 
             # If we had permissions, it would be as simple as a
             #   DROP DATABASE dbname
