@@ -104,7 +104,7 @@ def get_args():
     "Return arguments"
     parser = ArgumentParser(description=__doc__, formatter_class=fmt)
     add = parser.add_argument  # shortcut
-    add('--config', default='dhis2_clone.cfg', help='file with configuration')
+    add('--config', default='dhis2_clone.json', help='file with configuration')
     add('--no-data', action='store_true', help='copy only metadata, no data')
     add('--no-webapps', action='store_true', help="don't clone the webapps")
     add('--no-backups', action='store_true', help="don't make backups")
