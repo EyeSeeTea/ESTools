@@ -65,9 +65,9 @@ def main():
 
 
 def wait_for_server(api, timeout=300):
-    start_time = time.time()
-    print('Check active API: %s' % api.api_url)
+    log('Check active API: %s' % api.api_url)
 
+    start_time = time.time()
     while True:
         try:
             api.get('/me')
