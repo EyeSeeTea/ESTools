@@ -8,12 +8,10 @@ import sys
 import os
 import time
 import json
-import requests
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
 
 import psycopg2
 
-import dhis2api
 import process
 
 
@@ -26,10 +24,6 @@ def main():
 
     args = get_args()
     cfg = get_config(args.config)
-
-    api_config = cfg['api_local']
-    api = dhis2api.Dhis2Api(api_config['url'], api_config['username'],
-                            api_config['password'])
 
     if args.no_color or not os.isatty(sys.stdout.fileno()):
         COLOR = False
@@ -59,33 +53,10 @@ def main():
 
     if not args.manual_restart:
         start_tomcat(dir_local)
-
-    wait_for_server(api)
-    postprocess(api, cfg['postprocess'])
-
-
-def wait_for_server(api, timeout=300):
-    log('Check active API: %s' % api.api_url)
-
-    start_time = time.time()
-    while True:
-        try:
-            api.get('/me')
-            break
-        except requests.exceptions.ConnectionError:
-            if time.time() - start_time > timeout:
-                raise RuntimeError('Timeout: could not connect to the API')
-            time.sleep(1)
-
-
-def postprocess(api, config):
-    conf_enable = config.get('enable', {})
-    process.enable_users(api,
-                         usernames=conf_enable.get('users', []),
-                         user_group_names=conf_enable.get('groups', []))
-
-    conf_add = config.get('addUserRoles', [])
-    process.add_user_roles(api, conf_add)
+        process.postprocess(cfg['api_local'], cfg['postprocess'])
+    else:
+        log('Server not started automatically, as requested.')
+        log('No postprocessing done.')
 
 
 def get_config(fname):
@@ -183,7 +154,7 @@ def get_webapps(route_local, war_local, route_remote, war_remote):
     if war_local != war_remote:
         run(('cd %s/webapps; ' % route_local) +
             ('mv %s %s; ' % (war_remote, war_local)) +  # the war file itself
-            ('rm -rf %s' % war_local[:-4]) +
+            ('rm -rf %s; ' % war_local[:-4]) +
             ('mv %s %s' % (war_remote[:-4], war_local[:-4])))  # the directory
 
 
