@@ -159,6 +159,7 @@ def get_webapps(route_local, war_local, route_remote, war_remote):
 
 
 def get_db(db_local, db_remote, hostname_remote):
+    "Replace the contents of db_local with db_remote"
     empty_db(db_local)
     exclude = ("--exclude-table 'aggregated*' --exclude-table 'analytics*' "
                "--exclude-table 'completeness*' --exclude-schema sys")
@@ -192,17 +193,17 @@ def empty_db(db_local):
                 cur.execute(
                     "SELECT %(prefix)s_name FROM information_schema.%(name)s "
                     "WHERE %(prefix)s_schema='public' "
-                    "AND %(prefix)s_catalog='%(db_name)s'" % {
-                        'prefix': prefix, 'name': name, 'db_name': db_name})
+                    "AND %(prefix)s_catalog='%(db_name)s'" %
+                    {'prefix': prefix, 'name': name, 'db_name': db_name})
                 results = cur.fetchall()
                 return zip(*results)[0] if results else []
 
             def drop(name):
                 xs = fetch(name)
                 log("Dropping %d %s..." % (len(xs), name))
-                view = name[:-1].upper()  # "tables" -> "TABLE"
+                kind = name[:-1].upper()  # "tables" -> "TABLE"
                 for x in xs:
-                    cur.execute("DROP %s IF EXISTS %s CASCADE" % (view, x))
+                    cur.execute("DROP %s IF EXISTS %s CASCADE" % (kind, x))
                     conn.commit()
 
             drop('views')

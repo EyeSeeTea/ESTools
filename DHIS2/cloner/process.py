@@ -1,5 +1,5 @@
 """
-DHIS2 API and helpers.
+Enable and add roles to selected users.
 
 Example:
 
@@ -7,11 +7,9 @@ Example:
     >> import process
     >> api = dhis2apis.Dhis2Api('http://localhost:8080/api',
                                 username='admin', password='district')
-    >> process.enable_users(api, usernames=['android', 'district'],
-                            user_group_names=['Administrators'])
+    >> process.add_roles(api, usernames=['test.dataentry'],
+                         users_from_group_names=['program1', 'program2'])
 """
-
-from __future__ import print_function
 
 import sys
 import time
@@ -60,7 +58,8 @@ def wait_for_server(api, delay=30, timeout=300):
 
 def add_roles(api, usernames, users_from_group_names,
               rolenames, template_with_roles):
-    """
+    """Add roles to the appropriate users.
+
     Take the users with the given usernames and all users in groups
     users_from_group_names, enable them and add them roles from
     add_roles and the roles in user add_roles_from_template.
@@ -119,6 +118,7 @@ def get_users_by_group_names(api, user_group_names):
 
 
 def get_user_roles_by_name(api, user_role_names):
+    "Return list of roles corresponding to the given role names"
     debug('Get user roles: name=%s' % user_role_names)
     response = api.get('/userRoles', {
         'paging': False,
