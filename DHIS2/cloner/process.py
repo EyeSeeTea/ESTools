@@ -43,6 +43,7 @@ def postprocess(cfg, entries):
 
 
 def wait_for_server(api, delay=30, timeout=300):
+    "Sleep until server is ready to accept requests"
     debug('Check active API: %s' % api.api_url)
     time.sleep(delay)  # in case tomcat is still starting
     start_time = time.time()
