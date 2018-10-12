@@ -53,7 +53,10 @@ def main():
 
     if not args.manual_restart:
         start_tomcat(dir_local)
-        process.postprocess(cfg['api_local'], cfg['postprocess'])
+        if 'api_local' in cfg and 'postprocess' in cfg:
+            process.postprocess(cfg['api_local'], cfg['postprocess'])
+        else:
+            log('No postprocessing done.')
     else:
         log('Server not started automatically, as requested.')
         log('No postprocessing done.')
@@ -89,9 +92,11 @@ def check_config(cfg):
     "Assert all the options in configuration exist and have reasonable values"
     for option in ['backups_dir', 'backup_name', 'hostname_remote',
                    'server_dir_local', 'server_dir_remote',
-                   'db_local', 'db_remote', 'war_local', 'war_remote',
-                   'api_local', 'postprocess']:
+                   'db_local', 'db_remote', 'war_local', 'war_remote']:
         assert option in cfg, 'Missing option "%s"' % option
+    for option in ['api_local', 'postprocess']:
+        if option not in cfg:
+            log('Option %s missing. Will not do postprocessing.' % option)
     for path in ['backups_dir', 'server_dir_local']:
         assert os.path.isdir(cfg[path]), \
             '%s is not a directory: %s' % (path, cfg[path])
