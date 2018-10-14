@@ -232,6 +232,10 @@ datavalue
 programstageinstance_messageconversation
 programstageinstancecomments
 programstageinstance
+trackedentityattributevalue
+programinstancecomments
+programinstance
+trackedentityattributevalueaudit
 trackedentityinstance
 """.split()
 
