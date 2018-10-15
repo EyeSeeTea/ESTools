@@ -13,22 +13,15 @@
         "username": "system",
         "password": "System123"
     },
-    "postprocess": {
-        "enable": {
-            "users": ["guest", "district"],
-            "groups": ["Administrators", "Malaria program"]
+    "postprocess": [
+        {
+            "usernames": ["guest", "clone_test_user"],
         },
-        "addUserRoles": [
-            {
-                "userGroups": ["_DATASET_M and E Officer"],
-                "userTemplate": "district",
-                "extraUserRoles": ["Facility tracker"]
-            },
-            {
-                "userGroups": ["Administrators"],
-                "userTemplate": "android",
-                "extraUserRoles": ["Guest"]
-            }
-        ]
-    }
+        {
+            "usernames": ["test.dataentry"],
+            "fromGroups": ["program1", "program2"],
+            "addRoles": ["role1", "role2"],
+            "addRolesFromTemplate": "validator.template"
+        }
+    ]
 }
