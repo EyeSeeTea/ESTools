@@ -86,9 +86,14 @@ parse_args() { local global_array=$1 coded_options=$2 print_help=$3
   done
 }
 
-is_http() { local path_or_url=$1
-  echo "$path_or_url" | grep -q "^https\?://"
+startswith() { local text=$1 begin=$2
+  echo "$text" | grep -q "^$begin"
 }
+
+is_http() { local path_or_url=$1
+  startswith "$path_or_url" "https\?://"
+}
+
 
 ### App
 
@@ -102,14 +107,26 @@ declare -g profile
 download() { local destdir=$1 url=$2
   local filename
   filename="$destdir/$(basename "$url")"
-  if ! is_http "$url"; then # local file
+  if startswith "$url" "ssh://"; then
+    local remote_path
+    remote_path=$(echo "$url" | sed "s/^ssh://")
+    if scp -q "$remote_path" "$destdir"; then
+      debug "scp: $url"
+      echo $filename
+    else
+      debug "Could not scp: $url"
+      return 1
+    fi
+  elif is_http "$url"; then
+    if wget -q -O "$filename" "$url"; then
+      debug "Downloaded: $url"
+      echo $filename
+    else
+      debug "Could not download: $url"
+      return 1
+    fi
+  else # local file
     echo "$url"
-  elif wget -q -O "$filename" "$url"; then # http file
-    debug "Downloaded: $url"
-    echo $filename
-  else
-    debug "Could not download: $url"
-    return 1
   fi
 }
 
@@ -318,7 +335,7 @@ load_args_for_update_command() { local profile_or_first_option=${1:-}
 }
 
 update() {
-  local dbfile warfile datadir
+  local dbfile warfile datadir db_source
 
   load_args_for_update_command "$@"
 
@@ -328,8 +345,10 @@ update() {
   stop_dhis_server "${args[stop-command]}"
 
   if test "${args[hard]-}" || test "${args[soft]-}"; then
-    dbfile=$(download_from_fileurl_or_repository "$datadir" "${args[db-source]}" "${args[hard]-}")
-    import_database "$dbfile" "${args[db-name]}"
+    for db_source in ${args[db-source]}; do
+      dbfile=$(download_from_fileurl_or_repository "$datadir" "$db-source" "${args[hard]-}")
+      import_database "$dbfile" "${args[db-name]}"
+    done
   fi
 
   if test "${args[hard]-}" || test "${args[nodb]-}"; then
