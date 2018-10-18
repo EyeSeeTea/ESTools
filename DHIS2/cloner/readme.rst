@@ -45,7 +45,7 @@ Usage
     --no-webapps          don't clone the webapps (default: False)
     --no-backups          don't make backups (default: False)
     --manual-restart      don't stop/start tomcat (default: False)
-    --post-sql POST_SQL [POST_SQL ...]
+    --post-sql SQL1_SQL2_etc
                           sql files to run post-clone (default: [])
     --no-color            don't use colored output (default: False)
 
@@ -94,7 +94,7 @@ The sections in the configuration file are:
 Requirements
 ------------
 
-This program depends on a few Python standard modules, and also:
+This program depends on a few Python standard modules and also:
 
 * ``psycopg2``: to connect to the postgres database.
 * ``requests``: to make HTTP requests.
@@ -104,5 +104,5 @@ called ``python-psycopg2`` and ``python-requests``).
 
 Also, it relies on two more modules included here:
 
-* ``process.py``: include all the post-processing logic.
-* ``dhis2api.py``: handle communications with a DHIS2 server through its api.
+* ``process.py``: includes all the post-processing logic.
+* ``dhis2api.py``: handles communications with a DHIS2 server through its api.
