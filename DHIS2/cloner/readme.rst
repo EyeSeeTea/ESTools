@@ -91,10 +91,6 @@ The sections in the configuration file are:
 
 .. _`conninfo`: https://www.postgresql.org/docs/9.3/static/libpq-connect.html#LIBPQ-CONNSTRING
 
-To get more details, run the program with::
-
-  dhis2_clone --help
-
 Requirements
 ------------
 
