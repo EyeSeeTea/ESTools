@@ -1,9 +1,14 @@
 ## cronwrap
 
-Wrapper for crontab scripts: add logs and manages stderr for crontab. Example:
+Wrapper for crontab scripts. Features:
+
+- Save output of scripts (stdin and stderr) to a log file, with line timestamps.
+- Manages stderr for crontab. Note that crontab sends an email (variable `MAILTO`) whenever a command outputs something to stderr, even if it finished successfully. This wrapper makes sure nothing is written to stderr on success, to avoid this.
+
+Example:
 
 ```
-$ cronwrap output.log my-script arg1 arg2
+15 22 * * * /usr/local/bin/cronwrap /tmp/output.log ls /etc
 ```
 
-This runs "my-script arg1 arg2" and saves its stdout/stderr output (with timestamp) to output.log. Note that crontab sends an email (variable `MAILTO`) whenever a command outputs to the stderr, even if it finishes successfully. So the wrapper makes sure nothing is written to stderr on success.
+This runs `ls /etc` at 22:15 every day and saves its stdout/stderr output to `/tmp/output.log`.
