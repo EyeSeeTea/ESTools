@@ -41,11 +41,15 @@ def main():
         'euro': 'svSQSBLTVz6'}
     countries.update(get_countries())
     for alias, country in [
+            ('usa / hrsa', 'united states of america'),
+            ('belize/trinidad & tobago', 'belize'),
             ('trinidad', 'trinidad and tobago'),
-            ('usa', 'united states of america')]:
+            ('usa', 'united states of america'),
+    ]:
         countries[alias] = countries[country]
 
-    users = get_users_teena(countries) + get_users_aurora(countries)
+    #users = get_users_teena(countries) + get_users_aurora(countries)
+    users = get_users_prod(countries)
     user_groups = [update_group(x, users) for x in group_ids.values()]
 
     fout = 'users_hwf.json'
@@ -72,6 +76,34 @@ def fill_ids():
     for user in users:
         username = user['userCredentials']['username']
         ids[username] = (user['id'], user['userCredentials']['id'])
+
+
+def get_users_prod(countries):
+    df = pd.read_excel(
+        'InfoSystemsHRH_NHWA_GUARDS_DESK_LIST UPDATED_11_OCT.xlsx',
+        'NHWAusers')
+    users = []
+    for i, row in enumerate(df.itertuples()):
+        if i < 4:
+            continue
+        print(i)
+        print(row)
+        username = row[7]
+        if username is pd.np.nan:
+            continue
+        default = lambda x: x.strip() if x is not pd.np.nan else username
+        firstname = default(row[3])
+        surname = default(row[2])
+        name = (' '.join(x.strip() for x in [row[3], row[2]] if type(x) == str)
+                or username)
+        password = row[8]
+        email = row[6]
+        country = countries[row[1].lower()]
+        groups = [group_ids[x.lower().strip()] for x in row[10].split(',')]
+        users.append(generate_user(username, password,
+                                   firstname, surname, name,
+                                   email, country, groups))
+    return users
 
 
 def get_users_teena(countries):
@@ -122,7 +154,7 @@ def get_args():
     add = parser.add_argument  # shortcut
     add('-u', '--user', metavar='USER:PASSWORD', required=True,
         help='username and password for server authentication')
-    add('--url-base', default='http://who-dev.essi.upc.edu:8081',
+    add('--url-base', default='https://extranet.who.int/dhis2',
         help='base url to make queries')
     return parser.parse_args()
 
