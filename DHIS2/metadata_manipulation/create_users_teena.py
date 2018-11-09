@@ -253,7 +253,7 @@ def generate_user(username, password,
     }
 
     if type(email) == str:
-        user['userCredentials']['email'] = email
+        user['email'] = email
 
     return user
 
