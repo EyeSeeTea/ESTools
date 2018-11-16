@@ -4,6 +4,7 @@ require 'active_support/time'
 require 'togglv8'
 require 'mail'
 require 'optimist'
+require 'pp'
 
 class TogglAlerts
   SUBJECT_PREFIX = "toggl-alarms"
@@ -69,7 +70,7 @@ class TogglAlerts
 
   def send_message(body, subject)
     email_from = @email_from
-    to = @email_recipients.split(",").map(&:strip)
+    to = @email_recipients
     debug("Send email: #{subject} -> #{to}")
     full_body = "
       #{body}
@@ -109,8 +110,6 @@ class TogglAlerts
 
   def check_thresholds(cache)
     current_threshold_reached = (@thresholds || "")
-      .split(",")
-      .map(&:to_i)
       .sort
       .reverse
       .find { |threshold| @summary[:current_usage_percent] >= threshold }
@@ -163,30 +162,18 @@ end
 
 if __FILE__ == $0
   opts = Optimist::options do
-    opt(:api_token_path, "Path to API token", type: :string, default: File.join(__dir__, "api-token.txt"))
-    opt(:cache_path, "Path to API token", type: :string, default: File.join(__dir__, "cache.json"))
+    opt(:config_file, "Path to configuration file",
+      type: :string,
+      default: File.join(__dir__, "toggl_alerts.json"),
+    )
     opt(:date, "Date month (YYYY/MM/DD)", type: :string)
-    opt(:workspace, "Workspace name", type: :string, required: true)
-    opt(:project, "Project name", type: :string)
-    opt(:tag, "Tag name", type: :string, default: nil)
-    opt(:limit_hours, "Limit of total hours by month", type: :float, required: true)
-    opt(:thresholds, "Percert values to send alerts (VAL1,[VAL2,...])", type: :string)
-    opt(:email_from, "Email origin", type: :string, required: true)
-    opt(:email_recipients, "Recipient emails to notify (EMAIL1[,EMAIL2,...])", type: :string, required: true)
   end
-  
-  alerts = TogglAlerts.new(
-    api_token: File.read(opts[:api_token_path]).strip,
-    cache_path: opts[:cache_path],
-    date: opts[:date] ? Time.parse(opts[:date]).to_date : Date.current,
-    thresholds: opts[:thresholds],
-    workspace: opts[:workspace],
-    project: opts[:project],
-    tag: opts[:tag],
-    limit_hours: opts[:limit_hours],
-    email_from: opts[:email_from],
-    email_recipients: opts[:email_recipients],
-  )
 
+  $stderr.puts("Read configuration file: #{opts.config_file}")
+  all_options = JSON.parse(File.read(opts.config_file)).symbolize_keys.merge({
+    date: opts[:date] ? Time.parse(opts[:date]).to_date : Date.current,
+  })
+  $stderr.puts("Options: " + all_options.pretty_inspect)
+  alerts = TogglAlerts.new(all_options)
   alerts.notify
 end
