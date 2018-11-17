@@ -29,7 +29,7 @@ To find out the kernel version on all the hosts that appear in
 To list the files and directories in `/` and show them with newlines
 included in between::
 
-  $ ./multirunpy --format long 'ls /'
+  $ ./multirun.py --format long 'ls /'
 
 Usage
 -----
