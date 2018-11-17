@@ -49,5 +49,5 @@ Usage
                           file with hosts to run command on (default:
                           multirun_hosts.txt)
     --timeout TIMEOUT     number of seconds to wait (default: 10)
-    --format {short,long}
+    --format short_long
                           output format (default: short)
