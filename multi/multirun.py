@@ -56,18 +56,15 @@ def get_display(format_type, nodes):
                                        (node, '=' * len(node), out))
 
 
-def run(node, command, timeout):
-    "Run command in given node and return its output"
-    out = sp.check_output(['ssh', node, '/bin/sh'], stderr=sp.STDOUT,
-                          input=command.encode('utf8'), timeout=timeout)
-    return out.decode('utf8').strip()
-
-
 def multirun(command, nodes, timeout=10, max_workers=10):
     "Run command in nodes and yield their output, computed in parallel"
-    f = lambda node: run(node, command, timeout)
+    def run(node):
+        out = sp.check_output(['ssh', node, '/bin/sh'], stderr=sp.STDOUT,
+                              input=command.encode('utf8'), timeout=timeout)
+        return out.decode('utf8').strip()
+
     with ThreadPoolExecutor(max_workers) as executor:
-        future_to_node = {executor.submit(f, x): x for x in nodes}
+        future_to_node = {executor.submit(run, node): node for node in nodes}
         for future in as_completed(future_to_node):
             node = future_to_node[future]
             try:
