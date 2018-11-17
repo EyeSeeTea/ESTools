@@ -4,6 +4,7 @@
 Run command on multiple nodes, in parallel.
 """
 
+import sys
 import subprocess as sp
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
@@ -13,9 +14,11 @@ def main():
     try:
         args = get_arguments()
         nodes = get_nodes(args.hosts_file)
-        multirun(args.command, nodes, args.timeout)
+        display = get_display(args.format, nodes)
+        for node, out in multirun(args.command, nodes, args.timeout):
+            display(node, out)
     except (AssertionError, OSError) as e:
-        print(e)
+        sys.exit(e)
 
 
 def get_arguments():
@@ -25,6 +28,8 @@ def get_arguments():
     add('--hosts-file', default='multirun_hosts.txt',
         help='file with hosts to run command on')
     add('--timeout', type=int, default=10, help='number of seconds to wait')
+    add('--format', default='short', choices=['short', 'long'],
+        help='output format')
     return parser.parse_args()
 
 
@@ -41,6 +46,16 @@ def get_nodes(fname):
     return nodes
 
 
+def get_display(format_type, nodes):
+    "Return a function that, given a node and its output, displays it prettily"
+    if format_type == 'short':
+        fmt = '%%-%ds # %%s' % max(len(x) for x in nodes)
+        return lambda node, out: print(fmt % (node, out.replace('\n', ' ')))
+    else:
+        return lambda node, out: print('%s\n%s\n%s\n' %
+                                       (node, '=' * len(node), out))
+
+
 def run(node, command, timeout):
     "Run command in given node and return its output"
     out = sp.check_output(['ssh', node, '/bin/sh'], stderr=sp.STDOUT,
@@ -49,17 +64,16 @@ def run(node, command, timeout):
 
 
 def multirun(command, nodes, timeout=10, max_workers=10):
-    "Run command in nodes and print its ouput, computed in parallel"
+    "Run command in nodes and yield their output, computed in parallel"
     f = lambda node: run(node, command, timeout)
     with ThreadPoolExecutor(max_workers) as executor:
         future_to_node = {executor.submit(f, x): x for x in nodes}
         for future in as_completed(future_to_node):
             node = future_to_node[future]
             try:
-                out = future.result()
-                print('%-20s %s' % (node, out))
+                yield node, future.result()
             except Exception as e:
-                print('%-20s %s' % (node, e))
+                yield node, str(e)
 
 
 
