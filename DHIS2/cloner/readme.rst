@@ -113,7 +113,7 @@ For example, this will run the cloning for a training server every
 Saturday night at 22:00::
 
   $ crontab -l
-  00 22  * * 6 /services/tomcats/bin/dhis2_clone --no-data --config /services/tomcats/bin/dhis2_clone-training.json >> /services/tomcats/logs/dhis2_clone.log
+  00 22 * * 6 /services/tomcats/bin/dhis2_clone --no-data --config /services/tomcats/bin/dhis2_clone-training.json >> /services/tomcats/logs/dhis2_clone.log
 
 
 Requirements
@@ -155,9 +155,10 @@ User permissions
 The program assumes that it runs with permissions to:
 
 * Read and write all the files in ``<server_dir_local>``, and especially,
-** run the files ``<server_dir_local>/bin/startup.sh`` and
+  * run the files ``<server_dir_local>/bin/startup.sh`` and
   ``<server_dir_local>/bin/shutdown.sh``.
-** write on ``<server_dir_local>/webapps`` and ``<server_dir_local>/files``.
+  * write on ``<server_dir_local>/webapps`` and
+    ``<server_dir_local>/files``.
 * Write on ``<backups_dir>``.
 * Run ``ssh`` to connect to ``<hostname_remote>``.
 * Run ``psql`` and ``pg_dump`` on the local host, and on
