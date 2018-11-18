@@ -29,6 +29,11 @@ by running `upgrade-230.sql`_).
 
 .. _`upgrade-230.sql`: https://github.com/dhis2/dhis2-releases/blob/master/releases/2.30/upgrade-230.sql
 
+All the commands run to perform the different steps are printed on the
+screen (with color to help identify the steps), and the output of
+those commands too. If any step fails, the program will signal and
+error and stop all the processing at that point.
+
 Usage
 -----
 
@@ -69,10 +74,15 @@ You can specify a different configuration file with ``--config``.
 The sections in the configuration file are:
 
 * ``backups_dir``: directory where it will store the backups.
-* ``backup_name``: an identifier that it will append to the name of the war file and database backups.
-* ``server_dir_local``: base directory of the tomcat running in the local server.
-* ``server_dir_remote``: base directory of the tomcat running in the remote server.
-* ``hostname_remote``: name or IP of the machine containing the remote DHIS2 instance. The user running the script is assumed to have ssh access to that machine.
+* ``backup_name``: an identifier that it will append to the name of
+  the war file and database backups.
+* ``server_dir_local``: base directory of the tomcat running in the
+  local server.
+* ``server_dir_remote``: base directory of the tomcat running in the
+  remote server.
+* ``hostname_remote``: name or IP of the machine containing the remote
+  DHIS2 instance. The user running the script is assumed to have ssh
+  access to that machine.
 * ``db_local``: URI `conninfo`_ string to connect to the local database.
 * ``db_remote``: URI conninfo string to connect to the remote database.
 * ``war_local``: name of the local war file (when connecting to the
@@ -91,8 +101,26 @@ The sections in the configuration file are:
 
 .. _`conninfo`: https://www.postgresql.org/docs/9.3/static/libpq-connect.html#LIBPQ-CONNSTRING
 
+Automatic cloning
+-----------------
+
+You may want to run the cloning script periodically. For that, you can
+use the appropriate users's crontab::
+
+  $ crontab -e
+
+For example, this will run the cloning for a training server every
+Saturday night at 22:00::
+
+  $ crontab -l
+  00 22  * * 6 /services/tomcats/bin/dhis2_clone --no-data --config /services/tomcats/bin/dhis2_clone-training.json >> /services/tomcats/logs/dhis2_clone.log
+
+
 Requirements
 ------------
+
+Python
+~~~~~~
 
 This program depends on a few Python standard modules and also:
 
@@ -106,3 +134,47 @@ Also, it relies on two more modules included here:
 
 * ``process.py``: includes all the post-processing logic.
 * ``dhis2api.py``: handles communications with a DHIS2 server through its api.
+
+System programs
+~~~~~~~~~~~~~~~
+
+Other than the standard system utilities, the program will need to
+have a local installation of:
+
+* ``rsync`` (used with ``ssh`` to copy the remote webapps).
+* ``ssh`` (used to copy the remote webapps and to launch the remote dump
+  of the database to be cloned).
+* ``psql`` (used to modify the local database).
+* ``pg_dump`` (used to make a backup of the local database, and a dump
+  of the remote one -- so this one needs to exist on ``hostname_remote``
+  too).
+
+User permissions
+~~~~~~~~~~~~~~~~
+
+The program assumes that it runs with permissions to:
+
+* Read and write all the files in ``<server_dir_local>``, and especially,
+** run the files ``<server_dir_local>/bin/startup.sh`` and
+  ``<server_dir_local>/bin/shutdown.sh``.
+** write on ``<server_dir_local>/webapps`` and ``<server_dir_local>/files``.
+* Write on ``<backups_dir>``.
+* Run ``ssh`` to connect to ``<hostname_remote>``.
+* Run ``psql`` and ``pg_dump`` on the local host, and on
+  ``<hostname_remote>`` thru ``ssh``.
+* Read all the files in ``<hostname_remote>:<server_dir_remote>`` thru
+  ``ssh``.
+* Have read and write access to the local database thru the ``db_local``
+  conninfo string, and read access to the remote one thru ``db_remote``.
+
+If it runs any kind of postprocessing (by having an ``api_local`` and
+``postprocess`` section in the configuration file), it will also need
+permissions to:
+
+* Access the running dhis2 instance thru the ``url``, ``username`` and
+  ``password`` present in the ``api_local`` section, and have
+  permissions to change the users.
+
+In any case, it does not assume permissions to:
+
+* Delete and create databases.
