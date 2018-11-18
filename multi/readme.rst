@@ -24,7 +24,7 @@ Example
 To find out the kernel version on all the hosts that appear in
 `multirun_hosts.txt`, you can simply run::
 
-  $ ./multirun.py 'ps -a'
+  $ ./multirun.py 'uname -a'
 
 To list the files and directories in `/` and show them with newlines
 included in between::
