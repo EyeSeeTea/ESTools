@@ -155,9 +155,10 @@ User permissions
 The program assumes that it runs with permissions to:
 
 * Read and write all the files in ``<server_dir_local>``, and especially,
-  ** run the files ``<server_dir_local>/bin/startup.sh`` and
+
+  * run the files ``<server_dir_local>/bin/startup.sh`` and
   ``<server_dir_local>/bin/shutdown.sh``.
-  ** write on ``<server_dir_local>/webapps`` and
+  * write on ``<server_dir_local>/webapps`` and
     ``<server_dir_local>/files``.
 * Write on ``<backups_dir>``.
 * Run ``ssh`` to connect to ``<hostname_remote>``.
