@@ -158,6 +158,7 @@ The program assumes that it runs with permissions to:
 
   * run the files ``<server_dir_local>/bin/startup.sh`` and
   ``<server_dir_local>/bin/shutdown.sh``.
+
   * write on ``<server_dir_local>/webapps`` and
     ``<server_dir_local>/files``.
 * Write on ``<backups_dir>``.
