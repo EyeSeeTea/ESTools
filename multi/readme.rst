@@ -34,9 +34,7 @@ included in between::
 Usage
 -----
 
-  usage: multirun.py [-h] [--hosts-file HOSTS_FILE] [--timeout TIMEOUT]
-                     [--format {short,long}]
-                     command
+  usage: multirun.py [-h] [--hosts-file HOSTS_FILE] [--timeout TIMEOUT] [--format {short,long}] command
 
   Run command on multiple nodes, in parallel.
 
