@@ -45,7 +45,6 @@ Usage
 
   optional arguments:
     -h, --help                show this help message and exit
-    --hosts-file HOSTS_FILE   file with hosts to run command on (default:
-                              multirun_hosts.txt)
+    --hosts-file HOSTS_FILE   file with hosts to run command on (default:  multirun_hosts.txt)
     --timeout TIMEOUT         number of seconds to wait (default: 10)
     --format short_long       output format (default: short)
