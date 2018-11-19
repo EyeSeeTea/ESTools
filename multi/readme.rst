@@ -34,15 +34,15 @@ included in between::
 Usage
 -----
 
-  usage: multirun.py [-h] [--hosts-file HOSTS_FILE] [--timeout TIMEOUT] [--format {short,long}] command
+usage: multirun.py [-h] [--hosts-file HOSTS_FILE] [--timeout TIMEOUT] [--format {short,long}] command
 
-  Run command on multiple nodes, in parallel.
+Run command on multiple nodes, in parallel.
 
-  positional arguments:
-    command               command to run
+positional arguments:
+  command               command to run
 
-  optional arguments:
-    -h, --help                show this help message and exit
-    --hosts-file HOSTS_FILE   file with hosts to run command on (default:  multirun_hosts.txt)
-    --timeout TIMEOUT         number of seconds to wait (default: 10)
-    --format short_long       output format (default: short)
+optional arguments:
+  -h, --help                show this help message and exit
+  --hosts-file HOSTS_FILE   file with hosts to run command on (default:  multirun_hosts.txt)
+  --timeout TIMEOUT         number of seconds to wait (default: 10)
+  --format short_long       output format (default: short)
