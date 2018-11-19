@@ -45,9 +45,6 @@ def main():
 
     get_db(db_local, db_remote, cfg['hostname_remote'])
 
-    if args.no_data:
-        delete_data(db_local)
-
     if args.post_sql:
         run_sql(db_local, args.post_sql)
 
@@ -79,7 +76,6 @@ def get_args():
     parser = ArgumentParser(description=__doc__, formatter_class=fmt)
     add = parser.add_argument  # shortcut
     add('--config', default='dhis2_clone.json', help='file with configuration')
-    add('--no-data', action='store_true', help='copy only metadata, no data')
     add('--no-webapps', action='store_true', help="don't clone the webapps")
     add('--no-backups', action='store_true', help="don't make backups")
     add('--manual-restart', action='store_true', help="don't stop/start tomcat")
@@ -219,33 +215,6 @@ def empty_db(db_local):
             #   DROP DATABASE dbname
             #   CREATE DATABASE dbname
             # but we may not have those permissions.
-
-
-def delete_data(db_local):
-    "Delete data from the tables with values"
-    # We delete the tables in a specific order so constraints are satisfied.
-    data_tables = """\
-trackedentitydatavalueaudit
-trackedentitydatavalue
-datavalueaudit
-datavalue
-programstageinstance_messageconversation
-programstageinstancecomments
-programstageinstance
-trackedentityattributevalue
-programinstancecomments
-programinstance
-trackedentityattributevalueaudit
-trackedentityinstance
-""".split()
-
-    db_name = db_local.split('/')[-1]
-    with psycopg2.connect(db_local) as conn:
-        with conn.cursor() as cur:
-            for table in data_tables:
-                log("Deleting contents of table %s ..." % table)
-                cur.execute("DELETE FROM %s" % table)
-                conn.commit()
 
 
 def run_sql(db_local, post_sql):
