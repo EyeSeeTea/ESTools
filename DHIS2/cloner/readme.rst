@@ -113,7 +113,7 @@ For example, this will run the cloning for a training server every
 Saturday night at 22:00::
 
   $ crontab -l
-  00 22 * * 6 /services/tomcats/bin/dhis2_clone --no-data --config /services/tomcats/bin/dhis2_clone-training.json >> /services/tomcats/logs/dhis2_clone.log
+  00 22 * * 6 /services/tomcats/bin/dhis2_clone --no-data --config /services/tomcats/bin/dhis2_clone-training.json >> /services/tomcats/logs/dhis2_clone.log 2>&1
 
 
 Requirements
