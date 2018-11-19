@@ -14,62 +14,62 @@ The steps are:
 * Empty the local database and fill it with a replica of the remote one.
 * Start the tomcat again.
 
-Optionally, it can remove the data (while keeping the metadata) when
-copying the remote database (with ``--no-data``). Also, some steps can
-be switched off (``--no-backups``, ``--no-webapps``,
+Some steps can be switched off (``--no-backups``, ``--no-webapps``,
 ``--manual-restart``).
 
-If it is so specified in the configuration file, it will perform some
-postprocessing actions (see section below).
-
 Also, it can run some sql scripts on the database before starting the
-server again (``--post-sql``). This is especially useful to
+server again (``--post-sql``). This is useful in several
+scenarios. For example, to empty the tables that contain the data
+(while keeping the metadata), as one would want for a training server
+(see the `empty_data_tables.sql`_ example). Or it can be used to
 automatically upgrade from one version to another (say, 2.29 to 2.30
 by running `upgrade-230.sql`_).
 
 .. _`upgrade-230.sql`: https://github.com/dhis2/dhis2-releases/blob/master/releases/2.30/upgrade-230.sql
 
+If it is so specified in the configuration file, it will perform some
+postprocessing actions once the server is running again (see section
+below).
+
 All the commands run to perform the different steps are printed on the
 screen (with color to help identify the steps), and the output of
-those commands too. If any step fails, the program will signal and
+those commands too. If any step fails, the program will signal an
 error and stop all the processing at that point.
 
 Usage
 -----
 
-  usage: dhis2_clone [-h] [--config CONFIG] [--no-data] [--no-webapps]
-                     [--no-backups] [--manual-restart]
+  usage: dhis2_clone [-h] [--no-webapps] [--no-backups] [--manual-restart]
                      [--post-sql POST_SQL [POST_SQL ...]] [--no-color]
+                     config
 
   Clone a dhis2 installation from another server.
 
+  positional arguments:
+    config                file with configuration
+
   optional arguments:
     -h, --help            show this help message and exit
-    --config CONFIG       file with configuration (default: dhis2_clone.json)
-    --no-data             copy only metadata, no data (default: False)
-    --no-webapps          don't clone the webapps (default: False)
-    --no-backups          don't make backups (default: False)
-    --manual-restart      don't stop/start tomcat (default: False)
+    --no-webapps          don't clone the webapps
+    --no-backups          don't make backups
+    --manual-restart      don't stop/start tomcat
     --post-sql SQL1_SQL2_etc
-                          sql files to run post-clone (default: [])
-    --no-color            don't use colored output (default: False)
+                          sql files to run post-clone
+    --no-color            don't use colored output
 
 
 
 Configuration
 -------------
 
-When running::
+To invoke the program you need to specify a configuration file, as in::
 
-  dhis2_clone
+  $ dhis2_clone dhis2_clone.json
 
-it will try to read a configuration file ``dhis2_clone.json`` from the
-same directory. An example configuration file is provided in this
-repository (`dhis2_clone.json`_).
+An example configuration file is provided in this repository
+(`dhis2_clone.json`_).
 
 .. _`dhis2_clone.json`: https://github.com/EyeSeeTea/ESTools/blob/feature/dhis2-clone/DHIS2/cloner/dhis2_clone.json
-
-You can specify a different configuration file with ``--config``.
 
 The sections in the configuration file are:
 
