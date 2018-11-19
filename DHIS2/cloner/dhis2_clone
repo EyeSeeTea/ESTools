@@ -129,34 +129,37 @@ def magenta(txt):
 
 
 def start_tomcat(server_path):
-    run('%s/bin/startup.sh' % server_path)
+    run('"%s/bin/startup.sh"' % server_path)
 
 
 def stop_tomcat(server_path):
-    run('%s/bin/shutdown.sh' % server_path)
+    run('"%s/bin/shutdown.sh"' % server_path)
 
 
 def backup_db(backups_dir, backup_name, db_local):
     backup_file = '%s/%s_%s.dump' % (backups_dir, backup_name, TIME)
-    run("pg_dump --file %s --format custom --clean '%s'" % (backup_file,
-                                                            db_local))
+    run("pg_dump --file '%s' --format custom --clean '%s'" % (backup_file,
+                                                              db_local))
 
 
 def backup_war(backups_dir, dir_local, war_local):
     backup_file = '%s/%s_%s.war' % (backups_dir, war_local[:-4], TIME)
-    run('cp %s/webapps/%s %s' % (dir_local, war_local, backup_file))
+    run('cp "%s/webapps/%s" "%s"' % (dir_local, war_local, backup_file))
 
 
 def get_webapps(route_local, war_local, route_remote, war_remote):
     for subdir in ['webapps', 'files']:
-        run("rsync -a --delete '%s/%s/*' %s/%s" % (route_remote, subdir,
-                                                   route_local, subdir))
+        run("rsync -a --delete '%s/%s/*' '%s/%s'" % (route_remote, subdir,
+                                                     route_local, subdir))
 
     if war_local != war_remote:
-        run(('cd %s/webapps; ' % route_local) +
-            ('mv %s %s; ' % (war_remote, war_local)) +  # the war file itself
-            ('rm -rf %s; ' % war_local[:-4]) +
-            ('mv %s %s' % (war_remote[:-4], war_local[:-4])))  # the directory
+        commands = [
+            'cd "%s/webapps"' % route_local,
+            'rm -f "%s"' % war_local,  # the war file itself
+            'mv "%s" "%s"' % (war_remote, war_local),
+            'rm -rf "%s"' % war_local[:-4],  # the directory
+            'mv "%s" "%s"' % (war_remote[:-4], war_local[:-4])]
+        run('; '.join(commands))
 
 
 def get_db(db_local, db_remote, hostname_remote):
@@ -219,7 +222,7 @@ def empty_db(db_local):
 
 def run_sql(db_local, post_sql):
     for fname in post_sql:
-        run("psql -d '%s' < %s" % (db_local, fname))
+        run("psql -d '%s' < '%s'" % (db_local, fname))
 
 
 
