@@ -94,8 +94,8 @@ The sections in the configuration file are:
 * ``api_local``: if some post-processing steps are applied, this
   section needs to define a ``url``, ``username`` and ``password`` to
   connect to the running DHIS2 system after the cloning.
-* ``postprocess``: list of blocks, each containing users (especified
-  by ``usernames`` and/or ``fromGroups``) that will be activated, and
+* ``postprocess``: list of blocks, each containing users (specified by
+  ``usernames`` and/or ``fromGroups``) that will be activated, and
   optionally given extra roles if specified (directly from
   ``addRoles`` and/or from ``addRolesFromTemplate`` which will give
   all the roles corresponding to the given user too).
@@ -114,7 +114,7 @@ For example, this will run the cloning for a training server every
 Saturday night at 22:00::
 
   $ crontab -l
-  00 22 * * 6 /services/tomcats/bin/dhis2_clone --no-data --config /services/tomcats/bin/dhis2_clone-training.json >> /services/tomcats/logs/dhis2_clone.log 2>&1
+  00 22 * * 6 /usr/local/bin/dhis2_clone --post-sql /usr/share/dhis2_clone/empty_data_tables.sql /usr/share/dhis2_clone/training.json >> /var/log/dhis2_clone.log 2>&1
 
 
 Requirements
