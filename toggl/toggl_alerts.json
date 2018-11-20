@@ -1,11 +1,49 @@
 {
-    "api_token": "PUT_YOUR_TOGGL_TOKEN_HERE",
-    "cache_path": "cache.json",
-    "workspace": "WORKSPACE",
-    "project": "PROJECT",
-    "tag": "TAG",
-    "limit_hours": 100,
-    "thresholds": [50, 90, 100],
-    "email_from": "user1@somewhere.org",
-    "email_recipients": ["user2@somewhere.com", "user3@somewhere.com"]
+    "cache_path": "cache-%s.json",
+    "smtp": {
+        "address": "smtp.gmail.com",
+        "port": 587,
+        "domain": "gmail.com",
+        "authentication": "plain",
+        "enable_starttls_auto": true,
+        "user_name": "USER@gmail.com",
+        "password": "PASSWORD"
+    },
+    "checks": [
+        {
+            "id": "android-maintenance",
+            "enabled": true,
+            "api_token": "API_TOKEN",
+            "workspace": "EyeSeeTea-Android",
+            "projects": ["project1", "project2"],
+            "tags": ["tag1"],
+            "email_recipients": ["user@server.org"],
+            "monthly_checks": {
+                "enabled": true,
+                "limit_hours": 60,
+                "thresholds": [50, 90, 100, 120]
+            },
+            "yearly_checks": {
+                "enabled": false
+            }
+        },
+
+        {
+            "id": "web-hwf",
+            "enabled": true,
+            "api_token": "API_TOKEN",
+            "workspace": "EyeSeeTea-Web",
+            "projects": ["Servers maintenance"],
+            "tags": ["tag2", "tag3"],
+            "email_recipients": ["user@server.org"],
+            "monthly_checks": {
+                "enabled": false
+            },
+            "yearly_checks": {
+                "enabled": true,
+                "limit_hours": 340,
+                "start_date": "2018/03/01"
+            }
+        }
+    ]
 }
