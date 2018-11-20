@@ -8,8 +8,8 @@ require 'pp'
 require 'set'
 
 class TogglAlerts
-  SUBJECT_PREFIX = "toggl-alarms"
-  EMAIL_FROM = "info@eyeseetea.com"
+  SUBJECT_PREFIX = "toggl-alerts"
+  EMAIL_FROM = "alerts@eyeseetea.com"
 
   def initialize(
       api_token:,
