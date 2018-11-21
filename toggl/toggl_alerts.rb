@@ -273,7 +273,8 @@ class TogglAlerts
 
     config[:checks].each do |check_options|
       all_options = check_options.merge(date: date)
-      TogglAlerts.run_from_options(config.fetch(:cache_path), all_options)
+      cache_path = File.join(File.dirname(opts.config_file), config.fetch(:cache_path))
+      TogglAlerts.run_from_options(cache_path, all_options)
     end
   end
 end
