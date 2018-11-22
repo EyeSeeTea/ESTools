@@ -15,7 +15,7 @@
     },
     "postprocess": [
         {
-            "usernames": ["guest", "clone_test_user"],
+            "usernames": ["guest", "clone_test_user"]
         },
         {
             "usernames": ["test.dataentry"],
