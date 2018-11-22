@@ -49,10 +49,11 @@ def main():
         countries[alias] = countries[country]
 
     #users = get_users_teena(countries) + get_users_aurora(countries)
-    users = get_users_prod(countries)
+    #users = get_users_prod(countries)
+    users = get_users_mat(countries)
     user_groups = [update_group(x, users) for x in group_ids.values()]
 
-    fout = 'users_hwf.json'
+    fout = 'users_hwf_mat.json'
     if os.path.exists(fout):
         answer = input('File %s already exists. Overwrite? [y/N] ' % fout)
         if not answer.lower().startswith('y'):
@@ -62,9 +63,45 @@ def main():
                            indent=2) + '\n')
 
 
+def get_args():
+    parser = ArgumentParser(description=__doc__, formatter_class=fmt)
+    add = parser.add_argument  # shortcut
+    add('-u', '--user', metavar='USER:PASSWORD', required=True,
+        help='username and password for server authentication')
+    add('--url-base', default='https://extranet.who.int/dhis2-demo',
+        #'https://extranet.who.int/dhis2',
+        help='base url to make queries')
+    return parser.parse_args()
+
+
+def initialize_dhis2(user, url_base):
+    d2.USER = user
+    d2.URLBASE = url_base.rstrip('/')
+
+
+def get_countries():
+    "Return dictionary {'country name': 'id'}"
+    data = d2.get("organisationUnits.json?"
+                  "level=3&fields=id,shortName&paging=false")
+    return {pretty_name(x['shortName']): x['id']
+            for x in data['organisationUnits']}
+
+
+def pretty_name(name):
+    name = remove_accents(name).lower()
+    if ' (' in name:
+        name = name.split(' (', 1)[0]
+    return name
+
+
+def remove_accents(name):
+    return ''.join(c for c in unicodedata.normalize('NFD', name)
+                   if unicodedata.category(c) != 'Mn')
+
+
 def fill_ids():
     global ids
-    fname = 'users_hwf.json'
+    fname = 'users_hwf.json' # or 'users_hwf_mat.json'
     if not os.path.exists(fname):
         sys.exit('Cannot get the uids from inexistent file: %s' % fname)
         # If you want to generate them instead for the first time, do
@@ -76,6 +113,26 @@ def fill_ids():
     for user in users:
         username = user['userCredentials']['username']
         ids[username] = (user['id'], user['userCredentials']['id'])
+
+
+def get_users_mat(countries):
+    df = pd.read_excel(
+        'NHWA platform users Abidjan 2018 training.xlsx',
+        'Sheet2')
+    users = []
+    for row in df.itertuples():
+        username = row[6]
+        name = row.name
+        parts = name.rsplit(maxsplit=1)
+        firstname, surname = parts if len(parts) == 2 else (parts[0], parts[0])
+        password = row.Password
+        email = row.email
+        country = countries[row.OU.strip().lower()]
+        groups = [group_ids[x.lower().strip()] for x in row[9].split(',')]
+        users.append(generate_user(username, password,
+                                   firstname, surname, name,
+                                   email, country, groups))
+    return users
 
 
 def get_users_prod(countries):
@@ -147,41 +204,6 @@ def get_users_aurora(countries):
                                    firstname, surname, name,
                                    email, country, groups))
     return users
-
-
-def get_args():
-    parser = ArgumentParser(description=__doc__, formatter_class=fmt)
-    add = parser.add_argument  # shortcut
-    add('-u', '--user', metavar='USER:PASSWORD', required=True,
-        help='username and password for server authentication')
-    add('--url-base', default='https://extranet.who.int/dhis2',
-        help='base url to make queries')
-    return parser.parse_args()
-
-
-def initialize_dhis2(user, url_base):
-    d2.USER = user
-    d2.URLBASE = url_base.rstrip('/')
-
-
-def get_countries():
-    "Return dictionary {'country name': 'id'}"
-    data = d2.get("organisationUnits.json?"
-                  "level=3&fields=id,shortName&paging=false")
-    return {pretty_name(x['shortName']): x['id']
-            for x in data['organisationUnits']}
-
-
-def pretty_name(name):
-    name = remove_accents(name).lower()
-    if ' (' in name:
-        name = name.split(' (', 1)[0]
-    return name
-
-
-def remove_accents(name):
-    return ''.join(c for c in unicodedata.normalize('NFD', name)
-                   if unicodedata.category(c) != 'Mn')
 
 
 def generate_user(username, password,
