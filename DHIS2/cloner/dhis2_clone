@@ -43,7 +43,8 @@ def main():
         get_webapps(dir_local, cfg['war_local'],
                     route_remote, cfg['war_remote'])
 
-    get_db(db_local, db_remote, cfg['hostname_remote'])
+    if not args.no_db:
+        get_db(db_local, db_remote, cfg['hostname_remote'])
 
     if args.post_sql:
         run_sql(db_local, args.post_sql)
@@ -76,8 +77,9 @@ def get_args():
     parser = argparse.ArgumentParser(description=__doc__)
     add = parser.add_argument  # shortcut
     add('config', help='file with configuration')
-    add('--no-webapps', action='store_true', help="don't clone the webapps")
     add('--no-backups', action='store_true', help="don't make backups")
+    add('--no-webapps', action='store_true', help="don't clone the webapps")
+    add('--no-db', action='store_true', help="don't clone the database")
     add('--manual-restart', action='store_true', help="don't stop/start tomcat")
     add('--post-sql', nargs='+', default=[], help='sql files to run post-clone')
     add('--no-color', action='store_true', help="don't use colored output")

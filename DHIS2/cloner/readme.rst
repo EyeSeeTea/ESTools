@@ -14,8 +14,8 @@ The steps are:
 * Empty the local database and fill it with a replica of the remote one.
 * Start the tomcat again.
 
-Some steps can be switched off (``--no-backups``, ``--no-webapps``,
-``--manual-restart``).
+Any step can be individually switched off (``--no-backups``,
+``--no-webapps``, ``--no-db``, ``--manual-restart``).
 
 Also, it can run some sql scripts on the database before starting the
 server again (``--post-sql``). This is useful in several
@@ -40,8 +40,9 @@ error and stop all the processing at that point.
 Usage
 -----
 
-  usage: dhis2_clone [-h] [--no-webapps] [--no-backups] [--manual-restart]
-                     [--post-sql POST_SQL [POST_SQL ...]] [--no-color]
+  usage: dhis2_clone [-h] [--no-backups] [--no-webapps] [--no-db]
+                     [--manual-restart] [--post-sql POST_SQL [POST_SQL ...]]
+                     [--no-color]
                      config
 
   Clone a dhis2 installation from another server.
@@ -51,8 +52,9 @@ Usage
 
   optional arguments:
     -h, --help            show this help message and exit
-    --no-webapps          don't clone the webapps
     --no-backups          don't make backups
+    --no-webapps          don't clone the webapps
+    --no-db               don't clone the database
     --manual-restart      don't stop/start tomcat
     --post-sql SQL1_SQL2_etc
                           sql files to run post-clone
