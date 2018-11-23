@@ -1,0 +1,232 @@
+#!/usr/bin/env python
+
+"""
+Clone a dhis2 installation from another server.
+"""
+
+import sys
+import os
+import time
+import json
+import argparse
+
+import psycopg2
+
+import process
+
+
+TIME = time.strftime('%Y-%m-%d_%H%M')
+COLOR = True
+
+
+def main():
+    global COLOR
+
+    args = get_args()
+    cfg = get_config(args.config)
+
+    if args.no_color or not os.isatty(sys.stdout.fileno()):
+        COLOR = False
+
+    dir_local, dir_remote = cfg['server_dir_local'], cfg['server_dir_remote']
+    db_local, db_remote = cfg['db_local'], cfg['db_remote']
+
+    if not args.manual_restart:
+        stop_tomcat(dir_local)
+
+    if not args.no_backups:
+        backup_db(cfg['backups_dir'], cfg['backup_name'], db_local)
+        backup_war(cfg['backups_dir'], dir_local, cfg['war_local'])
+
+    if not args.no_webapps:
+        route_remote = '%s:%s' % (cfg['hostname_remote'], dir_remote)
+        get_webapps(dir_local, cfg['war_local'],
+                    route_remote, cfg['war_remote'])
+
+    if not args.no_db:
+        get_db(db_local, db_remote, cfg['hostname_remote'])
+
+    if args.post_sql:
+        run_sql(db_local, args.post_sql)
+
+    if not args.manual_restart:
+        start_tomcat(dir_local)
+        if 'api_local' in cfg and 'postprocess' in cfg:
+            process.postprocess(cfg['api_local'], cfg['postprocess'])
+        else:
+            log('No postprocessing done.')
+    else:
+        log('Server not started automatically, as requested.')
+        log('No postprocessing done.')
+
+
+def get_config(fname):
+    "Return dict with the options read from configuration file"
+    log('Reading from config file %s ...' % fname)
+    try:
+        with open(fname) as f:
+            config = json.load(f)
+        check_config(config)
+    except (AssertionError, IOError, ValueError) as e:
+        sys.exit('Error reading config file %s: %s' % (fname, e))
+    return config
+
+
+def get_args():
+    "Return arguments"
+    parser = argparse.ArgumentParser(description=__doc__)
+    add = parser.add_argument  # shortcut
+    add('config', help='file with configuration')
+    add('--no-backups', action='store_true', help="don't make backups")
+    add('--no-webapps', action='store_true', help="don't clone the webapps")
+    add('--no-db', action='store_true', help="don't clone the database")
+    add('--manual-restart', action='store_true', help="don't stop/start tomcat")
+    add('--post-sql', nargs='+', default=[], help='sql files to run post-clone')
+    add('--no-color', action='store_true', help="don't use colored output")
+    return parser.parse_args()
+
+
+def check_config(cfg):
+    "Assert all the options in configuration exist and have reasonable values"
+    for option in ['backups_dir', 'backup_name', 'hostname_remote',
+                   'server_dir_local', 'server_dir_remote',
+                   'db_local', 'db_remote', 'war_local', 'war_remote']:
+        assert option in cfg, 'Missing option "%s"' % option
+    for option in ['api_local', 'postprocess']:
+        if option not in cfg:
+            log('Option %s missing. Will not do postprocessing.' % option)
+    for path in ['backups_dir', 'server_dir_local']:
+        assert os.path.isdir(cfg[path]), \
+            '%s is not a directory: %s' % (path, cfg[path])
+    assert (os.path.isfile(cfg['server_dir_local'] + '/bin/startup.sh') and
+            os.path.isfile(cfg['server_dir_local'] + '/bin/shutdown.sh')), \
+            ('%s should be a directory with start/stop scripts in bin: %s' %
+             ('server_dir_local', cfg['server_dir_local']))
+    for uri in ['db_local', 'db_remote']:
+        assert is_good_db_uri(cfg[uri]), 'bad %s uri: %s' % (uri, cfg[uri])
+    for war in ['war_local', 'war_remote']:
+        assert cfg[war].endswith('.war'), \
+            'war file does not end with .war: %s' % cfg[war]
+
+
+def is_good_db_uri(uri):
+    return uri.startswith('postgresql://')  # we could be way more sophisticated
+
+
+def run(cmd):
+    log(cmd)
+    ret = os.system(cmd)
+    if ret != 0:
+        sys.exit(ret)
+
+
+def log(txt):
+    out = '[%s] %s' % (time.strftime('%Y-%m-%d %T'), txt)
+    print(magenta(out) if COLOR else out)
+    sys.stdout.flush()
+
+
+def magenta(txt):
+    return '\x1b[35m%s\x1b[0m' % txt
+
+
+def start_tomcat(server_path):
+    run('"%s/bin/startup.sh"' % server_path)
+
+
+def stop_tomcat(server_path):
+    run('"%s/bin/shutdown.sh"' % server_path)
+
+
+def backup_db(backups_dir, backup_name, db_local):
+    backup_file = '%s/%s_%s.dump' % (backups_dir, backup_name, TIME)
+    run("pg_dump --file '%s' --format custom --clean '%s'" % (backup_file,
+                                                              db_local))
+
+
+def backup_war(backups_dir, dir_local, war_local):
+    backup_file = '%s/%s_%s.war' % (backups_dir, war_local[:-4], TIME)
+    run('cp "%s/webapps/%s" "%s"' % (dir_local, war_local, backup_file))
+
+
+def get_webapps(route_local, war_local, route_remote, war_remote):
+    for subdir in ['webapps', 'files']:
+        run("rsync -a --delete '%s/%s/*' '%s/%s'" % (route_remote, subdir,
+                                                     route_local, subdir))
+
+    if war_local != war_remote:
+        commands = [
+            'cd "%s/webapps"' % route_local,
+            'rm -f "%s"' % war_local,  # the war file itself
+            'mv "%s" "%s"' % (war_remote, war_local),
+            'rm -rf "%s"' % war_local[:-4],  # the directory
+            'mv "%s" "%s"' % (war_remote[:-4], war_local[:-4])]
+        run('; '.join(commands))
+
+
+def get_db(db_local, db_remote, hostname_remote):
+    "Replace the contents of db_local with db_remote"
+    empty_db(db_local)
+    exclude = ("--exclude-table 'aggregated*' --exclude-table 'analytics*' "
+               "--exclude-table 'completeness*' --exclude-schema sys")
+    dump = "pg_dump -d '%s' --no-owner %s" % (db_remote, exclude)
+    cmd = "ssh %s %s | psql -d '%s'" % (hostname_remote, dump, db_local)
+    run(cmd + " 2>&1 | paste - - - | uniq -c")  # run with more compact output
+    # Errors like 'ERROR: role "u_dhis2" does not exist' are expected
+    # and safe to ignore.
+
+    # We could skip the "ssh hostname_remote" part if we can access the
+    # remote DB from the local machine, but we keep it in case we can't.
+
+    # I'd prefer to do it with postgres custom format and pg_restore:
+    #    dump = ("pg_dump -d '%s' --format custom --clean --no-owner %s" %
+    #            (db_remote, exclude))
+    #    user = db_local[len('postgresql://'):].split(':')[0]
+    #    run("ssh %s %s | pg_restore -d '%s' --no-owner --role %s" %
+    #        (hostname_remote, dump, db_local, user))
+    # but it causes problems with the user role.
+
+
+def empty_db(db_local):
+    "Empty the contents of database"
+    db_name = db_local.split('/')[-1]
+    with psycopg2.connect(db_local) as conn:
+        with conn.cursor() as cur:
+            def fetch(name):
+                prefix = {'views': 'table',
+                          'tables': 'table',
+                          'sequences': 'sequence'}[name]
+                cur.execute(
+                    "SELECT %(prefix)s_name FROM information_schema.%(name)s "
+                    "WHERE %(prefix)s_schema='public' "
+                    "AND %(prefix)s_catalog='%(db_name)s'" %
+                    {'prefix': prefix, 'name': name, 'db_name': db_name})
+                results = cur.fetchall()
+                return zip(*results)[0] if results else []
+
+            def drop(name):
+                xs = fetch(name)
+                log("Dropping %d %s..." % (len(xs), name))
+                kind = name[:-1].upper()  # "tables" -> "TABLE"
+                for x in xs:
+                    cur.execute("DROP %s IF EXISTS %s CASCADE" % (kind, x))
+                    conn.commit()
+
+            drop('views')
+            drop('tables')
+            drop('sequences')
+
+            # If we had permissions, it would be as simple as a
+            #   DROP DATABASE dbname
+            #   CREATE DATABASE dbname
+            # but we may not have those permissions.
+
+
+def run_sql(db_local, post_sql):
+    for fname in post_sql:
+        run("psql -d '%s' < '%s'" % (db_local, fname))
+
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,27 @@
+{
+    "backups_dir": "/home/user/backups",
+    "backup_name": "TRAINING",
+    "server_dir_local": "/home/user/server",
+    "server_dir_remote": "/home/user/server",
+    "hostname_remote": "prod",
+    "db_local": "postgresql://user:pass@server_local:5432/db",
+    "db_remote": "postgresql://user:pass@server_remote:5432/db",
+    "war_local": "dhis2-demo.war",
+    "war_remote": "dhis2.war",
+    "api_local": {
+        "url": "http://localhost:8080",
+        "username": "system",
+        "password": "System123"
+    },
+    "postprocess": [
+        {
+            "usernames": ["guest", "clone_test_user"]
+        },
+        {
+            "usernames": ["test.dataentry"],
+            "fromGroups": ["program1", "program2"],
+            "addRoles": ["role1", "role2"],
+            "addRolesFromTemplate": "validator.template"
+        }
+    ]
+}
