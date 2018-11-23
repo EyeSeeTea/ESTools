@@ -1,0 +1,48 @@
+name: 'dhis2-android-eventcapture'
+
+server:
+  auth: 'admin:district'
+
+services:
+- {method: GET, url: '/23/me/?fields=id,created,lastUpdated,name,displayName,firstName,surname,gender,birthday,introduction,education,employer,interests,jobTitle,languages,email,phoneNumber,teiSearchOrganisationUnits%5Bid%5D,organisationUnits%5Bid%5D'}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/me?fields=organisationUnits%5Bid,displayName,programs%5Bid%5D%5D,userCredentials%5BuserRoles%5Bprograms%5Bid%5D%5D%5D'}
+- {method: GET, url: '/programs/q04UBOqq3rp?fields=*,trackedEntity%5B*%5D,programIndicators%5B*%5D,programStages%5B*,!dataEntryForm,program%5Bid%5D,programIndicators%5B*%5D,programStageSections%5B*,programStageDataElements%5B*,programStage%5Bid%5D,dataElement%5B*,id,attributeValues%5B*,attribute%5B*%5D%5D,optionSet%5Bid%5D%5D%5D,programIndicators%5B*%5D%5D,programStageDataElements%5B*,programStage%5Bid%5D,dataElement%5B*,optionSet%5Bid%5D%5D%5D%5D,programTrackedEntityAttributes%5B*,trackedEntityAttribute%5B*%5D%5D,!organisationUnits'}
+- {method: GET, url: '/optionSets.json?fields=*,options%5B*%5D'}
+- {method: GET, url: '/constants?paging=false&fields=%5B:all%5D'}
+- {method: GET, url: '/programRules?paging=false&fields=%5B:all%5D'}
+- {method: GET, url: '/programRuleVariables?paging=false&fields=%5B:all%5D'}
+- {method: GET, url: '/programRuleActions?paging=false&fields=%5B:all%5D'}
+- {method: GET, url: '/relationshipTypes?paging=false&fields=%5B:all%5D'}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/events?page=0&program=VBqh0ynB2wv&orgUnit=DiszpKrYNg8&pageSize=50&fields=%5B:all%5D'}
+- {method: GET, url: /events/SsLQnHOelRQ}
+- {method: GET, url: '/events/SsLQnHOelRQ?fields=created,lastUpdated'}
+- {method: GET, url: /events/onXW2DQHRGS}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/me?fields=organisationUnits%5Bid,displayName,programs%5Bid%5D%5D,userCredentials%5BuserRoles%5Bprograms%5Bid%5D%5D%5D'}
+- {method: GET, url: '/programs/q04UBOqq3rp?fields=*,trackedEntity%5B*%5D,programIndicators%5B*%5D,programStages%5B*,!dataEntryForm,program%5Bid%5D,programIndicators%5B*%5D,programStageSections%5B*,programStageDataElements%5B*,programStage%5Bid%5D,dataElement%5B*,id,attributeValues%5B*,attribute%5B*%5D%5D,optionSet%5Bid%5D%5D%5D,programIndicators%5B*%5D%5D,programStageDataElements%5B*,programStage%5Bid%5D,dataElement%5B*,optionSet%5Bid%5D%5D%5D%5D,programTrackedEntityAttributes%5B*,trackedEntityAttribute%5B*%5D%5D,!organisationUnits'}
+- {method: GET, url: '/optionSets?paging=false&fields=*,options%5B*%5D&filter=lastUpdated:gt:2017-07-20T18:21:45.924Z'}
+- {method: GET, url: '/constants?paging=false&fields=%5B:all%5D&filter=lastUpdated:gt:2017-07-20T18:21:45.924Z'}
+- {method: GET, url: '/programRules?paging=false&fields=%5B:all%5D&filter=lastUpdated:gt:2017-07-20T18:21:45.924Z'}
+- {method: GET, url: '/programRuleVariables?paging=false&fields=%5B:all%5D&filter=lastUpdated:gt:2017-07-20T18:21:45.924Z'}
+- {method: GET, url: '/programRuleActions?paging=false&fields=%5B:all%5D&filter=lastUpdated:gt:2017-07-20T18:21:45.924Z'}
+- {method: GET, url: '/relationshipTypes?paging=false&fields=%5B:all%5D&filter=lastUpdated:gt:2017-07-20T18:21:45.924Z'}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/events?page=0&program=VBqh0ynB2wv&orgUnit=DiszpKrYNg8&pageSize=50&fields=%5B:all%5D'}
+- {method: GET, url: '/events?program=VBqh0ynB2wv&orgUnit=DiszpKrYNg8&fields=%5Bevent%5D&skipPaging=true'}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/programs/uy2gU8kT1jF?fields=*,trackedEntity%5B*%5D,programIndicators%5B*%5D,programStages%5B*,!dataEntryForm,program%5Bid%5D,programIndicators%5B*%5D,programStageSections%5B*,programStageDataElements%5B*,programStage%5Bid%5D,dataElement%5B*,id,attributeValues%5B*,attribute%5B*%5D%5D,optionSet%5Bid%5D%5D%5D,programIndicators%5B*%5D%5D,programStageDataElements%5B*,programStage%5Bid%5D,dataElement%5B*,optionSet%5Bid%5D%5D%5D%5D,programTrackedEntityAttributes%5B*,trackedEntityAttribute%5B*%5D%5D,!organisationUnits&filter=lastUpdated:gt:2017-07-20T19:02:49.337Z'}
+- {method: GET, url: '/optionSets?paging=false&fields=*,options%5B*%5D&filter=lastUpdated:gt:2017-07-20T19:02:49.337Z'}
+- {method: GET, url: '/constants?paging=false&fields=%5B:all%5D&filter=lastUpdated:gt:2017-07-20T19:02:49.337Z'}
+- {method: GET, url: '/programRules?paging=false&fields=%5B:all%5D&filter=lastUpdated:gt:2017-07-20T19:02:49.337Z'}
+- {method: GET, url: '/programRuleVariables?paging=false&fields=%5B:all%5D&filter=lastUpdated:gt:2017-07-20T19:02:49.337Z'}
+- {method: GET, url: '/programRuleActions?paging=false&fields=%5B:all%5D&filter=lastUpdated:gt:2017-07-20T19:02:49.337Z'}
+- {method: GET, url: '/relationshipTypes?paging=false&fields=%5B:all%5D&filter=lastUpdated:gt:2017-07-20T19:02:49.337Z'}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/events?page=0&program=VBqh0ynB2wv&orgUnit=DiszpKrYNg8&pageSize=50&fields=%5B:all%5D&lastUpdated=2017-07-20T19:08:24.169Z'}
+- {method: POST, url: /events/, body-file: "events.json"}
+- {method: GET, url: '/events/z0PgbRhurgb?fields=created,lastUpdated'}
+- {method: GET, url: /events/, body-file: "events2.json"}
+- {method: GET, url: /system/info/}
+- {method: GET, url: '/events?page=0&program=VBqh0ynB2wv&orgUnit=DiszpKrYNg8&pageSize=50&fields=%5B:all%5D'}

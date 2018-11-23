@@ -1,0 +1,4 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,Latency,IdleTime,Connect
+1520591126728,5512,93 /android-previous1/api/23/me/,200,,ThreadGroup 1-1,text,true,,674,445,1,1,5511,0,4438
+1520591132242,2734,94 /android-previous1/api/system/info/,200,,ThreadGroup 1-1,text,true,,906,194,1,1,2734,0,1829
+1520591134977,2656,95 /android-previous1/api/me,200,,ThreadGroup 1-1,text,true,,779,306,1,1,2656,0,1724

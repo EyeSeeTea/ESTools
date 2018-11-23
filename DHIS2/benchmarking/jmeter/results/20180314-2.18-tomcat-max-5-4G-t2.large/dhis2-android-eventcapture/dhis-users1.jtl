@@ -1,0 +1,34 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,Latency,IdleTime,Connect
+1521035134425,516,144 /dhis/api/23/me/,200,,ThreadGroup 1-1,text,true,,641,440,1,1,515,0,231
+1521035134945,255,145 /dhis/api/system/info/,200,,ThreadGroup 1-1,text,true,,1105,189,1,1,255,0,0
+1521035135202,251,146 /dhis/api/me,200,,ThreadGroup 1-1,text,true,,1054,274,1,1,251,0,0
+1521035135454,599,147 /dhis/api/programs/uy2gU8kT1jF,200,,ThreadGroup 1-1,text,true,,73675,740,1,1,320,0,0
+1521035136054,267,148 /dhis/api/programs/q04UBOqq3rp,200,,ThreadGroup 1-1,text,true,,9085,740,1,1,267,0,0
+1521035136322,264,149 /dhis/api/programs/VBqh0ynB2wv,200,,ThreadGroup 1-1,text,true,,7520,740,1,1,264,0,0
+1521035136587,567,150 /dhis/api/programs/eBAyeGv0exc,200,,ThreadGroup 1-1,text,true,,34563,740,1,1,428,0,141
+1521035137155,268,151 /dhis/api/programs/kla3mAPgvCH,200,,ThreadGroup 1-1,text,true,,10101,740,1,1,268,0,0
+1521035137424,263,152 /dhis/api/programs/lxAQ7Zs9VYR,200,,ThreadGroup 1-1,text,true,,6138,740,1,1,263,0,0
+1521035137687,324,153 /dhis/api/programs/IpHINAT79UW,200,,ThreadGroup 1-1,text,true,,42228,740,1,1,324,0,0
+1521035138012,308,154 /dhis/api/programs/ur1Edk5Oe2n,200,,ThreadGroup 1-1,text,true,,50079,740,1,1,308,0,0
+1521035138321,698,155 /dhis/api/programs/WSGAb5XwJ3Y,200,,ThreadGroup 1-1,text,true,,225325,740,1,1,418,0,0
+1521035139020,791,156 /dhis/api/programs/fDd25txQckK,200,,ThreadGroup 1-1,text,true,,99119,740,1,1,512,0,140
+1521035139813,6135,157 /dhis/api/optionSets,200,,ThreadGroup 1-1,text,true,,5860112,226,1,1,4181,0,0
+1521035145949,395,158 /dhis/api/constants,200,,ThreadGroup 1-1,text,true,,890,219,1,1,395,0,141
+1521035146344,402,159 /dhis/api/programRules,200,,ThreadGroup 1-1,text,true,,14602,222,1,1,263,0,0
+1521035146747,253,160 /dhis/api/programRuleVariables,200,,ThreadGroup 1-1,text,true,,13124,230,1,1,253,0,0
+1521035147000,252,161 /dhis/api/programRuleActions,200,,ThreadGroup 1-1,text,true,,13114,228,1,1,252,0,0
+1521035147253,253,162 /dhis/api/relationshipTypes,200,,ThreadGroup 1-1,text,true,,926,227,1,1,253,0,0
+1521035134362,13061,InitialSyncController,200,"Number of samples in transaction : 19, number of failing samples : 0",ThreadGroup 1-1,,true,,6463401,9655,1,1,9990,82,653
+1521035147507,395,163 /dhis/api/events/,200,,ThreadGroup 1-1,text,true,,1644,463,1,1,395,0,0
+1521035147902,274,164 /dhis/api/events/Sg5AuUlfyok,200,,ThreadGroup 1-1,text,true,,1050,224,1,1,274,0,0
+1521035148176,469,165 /dhis/api/events/,200,,ThreadGroup 1-1,text,true,,1644,550,1,1,469,0,141
+1521035148646,260,166 /dhis/api/events/qi2lv5kE8U3,200,,ThreadGroup 1-1,text,true,,1050,224,1,1,260,0,0
+1521035148908,333,191 /dhis/api/events/,200,,ThreadGroup 1-1,text,true,,1644,550,1,1,333,0,0
+1521035149242,263,192 /dhis/api/events/LTKbdCxy3G4,200,,ThreadGroup 1-1,text,true,,1050,224,1,1,263,0,0
+1521035149506,256,193 /dhis/api/system/info/,200,,ThreadGroup 1-1,text,true,,1105,189,1,1,256,0,0
+1521035149763,680,194 /dhis/api/events,200,,ThreadGroup 1-1,text,true,,49725,262,1,1,399,0,0
+1521035150444,753,195 /dhis/api/events,200,,ThreadGroup 1-1,text,true,,94224,262,1,1,472,0,141
+1521035151197,273,196 /dhis/api/events,200,,ThreadGroup 1-1,text,true,,407,262,1,1,273,0,0
+1521035151471,272,197 /dhis/api/events,200,,ThreadGroup 1-1,text,true,,4348,262,1,1,272,0,0
+1521035151744,284,198 /dhis/api/events,200,,ThreadGroup 1-1,text,true,,6362,262,1,1,284,0,0
+1521035147506,4512,UsageController,200,"Number of samples in transaction : 12, number of failing samples : 0",ThreadGroup 1-1,,true,,164253,3734,1,1,3950,10,282

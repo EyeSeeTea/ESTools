@@ -1,0 +1,38 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,Latency,IdleTime,Connect
+1521008215232,61202,49 /android-current/api/me/user-account,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,265,1,1,61201,0,1036
+1521008276435,60903,50 /android-current/api/system/info/,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,262,1,1,60903,0,759
+1521008337339,60901,51 /android-current/api/me/assignedDataSets,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,269,1,1,60901,0,756
+1521008398241,60907,52 /android-current/api/dataSets/pBOMPrpg1QX,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,574,1,1,60907,0,758
+1521008459149,60897,53 /android-current/api/dataSets/QX4ZTUbOt3a,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,574,1,1,60897,0,753
+1521008520048,60936,54 /android-current/api/dataSets/eZDhcZi6FLP,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,574,1,1,60936,0,790
+1521008580985,60898,55 /android-current/api/dataSets/Rl58JxmKJo2,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,574,1,1,60898,0,755
+1521008641884,60903,56 /android-current/api/dataSets/V8MHeZHIrcP,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,574,1,1,60903,0,759
+1521008702789,60911,57 /android-current/api/dataSets/EKWVBc5C0ms,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,574,1,1,60911,0,765
+1521008763701,60895,58 /android-current/api/dataSets/ce7DSxx5H2I,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,574,1,1,60895,0,750
+1521008824597,61282,59 /android-current/api/dataSets/EDzMBk0RRji,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,574,1,1,61282,0,1134
+1521008885880,60897,60 /android-current/api/dataSets/TuL8IOPzpHh,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,574,1,1,60897,0,753
+1521008946778,60748,61 /android-current/api/dataSets/Y8gAn9DfAGU,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,574,1,1,60748,0,604
+1521009007526,60909,62 /android-current/api/dataSets/YFTk3VdO9av,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,528,1,1,60909,0,763
+1521009068436,60756,63 /android-current/api/dataSets/BfMAe6Itzgt,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,528,1,1,60755,0,611
+1521009129192,60910,64 /android-current/api/dataSets/VTdjfLXXmoi,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,528,1,1,60910,0,755
+1521009190102,60900,65 /android-current/api/dataSets/YZhd4nu3mzY,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,528,1,1,60900,0,756
+1521009251002,60892,66 /android-current/api/dataSets/SF8FDSqw30D,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,528,1,1,60892,0,748
+1521009311895,61021,67 /android-current/api/dataSets/PLq9sJluXvc,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,528,1,1,61021,0,876
+1521009372916,60746,68 /android-current/api/dataSets/vc6nF5yZsPR,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,528,1,1,60746,0,603
+1521009433663,60899,69 /android-current/api/dataSets/ULowA8V3ucd,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,528,1,1,60899,0,755
+1521009494562,60902,70 /android-current/api/dataSets/lyLU2wR22tC,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,528,1,1,60901,0,758
+1521009555464,60749,71 /android-current/api/dataSets/aLpVgfXiz0f,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,528,1,1,60749,0,605
+1521009616213,60751,72 /android-current/api/dataSets/OsPTWNqq26W,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,528,1,1,60751,0,605
+1521009676964,61067,73 /android-current/api/dataSets/N4fIX1HL3TQ,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,528,1,1,61067,0,922
+1521009738031,60894,74 /android-current/api/dataSets/Lpw6GcnTrmS,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,528,1,1,60894,0,750
+1521009798925,61128,75 /android-current/api/optionSets/SokRAajDrRz,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,372,1,1,61128,0,983
+1521009860054,60897,76 /android-current/api/system/info/,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,262,1,1,60897,0,752
+1521008215183,1705701,InitialSyncController,,"Number of samples in transaction : 28, number of failing samples : 28",ThreadGroup 1-1,,false,,10108,14034,1,1,1705698,67,21614
+1521009920952,60937,86 /android-current/api/system/info/,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,262,1,1,60937,0,795
+1521009981890,61010,87 /android-current/api/dataSets/BfMAe6Itzgt/form,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,300,1,1,61010,0,866
+1521010042901,60746,88 /android-current/api/dataSets/BfMAe6Itzgt,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,574,1,1,60746,0,604
+1521010103647,60896,89 /android-current/api/system/info/,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,262,1,1,60896,0,754
+1521010164544,46,90 /aggregationserver/agreggate,Non HTTP response code: javax.net.ssl.SSLHandshakeException,Non HTTP response message: Remote host closed connection during handshake,ThreadGroup 1-1,text,false,,2368,0,1,1,0,0,46
+1521010164591,60906,91 /android-current/api/dataValueSets,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,9464,1,1,60906,0,761
+1521010225497,60891,92 /android-current/api/system/info/,504,Gateway Time-out,ThreadGroup 1-1,text,false,,361,262,1,1,60891,0,747
+1521009920951,365432,UsageController,,"Number of samples in transaction : 7, number of failing samples : 7",ThreadGroup 1-1,,false,,4534,11124,1,1,365386,5,4573

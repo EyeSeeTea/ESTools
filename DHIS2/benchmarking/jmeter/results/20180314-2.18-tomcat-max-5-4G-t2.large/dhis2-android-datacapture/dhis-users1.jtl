@@ -1,0 +1,38 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,Latency,IdleTime,Connect
+1521034609221,491,49 /dhis/api/me/user-account,200,,ThreadGroup 1-1,text,true,,623,262,1,1,491,0,210
+1521034609715,260,50 /dhis/api/system/info/,200,,ThreadGroup 1-1,text,true,,1149,259,1,1,260,0,0
+1521034609975,1255,51 /dhis/api/me/assignedDataSets,200,,ThreadGroup 1-1,text,true,,245687,266,1,1,698,0,0
+1521034611232,263,52 /dhis/api/dataSets/pBOMPrpg1QX,200,,ThreadGroup 1-1,text,true,,1042,571,1,1,263,0,0
+1521034611496,400,53 /dhis/api/dataSets/QX4ZTUbOt3a,200,,ThreadGroup 1-1,text,true,,2715,571,1,1,400,0,140
+1521034611897,264,54 /dhis/api/dataSets/eZDhcZi6FLP,200,,ThreadGroup 1-1,text,true,,4373,571,1,1,264,0,0
+1521034612161,259,55 /dhis/api/dataSets/Rl58JxmKJo2,200,,ThreadGroup 1-1,text,true,,2092,571,1,1,259,0,0
+1521034612421,257,56 /dhis/api/dataSets/V8MHeZHIrcP,200,,ThreadGroup 1-1,text,true,,1686,571,1,1,257,0,0
+1521034612680,258,57 /dhis/api/dataSets/EKWVBc5C0ms,200,,ThreadGroup 1-1,text,true,,857,571,1,1,258,0,0
+1521034612939,260,58 /dhis/api/dataSets/ce7DSxx5H2I,200,,ThreadGroup 1-1,text,true,,3087,571,1,1,260,0,0
+1521034613200,259,59 /dhis/api/dataSets/EDzMBk0RRji,200,,ThreadGroup 1-1,text,true,,1535,571,1,1,259,0,0
+1521034613460,260,60 /dhis/api/dataSets/TuL8IOPzpHh,200,,ThreadGroup 1-1,text,true,,1190,571,1,1,260,0,0
+1521034613721,400,61 /dhis/api/dataSets/Y8gAn9DfAGU,200,,ThreadGroup 1-1,text,true,,953,571,1,1,400,0,140
+1521034614122,258,62 /dhis/api/dataSets/YFTk3VdO9av,200,,ThreadGroup 1-1,text,true,,2499,525,1,1,258,0,0
+1521034614381,260,63 /dhis/api/dataSets/BfMAe6Itzgt,200,,ThreadGroup 1-1,text,true,,2295,525,1,1,260,0,0
+1521034614641,264,64 /dhis/api/dataSets/VTdjfLXXmoi,200,,ThreadGroup 1-1,text,true,,4040,525,1,1,264,0,0
+1521034614906,258,65 /dhis/api/dataSets/YZhd4nu3mzY,200,,ThreadGroup 1-1,text,true,,709,525,1,1,258,0,0
+1521034615165,258,66 /dhis/api/dataSets/SF8FDSqw30D,200,,ThreadGroup 1-1,text,true,,1301,525,1,1,258,0,0
+1521034615424,259,67 /dhis/api/dataSets/PLq9sJluXvc,200,,ThreadGroup 1-1,text,true,,672,525,1,1,259,0,0
+1521034615683,260,68 /dhis/api/dataSets/vc6nF5yZsPR,200,,ThreadGroup 1-1,text,true,,1424,525,1,1,260,0,0
+1521034615943,398,69 /dhis/api/dataSets/ULowA8V3ucd,200,,ThreadGroup 1-1,text,true,,1005,525,1,1,398,0,141
+1521034616341,272,70 /dhis/api/dataSets/lyLU2wR22tC,200,,ThreadGroup 1-1,text,true,,6718,525,1,1,272,0,0
+1521034616613,258,71 /dhis/api/dataSets/aLpVgfXiz0f,200,,ThreadGroup 1-1,text,true,,709,525,1,1,258,0,0
+1521034616872,258,72 /dhis/api/dataSets/OsPTWNqq26W,200,,ThreadGroup 1-1,text,true,,1158,525,1,1,258,0,0
+1521034617131,265,73 /dhis/api/dataSets/N4fIX1HL3TQ,200,,ThreadGroup 1-1,text,true,,1311,525,1,1,265,0,0
+1521034617396,271,74 /dhis/api/dataSets/Lpw6GcnTrmS,200,,ThreadGroup 1-1,text,true,,2023,525,1,1,271,0,0
+1521034617668,258,75 /dhis/api/optionSets/SokRAajDrRz,200,,ThreadGroup 1-1,text,true,,1098,369,1,1,258,0,0
+1521034617926,262,76 /dhis/api/system/info/,200,,ThreadGroup 1-1,text,true,,1149,259,1,1,262,0,0
+1521034609161,8945,InitialSyncController,200,"Number of samples in transaction : 28, number of failing samples : 0",ThreadGroup 1-1,,true,,295100,13950,1,1,8388,81,631
+1521034618189,396,86 /dhis/api/system/info/,200,,ThreadGroup 1-1,text,true,,1149,259,1,1,396,0,139
+1521034618586,494,87 /dhis/api/dataSets/BfMAe6Itzgt/form,200,,ThreadGroup 1-1,,true,,17214,297,1,1,355,0,0
+1521034619080,260,88 /dhis/api/dataSets/BfMAe6Itzgt,200,,ThreadGroup 1-1,text,true,,2295,571,1,1,260,0,0
+1521034619340,257,89 /dhis/api/system/info/,200,,ThreadGroup 1-1,text,true,,1149,259,1,1,256,0,0
+1521034619597,284,90 /aggregationserver/agreggate,200,OK,ThreadGroup 1-1,,true,,124,486,1,1,284,0,126
+1521034619882,553,91 /dhis/api/dataValueSets,200,,ThreadGroup 1-1,text,true,,2658,9461,1,1,553,0,0
+1521034620437,398,92 /dhis/api/system/info/,200,,ThreadGroup 1-1,text,true,,1149,259,1,1,398,0,140
+1521034618188,2642,UsageController,200,"Number of samples in transaction : 7, number of failing samples : 0",ThreadGroup 1-1,,true,,25738,11592,1,1,2502,5,405

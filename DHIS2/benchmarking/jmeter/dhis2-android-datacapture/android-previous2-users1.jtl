@@ -1,0 +1,38 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,Latency,IdleTime,Connect
+1502362142319,697,49 /android-previous2/api/me/user-account,200,,ThreadGroup 1-1,text,true,,595,267,1,1,696,0,459
+1502362143021,161,50 /android-previous2/api/system/info/,200,,ThreadGroup 1-1,text,true,,884,264,1,1,161,0,0
+1502362143183,1355,51 /android-previous2/api/me/assignedDataSets,200,,ThreadGroup 1-1,text,true,,30840,271,1,1,1341,0,0
+1502362144540,254,52 /android-previous2/api/dataSets/pBOMPrpg1QX,200,,ThreadGroup 1-1,text,true,,735,576,1,1,254,0,34
+1502362144795,246,53 /android-previous2/api/dataSets/QX4ZTUbOt3a,200,,ThreadGroup 1-1,text,true,,954,576,1,1,246,0,0
+1502362145042,201,54 /android-previous2/api/dataSets/eZDhcZi6FLP,200,,ThreadGroup 1-1,text,true,,1665,576,1,1,201,0,0
+1502362145244,204,55 /android-previous2/api/dataSets/Rl58JxmKJo2,200,,ThreadGroup 1-1,text,true,,953,576,1,1,204,0,0
+1502362145449,173,56 /android-previous2/api/dataSets/V8MHeZHIrcP,200,,ThreadGroup 1-1,text,true,,843,576,1,1,173,0,0
+1502362145624,169,57 /android-previous2/api/dataSets/EKWVBc5C0ms,200,,ThreadGroup 1-1,text,true,,683,576,1,1,169,0,0
+1502362145794,173,58 /android-previous2/api/dataSets/ce7DSxx5H2I,200,,ThreadGroup 1-1,text,true,,803,576,1,1,172,0,0
+1502362145968,170,59 /android-previous2/api/dataSets/EDzMBk0RRji,200,,ThreadGroup 1-1,text,true,,874,576,1,1,169,0,0
+1502362146138,147,60 /android-previous2/api/dataSets/TuL8IOPzpHh,200,,ThreadGroup 1-1,text,true,,788,576,1,1,147,0,0
+1502362146286,140,61 /android-previous2/api/dataSets/Y8gAn9DfAGU,200,,ThreadGroup 1-1,text,true,,700,576,1,1,139,0,0
+1502362146426,177,62 /android-previous2/api/dataSets/YFTk3VdO9av,200,,ThreadGroup 1-1,text,true,,782,530,1,1,177,0,0
+1502362146604,201,63 /android-previous2/api/dataSets/BfMAe6Itzgt,200,,ThreadGroup 1-1,text,true,,998,530,1,1,201,0,31
+1502362146807,148,64 /android-previous2/api/dataSets/VTdjfLXXmoi,200,,ThreadGroup 1-1,text,true,,1563,530,1,1,148,0,0
+1502362146956,137,65 /android-previous2/api/dataSets/YZhd4nu3mzY,200,,ThreadGroup 1-1,text,true,,638,530,1,1,137,0,0
+1502362147094,140,66 /android-previous2/api/dataSets/SF8FDSqw30D,200,,ThreadGroup 1-1,text,true,,812,530,1,1,140,0,0
+1502362147235,138,67 /android-previous2/api/dataSets/PLq9sJluXvc,200,,ThreadGroup 1-1,text,true,,626,530,1,1,138,0,0
+1502362147373,176,68 /android-previous2/api/dataSets/vc6nF5yZsPR,404,,ThreadGroup 1-1,text,false,,562,530,1,1,176,0,0
+1502362147550,134,69 /android-previous2/api/dataSets/ULowA8V3ucd,200,,ThreadGroup 1-1,text,true,,727,530,1,1,134,0,0
+1502362147685,172,70 /android-previous2/api/dataSets/lyLU2wR22tC,200,,ThreadGroup 1-1,text,true,,2589,530,1,1,172,0,0
+1502362147858,133,71 /android-previous2/api/dataSets/aLpVgfXiz0f,200,,ThreadGroup 1-1,text,true,,638,530,1,1,133,0,0
+1502362147995,135,72 /android-previous2/api/dataSets/OsPTWNqq26W,200,,ThreadGroup 1-1,text,true,,730,530,1,1,135,0,0
+1502362148131,132,73 /android-previous2/api/dataSets/N4fIX1HL3TQ,200,,ThreadGroup 1-1,text,true,,801,530,1,1,132,0,0
+1502362148263,131,74 /android-previous2/api/dataSets/Lpw6GcnTrmS,404,,ThreadGroup 1-1,text,false,,562,530,1,1,131,0,0
+1502362148395,146,75 /android-previous2/api/optionSets/SokRAajDrRz,200,,ThreadGroup 1-1,text,true,,675,374,1,1,145,0,0
+1502362148541,135,76 /android-previous2/api/system/info/,200,,ThreadGroup 1-1,text,true,,883,264,1,1,135,0,0
+1502362142227,6325,InitialSyncController,,"Number of samples in transaction : 28, number of failing samples : 2",ThreadGroup 1-1,,false,,54903,14090,1,1,6306,124,524
+1502362148677,169,86 /android-previous2/api/system/info/,200,,ThreadGroup 1-1,text,true,,883,264,1,1,169,0,39
+1502362148846,293,87 /android-previous2/api/dataSets/BfMAe6Itzgt/form,200,,ThreadGroup 1-1,,true,,17201,302,1,1,293,0,0
+1502362149140,154,88 /android-previous2/api/dataSets/BfMAe6Itzgt,200,,ThreadGroup 1-1,text,true,,998,576,1,1,154,0,0
+1502362149295,129,89 /android-previous2/api/system/info/,200,,ThreadGroup 1-1,text,true,,885,264,1,1,129,0,0
+1502362149425,6,90 /aggregationserver/agreggate,Non HTTP response code: javax.net.ssl.SSLHandshakeException,Non HTTP response message: Remote host closed connection during handshake,ThreadGroup 1-1,text,false,,2367,0,1,1,0,0,6
+1502362149433,840,91 /android-previous2/api/dataValueSets,200,,ThreadGroup 1-1,text,true,,852,9466,1,1,840,0,0
+1502362150274,140,92 /android-previous2/api/system/info/,200,,ThreadGroup 1-1,text,true,,884,264,1,1,140,0,0
+1502362148676,1731,UsageController,,"Number of samples in transaction : 7, number of failing samples : 1",ThreadGroup 1-1,,false,,24070,11136,1,1,1725,8,45

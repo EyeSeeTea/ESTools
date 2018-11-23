@@ -1,0 +1,5 @@
+  ms/sec    failed (%)  method    url
+    1071             0  GET       http://dev.eyeseetea.com:8081/dhis/api/dataSets/BfMAe6Itzgt/form?ou=DiszpKrYNg8&pe=201706
+     837             0  GET       http://dev.eyeseetea.com:8081/dhis/api/dataSets/BfMAe6Itzgt?fields=fieldCombinationRequired%2CcompulsoryDataElementOperands%5BcategoryOptionCombo%2CdataElement%5Bid%5D%5D%2CcategoryCombo%5Bid%2CcategoryOptionCombos%5D%2CdataSetElements%5BdataElement%2CcategoryCombo%5Bid%2CcategoryOptionCombos%5D%5D%2Csections%5Bname%2CcategoryCombos%5BcategoryOptionCombos%5D%5D
+     799             0  GET       http://dev.eyeseetea.com:8081/dhis/api/aggregationserver/agreggate?aid=2a6fad56-017c-4c1f-ad81-286f6bf182b3&c=ES&cal_dom=10&cal_dow=5&cal_doy=222&cal_hod=12&cal_moh=11&cal_woy=32&cal_y=2017&d=c8386b379ffa4509&d_ins_id=eYz2AO0EHTM&fl=ca_ES&l=ca&p=org.dhis2.mobile&t=rVjlC57xipA0sUVkCk49twiILhTcPv42xyK86IQcGHo%253D%250A
+     731             0  GET       http://dev.eyeseetea.com:8081/dhis/api/system/info/
