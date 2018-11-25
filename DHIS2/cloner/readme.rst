@@ -40,7 +40,7 @@ error and stop all the processing at that point.
 Usage
 -----
 
-  usage: dhis2_clone [-h] [--no-backups] [--no-webapps] [--no-db]
+  usage: dhis2_clone [-h] [--check-only] [--no-backups] [--no-webapps] [--no-db]
                      [--manual-restart] [--post-sql POST_SQL [POST_SQL ...]]
                      [--no-color]
                      config
@@ -52,6 +52,7 @@ Usage
 
   optional arguments:
     -h, --help            show this help message and exit
+    --check-only          check config and exit
     --no-backups          don't make backups
     --no-webapps          don't clone the webapps
     --no-db               don't clone the database
