@@ -23,10 +23,12 @@ def main():
     global COLOR
 
     args = get_args()
-    cfg = get_config(args.config)
-
     if args.no_color or not os.isatty(sys.stdout.fileno()):
         COLOR = False
+
+    cfg = get_config(args.config)
+    if args.check_only:
+        sys.exit()
 
     dir_local, dir_remote = cfg['server_dir_local'], cfg['server_dir_remote']
     db_local, db_remote = cfg['db_local'], cfg['db_remote']
@@ -77,6 +79,7 @@ def get_args():
     parser = argparse.ArgumentParser(description=__doc__)
     add = parser.add_argument  # shortcut
     add('config', help='file with configuration')
+    add('--check-only', action='store_true', help='check config and exit')
     add('--no-backups', action='store_true', help="don't make backups")
     add('--no-webapps', action='store_true', help="don't clone the webapps")
     add('--no-db', action='store_true', help="don't clone the database")
