@@ -68,12 +68,12 @@ Configuration
 
 To invoke the program you need to specify a configuration file, as in::
 
-  $ dhis2_clone dhis2_clone.json
+  $ dhis2_clone config_training.json
 
 An example configuration file is provided in this repository
-(`dhis2_clone.json`_).
+(`configuration_example.json`_).
 
-.. _`dhis2_clone.json`: https://github.com/EyeSeeTea/ESTools/blob/feature/dhis2-clone/DHIS2/cloner/dhis2_clone.json
+.. _`configuration_example.json`: https://github.com/EyeSeeTea/ESTools/blob/feature/dhis2-clone/DHIS2/cloner/configuration_example.json
 
 The sections in the configuration file are:
 
