@@ -21,11 +21,11 @@ Also, it can run some sql scripts on the database before starting the
 server again (``--post-sql``). This is useful in several
 scenarios. For example, to empty the tables that contain the data
 (while keeping the metadata), as one would want for a training server
-(see the `empty_data_tables.sql`_ example). Or it can be used to
+(see the `empty_data_tables_228.sql`_ example). Or it can be used to
 automatically upgrade from one version to another (say, 2.29 to 2.30
 by running `upgrade-230.sql`_).
 
-.. _`empty_data_tables.sql`: https://github.com/EyeSeeTea/ESTools/blob/feature/clone-check/DHIS2/cloner/empty_data_tables.sql
+.. _`empty_data_tables_228.sql`: https://github.com/EyeSeeTea/ESTools/blob/feature/clone-check/DHIS2/cloner/empty_data_tables_228.sql
 .. _`upgrade-230.sql`: https://github.com/dhis2/dhis2-releases/blob/master/releases/2.30/upgrade-230.sql
 
 If it is so specified in the configuration file, it will perform some
