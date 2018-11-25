@@ -25,7 +25,7 @@ scenarios. For example, to empty the tables that contain the data
 automatically upgrade from one version to another (say, 2.29 to 2.30
 by running `upgrade-230.sql`_).
 
-.. _`empty_data_tables.sql`: https://github.com/EyeSeeTea/ESTools/blob/feature/dhis2-clone/DHIS2/cloner/empty_data_tables.sql
+.. _`empty_data_tables.sql`: https://github.com/EyeSeeTea/ESTools/blob/feature/clone-check/DHIS2/cloner/empty_data_tables.sql
 .. _`upgrade-230.sql`: https://github.com/dhis2/dhis2-releases/blob/master/releases/2.30/upgrade-230.sql
 
 If it is so specified in the configuration file, it will perform some
