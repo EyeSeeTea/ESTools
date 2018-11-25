@@ -73,7 +73,7 @@ To invoke the program you need to specify a configuration file, as in::
 An example configuration file is provided in this repository
 (`configuration_example.json`_).
 
-.. _`configuration_example.json`: https://github.com/EyeSeeTea/ESTools/blob/feature/dhis2-clone/DHIS2/cloner/configuration_example.json
+.. _`configuration_example.json`: https://github.com/EyeSeeTea/ESTools/blob/feature/clone-check/DHIS2/cloner/configuration_example.json
 
 The sections in the configuration file are:
 
