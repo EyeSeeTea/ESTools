@@ -143,8 +143,8 @@ def stop_tomcat(server_path):
 
 def backup_db(backups_dir, backup_name, db_local):
     backup_file = '%s/%s_%s.dump' % (backups_dir, backup_name, TIME)
-    run("pg_dump --file '%s' --format custom --clean '%s'" % (backup_file,
-                                                              db_local))
+    run("pg_dump --file '%s' --format custom --exclude-schema sys --clean '%s' "
+        % (backup_file, db_local))
 
 
 def backup_war(backups_dir, dir_local, war_local):
