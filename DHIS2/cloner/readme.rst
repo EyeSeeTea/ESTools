@@ -41,24 +41,28 @@ Usage
 -----
 
   usage: dhis2_clone [-h] [--no-backups] [--no-webapps] [--no-db]
-                     [--manual-restart] [--post-sql POST_SQL [POST_SQL ...]]
-                     [--no-color]
-                     config
+                   [--no-postprocess] [--manual-restart]
+                   [--post-sql POST_SQL [POST_SQL ...]] [--post-clone-scripts]
+                   [--no-color]
+                   config
 
-  Clone a dhis2 installation from another server.
+Clone a dhis2 installation from another server.
 
-  positional arguments:
-    config                file with configuration
+positional arguments:
+  config                file with configuration
 
-  optional arguments:
-    -h, --help            show this help message and exit
-    --no-backups          don't make backups
-    --no-webapps          don't clone the webapps
-    --no-db               don't clone the database
-    --manual-restart      don't stop/start tomcat
-    --post-sql SQL1_SQL2_etc
-                          sql files to run post-clone
-    --no-color            don't use colored output
+optional arguments:
+  -h, --help            show this help message and exit
+  --no-backups          don't make backups
+  --no-webapps          don't clone the webapps
+  --no-db               don't clone the database
+  --no-postprocess      don't execute postprocessing actions
+  --manual-restart      don't stop/start tomcat
+  --post-sql POST_SQL [POST_SQL ...]
+                        sql files to run post-clone
+  --post-clone-scripts  execute all py and sh scripts under
+                        post_clone_scripts_dir folder
+  --no-color            don't use colored output
 
 
 
