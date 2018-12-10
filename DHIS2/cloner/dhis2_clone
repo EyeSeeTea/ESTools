@@ -49,9 +49,14 @@ def main():
     if args.post_sql:
         run_sql(db_local, args.post_sql)
 
+    if args.post_clone_scripts:
+        execute_scripts(cfg['post_clone_scripts_dir'])
+
     if not args.manual_restart:
         start_tomcat(dir_local)
-        if 'api_local' in cfg and 'postprocess' in cfg:
+        if args.no_postprocess:
+            log('No postprocessing done, as requested.')
+        elif 'api_local' in cfg and 'postprocess' in cfg:
             process.postprocess(cfg['api_local'], cfg['postprocess'])
         else:
             log('No postprocessing done.')
@@ -80,8 +85,10 @@ def get_args():
     add('--no-backups', action='store_true', help="don't make backups")
     add('--no-webapps', action='store_true', help="don't clone the webapps")
     add('--no-db', action='store_true', help="don't clone the database")
+    add('--no-postprocess', action='store_true', help='don\'t execute postprocessing actions')
     add('--manual-restart', action='store_true', help="don't stop/start tomcat")
     add('--post-sql', nargs='+', default=[], help='sql files to run post-clone')
+    add('--post-clone-scripts', action='store_true', help='execute all py and sh scripts under post_clone_scripts_dir folder')
     add('--no-color', action='store_true', help="don't use colored output")
     return parser.parse_args()
 
@@ -95,9 +102,10 @@ def check_config(cfg):
     for option in ['api_local', 'postprocess']:
         if option not in cfg:
             log('Option %s missing. Will not do postprocessing.' % option)
-    for path in ['backups_dir', 'server_dir_local']:
-        assert os.path.isdir(cfg[path]), \
-            '%s is not a directory: %s' % (path, cfg[path])
+    for path in ['backups_dir', 'server_dir_local', 'post_clone_scripts_dir']:
+        if cfg.has_key(path):
+            assert os.path.isdir(cfg[path]), \
+                '%s is not a directory: %s' % (path, cfg[path])
     assert (os.path.isfile(cfg['server_dir_local'] + '/bin/startup.sh') and
             os.path.isfile(cfg['server_dir_local'] + '/bin/shutdown.sh')), \
             ('%s should be a directory with start/stop scripts in bin: %s' %
@@ -128,6 +136,19 @@ def log(txt):
 
 def magenta(txt):
     return '\x1b[35m%s\x1b[0m' % txt
+
+
+def execute_scripts(scripts_folder):
+    scripts = []
+    files = os.listdir(scripts_folder)
+    for file in files:
+        filename, file_extension = os.path.splitext(file)
+        if file_extension in ('.sh','.py'):
+            scripts.append(file)
+
+    for script in scripts:
+        command = '%s/%s' % (scripts_folder, script)
+        run(command)
 
 
 def start_tomcat(server_path):
