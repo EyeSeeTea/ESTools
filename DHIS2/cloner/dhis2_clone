@@ -141,10 +141,10 @@ def magenta(txt):
 def execute_scripts(scripts_folder):
     scripts = []
     files = os.listdir(scripts_folder)
-    for file in files:
-        filename, file_extension = os.path.splitext(file)
+    for fname in files:
+        filename, file_extension = os.path.splitext(fname)
         if file_extension in ('.sh','.py'):
-            scripts.append(file)
+            scripts.append(fname)
 
     for script in scripts:
         command = '%s/%s' % (scripts_folder, script)
