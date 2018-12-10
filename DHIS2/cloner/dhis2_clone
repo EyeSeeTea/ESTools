@@ -85,10 +85,11 @@ def get_args():
     add('--no-backups', action='store_true', help="don't make backups")
     add('--no-webapps', action='store_true', help="don't clone the webapps")
     add('--no-db', action='store_true', help="don't clone the database")
-    add('--no-postprocess', action='store_true', help='don\'t execute postprocessing actions')
+    add('--no-postprocess', action='store_true', help="don't execute postprocessing actions")
     add('--manual-restart', action='store_true', help="don't stop/start tomcat")
     add('--post-sql', nargs='+', default=[], help='sql files to run post-clone')
-    add('--post-clone-scripts', action='store_true', help='execute all py and sh scripts under post_clone_scripts_dir folder')
+    add('--post-clone-scripts', action='store_true',
+        help='execute all py and sh scripts in the post_clone_scripts_dir folder')
     add('--no-color', action='store_true', help="don't use colored output")
     return parser.parse_args()
 
@@ -142,11 +143,11 @@ def execute_scripts(scripts_folder):
     scripts = []
     files = os.listdir(scripts_folder)
     for fname in files:
-        filename, file_extension = os.path.splitext(fname)
-        if file_extension in ('.sh','.py'):
+        _, ext = os.path.splitext(fname)
+        if ext in ['.sh','.py']:
             scripts.append(fname)
 
-    for script in scripts:
+    for script in sorted(scripts):
         command = '%s/%s' % (scripts_folder, script)
         run(command)
 
