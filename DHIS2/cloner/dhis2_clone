@@ -211,6 +211,10 @@ def get_db(db_local, db_remote, hostname_remote):
 def empty_db(db_local):
     "Empty the contents of database"
     db_name = db_local.split('/')[-1]
+    postgis_elements = {'geography_columns', 'geometry_columns',
+                        'raster_columns', 'raster_overviews',
+                        'spatial_ref_sys'}
+
     with psycopg2.connect(db_local) as conn:
         with conn.cursor() as cur:
             def fetch(name):
@@ -222,8 +226,10 @@ def empty_db(db_local):
                     "WHERE %(prefix)s_schema='public' "
                     "AND %(prefix)s_catalog='%(db_name)s'" %
                     {'prefix': prefix, 'name': name, 'db_name': db_name})
-                results = cur.fetchall()
-                return zip(*results)[0] if results else []
+                results_tuples = cur.fetchall()
+                results = set(zip(*results_tuples)[0] if results_tuples else [])
+
+                return results - postgis_elements
 
             def drop(name):
                 xs = fetch(name)
