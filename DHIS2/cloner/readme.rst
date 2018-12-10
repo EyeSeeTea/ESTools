@@ -21,11 +21,11 @@ Also, it can run some sql scripts on the database before starting the
 server again (``--post-sql``). This is useful in several
 scenarios. For example, to empty the tables that contain the data
 (while keeping the metadata), as one would want for a training server
-(see the `empty_data_tables.sql`_ example). Or it can be used to
+(see the `empty_data_tables_228.sql`_ example). Or it can be used to
 automatically upgrade from one version to another (say, 2.29 to 2.30
 by running `upgrade-230.sql`_).
 
-.. _`empty_data_tables.sql`: https://github.com/EyeSeeTea/ESTools/blob/feature/dhis2-clone/DHIS2/cloner/empty_data_tables.sql
+.. _`empty_data_tables_228.sql`: https://github.com/EyeSeeTea/ESTools/blob/feature/clone-check/DHIS2/cloner/empty_data_tables_228.sql
 .. _`upgrade-230.sql`: https://github.com/dhis2/dhis2-releases/blob/master/releases/2.30/upgrade-230.sql
 
 If it is so specified in the configuration file, it will perform some
@@ -40,7 +40,7 @@ error and stop all the processing at that point.
 Usage
 -----
 
-  usage: dhis2_clone [-h] [--no-backups] [--no-webapps] [--no-db]
+  usage: dhis2_clone [-h] [--check-only] [--no-backups] [--no-webapps] [--no-db]
                    [--no-postprocess] [--manual-restart]
                    [--post-sql POST_SQL [POST_SQL ...]] [--post-clone-scripts]
                    [--no-color]
@@ -53,6 +53,7 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
+  --check-only          check config and exit
   --no-backups          don't make backups
   --no-webapps          don't clone the webapps
   --no-db               don't clone the database
@@ -60,7 +61,7 @@ optional arguments:
   --manual-restart      don't stop/start tomcat
   --post-sql POST_SQL [POST_SQL ...]
                         sql files to run post-clone
-  --post-clone-scripts  execute all py and sh scripts under
+  --post-clone-scripts  execute all py and sh scripts in the
                         post_clone_scripts_dir folder
   --no-color            don't use colored output
 
@@ -71,12 +72,12 @@ Configuration
 
 To invoke the program you need to specify a configuration file, as in::
 
-  $ dhis2_clone dhis2_clone.json
+  $ dhis2_clone config_training.json
 
 An example configuration file is provided in this repository
-(`dhis2_clone.json`_).
+(`configuration_example.json`_).
 
-.. _`dhis2_clone.json`: https://github.com/EyeSeeTea/ESTools/blob/feature/dhis2-clone/DHIS2/cloner/dhis2_clone.json
+.. _`configuration_example.json`: https://github.com/EyeSeeTea/ESTools/blob/feature/clone-check/DHIS2/cloner/configuration_example.json
 
 The sections in the configuration file are:
 
