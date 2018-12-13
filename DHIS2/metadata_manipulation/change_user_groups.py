@@ -60,7 +60,7 @@ def main():
                 if args.remove_ous and element.get('organisationUnits'):
                     element['organisationUnits'] = []
                 if args.remove_catcombos and element.get('categoryCombo'):
-                    element['categoryCombo'] = []
+                    del element['categoryCombo']
 
             if args.replace_ids and element['id'] in replacements.keys():
                 element['id'] = replacements.get(element['id'])
