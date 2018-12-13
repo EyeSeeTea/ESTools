@@ -56,8 +56,11 @@ def main():
             element['publicAccess'] = args.public_access
             element['userGroupAccesses'] = userGroupAccesses_new
 
-            if args.remove_ous and dhis_object == 'program':
-                element['organisationUnits'] = []
+            if dhis_object in ['programs', 'dataElements']:
+                if args.remove_ous and element.get('organisationUnits'):
+                    element['organisationUnits'] = []
+                if args.remove_catcombos and element.get('categoryCombo'):
+                    element['categoryCombo'] = []
 
             if args.replace_ids and element['id'] in replacements.keys():
                 element['id'] = replacements.get(element['id'])
@@ -74,6 +77,7 @@ def get_args():
     add = parser.add_argument  # shortcut
     add('--public-access', default='--------', help='set public permissions. Default: no public access (--------)')
     add('--remove-ous', action='store_true', help='remove ous assignment from programs')
+    add('--remove-catcombos', action='store_true', help='remove catcombos assignment from programs')
     add('--replace-ids', nargs='+', metavar='FROM TO', default=[],
         help='ids to replace. NOTE: references are not updated!!!')
     add('--include', nargs='+', default=dhis_objects, help='DHIS2 objects to include. Default: All')
