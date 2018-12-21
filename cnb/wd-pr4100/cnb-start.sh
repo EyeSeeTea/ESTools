@@ -4,6 +4,7 @@
 docker_image="backstabbing_feynman"
 docker start $docker_image
 docker exec -t $docker_image /etc/init.d/ssh start
+docker exec -t $docker_image /etc/init.d/rsync start
 
 # Re-create LVM /dev/mapper entries
 lvm vgchange -a y
