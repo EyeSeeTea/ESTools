@@ -14,7 +14,7 @@ def main():
     try:
         args = get_arguments()
         nodes = get_nodes(args.hosts_file)
-        display = get_display(args.format, nodes)
+        display = get_display(args.format, nodes, args.literal)
         for node, out in multirun(args.command, nodes, args.timeout):
             display(node, out)
     except (AssertionError, OSError) as e:
@@ -30,6 +30,7 @@ def get_arguments():
     add('--timeout', type=int, default=10, help='number of seconds to wait')
     add('--format', default='short', choices=['short', 'long'],
         help='output format')
+    add('--literal', action='store_true', help='do not parse the response')
     return parser.parse_args()
 
 
@@ -46,11 +47,11 @@ def get_nodes(fname):
     return nodes
 
 
-def get_display(format_type, nodes):
+def get_display(format_type, nodes, literal):
     "Return a function that, given a node and its output, displays it prettily"
     if format_type == 'short':
         fmt = '%%-%ds # %%s' % max(len(x) for x in nodes)
-        return lambda node, out: print(fmt % (node, out.replace('\n', ' ')))
+        return lambda node, out: print(fmt % (node, out if literal else out.replace('\n', ' ')))
     else:
         return lambda node, out: print('%s\n%s\n%s\n' %
                                        (node, '=' * len(node), out))
