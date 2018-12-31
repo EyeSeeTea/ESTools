@@ -1,0 +1,938 @@
+asimov-dos   # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-timesync:x:100:103:systemd Time Synchronization,,,:/run/systemd:/bin/false
+systemd-network:x:101:104:systemd Network Management,,,:/run/systemd/netif:/bin/false
+systemd-resolve:x:102:105:systemd Resolver,,,:/run/systemd/resolve:/bin/false
+systemd-bus-proxy:x:103:106:systemd Bus Proxy,,,:/run/systemd:/bin/false
+Debian-exim:x:104:109::/var/spool/exim4:/bin/false
+messagebus:x:105:110::/var/run/dbus:/bin/false
+statd:x:106:65534::/var/lib/nfs:/bin/false
+sshd:x:107:65534::/var/run/sshd:/usr/sbin/nologin
+ntp:x:108:113::/home/ntp:/bin/false
+colord:x:109:115:colord colour management daemon,,,:/var/lib/colord:/bin/false
+saned:x:110:116::/var/lib/saned:/bin/false
+nagios:x:111:118::/var/lib/nagios:/bin/false
+scipion:x:7271:7271::/home/scipion:/bin/bash
+roberto:x:7213:200::/home/roberto:/bin/bash
+geoclue:x:112:120::/var/lib/geoclue:/bin/false
+joton:x:7245:200::/home/joton:/bin/bash
+curso01:x:8315:7296::/home/curso01:/bin/bash
+curso02:x:8316:7296::/home/curso02:/bin/bash
+curso03:x:8317:7296::/home/curso03:/bin/bash
+curso04:x:8318:7296::/home/curso04:/bin/bash
+curso05:x:8319:7296::/home/curso05:/bin/bash
+coss:x:7204:200::/home/coss:/bin/bash
+rmelero:x:7242:200:rmelero,,,:/home/rmelero:/bin/bash
+jsegura:x:7261:200::/home/jsegura:/bin/bash
+lightdm:x:113:121:Light Display Manager:/var/lib/lightdm:/bin/false
+usbmux:x:114:46:usbmux daemon,,,:/var/lib/usbmux:/bin/false
+ldelcano:x:7254:200::/home/ldelcano:/bin/bash
+admin:x:8320:8320::/home/admin:/bin/bash
+zabbix:x:8321:8321::/home/zabbix:/bin/bash
+marta:x:7298:200:Marta Martinez,,,:/home/marta:/bin/bash
+clark6       # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-timesync:x:100:103:systemd Time Synchronization,,,:/run/systemd:/bin/false
+systemd-network:x:101:104:systemd Network Management,,,:/run/systemd/netif:/bin/false
+systemd-resolve:x:102:105:systemd Resolver,,,:/run/systemd/resolve:/bin/false
+systemd-bus-proxy:x:103:106:systemd Bus Proxy,,,:/run/systemd:/bin/false
+messagebus:x:104:109::/var/run/dbus:/bin/false
+avahi:x:105:110:Avahi mDNS daemon,,,:/var/run/avahi-daemon:/bin/false
+Debian-exim:x:106:112::/var/spool/exim4:/bin/false
+statd:x:107:65534::/var/lib/nfs:/bin/false
+colord:x:108:116:colord colour management daemon,,,:/var/lib/colord:/bin/false
+dnsmasq:x:109:65534:dnsmasq,,,:/var/lib/misc:/bin/false
+geoclue:x:110:117::/var/lib/geoclue:/bin/false
+pulse:x:111:119:PulseAudio daemon,,,:/var/run/pulse:/bin/false
+speech-dispatcher:x:112:29:Speech Dispatcher,,,:/var/run/speech-dispatcher:/bin/sh
+sshd:x:113:65534::/var/run/sshd:/usr/sbin/nologin
+rtkit:x:114:121:RealtimeKit,,,:/proc:/bin/false
+saned:x:115:122::/var/lib/saned:/bin/false
+usbmux:x:116:46:usbmux daemon,,,:/var/lib/usbmux:/bin/false
+Debian-gdm:x:117:123:Gnome Display Manager:/var/lib/gdm3:/bin/false
+roberto:x:7213:1000:roberto,,,:/home/roberto:/bin/bash
+carmen:x:7214:1001::/home/carmen:/bin/bash
+merhernando:x:7274:1002::/home/merhernando:/bin/bash
+gncondezo:x:7275:1003::/home/gncondezo:/bin/bash
+mpillana:x:7276:1004::/home/mpillana:/bin/bash
+guacd:x:999:999::/usr/share/guacd:/bin/false
+tomcat8:x:118:125::/usr/share/tomcat8:/bin/false
+scipion:x:7271:1006::/home/scipion:/bin/sh
+postgres:x:119:128:PostgreSQL administrator,,,:/var/lib/postgresql:/bin/bash
+ntp:x:120:129::/home/ntp:/bin/false
+moshen:x:1005:1007:,,,:/home/moshen:/bin/bash
+admin:x:1007:1008::/home/admin:/bin/bash
+zabbix:x:1008:1009::/home/zabbix:/bin/bash
+tomo:x:1000:1010:tomo,15,jdfjdk,kasdaksj,ajskhajk:/home/tomo:/bin/bash
+hplip:x:121:7:HPLIP system user,,,:/var/run/hplip:/bin/false
+clark-cinco  # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+sm:x:1000:1000:sm,,,:/home/sm:/bin/bash
+sshd:x:101:65534::/var/run/sshd:/usr/sbin/nologin
+messagebus:x:102:106::/var/run/dbus:/bin/false
+carmen:x:7214:200::/home/carmen:/bin/bash
+roberto:x:7213:200::/home/roberto:/bin/bash
+coss:x:7204:7214::/home/coss:/bin/bash
+nagios:x:103:109::/var/lib/nagios:/bin/false
+ntp:x:104:110::/home/ntp:/bin/false
+haldaemon:x:105:111:Hardware abstraction layer,,,:/var/run/hald:/bin/false
+appion:x:7272:7272::/home/appion:/bin/bash
+statd:x:106:65534::/var/lib/nfs:/bin/false
+jsegura:x:7261:7216::/home/jsegura:/bin/bash
+carazo:x:7256:7256::/home/carazo:/bin/bash
+colord:x:107:114:colord colour management daemon,,,:/var/lib/colord:/bin/false
+saned:x:108:115::/home/saned:/bin/false
+Debian-exim:x:109:116::/var/spool/exim4:/bin/false
+uuidd:x:100:101::/run/uuidd:/bin/false
+avahi:x:110:117:Avahi mDNS daemon,,,:/var/run/avahi-daemon:/bin/false
+geoclue:x:111:119::/var/lib/geoclue:/bin/false
+systemd-timesync:x:112:122:systemd Time Synchronization,,,:/run/systemd:/bin/false
+systemd-network:x:113:123:systemd Network Management,,,:/run/systemd/netif:/bin/false
+systemd-resolve:x:114:124:systemd Resolver,,,:/run/systemd/resolve:/bin/false
+systemd-bus-proxy:x:115:125:systemd Bus Proxy,,,:/run/systemd:/bin/false
+usbmux:x:116:46:usbmux daemon,,,:/var/lib/usbmux:/bin/false
+merhernando:x:7274:7274::/home/merhernando:/bin/bash
+gncondezo:x:7275:7275::/home/gncondezo:/bin/bash
+mpillana:x:7276:7276::/home/mpillana:/bin/bash
+lightdm:x:117:126:Light Display Manager:/var/lib/lightdm:/bin/false
+daniel:x:1001:1001:d,,,:/home/daniel:/bin/bash
+admin:x:7277:7277::/home/admin:/bin/bash
+zabbix:x:7278:7278::/home/zabbix:/bin/bash
+arquimedes   # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-timesync:x:100:103:systemd Time Synchronization,,,:/run/systemd:/bin/false
+systemd-network:x:101:104:systemd Network Management,,,:/run/systemd/netif:/bin/false
+systemd-resolve:x:102:105:systemd Resolver,,,:/run/systemd/resolve:/bin/false
+systemd-bus-proxy:x:103:106:systemd Bus Proxy,,,:/run/systemd:/bin/false
+Debian-exim:x:104:109::/var/spool/exim4:/bin/false
+messagebus:x:105:110::/var/run/dbus:/bin/false
+statd:x:106:65534::/var/lib/nfs:/bin/false
+sshd:x:107:65534::/var/run/sshd:/usr/sbin/nologin
+nagios:x:108:113::/var/lib/nagios:/bin/false
+ntp:x:109:115::/home/ntp:/bin/false
+colord:x:110:116:colord colour management daemon,,,:/var/lib/colord:/bin/false
+saned:x:111:117::/var/lib/saned:/bin/false
+admin:x:1001:1001:,,,:/home/admin:/bin/bash
+pconesa:x:7278:200:Pablo Conesa,,,:/home/pconesa:/bin/bash
+ldelcano:x:7254:200:Laura del Cano,,,:/home/ldelcano:/bin/bash
+yaiza:x:7299:200:Yaiza Rancel,,,:/home/yaiza:/bin/bash
+_apt:x:113:65534::/nonexistent:/bin/false
+zabbix:x:114:122::/home/zabbix:/bin/bash
+mysql:x:112:120:MySQL Server,,,:/nonexistent:/bin/false
+gacaffe:x:7305:200:Gabriel Caffarena,,,:/home/gacaffe:/bin/bash
+Debian-snmp:x:115:123::/var/lib/snmp:/bin/false
+myproxyoauth:x:999:999:User to run the MyProxy OAuth service:/usr/share/myproxy-oauth:/bin/nologin
+myproxy:x:998:998:User to run the MyProxy service:/var/lib/myproxy:/bin/nologin
+simpleca:x:997:997:User to run the SimpleCA:/var/lib/globus/simple_ca:/bin/nologin
+buildbot:x:116:124::/home/buildbot:/bin/bash
+asimov       # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/bin/sh
+bin:x:2:2:bin:/bin:/bin/sh
+sys:x:3:3:sys:/dev:/bin/sh
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/bin/sh
+man:x:6:12:man:/var/cache/man:/bin/sh
+lp:x:7:7:lp:/var/spool/lpd:/bin/sh
+mail:x:8:8:mail:/var/mail:/bin/sh
+news:x:9:9:news:/var/spool/news:/bin/sh
+uucp:x:10:10:uucp:/var/spool/uucp:/bin/sh
+proxy:x:13:13:proxy:/bin:/bin/sh
+www-data:x:33:33:www-data:/var/www:/bin/sh
+backup:x:34:34:backup:/var/backups:/bin/sh
+list:x:38:38:Mailing List Manager:/var/list:/bin/sh
+irc:x:39:39:ircd:/var/run/ircd:/bin/sh
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/bin/sh
+nobody:x:65534:65534:nobody:/nonexistent:/bin/sh
+libuuid:x:100:101::/var/lib/libuuid:/bin/sh
+sshd:x:101:65534::/var/run/sshd:/usr/sbin/nologin
+ntp:x:102:104::/home/ntp:/bin/false
+statd:x:103:65534::/var/lib/nfs:/bin/false
+Debian-exim:x:104:105::/var/spool/exim4:/bin/false
+messagebus:x:105:106::/var/run/dbus:/bin/false
+colord:x:106:108:colord colour management daemon,,,:/var/lib/colord:/bin/false
+saned:x:107:109::/home/saned:/bin/false
+usbmux:x:108:46:usbmux daemon,,,:/home/usbmux:/bin/false
+pulse:x:109:114:PulseAudio daemon,,,:/var/run/pulse:/bin/false
+rtkit:x:110:116:RealtimeKit,,,:/proc:/bin/false
+Debian-gdm:x:111:117:Gnome Display Manager:/var/lib/gdm3:/bin/false
+nagios:x:112:118::/var/lib/nagios:/bin/false
+slurm:x:64030:64030::/home/slurm:/bin/false
+munge:x:113:119::/home/munge:/bin/false
+scipionweb:x:7273:200::/mnt/big1/scipion-service/data/scipionweb:/bin/bash
+coss:x:7204:200::/home/coss:/bin/bash
+roberto:x:7213:200::/home/roberto:/bin/bash
+scipion:x:7271:7271::/home/scipion:/bin/bash
+carazo:x:7256:200::/home/carazo:/bin/bash
+mwsupload:x:1111:1111::/services/scipion/data/uploads:/bin/false
+rmelero:x:7242:200::/mnt/big1/rmelero:/bin/bash
+mazdak:x:8311:7295::/mnt/big2/mazdak:/bin/false
+curso02:x:8316:7296::/mnt/big2/curso02:/bin/bash
+curso03:x:8317:7296::/mnt/big2/curso03:/bin/bash
+curso04:x:8318:7296::/mnt/big2/curso04:/bin/bash
+curso05:x:8319:7296::/mnt/big2/curso05:/bin/bash
+curso06:x:8320:7296::/mnt/big2/curso06:/bin/bash
+curso07:x:8321:7296::/mnt/big2/curso07:/bin/bash
+curso08:x:8322:7296::/mnt/big2/curso08:/bin/bash
+curso09:x:8323:7296::/mnt/big2/curso09:/bin/bash
+curso10:x:8324:7296::/mnt/big2/curso10:/bin/bash
+curso11:x:8325:7296::/mnt/big2/curso11:/bin/bash
+curso12:x:8326:7296::/mnt/big2/curso12:/bin/bash
+curso13:x:8327:7296::/mnt/big2/curso13:/bin/bash
+jsegura:x:7261:200::/mnt/big2//jsegura:/bin/bash
+curso01:x:8315:7296::/mnt/big2//curso01:/bin/bash
+trial01:x:6000:6000::/mnt/big2/trials/trial01:/bin/bash
+trial02:x:6002:6000::/mnt/big2/trials/trial02:/bin/bash
+trial03:x:6003:6000::/mnt/big2/trials/trial03:/bin/bash
+trial04:x:6004:6000::/mnt/big2/trials/trial04:/bin/bash
+trial05:x:6005:6000::/mnt/big2/trials/trial05:/bin/bash
+trial06:x:6006:6000::/mnt/big2/trials/trial06:/bin/bash
+trial07:x:6007:6000::/mnt/big2/trials/trial07:/bin/bash
+trial08:x:6008:6000::/mnt/big2/trials/trial08:/bin/bash
+trial09:x:6009:6000::/mnt/big2/trials/trial09:/bin/bash
+trial10:x:6010:6000::/mnt/big2/trials/trial10:/bin/bash
+trial11:x:6011:6000::/mnt/big2/trials/trial11:/bin/bash
+trial12:x:6012:6000::/mnt/big2/trials/trial12:/bin/bash
+trial13:x:6013:6000::/mnt/big2/trials/trial13:/bin/bash
+trial14:x:6014:6000::/mnt/big2/trials/trial14:/bin/bash
+trial17:x:8328:8328::/mnt/big2/trials/trial17:/bin/sh
+xrdp:x:114:122::/var/run/xrdp:/bin/false
+demo00:x:6500:6000::/mnt/big2/demo/demo00:/bin/bash
+demo01:x:6501:6000::/mnt/big2/demo/demo01:/bin/bash
+demo02:x:6502:6000::/mnt/big2/demo/demo02:/bin/bash
+demo03:x:6503:6000::/mnt/big2/demo/demo03:/bin/bash
+demo04:x:6504:6000::/mnt/big2/demo/demo04:/bin/bash
+demo05:x:6505:6000::/mnt/big2/demo/demo05:/bin/bash
+demo06:x:6506:6000::/mnt/big2/demo/demo06:/bin/bash
+demo07:x:6507:6000::/mnt/big2/demo/demo07:/bin/bash
+demo08:x:6508:6000::/mnt/big2/demo/demo08:/bin/bash
+demo09:x:6509:6000::/mnt/big2/demo/demo09:/bin/bash
+demo10:x:6510:6000::/mnt/big2/demo/demo10:/bin/bash
+ldelcano:x:7254:200::/home/ldelcano:/bin/bash
+rsanchez:x:7268:200:Ruben Sanchez,,,:/home/rsanchez:/bin/bash
+admin:x:8336:8336::/home/admin:/bin/bash
+zabbix:x:8337:8337::/home/zabbix:/bin/bash
+marta:x:7298:200:Marta Martinez,,,:/home/marta:/bin/bash
+jamotga:x:7272:200:Javier Mota Garcia,,,:/home/jamotga:/bin/bash
+dmaluenda:x:7306:200:David Maluenda,,,:/home/dmaluenda:/bin/bash
+faraday      # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-timesync:x:100:103:systemd Time Synchronization,,,:/run/systemd:/bin/false
+systemd-network:x:101:104:systemd Network Management,,,:/run/systemd/netif:/bin/false
+systemd-resolve:x:102:105:systemd Resolver,,,:/run/systemd/resolve:/bin/false
+systemd-bus-proxy:x:103:106:systemd Bus Proxy,,,:/run/systemd:/bin/false
+Debian-exim:x:104:109::/var/spool/exim4:/bin/false
+messagebus:x:105:110::/var/run/dbus:/bin/false
+statd:x:106:65534::/var/lib/nfs:/bin/false
+sshd:x:107:65534::/var/run/sshd:/usr/sbin/nologin
+nagios:x:108:113::/var/lib/nagios:/bin/false
+ntp:x:109:114::/home/ntp:/bin/false
+coss:x:7204:200::/home/coss:/bin/bash
+admin:x:7263:7263::/home/admin:/bin/bash
+zabbix:x:7264:7264::/home/zabbix:/bin/bash
+_apt:x:110:65534::/nonexistent:/bin/false
+einstein-dos # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+syslog:x:101:104::/home/syslog:/bin/false
+messagebus:x:102:106::/var/run/dbus:/bin/false
+usbmux:x:103:46:usbmux daemon,,,:/home/usbmux:/bin/false
+dnsmasq:x:104:65534:dnsmasq,,,:/var/lib/misc:/bin/false
+avahi-autoipd:x:105:113:Avahi autoip daemon,,,:/var/lib/avahi-autoipd:/bin/false
+kernoops:x:106:65534:Kernel Oops Tracking Daemon,,,:/:/bin/false
+rtkit:x:107:114:RealtimeKit,,,:/proc:/bin/false
+saned:x:108:115::/var/lib/saned:/bin/false
+whoopsie:x:109:116::/nonexistent:/bin/false
+speech-dispatcher:x:110:29:Speech Dispatcher,,,:/var/run/speech-dispatcher:/bin/false
+avahi:x:111:117:Avahi mDNS daemon,,,:/var/run/avahi-daemon:/bin/false
+lightdm:x:112:118:Light Display Manager:/var/lib/lightdm:/bin/false
+colord:x:113:121:colord colour management daemon,,,:/var/lib/colord:/bin/false
+hplip:x:114:7:HPLIP system user,,,:/var/run/hplip:/bin/false
+pulse:x:115:122:PulseAudio daemon,,,:/var/run/pulse:/bin/false
+postfix:x:116:125::/var/spool/postfix:/bin/false
+rmelero:x:1001:1001:rmelero,,,:/home/rmelero:/bin/bash
+sshd:x:117:65534::/var/run/sshd:/usr/sbin/nologin
+ntp:x:118:128::/home/ntp:/bin/false
+statd:x:119:65534::/var/lib/nfs:/bin/false
+admin:x:1002:1002::/home/admin:/bin/bash
+systemd-timesync:x:120:130:systemd Time Synchronization,,,:/run/systemd:/bin/false
+systemd-network:x:121:131:systemd Network Management,,,:/run/systemd/netif:/bin/false
+systemd-resolve:x:122:132:systemd Resolver,,,:/run/systemd/resolve:/bin/false
+uuidd:x:100:101::/run/uuidd:/bin/false
+_apt:x:124:65534::/nonexistent:/bin/false
+cups-pk-helper:x:123:108:user for cups-pk-helper service,,,:/home/cups-pk-helper:/usr/sbin/nologin
+nm-openvpn:x:125:135:NetworkManager OpenVPN,,,:/var/lib/openvpn/chroot:/usr/sbin/nologin
+geoclue:x:126:136::/var/lib/geoclue:/usr/sbin/nologin
+gdm:x:127:137:Gnome Display Manager:/var/lib/gdm3:/bin/false
+coss:x:7204:7204::/home/coss:/bin/sh
+nvidia-persistenced:x:128:138:NVIDIA Persistence Daemon,,,:/nonexistent:/sbin/nologin
+copernico    # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-timesync:x:100:102:systemd Time Synchronization,,,:/run/systemd:/bin/false
+systemd-network:x:101:103:systemd Network Management,,,:/run/systemd/netif:/bin/false
+systemd-resolve:x:102:104:systemd Resolver,,,:/run/systemd/resolve:/bin/false
+systemd-bus-proxy:x:103:105:systemd Bus Proxy,,,:/run/systemd:/bin/false
+_apt:x:104:65534::/nonexistent:/bin/false
+messagebus:x:105:109::/var/run/dbus:/bin/false
+sshd:x:106:65534::/run/sshd:/usr/sbin/nologin
+admin:x:1001:1001::/home/admin:/bin/bash
+coss:x:7204:7204::/home/coss:
+carver       # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+syslog:x:101:104::/home/syslog:/bin/false
+messagebus:x:102:106::/var/run/dbus:/bin/false
+usbmux:x:103:46:usbmux daemon,,,:/home/usbmux:/bin/false
+dnsmasq:x:104:65534:dnsmasq,,,:/var/lib/misc:/bin/false
+avahi-autoipd:x:105:113:Avahi autoip daemon,,,:/var/lib/avahi-autoipd:/bin/false
+kernoops:x:106:65534:Kernel Oops Tracking Daemon,,,:/:/bin/false
+rtkit:x:107:114:RealtimeKit,,,:/proc:/bin/false
+saned:x:108:115::/var/lib/saned:/bin/false
+whoopsie:x:109:116::/nonexistent:/bin/false
+speech-dispatcher:x:110:29:Speech Dispatcher,,,:/var/run/speech-dispatcher:/bin/false
+avahi:x:111:117:Avahi mDNS daemon,,,:/var/run/avahi-daemon:/bin/false
+lightdm:x:112:118:Light Display Manager:/var/lib/lightdm:/bin/false
+colord:x:113:121:colord colour management daemon,,,:/var/lib/colord:/bin/false
+hplip:x:114:7:HPLIP system user,,,:/var/run/hplip:/bin/false
+pulse:x:115:122:PulseAudio daemon,,,:/var/run/pulse:/bin/false
+sshd:x:116:65534::/var/run/sshd:/usr/sbin/nologin
+postfix:x:117:125::/var/spool/postfix:/bin/false
+jsegura:x:7261:7292::/home/jsegura:/bin/bash
+mkazemi:x:7276:200::/home/mkazemi:/bin/bash
+nagios:x:118:127::/var/lib/nagios:/bin/false
+pconesa:x:7278:200::/home/pconesa:/bin/bash
+rmelero:x:7242:7242:Roberto Melero,103,696969,:/home/rmelero:/bin/bash
+yaiza:x:7299:7299:Yaiza Rancel,,,:/home/yaiza:/bin/bash
+coss:x:7204:7279::/home/coss:/bin/bash
+statd:x:119:65534::/var/lib/nfs:/bin/false
+jamotga:x:7272:200:Javier Mota,,,:/home/jamotga:/bin/bash
+rsanchez:x:7268:7292:,,,:/home/rsanchez:/bin/bash
+admin:x:7300:7300::/home/admin:/bin/bash
+zabbix:x:7301:7301::/home/zabbix:/bin/bash
+naharrosp:x:7302:7302::/home/naharrosp:/bin/bash
+asanmartin:x:7303:7303::/home/asanmartin:/bin/bash
+phorvath:x:7304:7304::/home/phorvath:/bin/bash
+systemd-timesync:x:120:129:systemd Time Synchronization,,,:/run/systemd:/bin/false
+systemd-network:x:121:130:systemd Network Management,,,:/run/systemd/netif:/bin/false
+systemd-resolve:x:122:131:systemd Resolver,,,:/run/systemd/resolve:/bin/false
+uuidd:x:100:101::/run/uuidd:/bin/false
+_apt:x:124:65534::/nonexistent:/bin/false
+cups-pk-helper:x:123:108:user for cups-pk-helper service,,,:/home/cups-pk-helper:/usr/sbin/nologin
+geoclue:x:125:134::/var/lib/geoclue:/usr/sbin/nologin
+gdm:x:126:135:Gnome Display Manager:/var/lib/gdm3:/bin/false
+gnome-initial-setup:x:127:65534::/run/gnome-initial-setup/:/bin/false
+nvidia-persistenced:x:128:136:NVIDIA Persistence Daemon,,,:/nonexistent:/sbin/nologin
+erney:x:7283:200:Erney Ramirez,,,:/home/erney:/bin/bash
+ajimenez:x:8336:8336::/home/ajimenez:/bin/bash
+dmaluenda:x:7306:7306::/home/dmaluenda:/bin/bash
+euler        # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+Debian-exim:x:101:103::/var/spool/exim4:/bin/false
+sshd:x:102:65534::/var/run/sshd:/usr/sbin/nologin
+ntp:x:103:105::/home/ntp:/bin/false
+statd:x:104:65534::/var/lib/nfs:/bin/false
+messagebus:x:105:106::/var/run/dbus:/bin/false
+nagios:x:106:107::/var/lib/nagios:/bin/false
+coss:x:7204:200::/home/coss:/bin/bash
+admin:x:7263:7263::/home/admin:/bin/bash
+zabbix:x:7264:7264::/home/zabbix:/bin/bash
+_apt:x:107:65534::/nonexistent:/bin/false
+uuidd:x:100:101::/run/uuidd:/bin/false
+systemd-timesync:x:108:113:systemd Time Synchronization,,,:/run/systemd:/bin/false
+systemd-network:x:109:114:systemd Network Management,,,:/run/systemd/netif:/bin/false
+systemd-resolve:x:110:115:systemd Resolver,,,:/run/systemd/resolve:/bin/false
+systemd-bus-proxy:x:111:116:systemd Bus Proxy,,,:/run/systemd:/bin/false
+heisenberg   # Debian-exim:x:101:103::/var/spool/exim4:/bin/false
+messagebus:x:103:106::/var/run/dbus:/bin/false
+ntp:x:104:107::/home/ntp:/bin/false
+nagios:x:106:108::/var/lib/nagios:/bin/false
+twiki:x:7232:7232::/home/twiki:/bin/sh
+root:x:0:0:root:/root:/bin/bash
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+libuuid:x:100:101::/var/lib/libuuid:
+syslog:x:101:104::/home/syslog:/bin/false
+sshd:x:102:65534::/var/run/sshd:/usr/sbin/nologin
+ajperez:x:7280:7201::/services/bioras/data/ajperez:/bin/bash
+ana:x:7282:7201::/services/bioras/data/ana:/bin/bash
+bengel:x:8308:7210::/services/bioras/data/bengel:/bin/rbash
+carazo:x:7256:7200::/services/bioras/data/carazo:/bin/bash
+carmen:x:7214:7200::/services/bioras/data/carmen:/bin/bash
+cftornero:x:1176:7210::/services/bioras/data/cftornero:/bin/bash
+coss:x:7204:7200::/services/bioras/data/coss:/bin/bash
+curso:x:8304:7210::/services/bioras/data/curso:/bin/rbash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+dmitry:x:8302:7210:Dmitry Lyumkis-dlyumkis@scripps.edu:/services/bioras/data/biguploads/dmitry:/bin/rbash
+epereiro:x:8307:7210::/services/bioras/data/epereiro:/bin/bash
+franklab:x:8301:7210::/services/bioras/data/biguploads/franklab:/bin/rbash
+ftp:x:1100:7295:with validate-ssh,no need for rbash:/services/bioras/data/ftp:/bin/bash
+iarganda:x:7290:7201::/services/bioras/data/iarganda:/bin/bash
+jalegrio:x:1177:7210::/services/bioras/data/jalegrio:/bin/bash
+jatherton:x:8327:7210:Joseph Atherton,j.atherton@mail.cryst.bbk.ac.uk:/services/bioras/data/jatherton:/bin/rbash
+jcanton:x:7274:7210::/services/bioras/data/jcanton:/bin/bash
+jsegura:x:7261:7200::/services/bioras/data/jsegura:/bin/bash
+johan:x:7221:7200::/services/bioras/data/johan:/bin/bash
+josem:x:7246:7200::/services/bioras/data/josem:/bin/bash
+ldelcano:x:7254:7200::/services/bioras/data/ldelcano:/bin/bash
+marta:x:7298:7200::/services/bioras/data//marta:/bin/bash
+mazdak:x:8311:7210::/services/bioras/data/mazdak:/bin/rbash
+mkazemi:x:7276:7276::/services/bioras/data/mkazemi:/bin/bash
+mukleja:x:8306:7210::/services/bioras/data/mukleja:/bin/bash
+ollorca:x:1175:7210::/services/bioras/data/ollorca:/bin/bash
+pconesa:x:7278:7200::/services/bioras/data//pconesa:/bin/bash
+pcossio:x:8312:7210:Pilar Cossio,Pilar.Cossio@biophys.mpg.de:/services/bioras/data/pcossio:/bin/rbash
+polito:x:8328:7295::/services/bioras/data/polito:/bin/bash
+rafa:x:7216:7201::/services/bioras/data/rafa:/bin/bash
+repo:x:1103:1103::/services/bioras/data/git:/bin/bash
+rmelero:x:7242:7200::/services/bioras/data/rmelero:/bin/bash
+roberto:x:7213:7200::/services/bioras/data/roberto:/bin/bash
+rsanchez:x:7268:7200::/services/bioras/data/rsanchez:/bin/bash
+shabih:x:8303:7210::/services/bioras/data/biguploads/shabih:/bin/rbash
+srdja:x:2006:7210::/services/bioras/data/srdja:/bin/bash
+surf:x:8332:8332::/services/bioras/data/surf:/bin/bash
+swt:x:8331:7295::/services/bioras/data/swt:/bin/bash
+vilas:x:7269:200::/services/bioras/data/vilas:/bin/bash
+xiaojiac:x:8329:7295:Xiaojiang Chen (xiaojiac@usc.edu):/services/bioras/data/xiaojiac:/bin/bash
+xiaojunh:x:8330:7295:Xiaojun Huang,xiaojunhuang@moon.ibp.ac.cn:/services/bioras/data/xiaojunh:/bin/bash
+yifan:x:8305:7210::/services/bioras/data/biguploads/yifan:/bin/rbash
+instruct:x:7275:7295::/services/bioras/data/instruct:/bin/bash
+rkoning:x:8310:7295::/services/bioras/data/rkoning:/bin/bash
+efranken:x:8334:7295::/services/bioras/data/efranken:/bin/bash
+mingliang:x:8333:7295::/services/bioras/data/mingliang:/bin/bash
+statd:x:103:65534::/var/lib/nfs:/bin/false
+gacaffe:x:8335:8335::/services/bioras/data/gacaffe:/bin/bash
+ajimenez:x:8336:7200::/services/bioras/data/ajimenez:/bin/bash
+scipion:x:7271:1001:,,,:/home/scipion:/bin/bash
+admin:x:8338:8338::/home/admin:/bin/bash
+zabbix:x:8339:8339::/home/zabbix:/bin/bash
+yaiza:x:7299:7200:Yaiza Rancel,,,:/home/yaiza:/bin/bash
+_apt:x:105:65534::/nonexistent:/bin/false
+nolan        # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-timesync:x:100:103:systemd Time Synchronization,,,:/run/systemd:/bin/false
+systemd-network:x:101:104:systemd Network Management,,,:/run/systemd/netif:/bin/false
+systemd-resolve:x:102:105:systemd Resolver,,,:/run/systemd/resolve:/bin/false
+systemd-bus-proxy:x:103:106:systemd Bus Proxy,,,:/run/systemd:/bin/false
+Debian-exim:x:104:109::/var/spool/exim4:/bin/false
+messagebus:x:105:110::/var/run/dbus:/bin/false
+statd:x:106:65534::/var/lib/nfs:/bin/false
+sshd:x:107:65534::/var/run/sshd:/usr/sbin/nologin
+ntp:x:108:113::/home/ntp:/bin/false
+nagios:x:109:114::/var/lib/nagios:/bin/false
+scipionweb:x:7273:7273::/services/scipion/data/scipionweb:/bin/bash
+mwsupload:x:1111:1111::/services/scipion/data/uploads:/bin/bash
+scipion:x:7271:7271::/home/scipion:/bin/bash
+curso01:x:8315:7296::/home/curso01:/bin/bash
+curso02:x:8316:7296::/home/curso02:/bin/bash
+curso03:x:8317:7296::/home/curso03:/bin/bash
+coss:x:7204:200::/home/coss:/bin/bash
+geoclue:x:110:117::/var/lib/geoclue:/bin/false
+johan:x:7221:200::/home/johan:/bin/bash
+x2gouser:x:999:999::/var/lib/x2go:/bin/false
+usbmux:x:111:46:usbmux daemon,,,:/var/lib/usbmux:/bin/false
+slurm:x:64030:64030::/services/slurm/data/slurm:/bin/bash
+roberto:x:7213:200::/home/roberto:/bin/bash
+supervisor:x:8318:8318::/home/supervisor:/bin/sh
+buildbot:x:8319:8319::/services/buildbot-slave/data/slave/:/bin/bash
+scipionbox:x:7297:200::/home//scipionbox:/bin/bash
+pconesa:x:7278:200::/home/pconesa:/bin/bash
+admin:x:8320:8320::/home/admin:/bin/bash
+zabbix:x:8321:8321::/home/zabbix:/bin/bash
+_apt:x:112:65534::/nonexistent:/bin/false
+peano        # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-timesync:x:100:103:systemd Time Synchronization,,,:/run/systemd:/bin/false
+systemd-network:x:101:104:systemd Network Management,,,:/run/systemd/netif:/bin/false
+systemd-resolve:x:102:105:systemd Resolver,,,:/run/systemd/resolve:/bin/false
+systemd-bus-proxy:x:103:106:systemd Bus Proxy,,,:/run/systemd:/bin/false
+Debian-exim:x:104:109::/var/spool/exim4:/bin/false
+messagebus:x:105:110::/var/run/dbus:/bin/false
+statd:x:106:65534::/var/lib/nfs:/bin/false
+sshd:x:107:65534::/var/run/sshd:/usr/sbin/nologin
+ntp:x:108:113::/home/ntp:/bin/false
+colord:x:109:115:colord colour management daemon,,,:/var/lib/colord:/bin/false
+saned:x:110:116::/var/lib/saned:/bin/false
+nagios:x:111:117::/var/lib/nagios:/bin/false
+coss:x:7204:200::/home/coss:/bin/bash
+admin:x:7263:7263::/home/admin:/bin/bash
+zabbix:x:7264:7264::/home/zabbix:/bin/bash
+_apt:x:112:65534::/nonexistent:/bin/false
+rinchen      # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-timesync:x:100:103:systemd Time Synchronization,,,:/run/systemd:/bin/false
+systemd-network:x:101:104:systemd Network Management,,,:/run/systemd/netif:/bin/false
+systemd-resolve:x:102:105:systemd Resolver,,,:/run/systemd/resolve:/bin/false
+systemd-bus-proxy:x:103:106:systemd Bus Proxy,,,:/run/systemd:/bin/false
+Debian-exim:x:104:109::/var/spool/exim4:/bin/false
+messagebus:x:105:110::/var/run/dbus:/bin/false
+statd:x:106:65534::/var/lib/nfs:/bin/false
+sshd:x:107:65534::/var/run/sshd:/usr/sbin/nologin
+ntp:x:108:113::/home/ntp:/bin/false
+nagios:x:109:114::/var/lib/nagios:/bin/false
+scipion:x:7271:200::/home/scipion:/bin/bash
+vilas:x:7269:200::/home/vilas:/bin/bash
+coss:x:7204:200::/home/coss:/bin/bash
+ajimenez:x:8336:1001:ajimenez,b13,,:/home/ajimenez:/bin/bash
+jamotga:x:7272:200::/home/jamotga:/bin/bash
+admin:x:7273:7273::/home/admin:/bin/bash
+zabbix:x:7274:7274::/home/zabbix:/bin/bash
+erney:x:1001:1002:erney,b13,,:/home/erney:/bin/bash
+_apt:x:110:65534::/nonexistent:/bin/false
+rinchen-dos  # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-timesync:x:100:103:systemd Time Synchronization,,,:/run/systemd:/bin/false
+systemd-network:x:101:104:systemd Network Management,,,:/run/systemd/netif:/bin/false
+systemd-resolve:x:102:105:systemd Resolver,,,:/run/systemd/resolve:/bin/false
+systemd-bus-proxy:x:103:106:systemd Bus Proxy,,,:/run/systemd:/bin/false
+Debian-exim:x:104:109::/var/spool/exim4:/bin/false
+messagebus:x:105:110::/var/run/dbus:/bin/false
+statd:x:106:65534::/var/lib/nfs:/bin/false
+sshd:x:107:65534::/var/run/sshd:/usr/sbin/nologin
+ntp:x:108:113::/home/ntp:/bin/false
+coss:x:7204:200::/home/coss:/bin/bash
+nagios:x:109:115::/var/lib/nagios:/bin/false
+geoclue:x:110:116::/var/lib/geoclue:/bin/false
+vilas:x:7269:200::/home/vilas:/bin/bash
+uuidd:x:111:117::/run/uuidd:/bin/false
+usbmux:x:112:46:usbmux daemon,,,:/var/lib/usbmux:/bin/false
+curso01:x:1001:1001:,,,:/home/curso01:/bin/bash
+curso02:x:1002:1002:,,,:/home/curso02:/bin/bash
+curso03:x:1003:1003:,,,:/home/curso03:/bin/bash
+curso04:x:1004:1004:,,,:/home/curso04:/bin/bash
+curso05:x:1005:1005:,,,:/home/curso05:/bin/bash
+admin:x:7270:7270::/home/admin:/bin/bash
+zabbix:x:7271:7271::/home/zabbix:/bin/bash
+torvalds     # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-network:x:100:102:systemd Network Management,,,:/run/systemd/netif:/usr/sbin/nologin
+systemd-resolve:x:101:103:systemd Resolver,,,:/run/systemd/resolve:/usr/sbin/nologin
+syslog:x:102:106::/home/syslog:/usr/sbin/nologin
+messagebus:x:103:107::/nonexistent:/usr/sbin/nologin
+_apt:x:104:65534::/nonexistent:/usr/sbin/nologin
+uuidd:x:105:111::/run/uuidd:/usr/sbin/nologin
+avahi-autoipd:x:106:112:Avahi autoip daemon,,,:/var/lib/avahi-autoipd:/usr/sbin/nologin
+usbmux:x:107:46:usbmux daemon,,,:/var/lib/usbmux:/usr/sbin/nologin
+dnsmasq:x:108:65534:dnsmasq,,,:/var/lib/misc:/usr/sbin/nologin
+rtkit:x:109:114:RealtimeKit,,,:/proc:/usr/sbin/nologin
+speech-dispatcher:x:110:29:Speech Dispatcher,,,:/var/run/speech-dispatcher:/bin/false
+whoopsie:x:111:117::/nonexistent:/bin/false
+kernoops:x:112:65534:Kernel Oops Tracking Daemon,,,:/:/usr/sbin/nologin
+saned:x:113:119::/var/lib/saned:/usr/sbin/nologin
+pulse:x:114:120:PulseAudio daemon,,,:/var/run/pulse:/usr/sbin/nologin
+avahi:x:115:122:Avahi mDNS daemon,,,:/var/run/avahi-daemon:/usr/sbin/nologin
+colord:x:116:123:colord colour management daemon,,,:/var/lib/colord:/usr/sbin/nologin
+hplip:x:117:7:HPLIP system user,,,:/var/run/hplip:/bin/false
+geoclue:x:118:124::/var/lib/geoclue:/usr/sbin/nologin
+gnome-initial-setup:x:119:65534::/run/gnome-initial-setup/:/bin/false
+gdm:x:120:125:Gnome Display Manager:/var/lib/gdm3:/bin/false
+joan:x:1000:1000:joan,,,:/home/joan:/bin/bash
+cups-pk-helper:x:121:116:user for cups-pk-helper service,,,:/home/cups-pk-helper:/usr/sbin/nologin
+sshd:x:122:65534::/run/sshd:/usr/sbin/nologin
+nvidia-persistenced:x:123:127:NVIDIA Persistence Daemon,,,:/nonexistent:/sbin/nologin
+slurm:x:64030:64030::/nonexistent:/bin/bash
+munge:x:124:129::/nonexistent:/usr/sbin/nologin
+test:x:1001:1001:,,,:/home/test:/bin/bash
+postfix:x:125:130::/var/spool/postfix:/usr/sbin/nologin
+test-gpu:x:2001:1001::/home/test:/bin/bash
+coss:x:7204:1004:,,,:/home/coss:/bin/bash
+coss-gpu:x:1004:1004:,,,:/home/coss:/bin/bash
+dmaluenda:x:7306:7306:,,,:/home/dmaluenda:/bin/bash
+dmaluenda-gpu:x:1002:7306:,,,:/home/dmaluenda:/bin/bash
+rmelero:x:7242:7242:,,,:/home/rmelero:/bin/bash
+rmelero-gpu:x:1003:7242:,,,:/home/rmelero:/bin/bash
+erney:x:7283:7283:,,,:/home/erney:/bin/bash
+erney-gpu:x:1005:7283:,,,:/home/erney:/bin/bash
+rsanchez:x:7268:7268:,,,:/home/rsanchez:/bin/bash
+rsanchez-gpu:x:1006:7268:,,,:/home/rsanchez:/bin/bash
+joan-gpu:x:1009:1000:,,,:/home/joan:/bin/bash
+phorvath:x:7304:7304:,,,:/home/phorvath:/bin/bash
+phorvath-gpu:x:1007:7304:,,,:/home/phorvath:/bin/bash
+zabbix:x:126:132::/nonexistent:/usr/sbin/nologin
+yaiza:x:7299:7299:,,,:/home/yaiza:/bin/bash
+yaiza-gpu:x:1008:7299:,,,:/home/yaiza:/bin/bash
+dstrelak:x:7307:7307:,,,:/home/dstrelak:/bin/bash
+dstrelak-gpu:x:1010:7307:,,,:/home/dstrelak:/bin/bash
+yfonseca:x:7308:7308:,,,:/home/yfonseca:/bin/bash
+yfonseca-gpu:x:1011:7308:,,,:/home/yfonseca:/bin/bash
+ajimenez:x:8336:8336:,,,:/home/ajimenez:/bin/bash
+ajimenez-gpu:x:1012:8336:,,,:/home/ajimenez:/bin/bash
+jamotga:x:7272:7272:,,,:/home/jamotga:/bin/bash
+jamotga-gpu:x:1013:7272:,,,:/home/jamotga:/bin/bash
+ldelcano:x:7254:7254:,,,:/home/ldelcano:/bin/bash
+ldelcano-gpu:x:1014:7254:,,,:/home/ldelcano:/bin/bash
+statd:x:127:65534::/var/lib/nfs:/usr/sbin/nologin
+admin:x:8337:8337::/home/admin:/bin/bash
+scipionbox   # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-timesync:x:100:102:systemd Time Synchronization,,,:/run/systemd:/bin/false
+systemd-network:x:101:103:systemd Network Management,,,:/run/systemd/netif:/bin/false
+systemd-resolve:x:102:104:systemd Resolver,,,:/run/systemd/resolve:/bin/false
+systemd-bus-proxy:x:103:105:systemd Bus Proxy,,,:/run/systemd:/bin/false
+syslog:x:104:108::/home/syslog:/bin/false
+_apt:x:105:65534::/nonexistent:/bin/false
+lxd:x:106:65534::/var/lib/lxd/:/bin/false
+messagebus:x:107:111::/var/run/dbus:/bin/false
+uuidd:x:108:112::/run/uuidd:/bin/false
+dnsmasq:x:109:65534:dnsmasq,,,:/var/lib/misc:/bin/false
+dovecot:x:111:119:Dovecot mail server,,,:/usr/lib/dovecot:/bin/false
+dovenull:x:112:120:Dovecot login user,,,:/nonexistent:/bin/false
+sshd:x:113:65534::/var/run/sshd:/usr/sbin/nologin
+postgres:x:114:121:PostgreSQL administrator,,,:/var/lib/postgresql:/bin/bash
+administrator:x:1000:1000:administrator,,,:/home/administrator:/bin/bash
+lightdm:x:115:124:Light Display Manager:/var/lib/lightdm:/bin/false
+whoopsie:x:116:126::/nonexistent:/bin/false
+avahi-autoipd:x:117:127:Avahi autoip daemon,,,:/var/lib/avahi-autoipd:/bin/false
+avahi:x:118:128:Avahi mDNS daemon,,,:/var/run/avahi-daemon:/bin/false
+colord:x:119:131:colord colour management daemon,,,:/var/lib/colord:/bin/false
+speech-dispatcher:x:120:29:Speech Dispatcher,,,:/var/run/speech-dispatcher:/bin/false
+hplip:x:121:7:HPLIP system user,,,:/var/run/hplip:/bin/false
+kernoops:x:122:65534:Kernel Oops Tracking Daemon,,,:/:/bin/false
+pulse:x:123:132:PulseAudio daemon,,,:/var/run/pulse:/bin/false
+rtkit:x:124:134:RealtimeKit,,,:/proc:/bin/false
+saned:x:125:135::/var/lib/saned:/bin/false
+usbmux:x:126:46:usbmux daemon,,,:/var/lib/usbmux:/bin/false
+scipionuser:x:1001:1001:scipion user,,,:/home/scipionuser:/bin/bash
+postfix:x:110:117::/var/spool/postfix:/bin/false
+statd:x:127:65534::/var/lib/nfs:/bin/false
+hilbert      # root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/bin/bash
+nobody:x:99:99:Nobody:/:/sbin/nologin
+systemd-network:x:192:192:systemd Network Management:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:999:997:User for polkitd:/:/sbin/nologin
+libstoragemgmt:x:998:996:daemon account for libstoragemgmt:/var/run/lsm:/sbin/nologin
+abrt:x:173:173::/etc/abrt:/sbin/nologin
+rpc:x:32:32:Rpcbind Daemon:/var/lib/rpcbind:/sbin/nologin
+tss:x:59:59:Account used by the trousers package to sandbox the tcsd daemon:/dev/null:/sbin/nologin
+rpcuser:x:29:29:RPC Service User:/var/lib/nfs:/sbin/nologin
+nfsnobody:x:65534:65534:Anonymous NFS User:/var/lib/nfs:/sbin/nologin
+postfix:x:89:89::/var/spool/postfix:/sbin/nologin
+chrony:x:997:994::/var/lib/chrony:/sbin/nologin
+ntp:x:38:38::/etc/ntp:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
+tcpdump:x:72:72::/:/sbin/nologin
+admin:x:1000:1000::/home/admin:/bin/bash
+jmartinb:x:1001:1002::/pool_cnb/martin-benito/jmartinb:/bin/bash
+jrcaston:x:1002:1003::/pool_cnb/caston/jrcaston:/bin/bash
+carmen:x:7214:1004::/pool_cnb/carmensanmartin/carmen:/bin/bash
+jmv:x:1004:1005::/pool_cnb/valpuesta/jmv:/bin/bash
+coss:x:7204:1006::/pool_cnb/bioinfo/coss:/bin/bash
+jlcarrascosa:x:1008:1009::/pool_cnb/carrascosa/jlcarrascosa:/bin/bash
+rsanchez:x:7268:1010::/pool_cnb/bioinfo/rsanchez:/bin/bash
+cryoem:x:7266:7266::/pool_cnb/cryoem/cryoem:/bin/bash
+bioinfo:x:7262:1011::/pool_cnb/bioinfo/bioinfo:/bin/bash
+jsegura:x:7261:7271::/:/sbin/nologin
+roberto:x:7213:7293::/home/roberto:/bin/bash
+mkazemi:x:7276:7276::/pool_cnb/bioinfo/mkazemi:/bin/bash
+rmelero:x:7242:7242::/pool_cnb/bioinfo/rmelero:/bin/bash
+zabbix:x:7277:7277::/home/zabbix:/bin/bash
+jamotga:x:7272:7272::/pool_cnb/bioinfo/jamotga:/bin/bash
+vilas:x:7269:7269::/pool_cnb/bioinfo/vilas:/bin/bash
+erney:x:7283:7283::/pool_cnb/bioinfo/erney:/bin/bash
+phorvath:x:7304:7304::/pool_cnb/bioinfo/phorvath:/bin/bash
+ajimenez:x:8336:8336::/pool_cnb/bioinfo/ajimenez:/bin/bash
+gluster:x:996:992:GlusterFS daemons:/var/run/gluster:/sbin/nologin
+finlay       # root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-network:x:100:102:systemd Network Management,,,:/run/systemd/netif:/usr/sbin/nologin
+systemd-resolve:x:101:103:systemd Resolver,,,:/run/systemd/resolve:/usr/sbin/nologin
+syslog:x:102:106::/home/syslog:/usr/sbin/nologin
+messagebus:x:103:107::/nonexistent:/usr/sbin/nologin
+_apt:x:104:65534::/nonexistent:/usr/sbin/nologin
+uuidd:x:105:111::/run/uuidd:/usr/sbin/nologin
+avahi-autoipd:x:106:112:Avahi autoip daemon,,,:/var/lib/avahi-autoipd:/usr/sbin/nologin
+usbmux:x:107:46:usbmux daemon,,,:/var/lib/usbmux:/usr/sbin/nologin
+dnsmasq:x:108:65534:dnsmasq,,,:/var/lib/misc:/usr/sbin/nologin
+rtkit:x:109:114:RealtimeKit,,,:/proc:/usr/sbin/nologin
+cups-pk-helper:x:110:116:user for cups-pk-helper service,,,:/home/cups-pk-helper:/usr/sbin/nologin
+speech-dispatcher:x:111:29:Speech Dispatcher,,,:/var/run/speech-dispatcher:/bin/false
+whoopsie:x:112:117::/nonexistent:/bin/false
+kernoops:x:113:65534:Kernel Oops Tracking Daemon,,,:/:/usr/sbin/nologin
+saned:x:114:119::/var/lib/saned:/usr/sbin/nologin
+pulse:x:115:120:PulseAudio daemon,,,:/var/run/pulse:/usr/sbin/nologin
+avahi:x:116:122:Avahi mDNS daemon,,,:/var/run/avahi-daemon:/usr/sbin/nologin
+colord:x:117:123:colord colour management daemon,,,:/var/lib/colord:/usr/sbin/nologin
+hplip:x:118:7:HPLIP system user,,,:/var/run/hplip:/bin/false
+geoclue:x:119:124::/var/lib/geoclue:/usr/sbin/nologin
+gnome-initial-setup:x:120:65534::/run/gnome-initial-setup/:/bin/false
+gdm:x:121:125:Gnome Display Manager:/var/lib/gdm3:/bin/false
+acuervo:x:1000:1000:Ana,,,:/home/acuervo:/bin/bash
+admin:x:1001:1001::/home/admin:/bin/bash
+sshd:x:122:65534::/run/sshd:/usr/sbin/nologin

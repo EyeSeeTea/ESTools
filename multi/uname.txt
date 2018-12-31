@@ -1,0 +1,19 @@
+asimov       # Linux asimov 3.13.0-35-generic #62-Ubuntu SMP Fri Aug 15 01:58:42 UTC 2014 x86_64 GNU/Linux
+clark6       # Linux clark6 3.16.0-4-amd64 #1 SMP Debian 3.16.39-1+deb8u2 (2017-03-07) x86_64 GNU/Linux
+clark-cinco  # Linux clark-cinco.cnb.csic.es 3.16.0-4-amd64 #1 SMP Debian 3.16.36-1+deb8u1 (2016-09-03) x86_64 GNU/Linux
+asimov-dos   # Linux asimov-dos 3.16.0-5-amd64 #1 SMP Debian 3.16.51-3+deb8u1 (2018-01-08) x86_64 GNU/Linux
+arquimedes   # Linux arquimedes 4.9.0-8-amd64 #1 SMP Debian 4.9.110-3+deb9u6 (2018-10-08) x86_64 GNU/Linux
+copernico    # Linux copernico 4.9.0-8-amd64 #1 SMP Debian 4.9.130-2 (2018-10-27) x86_64 GNU/Linux
+faraday      # Linux faraday 4.9.0-8-amd64 #1 SMP Debian 4.9.130-2 (2018-10-27) x86_64 GNU/Linux
+euler        # Linux euler.cnb.csic.es 4.9.0-8-amd64 #1 SMP Debian 4.9.130-2 (2018-10-27) x86_64 GNU/Linux
+einstein-dos # Linux einstein-dos 4.15.0-39-generic #42-Ubuntu SMP Tue Oct 23 15:48:01 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+carver       # Linux carver 4.15.0-42-generic #45-Ubuntu SMP Thu Nov 15 19:32:57 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+nolan        # Linux nolan 3.18.19 #1 SMP Fri Jul 31 12:08:21 CEST 2015 x86_64 GNU/Linux
+heisenberg   # Linux heisenberg.cnb.csic.es 3.16.0-0.bpo.4-amd64 #1 SMP Debian 3.16.39-1+deb8u1~bpo70+1 (2017-02-24) x86_64 GNU/Linux
+peano        # Linux peano.cnb.csic.es 4.9.0-8-amd64 #1 SMP Debian 4.9.130-2 (2018-10-27) x86_64 GNU/Linux
+rinchen-dos  # Linux rinchen-dos 3.16.0-4-amd64 #1 SMP Debian 3.16.36-1+deb8u1 (2016-09-03) x86_64 GNU/Linux
+rinchen      # Linux rinchen 4.9.0-8-amd64 #1 SMP Debian 4.9.130-2 (2018-10-27) x86_64 GNU/Linux
+torvalds     # Linux torvalds 4.15.0-42-generic #45-Ubuntu SMP Thu Nov 15 19:32:57 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+scipionbox   # Linux scipionbox 4.4.0-87-generic #110-Ubuntu SMP Tue Jul 18 12:55:35 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+hilbert      # Linux hilbert.cnb.csic.es 3.10.0-862.14.4.el7.x86_64 #1 SMP Wed Sep 26 15:12:11 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
+finlay       # Linux finlay 4.15.0-42-generic #45-Ubuntu SMP Thu Nov 15 19:32:57 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux

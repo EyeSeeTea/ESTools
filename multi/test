@@ -1,0 +1,21 @@
+arquimedes   # backup_zabbix_conf.sh buildbot configs.tgz cron_scripts.tgz email globus globus-software index.html index.html.1 monitoring rsync_backup_linux rsync_backup_linux.old.sh test-files upgrade_jessie_to_stretch w13db zabbix-2018-04-18-config.sql.gz zabbix-2018-04-18-schema.sql.gz
+campins      # Command '['ssh', 'campins', '/bin/sh']' timed out after 10 seconds
+asimov-dos   # Command '['ssh', 'asimov-dos', '/bin/sh']' timed out after 10 seconds
+asimov       # Command '['ssh', 'asimov', '/bin/sh']' timed out after 10 seconds
+carver       # Command '['ssh', 'carver', '/bin/sh']' timed out after 10 seconds
+clark-cinco  # Command '['ssh', 'clark-cinco', '/bin/sh']' timed out after 10 seconds
+clark6       # Command '['ssh', 'clark6', '/bin/sh']' timed out after 10 seconds
+copernico    # Command '['ssh', 'copernico', '/bin/sh']' timed out after 10 seconds
+einstein-dos # Command '['ssh', 'einstein-dos', '/bin/sh']' timed out after 10 seconds
+euler        # Command '['ssh', 'euler', '/bin/sh']' timed out after 10 seconds
+torvalds     # Command '['ssh', 'torvalds', '/bin/sh']' returned non-zero exit status 255.
+i2pc         # Command '['ssh', 'i2pc', '/bin/sh']' returned non-zero exit status 255.
+faraday      # Command '['ssh', 'faraday', '/bin/sh']' timed out after 10 seconds
+peano        # Command '['ssh', 'peano', '/bin/sh']' timed out after 10 seconds
+nolan        # Command '['ssh', 'nolan', '/bin/sh']' timed out after 10 seconds
+hilbert      # Command '['ssh', 'hilbert', '/bin/sh']' timed out after 10 seconds
+heisenberg   # Command '['ssh', 'heisenberg', '/bin/sh']' timed out after 10 seconds
+rinchen      # Command '['ssh', 'rinchen', '/bin/sh']' timed out after 10 seconds
+rinchen-dos  # Command '['ssh', 'rinchen-dos', '/bin/sh']' timed out after 10 seconds
+scipionbox   # Command '['ssh', 'scipionbox', '/bin/sh']' timed out after 10 seconds
+finlay       # Command '['ssh', 'finlay', '/bin/sh']' timed out after 10 seconds

@@ -1,0 +1,20 @@
+asimov-dos   # MemTotal:       529342884 kB
+asimov       # MemTotal:       246711080 kB
+clark6       # MemTotal:       529309220 kB
+clark-cinco  # MemTotal:       264654104 kB
+arquimedes   # MemTotal:       32906040 kB
+faraday      # MemTotal:       16423100 kB
+copernico    # MemTotal:       16423084 kB
+euler        # MemTotal:        8158528 kB
+carver       # MemTotal:       264031468 kB
+einstein-dos # MemTotal:       131907696 kB
+heisenberg   # MemTotal:       33001264 kB
+nolan        # MemTotal:       132186732 kB
+rinchen-dos  # MemTotal:       198381104 kB
+rinchen      # MemTotal:       65876424 kB
+peano        # MemTotal:       16423100 kB
+torvalds     # MemTotal:       264033432 kB
+scipionbox   # MemTotal:       65855476 kB
+finlay       # MemTotal:       131907672 kB
+hilbert      # MemTotal:       131750252 kB
+behring      # Command '['ssh', 'behring', '/bin/sh']' timed out after 10 seconds
