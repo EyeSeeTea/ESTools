@@ -57,7 +57,7 @@ optional arguments:
   --no-backups          don't make backups
   --no-webapps          don't clone the webapps
   --no-db               don't clone the database
-  --no-postprocess      don't execute postprocessing actions
+  --no-postprocess      don't do postprocessing
   --manual-restart      don't stop/start tomcat
   --post-sql POST_SQL [POST_SQL ...]
                         sql files to run post-clone

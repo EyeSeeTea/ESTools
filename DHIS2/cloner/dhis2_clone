@@ -88,7 +88,7 @@ def get_args():
     add('--no-backups', action='store_true', help="don't make backups")
     add('--no-webapps', action='store_true', help="don't clone the webapps")
     add('--no-db', action='store_true', help="don't clone the database")
-    add('--no-postprocess', action='store_true', help="don't execute postprocessing actions")
+    add('--no-postprocess', action='store_true', help="don't do postprocessing")
     add('--manual-restart', action='store_true', help="don't stop/start tomcat")
     add('--post-sql', nargs='+', default=[], help='sql files to run post-clone')
     add('--post-clone-scripts', action='store_true',
@@ -142,17 +142,10 @@ def magenta(txt):
     return '\x1b[35m%s\x1b[0m' % txt
 
 
-def execute_scripts(scripts_folder):
-    scripts = []
-    files = os.listdir(scripts_folder)
-    for fname in files:
-        _, ext = os.path.splitext(fname)
-        if ext in ['.sh','.py']:
-            scripts.append(fname)
-
-    for script in sorted(scripts):
-        command = '%s/%s' % (scripts_folder, script)
-        run(command)
+def execute_scripts(dirname):
+    is_script = lambda fname: os.path.splitext(fname)[-1] in ['.sh', '.py']
+    for script in sorted(filter(is_script, os.listdir(dirname))):
+        run('"%s/%s"' % (dirname, script))
 
 
 def start_tomcat(server_path):
