@@ -38,3 +38,6 @@ class Dhis2Api:
 
     def patch(self, path, payload):
         return self._request('patch', path, json=payload)
+
+    def delete(self, path):
+        return self._request('delete', path)
