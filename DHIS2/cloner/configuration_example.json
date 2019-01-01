@@ -15,13 +15,27 @@
     },
     "postprocess": [
         {
-            "usernames": ["guest", "clone_test_user"]
+            "selectUsernames": ["guest"],
+            "selectFromGroups": ["program1", "program2"],
+            "action": "activate"
         },
         {
-            "usernames": ["test.dataentry"],
-            "fromGroups": ["program1", "program2"],
-            "addRoles": ["role1", "role2"],
+            "selectUsernames": ["guest"],
+            "selectFromGroups": ["program1", "program2"],
+            "action": "deleteOthers"
+        },
+        {
+            "selectUsernames": ["guest"],
+            "selectFromGroups": ["program1", "program2"],
+            "action": "addRoles",
+            "addRoles": ["role1", "role2"]
+        },
+        {
+            "selectUsernames": ["guest"],
+            "selectFromGroups": ["program1", "program2"],
+            "action": "addRolesFromTemplate",
             "addRolesFromTemplate": "validator.template"
         }
-    ]
+    ],
+    "postprocess_url": "https://raw.githubusercontent.com/EyeSeeTea/ESTools/master/DHIS2/cloner/configuration_example_only_postprocess.json"
 }

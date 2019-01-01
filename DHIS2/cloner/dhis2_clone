@@ -58,8 +58,12 @@ def main():
         start_tomcat(dir_local)
         if args.no_postprocess:
             log('No postprocessing done, as requested.')
-        elif 'api_local' in cfg and 'postprocess' in cfg:
-            process.postprocess(cfg['api_local'], cfg['postprocess'])
+        elif 'api_local' in cfg:
+            if 'postprocess' in cfg:
+                process.postprocess(cfg['api_local'], cfg['postprocess'])
+            if 'postprocess_url' in cfg:
+                posprocess.postprocess_url(cfg['api_local'],
+                                           cfg['postprocess_url'])
         else:
             log('No postprocessing done.')
     else:
@@ -103,9 +107,12 @@ def check_config(cfg):
                    'server_dir_local', 'server_dir_remote',
                    'db_local', 'db_remote', 'war_local', 'war_remote']:
         assert option in cfg, 'Missing option "%s"' % option
-    for option in ['api_local', 'postprocess']:
-        if option not in cfg:
-            log('Option %s missing. Will not do postprocessing.' % option)
+    if 'api_local' not in cfg:
+        log('Option api_local missing. Will not do any postprocessing.')
+    elif 'postprocess' not in cfg:
+        log('Option postprocess missing. Will not do local postprocessing.')
+    elif 'postprocess_url' not in cfg:
+        log('Option postprocess_url missing. Will not read from remote url.')
     for path in ['backups_dir', 'server_dir_local', 'post_clone_scripts_dir']:
         if cfg.has_key(path):
             assert os.path.isdir(cfg[path]), \

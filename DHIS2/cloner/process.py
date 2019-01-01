@@ -7,8 +7,8 @@ Example:
     >> import process
     >> api = dhis2apis.Dhis2Api('http://localhost:8080/api',
                                 username='admin', password='district')
-    >> process.add_roles(api, usernames=['test.dataentry'],
-                         users_from_group_names=['program1', 'program2'])
+    >> users = process.select_users(api, usernames=['test.dataentry'])
+    >> process.add_roles(api, users, ['role1', 'role2'])
 """
 
 import sys
@@ -20,17 +20,21 @@ import dhis2api
 
 
 def postprocess(cfg, entries):
-    """Add roles to the appropriate users as specified in entries.
+    """Execute actions on the appropriate users as specified in entries.
 
     The entries structure looks like:
         [
             {
-                "usernames": ["test.dataentry"],
-                "fromGroups": ["program1", "program2"],
-                "addRoles": ["role1", "role2"],
-                "addRolesFromTemplate": "validator.template"
+                "selectUsernames": ["test.dataentry"],
+                "selectFromGroups": ["program1", "program2"],
+                "action": "addRoles",
+                "addRoles": ["role1", "role2"]
             }
         ]
+
+    `action` can be "activate", "deleteOthers", "addRoles" or
+    "addRolesFromTemplate", with an additional field for "addRoles" (a list)
+    and "addRolesFromTemplate" (a string) if that's the action.
     """
     api = dhis2api.Dhis2Api(cfg['url'], cfg['username'], cfg['password'])
 
@@ -38,8 +42,23 @@ def postprocess(cfg, entries):
 
     for entry in entries:
         get = lambda x: entry.get(x, [])
-        add_roles(api, get('usernames'), get('fromGroups'),
-                  get('addRoles'), get('addRolesFromTemplate'))
+        users = select_users(api, get('selectUsernames'), get('selectFromGroups'))
+        debug('Users selected: %s' % ', '.join(get_username(x) for x in users))
+        action = get('action')
+        if action == 'activate':
+            activate(api, users)
+        elif action == 'deleteOthers':
+            delete_others(api, users)
+        elif action == 'addRoles':
+            add_roles_by_name(api, users, get('addRoles'))
+        elif action == 'addRolesFromTemplate':
+            add_roles_from_template(api, users, get('addRolesFromTemplate'))
+
+
+def postprocess_url(cfg, url):
+    "Execute actions encoded in the given url"
+    entries = requests.get(url).json()
+    potprocess(cfg, entries)
 
 
 def wait_for_server(api, delay=30, timeout=300):
@@ -57,27 +76,49 @@ def wait_for_server(api, delay=30, timeout=300):
             time.sleep(1)
 
 
-def add_roles(api, usernames, users_from_group_names,
-              rolenames, template_with_roles):
-    """Add roles to the appropriate users.
+def select_users(api, usernames, users_from_group_names):
+    "Return users with from usernames and from groups users_from_group_names"
+    return unique(get_users_by_usernames(api, usernames) +
+                  get_users_by_group_names(api, users_from_group_names))
 
-    Take the users with the given usernames and all users in groups
-    users_from_group_names, enable them and add them roles from
-    add_roles and the roles in user add_roles_from_template.
-    """
-    users = unique(get_users_by_usernames(api, usernames) +
-                   get_users_by_group_names(api, users_from_group_names))
-    debug('Users to modify: %s' % ', '.join(get_username(x) for x in users))
 
+def activate(api, users):
+    for user in users:
+        user['userCredentials']['disabled'] = False
+        api.put('/users/' + user['id'], user)
+
+
+def delete_others(api, users):
+    "Delete all the users except the given ones and the one used by the api"
+    usernames = [get_username(x) for x in users] + [api.username]
+    uids_to_delete = api.get('/users', {
+        'paging': False,
+        'filter': 'userCredentials.username:!in:[%s]' % ','.join(usernames),
+        'fields': 'id'})
+    # Alternatively, we could get all the users with 'fields':
+    # 'id,userCredentials[username]' and loop only over the ones whose
+    # username is not in usernames.
+    for uid in uids_to_delete:
+        api.delete('/users/' + uid)
+
+
+def add_roles_by_name(api, users, rolenames):
+    "Add roles to the given users"
     roles_to_add = get_user_roles_by_name(api, rolenames)
-    if template_with_roles:
-        template = get_users_by_usernames(api, [template_with_roles])[0]
-        roles_to_add += get_roles(template)
+    add_roles(api, users, roles_to_add)
 
+
+def add_roles_from_template(api, users, template_with_roles):
+    "Add roles in user template_with_roles to the given users"
+    template = get_users_by_usernames(api, [template_with_roles])[0]
+    roles_to_add = get_roles(template)
+    add_roles(api, users, roles_to_add)
+
+
+def add_roles(api, users, roles_to_add):
     for user in users:
         roles = unique(get_roles(user) + roles_to_add)
         user['userCredentials']['userRoles'] = roles
-        user['userCredentials']['disabled'] = False
         api.put('/users/' + user['id'], user)
 
 

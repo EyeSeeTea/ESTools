@@ -102,10 +102,13 @@ The sections in the configuration file are:
   section needs to define a ``url``, ``username`` and ``password`` to
   connect to the running DHIS2 system after the cloning.
 * ``postprocess``: list of blocks, each containing users (specified by
-  ``usernames`` and/or ``fromGroups``) that will be activated, and
-  optionally given extra roles if specified (directly from
-  ``addRoles`` and/or from ``addRolesFromTemplate`` which will give
-  all the roles corresponding to the given user too).
+  ``selectUsernames`` and/or ``selectFromGroups``) and an ``action``
+  to perform on them (``activate`` to activate them, ``deleteOthers``
+  to keep them in exclusive, ``addRoles`` to specify a list of extra
+  roles to give, or ``addRolesFromTemplate`` to give a reference
+  username whose roles we want to add).
+* ``postprocess_url``: url with a json file describing the
+  postprocessing actions to do, as a list of blocks.
 
 .. _`conninfo`: https://www.postgresql.org/docs/9.3/static/libpq-connect.html#LIBPQ-CONNSTRING
 

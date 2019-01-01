@@ -14,6 +14,7 @@ class Dhis2Api:
         >> api.patch('/users/3', ...)
     """
     def __init__(self, url, username='admin', password='district'):
+        self.username = username
         self.api_url = url.rstrip('/') + '/api'
         self.auth = requests.auth.HTTPBasicAuth(username, password)
 
