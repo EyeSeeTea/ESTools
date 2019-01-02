@@ -44,8 +44,3 @@ hostname,tom,1000
 we have an alphabetical ordered list (by its hostname) with all the users in all the machines, one in each line, in this output format:
 
 hostname,user,IUD
-hostname,user,IUD
-hostname,user,IUD
-
-
-
