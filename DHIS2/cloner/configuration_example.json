@@ -35,7 +35,7 @@
             "selectFromGroups": ["program1", "program2"],
             "action": "addRolesFromTemplate",
             "addRolesFromTemplate": "validator.template"
-        }
-    ],
-    "postprocess_url": "https://raw.githubusercontent.com/EyeSeeTea/ESTools/master/DHIS2/cloner/configuration_example_only_postprocess.json"
+        },
+        "https://raw.githubusercontent.com/EyeSeeTea/ESTools/master/DHIS2/cloner/configuration_example_only_postprocess.json"
+    ]
 }

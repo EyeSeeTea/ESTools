@@ -40,25 +40,39 @@ def postprocess(cfg, entries):
 
     wait_for_server(api)
 
-    for entry in entries:
-        get = lambda x: entry.get(x, [])
-        users = select_users(api, get('selectUsernames'), get('selectFromGroups'))
-        debug('Users selected: %s' % ', '.join(get_username(x) for x in users))
-        action = get('action')
-        if action == 'activate':
-            activate(api, users)
-        elif action == 'deleteOthers':
-            delete_others(api, users)
-        elif action == 'addRoles':
-            add_roles_by_name(api, users, get('addRoles'))
-        elif action == 'addRolesFromTemplate':
-            add_roles_from_template(api, users, get('addRolesFromTemplate'))
+    for entry in [expand_url(x) for x in entries]:
+        execute(api, entry)
 
 
-def postprocess_url(cfg, url):
-    "Execute actions encoded in the given url"
-    entries = requests.get(url).json()
-    potprocess(cfg, entries)
+def expand_url(entry):
+    if not is_url(entry):
+        return entry
+    else:
+        try:
+            return requests.get(x).json()
+        except Exception as e:
+            debug('Error on retrieving url with entries: %s - %s' % (entry, e))
+            return {}
+
+
+def is_url(x):
+    return type(x) == str and x.startswith('http')
+
+
+def execute(api, entry):
+    "Execute the action described in one entry of the postprocessing"
+    get = lambda x: entry.get(x, [])
+    users = select_users(api, get('selectUsernames'), get('selectFromGroups'))
+    debug('Users selected: %s' % ', '.join(get_username(x) for x in users))
+    action = get('action')
+    if action == 'activate':
+        activate(api, users)
+    elif action == 'deleteOthers':
+        delete_others(api, users)
+    elif action == 'addRoles':
+        add_roles_by_name(api, users, get('addRoles'))
+    elif action == 'addRolesFromTemplate':
+        add_roles_from_template(api, users, get('addRolesFromTemplate'))
 
 
 def wait_for_server(api, delay=30, timeout=300):
