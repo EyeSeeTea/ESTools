@@ -3,12 +3,12 @@ Enable and add roles to selected users.
 
 Example:
 
-    >> import dhis2api
-    >> import process
-    >> api = dhis2apis.Dhis2Api('http://localhost:8080/api',
-                                username='admin', password='district')
-    >> users = process.select_users(api, usernames=['test.dataentry'])
-    >> process.add_roles(api, users, ['role1', 'role2'])
+  import dhis2api
+  import process
+  api = dhis2apis.Dhis2Api('http://localhost:8080/api',
+                           username='admin', password='district')
+  users = process.select_users(api, usernames=['test.dataentry'])
+  process.add_roles(api, users, ['role1', 'role2'])
 """
 
 import sys
