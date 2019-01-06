@@ -29,6 +29,9 @@ def main():
     cfg = get_config(args.config)
     if args.check_only:
         sys.exit()
+    elif args.update_config:
+        update_config(args.config)
+        sys.exit()
 
     dir_local, dir_remote = cfg['server_dir_local'], cfg['server_dir_remote']
     db_local, db_remote = cfg['db_local'], cfg['db_remote']
@@ -96,7 +99,8 @@ def get_args():
     add('--manual-restart', action='store_true', help="don't stop/start tomcat")
     add('--post-sql', nargs='+', default=[], help='sql files to run post-clone')
     add('--post-clone-scripts', action='store_true',
-        help='execute all py and sh scripts in the post_clone_scripts_dir folder')
+        help='execute all py and sh scripts in post_clone_scripts_dir')
+    add('--update-config', action='store_true', help='update the config file')
     add('--no-color', action='store_true', help="don't use colored output")
     return parser.parse_args()
 
@@ -126,6 +130,65 @@ def check_config(cfg):
     for war in ['war_local', 'war_remote']:
         assert cfg[war].endswith('.war'), \
             'war file does not end with .war: %s' % cfg[war]
+
+
+def update_config(fname):
+    "Update the configuration file from an old format to the current one"
+    with open(fname) as f:
+        config = json.load(f)
+
+    if get_version(config) == 2:
+        log('The current configuration file is valid. Nothing to update.')
+    else:
+        if 'postprocess' in config:
+            entries = []
+            for entry_old in config['postprocess']:
+                entries += update_entry(entry)
+            config['postprocess'] = entries
+        name, ext = os.path.splitext(fname)
+        with open(name + '_updated' + ext, 'wt') as fnew:
+            json.dump(config, fnew)
+
+
+def update_entry(entry_old):
+    "Return a list of dictionaries that correspond to the actions in entry"
+    entries = []
+
+    # Get the selected users part.
+    users = {}
+    if 'usernames' in entry_old:
+        users['selectUsernames'] = entry_old['usernames']
+    if 'fromGroups' in entry_old:
+        users['selectFromGroups'] = entry_old['fromGroups']
+
+    # Add a new entry for each action described in the old entry.
+    old_actions = ['addRoles', 'addRolesFromTemplate']
+    if all(action not in entry_old for action in old_actions):
+        entry_new = users.copy()
+        entry_new['action'] = 'activate'
+        entries.append(entry_new)
+    else:
+        for action in old_actions:
+            if action in entry_old:
+                entry_new = users.copy()
+                entry_new['action'] = action
+                entry_new[action] = entry_old[action]
+                entries.append(entry_new)
+
+    return entries
+
+
+
+def get_version(config):
+    "Return the highest version for which the given configuration is valid"
+    if 'postprocess' not in config:
+        return 2
+    for entry in config['postprocess']:
+        if 'usernames' in entry or 'fromGroups' in entry:
+            return 1
+        if 'selectUsernames' in entry or 'selectFromGroups' in entry:
+            return 2
+    raise RuntimeException('Unknown version of configuration file.'
 
 
 def is_good_db_uri(uri):

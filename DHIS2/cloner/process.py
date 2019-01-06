@@ -18,7 +18,6 @@ import requests
 import dhis2api
 
 
-
 def postprocess(cfg, entries):
     """Execute actions on the appropriate users as specified in entries.
 
@@ -62,8 +61,12 @@ def is_url(x):
 def execute(api, entry):
     "Execute the action described in one entry of the postprocessing"
     get = lambda x: entry.get(x, [])
+
     users = select_users(api, get('selectUsernames'), get('selectFromGroups'))
     debug('Users selected: %s' % ', '.join(get_username(x) for x in users))
+    if not users:
+        return
+
     action = get('action')
     if action == 'activate':
         activate(api, users)
