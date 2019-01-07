@@ -26,7 +26,7 @@ def main():
     if args.no_color or not os.isatty(sys.stdout.fileno()):
         COLOR = False
 
-    cfg = get_config(args.config)
+    cfg = get_config(args.config, args.update_config)
     if args.check_only:
         sys.exit()
     elif args.update_config:
@@ -74,18 +74,6 @@ def main():
         log('No postprocessing done.')
 
 
-def get_config(fname):
-    "Return dict with the options read from configuration file"
-    log('Reading from config file %s ...' % fname)
-    try:
-        with open(fname) as f:
-            config = json.load(f)
-        check_config(config)
-    except (AssertionError, IOError, ValueError) as e:
-        sys.exit('Error reading config file %s: %s' % (fname, e))
-    return config
-
-
 def get_args():
     "Return arguments"
     parser = argparse.ArgumentParser(description=__doc__)
@@ -105,18 +93,37 @@ def get_args():
     return parser.parse_args()
 
 
+def get_config(fname, update):
+    "Return dict with the options read from configuration file"
+    log('Reading from config file %s ...' % fname)
+    try:
+        with open(fname) as f:
+            config = json.load(f)
+        if get_version(config) != 2:
+            if update:
+                update_config(fname)
+                sys.exit()
+            else:
+                raise ValueError('Old version of configuration file. Run with '
+                                 '--update-config to upgrade.')
+        check_config(config)
+    except (AssertionError, IOError, ValueError) as e:
+        sys.exit('Error reading config file %s: %s' % (fname, e))
+    return config
+
+
 def check_config(cfg):
     "Assert all the options in configuration exist and have reasonable values"
     for option in ['backups_dir', 'backup_name', 'hostname_remote',
                    'server_dir_local', 'server_dir_remote',
                    'db_local', 'db_remote', 'war_local', 'war_remote']:
         assert option in cfg, 'Missing option "%s"' % option
+
     if 'api_local' not in cfg:
         log('Option api_local missing. Will not do any postprocessing.')
     elif 'postprocess' not in cfg:
         log('Option postprocess missing. Will not do local postprocessing.')
-    elif 'postprocess_url' not in cfg:
-        log('Option postprocess_url missing. Will not read from remote url.')
+
     for path in ['backups_dir', 'server_dir_local', 'post_clone_scripts_dir']:
         if cfg.has_key(path):
             assert os.path.isdir(cfg[path]), \
@@ -130,6 +137,7 @@ def check_config(cfg):
     for war in ['war_local', 'war_remote']:
         assert cfg[war].endswith('.war'), \
             'war file does not end with .war: %s' % cfg[war]
+    log('Configuration looks OK.')
 
 
 def update_config(fname):
@@ -142,12 +150,14 @@ def update_config(fname):
     else:
         if 'postprocess' in config:
             entries = []
-            for entry_old in config['postprocess']:
+            for entry in config['postprocess']:
                 entries += update_entry(entry)
             config['postprocess'] = entries
         name, ext = os.path.splitext(fname)
-        with open(name + '_updated' + ext, 'wt') as fnew:
-            json.dump(config, fnew)
+        fname_new = name + '_updated' + ext
+        log('Writing updated configuration in %s' % fname_new)
+        with open(fname_new, 'wt') as fnew:
+            json.dump(config, fnew, indent=2)
 
 
 def update_entry(entry_old):
@@ -181,14 +191,14 @@ def update_entry(entry_old):
 
 def get_version(config):
     "Return the highest version for which the given configuration is valid"
-    if 'postprocess' not in config:
+    if 'postprocess' not in config or not config['postprocess']:
         return 2
     for entry in config['postprocess']:
         if 'usernames' in entry or 'fromGroups' in entry:
             return 1
         if 'selectUsernames' in entry or 'selectFromGroups' in entry:
             return 2
-    raise RuntimeException('Unknown version of configuration file.'
+    raise ValueError('Unknown version of configuration file.')
 
 
 def is_good_db_uri(uri):
