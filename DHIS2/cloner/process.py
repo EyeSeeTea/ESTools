@@ -111,15 +111,25 @@ def activate(api, users):
 def delete_others(api, users):
     "Delete all the users except the given ones and the one used by the api"
     usernames = [get_username(x) for x in users] + [api.username]
-    uids_to_delete = api.get('/users', {
+    users_to_delete = api.get('/users', {
         'paging': False,
         'filter': 'userCredentials.username:!in:[%s]' % ','.join(usernames),
-        'fields': 'id'})
+        'fields': 'id,userCredentials[username]'})['users']
     # Alternatively, we could get all the users with 'fields':
     # 'id,userCredentials[username]' and loop only over the ones whose
     # username is not in usernames.
-    for uid in uids_to_delete:
-        api.delete('/users/' + uid)
+    debug('Deleting %d users...' % len(users_to_delete))
+    users_deleted = []
+    users_with_error = []
+    for user in users_to_delete:
+        try:
+            api.delete('/users/' + user['id'])
+            users_deleted.append(get_username(user))
+        except requests.exceptions.HTTPError:
+            users_with_error.append(get_username(user))
+    if users_with_error:
+        debug('Could not delete %d users: %s' %
+              (len(users_with_error), users_with_error))
 
 
 def add_roles_by_name(api, users, rolenames):
