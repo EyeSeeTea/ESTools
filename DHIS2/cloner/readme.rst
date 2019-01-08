@@ -43,7 +43,7 @@ Usage
   usage: dhis2_clone [-h] [--check-only] [--no-backups] [--no-webapps] [--no-db]
                    [--no-postprocess] [--manual-restart]
                    [--post-sql POST_SQL [POST_SQL ...]] [--post-clone-scripts]
-                   [--no-color]
+                   [--update-config] [--no-color]
                    config
 
 Clone a dhis2 installation from another server.
@@ -61,10 +61,10 @@ optional arguments:
   --manual-restart      don't stop/start tomcat
   --post-sql POST_SQL [POST_SQL ...]
                         sql files to run post-clone
-  --post-clone-scripts  execute all py and sh scripts in the
-                        post_clone_scripts_dir folder
+  --post-clone-scripts  execute all py and sh scripts in
+                        post_clone_scripts_dir
+  --update-config       update the config file
   --no-color            don't use colored output
-
 
 
 Configuration
@@ -106,9 +106,9 @@ The sections in the configuration file are:
   to perform on them (``activate`` to activate them, ``deleteOthers``
   to keep them in exclusive, ``addRoles`` to specify a list of extra
   roles to give, or ``addRolesFromTemplate`` to give a reference
-  username whose roles we want to add).
-* ``postprocess_url``: url with a json file describing the
-  postprocessing actions to do, as a list of blocks.
+  username whose roles we want to add). Instead of a block, you can
+  give a url, and the blocks contained in that url will be added to
+  the list of blocks.
 
 .. _`conninfo`: https://www.postgresql.org/docs/9.3/static/libpq-connect.html#LIBPQ-CONNSTRING
 
