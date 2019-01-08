@@ -76,6 +76,8 @@ def execute(api, entry):
         add_roles_by_name(api, users, get('addRoles'))
     elif action == 'addRolesFromTemplate':
         add_roles_from_template(api, users, get('addRolesFromTemplate'))
+    else:
+        raise ValueError('Unknown action: %s' % action)
 
 
 def wait_for_server(api, delay=30, timeout=300):
