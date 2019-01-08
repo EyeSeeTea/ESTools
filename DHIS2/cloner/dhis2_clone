@@ -61,12 +61,8 @@ def main():
         start_tomcat(dir_local)
         if args.no_postprocess:
             log('No postprocessing done, as requested.')
-        elif 'api_local' in cfg:
-            if 'postprocess' in cfg:
-                process.postprocess(cfg['api_local'], cfg['postprocess'])
-            if 'postprocess_url' in cfg:
-                posprocess.postprocess_url(cfg['api_local'],
-                                           cfg['postprocess_url'])
+        elif 'api_local' in cfg and 'postprocess' in cfg:
+            process.postprocess(cfg['api_local'], cfg['postprocess'])
         else:
             log('No postprocessing done.')
     else:
