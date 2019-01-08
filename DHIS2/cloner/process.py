@@ -102,6 +102,7 @@ def select_users(api, usernames, users_from_group_names):
 
 
 def activate(api, users):
+    debug('Activating %d user(s)...' % len(users))
     for user in users:
         user['userCredentials']['disabled'] = False
         api.put('/users/' + user['id'], user)
@@ -135,6 +136,7 @@ def add_roles_from_template(api, users, template_with_roles):
 
 
 def add_roles(api, users, roles_to_add):
+    debug('Adding %d roles to %d users...' % (len(roles_to_add), len(users)))
     for user in users:
         roles = unique(get_roles(user) + roles_to_add)
         user['userCredentials']['userRoles'] = roles
