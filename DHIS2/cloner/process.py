@@ -48,7 +48,7 @@ def expand_url(entry):
         return entry
     else:
         try:
-            return requests.get(x).json()
+            return requests.get(entry).json()
         except Exception as e:
             debug('Error on retrieving url with entries: %s - %s' % (entry, e))
             return {}
