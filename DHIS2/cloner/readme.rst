@@ -43,7 +43,7 @@ Usage
   usage: dhis2_clone [-h] [--check-only] [--no-backups] [--no-webapps] [--no-db]
                    [--no-postprocess] [--manual-restart]
                    [--post-sql POST_SQL [POST_SQL ...]] [--post-clone-scripts]
-                   [--no-color]
+                   [--update-config] [--no-color]
                    config
 
 Clone a dhis2 installation from another server.
@@ -57,14 +57,14 @@ optional arguments:
   --no-backups          don't make backups
   --no-webapps          don't clone the webapps
   --no-db               don't clone the database
-  --no-postprocess      don't execute postprocessing actions
+  --no-postprocess      don't do postprocessing
   --manual-restart      don't stop/start tomcat
   --post-sql POST_SQL [POST_SQL ...]
                         sql files to run post-clone
-  --post-clone-scripts  execute all py and sh scripts in the
-                        post_clone_scripts_dir folder
+  --post-clone-scripts  execute all py and sh scripts in
+                        post_clone_scripts_dir
+  --update-config       update the config file
   --no-color            don't use colored output
-
 
 
 Configuration
@@ -102,10 +102,13 @@ The sections in the configuration file are:
   section needs to define a ``url``, ``username`` and ``password`` to
   connect to the running DHIS2 system after the cloning.
 * ``postprocess``: list of blocks, each containing users (specified by
-  ``usernames`` and/or ``fromGroups``) that will be activated, and
-  optionally given extra roles if specified (directly from
-  ``addRoles`` and/or from ``addRolesFromTemplate`` which will give
-  all the roles corresponding to the given user too).
+  ``selectUsernames`` and/or ``selectFromGroups``) and an ``action``
+  to perform on them (``activate`` to activate them, ``deleteOthers``
+  to keep them in exclusive, ``addRoles`` to specify a list of extra
+  roles to give, or ``addRolesFromTemplate`` to give a reference
+  username whose roles we want to add). Instead of a block, you can
+  give a url, and the blocks contained in that url will be added to
+  the list of blocks.
 
 .. _`conninfo`: https://www.postgresql.org/docs/9.3/static/libpq-connect.html#LIBPQ-CONNSTRING
 
