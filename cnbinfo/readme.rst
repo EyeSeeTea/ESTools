@@ -16,7 +16,6 @@ And then you can run::
 
   $ ./extract_users.py (no arguments)
 
-
 **Usage:**
 
 To get the list of users, you can simply run::
@@ -26,6 +25,7 @@ To get the list of users, you can simply run::
 multirun.py is located at https://github.com/EyeSeeTea/ESTools/tree/master/multi. user.text format should look like /etc/passwd format:
 
 .. code-block::
+
   tom\:x :\1000:1000:Vivek  Gite:/home/vivek:/bin/bash
   ...
 
@@ -38,11 +38,13 @@ where each parameter from left to right are:
    - absolute path to the home directory
    - shell path
 
-Copy the user.txt into the same directory as extract_user.py and run extract_users.py:
+Copy the user.txt into the same directory as extract_user.py and run extract_users.py::
 
   $ ./extract_users.py
 
 The output should look like:
+
 .. code-block::
+
   hostname,tom,1000
   ...
