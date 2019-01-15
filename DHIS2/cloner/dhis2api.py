@@ -1,4 +1,7 @@
 import requests
+from jsonobject import JsonObject
+from jsonobject.properties import StringProperty
+from jsonobject.properties import IntegerProperty
 
 
 class Dhis2Api:
@@ -31,8 +34,8 @@ class Dhis2Api:
     def get(self, path, params=None):
         return self._request('get', path, params=params)
 
-    def post(self, path, payload):
-        return self._request('post', path, json=payload)
+    def post(self, path, payload, params=None):
+        return self._request('post', path, params=params, json=payload)
 
     def put(self, path, payload):
         return self._request('put', path, json=payload)
@@ -42,3 +45,23 @@ class Dhis2Api:
 
     def delete(self, path):
         return self._request('delete', path)
+
+
+class ImportSummary(JsonObject):
+    """
+    Import processes are contained in an Object of type Import Summary
+    that is represented in this object. Typically an import summary offers
+    the following information:
+    total objects,
+    objects deleted,
+    objects ignored,
+    objects updated
+    objects created
+    """
+
+    total = IntegerProperty(required=True)
+    created = IntegerProperty(required=True)
+    updated = IntegerProperty(required=True)
+    deleted = IntegerProperty(required=True)
+    ignored = IntegerProperty(required=True)
+
