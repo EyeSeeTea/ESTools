@@ -14,11 +14,12 @@ Example:
 import sys
 import time
 import requests
+import json
 
 import dhis2api
 
 
-def postprocess(cfg, entries):
+def postprocess(cfg, entries, import_dir):
     """Execute actions on the appropriate users as specified in entries.
 
     The entries structure looks like:
@@ -28,7 +29,14 @@ def postprocess(cfg, entries):
                 "selectFromGroups": ["program1", "program2"],
                 "action": "addRoles",
                 "addRoles": ["role1", "role2"]
-            }
+            },
+            {
+                "selectFiles": ["users.json"],
+                "action": "import",
+                "importStrategy": "CREATE_AND_UPDATE",
+                "mergeMode": "MERGE",
+                "skipSharing": "false"
+             }
         ]
 
     `action` can be "activate", "deleteOthers", "addRoles" or
@@ -40,7 +48,7 @@ def postprocess(cfg, entries):
     wait_for_server(api)
 
     for entry in [expand_url(x) for x in entries]:
-        execute(api, entry)
+        execute(api, entry, cfg, import_dir)
 
 
 def expand_url(entry):
@@ -58,14 +66,23 @@ def is_url(x):
     return type(x) == str and x.startswith('http')
 
 
-def execute(api, entry):
+def execute(api, entry, cfg, import_dir):
     "Execute the action described in one entry of the postprocessing"
     get = lambda x: entry.get(x, [])
+    contains = lambda x: entry.has_key(x)
 
-    users = select_users(api, get('selectUsernames'), get('selectFromGroups'))
-    debug('Users selected: %s' % ', '.join(get_username(x) for x in users))
-    if not users:
+    if contains('selectUsernames') or contains('selectFromGroups'):
+        users = select_users(api, get('selectUsernames'), get('selectFromGroups'))
+        debug('Users selected: %s' % ', '.join(get_username(x) for x in users))
+        if not users:
+            return
+    elif contains('selectFiles'):
+        files = ['%s/%s' % (import_dir, filename) for filename in get('selectFiles')]
+        debug('Files selected: %s' % ', '.join(x for x in files))
+    else:
+        debug('No selection.')
         return
+
 
     action = get('action')
     if action == 'activate':
@@ -76,6 +93,8 @@ def execute(api, entry):
         add_roles_by_name(api, users, get('addRoles'))
     elif action == 'addRolesFromTemplate':
         add_roles_from_template(api, users, get('addRolesFromTemplate'))
+    elif action == 'import':
+        import_json(api, files)
     else:
         raise ValueError('Unknown action: %s' % action)
 
@@ -198,6 +217,26 @@ def get_user_roles_by_name(api, user_role_names):
         'filter': 'name:in:[%s]' % ','.join(user_role_names),
         'fields': ':all'})
     return response['userRoles']
+
+
+def import_json(api, files, importStrategy='CREATE_AND_UPDATE', mergeMode='MERGE',
+                skipSharing='false'):
+    "Import a json file into DHIS2"
+    responses = {}
+    for json_file in files:
+        file_to_import = json.load(open(json_file))
+        response = api.post('/metadata/', params={
+            'importStrategy': importStrategy,
+            'mergeMode': mergeMode,
+            'skipSharing': skipSharing
+        }, payload=file_to_import)
+        summary = dhis2api.ImportSummary(response['stats'])
+        debug('Import Summary for %s:' % json_file)
+        debug('%s total: %s created - %s updated - %s deleted - %s ignored'
+              % (summary.total, summary.created, summary.updated,
+                 summary.deleted, summary.ignored))
+        responses[json_file] = summary
+    return responses
 
 
 def unique(xs):

@@ -57,12 +57,16 @@ def main():
     if args.post_clone_scripts:
         execute_scripts(cfg['post_clone_scripts_dir'])
 
+    if args.post_import:
+        process.dhis2_import(cfg['post_process_import_dir'])
+
     if not args.manual_restart:
         start_tomcat(dir_local)
         if args.no_postprocess:
             log('No postprocessing done, as requested.')
         elif 'api_local' in cfg and 'postprocess' in cfg:
-            process.postprocess(cfg['api_local'], cfg['postprocess'])
+            process.postprocess(cfg['api_local'], cfg['postprocess']
+                                , cfg['post_process_import_dir'])
         else:
             log('No postprocessing done.')
     else:
@@ -84,6 +88,8 @@ def get_args():
     add('--post-sql', nargs='+', default=[], help='sql files to run post-clone')
     add('--post-clone-scripts', action='store_true',
         help='execute all py and sh scripts in post_clone_scripts_dir')
+    add('--post-import', action='store_true',
+        help='import to DHIS2 selected json files from post_process_import_dir')
     add('--update-config', action='store_true', help='update the config file')
     add('--no-color', action='store_true', help="don't use colored output")
     return parser.parse_args()
@@ -109,7 +115,7 @@ def get_config(fname, update):
 
 
 def check_config(cfg):
-    "Assert all the options in configuration exist and have reasonable values"
+    "Assert all the mandatory options in configuration exist and have reasonable values"
     for option in ['backups_dir', 'backup_name', 'hostname_remote',
                    'server_dir_local', 'server_dir_remote',
                    'db_local', 'db_remote', 'war_local', 'war_remote']:
@@ -120,7 +126,8 @@ def check_config(cfg):
     elif 'postprocess' not in cfg:
         log('Option postprocess missing. Will not do local postprocessing.')
 
-    for path in ['backups_dir', 'server_dir_local', 'post_clone_scripts_dir']:
+    for path in ['backups_dir', 'server_dir_local', 'post_clone_scripts_dir',
+                 'post_process_import_dir']:
         if cfg.has_key(path):
             assert os.path.isdir(cfg[path]), \
                 '%s is not a directory: %s' % (path, cfg[path])
