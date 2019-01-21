@@ -33,7 +33,7 @@ def get_args():
     add('-o', '--output', help='output file')
     add('-u', '--user', metavar='USER:PASSWORD', required=True,
         help='username and password for server authentication')
-    add('--urlbase', default='http://who-dev.essi.upc.edu:8081',
+    add('--urlbase', default='https://extranet-uat.who.int/dhis2',
         help='base url of the dhis server')
     return parser.parse_args()
 
@@ -48,6 +48,7 @@ def describe_program(program_id):
         stages = describe_stages(id_list(program['programStages']))
         rules = describe_rules(id_list(program['programRules']))
         variables = describe_variables(id_list(program['programRuleVariables']))
+        program_indicators = describe_program_indicators(id_list(program['programIndicators']))
         return """%s (%s)
 
 Attributes
@@ -60,11 +61,15 @@ Rules (name: condition --> action)
   %s
 
 Variables
+  %s
+    
+Program Indicators
   %s""" % (name, program_id,
            attributes.replace('\n', '\n  '),
            stages.replace('\n', '\n  '),
            rules.replace('\n', '\n  '),
-           variables.replace('\n', '\n  '))
+           variables.replace('\n', '\n  '),
+           program_indicators.replace('\n', '\n  '))
     except KeyError:
         return '***%s***' % program_id  # could not find it
 
@@ -209,6 +214,20 @@ def describe_variable(variable_id):
         return '%s (%s) -->%s' % (name, variable_id, extra)
     except KeyError:
         return '***%s***' % variable_id  # could not find it
+
+def describe_program_indicators(program_indicators):
+    return '\n'.join(describe_program_indicator(x) for x in program_indicators)
+
+def describe_program_indicator(program_indicator_id):
+    try:
+        var = d2.get_object(program_indicator_id)
+        name = var['name']
+        extra = '\n expression: %s' % var['filter']
+        extra += '\n filter: %s' % var['filter']
+
+        return '%s (%s) -->%s' % (name, program_indicator_id, extra)
+    except KeyError:
+        return '***%s***' % program_indicator_id  # could not find it
 
 
 
