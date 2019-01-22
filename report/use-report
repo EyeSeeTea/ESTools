@@ -1,0 +1,23 @@
+#!/bin/bash
+
+readonly time=$(date +%Y%m%d-%s)
+readonly log_dir="$(dirname $0)/log"
+readonly raw_log_file=$(mktemp)
+readonly final_log_file=${log_dir}/${time}.log
+
+# first, collect space per user into final log file
+
+cd /home
+echo "# HOME" > ${raw_log_file}
+du -xsBG * | awk '{print $2 "\t" substr($1,1,length($1)-1)}' >> ${raw_log_file}
+
+grep -v '^#\|^aquota\|^lost\|^tmp'  ${raw_log_file} | awk '{total[$1]+=$2}END{for (k in total){print k "\t" total[k]}}' | sort > ${final_log_file}
+
+# integrate data into global log (/var/log/disk_stats.log)
+# (@see sysman/net-simple-log)
+readonly timestamp="$(date '+%s %Y%m%d %H%M%S')"
+readonly host=$(hostname)
+cat ${final_log_file} | while read user diskgb; do
+    echo "${timestamp} ${host} ${user} ${diskgb}" >> /var/log/disk_stats.log
+done
+echo "${timestamp} ${host} TOTAL $(df /home | tail -n +2 | awk '{used+=$3; total+=$2; free+=$4}END{GB=1024*1024*1024;print total/GB " " used/GB " " free/GB}')" >> /var/log/disk_stats.log
