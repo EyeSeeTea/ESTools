@@ -20,9 +20,7 @@ It works as follows:
 
 Example
 
-For instance:
-
-.. codeblock::
+For instance::
 
   sudo du -hs /home/*
   36K	/home/admin
@@ -34,34 +32,28 @@ For instance:
   8.0K	/home/curso05
   6.4T	/home/EMPIAR
 
-.. codeblock::
-
-   sudo cat /tmp/tmp.QFHctJGqj5
-   # HOME
-   admin	1
-   coss	1095
-   curso01	1
-   curso02	2
-   curso03	2
-   curso04	2
-   curso05	1
-   EMPIAR	6475
+  sudo cat /tmp/tmp.QFHctJGqj5
+  # HOME
+  admin	1
+  coss	1095
+  curso01	1
+  curso02	2
+  curso03	2
+  curso04	2
+  curso05	1
+  EMPIAR	6475
 
 
 2. Rewrite the output in /log folder
 ------------------------------------
 
-The output written at /tmp is copied to /log folder (in the same path where the script is located), however some unnecesary lines are removed, for instance:
-
-.. codeblock::
+The output written at /tmp is copied to /log folder (in the same path where the script is located), however some unnecesary lines are removed, for instance::
 
    # HOME 
    lost+found 
    are deleted.
 
-Other lines, such as:
-
-.. codeblock::
+Other lines, such as::
 
    /home/aquota.group
    /home/aquota.user 
@@ -74,9 +66,7 @@ are data file and they don't exist in asimov-dos /home, but they exist in asimov
 
 Finally, use-report integrates all the data into /var/log/disk_stats.log
 
-An output of disk_stats.log is:
-
-.. codeblock::
+An output of disk_stats.log is::
 
    (...)
    1547619500 20190116 071820 asimov-dos admin 1
@@ -100,6 +90,7 @@ An output of disk_stats.log is:
    1547619500 20190116 071820 asimov-dos TOTAL 34.9473 23.7657 11.1816
 
 where each parameter from left to right are:
+
    - seconds since 1970-01-01 00:00:00 UTC
    - date
    - time
@@ -108,7 +99,4 @@ where each parameter from left to right are:
 
 and at the end, it summarizes total, used and free size. 
 
-
 and we have 11 Gb free yet.
-
-
