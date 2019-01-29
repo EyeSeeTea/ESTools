@@ -69,7 +69,7 @@ def is_url(x):
 def execute(api, entry, cfg, import_dir):
     "Execute the action described in one entry of the postprocessing"
     get = lambda x: entry.get(x, [])
-    contains = lambda x: entry.has_key(x)
+    contains = lambda x: x in entry
 
     if contains('selectUsernames') or contains('selectFromGroups'):
         users = select_users(api, get('selectUsernames'), get('selectFromGroups'))
