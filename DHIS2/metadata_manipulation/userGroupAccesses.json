@@ -1,0 +1,34 @@
+{
+    "userGroupAccesses": [
+        {
+        "access": "rwr-----",
+        "userGroupUid": "Urx6COfeLkm",
+        "displayName": "ETA administrators",
+        "id": "Urx6COfeLkm"
+        },
+        {
+        "access": "r-r-----",
+        "userGroupUid": "GjnWefzEY20",
+        "displayName": "ETA Data Entry",
+        "id": "GjnWefzEY20"
+        },
+        {
+        "access": "r-r-----",
+        "userGroupUid": "uNJOBaIvuNw",
+        "displayName": "ETA Facility Analysis Only",
+        "id": "uNJOBaIvuNw"
+        },
+        {
+        "access": "r-r-----",
+        "userGroupUid": "y4eVE0uT9yz",
+        "displayName": "ETA Users",
+        "id": "y4eVE0uT9yz"
+        },
+        {
+        "access": "r-r-----",
+        "userGroupUid": "QhhxtdJ8HL7",
+        "displayName": "ETA Ministry Analysis Only",
+        "id": "QhhxtdJ8HL7"
+        }
+    ]
+}
