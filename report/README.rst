@@ -5,8 +5,15 @@ use-report is a bash script that estimates the size (as GB round up to integer n
   
 This script can be found in the following machines-paths:
 
-   - asimov-dos -> /etc/sysman/san/reports/simple/asimov2 (cronjob at 6am everyday)
-   - asimov -> /etc/sysman/san/reports/simple/asimov
+   - asimov-dos -> /etc/sysman/san/reports/simple/asimov2 (cronjob at 6 am every Wednesday)
+   - asimov -> /etc/sysman/san/reports/simple/asimov (cronjob at 6 am every Wednesday)
+
+Differences between script in asimov (use-report-asimov) and asimov-dos (use-report-asimov2) are few and mostly related to different paths used for each machine. 
+
+Note:
+These scripts exists in clark-cinco, einstein-dos, nolan and rinchen but they do not work.
+And there scripts which don't estimate the size of each directories of /home, but the used, total and free space in /nas/archive, /nas/backup, /nas/replicas and /nas/workand working fine in: faraday, nolan, peano and rinchen. (Cron job already at 6 am every Wednesday)
+
 
 Usage
 =====
