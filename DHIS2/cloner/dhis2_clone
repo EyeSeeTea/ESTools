@@ -3,12 +3,14 @@
 """
 Clone a dhis2 installation from another server.
 """
-
+import subprocess
 import sys
 import os
 import time
 import json
 import argparse
+from pickle import TRUE
+from subprocess import PIPE, Popen
 
 import psycopg2
 
@@ -17,6 +19,7 @@ import process
 
 TIME = time.strftime('%Y-%m-%d_%H%M')
 COLOR = True
+MANDATORY_FOLDERS = ['webapps']
 
 
 def main():
@@ -250,8 +253,21 @@ def backup_war(backups_dir, dir_local, war_local):
 
 def get_webapps(route_local, war_local, route_remote, war_remote):
     for subdir in ['webapps', 'files']:
-        run("rsync -a --delete '%s/%s/*' '%s/%s'" % (route_remote, subdir,
-                                                     route_local, subdir))
+        cmd = ("rsync -a --delete %s/%s/* %s/%s" % (route_remote, subdir, route_local, subdir))
+        p = Popen(cmd, shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE,
+                  universal_newlines=True, stderr=subprocess.PIPE)
+        stdout, stderr = p.communicate()
+        if p.returncode != 0:
+            if subdir in MANDATORY_FOLDERS:
+                message = "Failed cloning {} folder with return code of {}. \n " \
+                          "stderr: {}  \n stdout: {} end of log"\
+                    .format(subdir, p.returncode, stderr, stdout)
+                log(message)
+                raise Exception(message)
+            else:
+                log('Not mandatory folder: "{}" not cloned.'.format(subdir))
+        else:
+            log('Mandatory folder: "{}" cloned.'.format(subdir))
 
     if war_local != war_remote:
         commands = [
