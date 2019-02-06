@@ -107,3 +107,9 @@ where each parameter from left to right are:
 and at the end, it summarizes total, used and free size. 
 
 and we have 11 Gb free yet.
+
+
+3. Send a report email
+---------------------
+
+At the end, it sends the /tmp content file to cnb.notifications@gmail.com

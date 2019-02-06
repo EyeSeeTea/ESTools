@@ -5,13 +5,27 @@ readonly log_dir="$(dirname $0)/log"
 readonly raw_log_file=$(mktemp)
 readonly final_log_file=${log_dir}/${time}.log
 
+colect() 
+{
+
+
+echo `hostname`  "- user report" > ${raw_log_file}
 # first, collect space per user into final log file
 
+echo >> ${raw_log_file} 
+echo "# BIG1" >> ${raw_log_file}
+du -xsBG /mnt/big1/* | awk '{print substr($2,11,length($2)-1)  "\t" substr($1,1,length($1)-1)}' >> ${raw_log_file}
+
+echo >> ${raw_log_file} 
+echo "# BIG2" >> ${raw_log_file}
+du -xsBG /mnt/big2/* | awk '{print substr($2,11,length($2)-1)  "\t" substr($1,1,length($1)-1)}' >> ${raw_log_file}
+
 cd /home
-echo "# HOME" > ${raw_log_file}
+echo >> ${raw_log_file} 
+echo "# HOME" >> ${raw_log_file}
 du -xsBG * | awk '{print $2 "\t" substr($1,1,length($1)-1)}' >> ${raw_log_file}
 
-grep -v '^#\|^aquota\|^lost\|^tmp'  ${raw_log_file} | awk '{total[$1]+=$2}END{for (k in total){print k "\t" total[k]}}' | sort > ${final_log_file}
+grep -v '^#\|^aquota\|^aerofs\|^delete_me\|^lost\|^tmp'  ${raw_log_file} | awk '{total[$1]+=$2}END{for (k in total){print k "\t" total[k]}}' | sort > ${final_log_file}
 
 # integrate data into global log (/var/log/disk_stats.log)
 # (@see sysman/net-simple-log)
@@ -20,4 +34,17 @@ readonly host=$(hostname)
 cat ${final_log_file} | while read user diskgb; do
     echo "${timestamp} ${host} ${user} ${diskgb}" >> /var/log/disk_stats.log
 done
-echo "${timestamp} ${host} TOTAL $(df /home | tail -n +2 | awk '{used+=$3; total+=$2; free+=$4}END{GB=1024*1024*1024;print total/GB " " used/GB " " free/GB}')" >> /var/log/disk_stats.log
+echo "${timestamp} ${host} TOTAL $(df /dev/xvda3 /dev/xvda5 /dev/xvda6 | tail -n +2 | awk '{used+=$3; total+=$2; free+=$4}END{GB=1024*1024*1024;print total/GB " " used/GB " " free/GB}')" >> /var/log/disk_stats.log
+}
+
+
+send_notification()
+{ 
+  subject="[Test user report]: " 
+  body=$raw_log_file
+  echo  "$subject;$body" >> "$raw_log_file"
+  wget -O /dev/null -q "http://arquimedes:1396" --post-file "$raw_log_file"
+}
+
+colect
+send_notification
