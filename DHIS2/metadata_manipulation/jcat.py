@@ -40,6 +40,7 @@ import re
 from collections import namedtuple
 from argparse import ArgumentParser, RawDescriptionHelpFormatter as fmt
 import zipfile
+import json
 
 Filter = namedtuple('Filter', ['nesting', 'part', 'field', 'regexp'])
 
@@ -51,7 +52,8 @@ sort_fields = []
 def main():
     args = get_args()
 
-    text = read(args.file)
+    text = get_text(args)
+
     text = expand(compact(text))  # normalize spacing
 
     text = apply_replacements(text, args.replacements)
@@ -83,7 +85,7 @@ def get_args():
 
     parser = ArgumentParser(description=__doc__, formatter_class=fmt)
     add = parser.add_argument  # shortcut
-    add('file', nargs='?', help='input file (read from stdin if not given)')
+    add('-i', '--input', nargs='+', help='input single or multiple files')
     add('-o', '--output', help='output file (write to stdout if not given')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--filters', nargs='+', metavar='FILTER',
@@ -105,15 +107,51 @@ def get_args():
 
     sort_fields = args.sort_fields
 
-    if file_arg_maybe_misplaced(args.file, args.filters):
+    validate_input_file(args.input)
+
+    if file_arg_maybe_misplaced(args.input, args.filters):
         print('Warning: no file given, but one of the filters looks '
               'like a filename.')
 
     return args
 
 
+def validate_input_file(input):
+    if input is None:
+        print('Error: a input file must be provided. Read jcat -h for more info.')
+        exit(0)
+
+
 def file_arg_maybe_misplaced(fname, filters):
     return not fname and filters and not all(':' in x for x in filters)
+
+
+def get_text(args):
+    "Return a text with all the input files merged"
+    text = None
+
+    for file in args.input:
+        file = read(file)
+        if text is None:
+            text = file
+            continue
+        text = join(text, file)
+
+    return text
+
+
+def join(text, file):
+    "Return text with all the file root elements added"
+    text = json.loads(text)
+    file = json.loads(file)
+    for key, value in file.items():
+        if key in text:
+            text[key] += value
+        elif isinstance(value, list):
+            text[key] = value
+        else:
+            text.update(value)
+    return json.dumps(text)
 
 
 def apply_replacements(text, replacements):
