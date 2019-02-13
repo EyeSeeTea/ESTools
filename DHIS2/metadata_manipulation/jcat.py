@@ -52,7 +52,7 @@ sort_fields = []
 def main():
     args = get_args()
 
-    text = get_text(args)
+    text = get_text(args.input)
 
     text = expand(compact(text))  # normalize spacing
 
@@ -126,11 +126,11 @@ def file_arg_maybe_misplaced(fname, filters):
     return not fname and filters and not all(':' in x for x in filters)
 
 
-def get_text(args):
+def get_text(input):
     "Return a text with all the input files merged"
     text = None
 
-    for file in args.input:
+    for file in input:
         file = read(file)
         if text is None:
             text = file

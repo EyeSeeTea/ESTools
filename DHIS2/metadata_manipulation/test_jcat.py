@@ -8,6 +8,10 @@ import pytest
 import jcat
 
 
+files_directory = "jcat_test_json/"
+expected_join_json = files_directory + "expected_join.json"
+
+
 json_text = """\
 {
   "planets": [
@@ -393,3 +397,15 @@ def test_remove_fields():
 def test_sort():
     jcat.sort_fields = ['name', 'id', 'property']
     assert jcat.jsort(json_text) == json_text_sorted
+
+
+def test_join():
+    list_of_files = list()
+    list_of_files.append(files_directory+"user2.json", )
+    list_of_files.append(files_directory+"user1.json")
+    list_of_files.append(files_directory+"categoryOptions.json")
+    expected_file = jcat.read(expected_join_json)
+
+    text = jcat.get_text(list_of_files)
+
+    assert jcat.compact(text) == jcat.compact(expected_file)
