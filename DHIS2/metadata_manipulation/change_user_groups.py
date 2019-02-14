@@ -41,18 +41,18 @@ def main():
         else:
             replacements = dict([(args.replace_ids[2 * i], args.replace_ids[2 * i + 1]) for i in range(n // 2)])
 
-    input_file = json.load(open('input.json'))
+    input_file = json.load(open(args.input))
     input_objects = [item for item in input_file.keys() if item not in args.exclude]
     for dhis_object in input_objects:
-        dhis_object_old = json.load(open('input.json')).get(dhis_object)
+        dhis_object_old = json.load(open(args.input)).get(dhis_object)
 
         if dhis_object in dhis_objects:
             if not dhis_object_old:
                 print('WARN: Ignoring not found object %s' % dhis_object)
                 continue
 
-            userAccesses_new = json.load(open('userAccesses.json'))['userAccesses']
-            userGroupAccesses_new = json.load(open('userGroupAccesses.json'))['userGroupAccesses']
+            userAccesses_new = json.load(open(args.userAccess))['userAccesses']
+            userGroupAccesses_new = json.load(open(args.userGroupAccesses))['userGroupAccesses']
 
             elements_new = []
             for element in dhis_object_old:
@@ -75,13 +75,19 @@ def main():
         else:
             output[dhis_object] = dhis_object_old
 
-    json.dump(output, open('output.json', 'wt'), indent=2)
+    json.dump(output, open(args.output, 'wt'), indent=2)
 
 
 def get_args():
     "Return arguments"
     parser = argparse.ArgumentParser(description=__doc__)
     add = parser.add_argument  # shortcut
+    add('-i', '--input', default="input.json", help='input file (read from input.json if not given)')
+    add('-o', '--output', default="output.json", help='output file (write to output.json if not given')
+    add('-ua', '--userAccess', default="userAccesses.json",
+        help='userAccess file (read from userAccesses.json if not given')
+    add('-uga', '--userGroupAccesses', default="userGroupAccesses.json",
+        help='userGroupAccesses file (read from userGroupAccesses.json if not given')
     add('--public-access', default='--------', help='set public permissions. Default: no public access (--------)')
     add('--remove-ous', action='store_true', help='remove ous assignment from programs')
     add('--remove-catcombos', action='store_true', help='remove catcombos assignment from programs')
