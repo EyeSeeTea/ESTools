@@ -27,7 +27,7 @@ dhis_objects = [
 ]
 
 
-replaceable_objects = [
+all_replaceable_objects = [
     "publicAccess",
     "userAccesses",
     "userGroupAccesses"
@@ -37,7 +37,11 @@ replaceable_objects = [
 def main():
     args = get_args()
     dhis_objects = [item for item in args.include if item not in args.exclude]
-    replaceable_objects = [item for item in args.replace_objects]
+    if args.replace_objects:
+        replaceable_objects = [item for item in args.replace_objects]
+    else:
+        replaceable_objects = all_replaceable_objects
+
     output = {}
     replacements = {}
 
@@ -84,10 +88,15 @@ def main():
 def replace_objects(args, element, replaceable_objects):
     for replaceable in replaceable_objects:
         if replaceable == "publicAccess":
-            element['publicAccess'] = args.public_access
-        else:
+            element['publicAccess'] = args.publicAccess
+        elif replaceable in all_replaceable_objects:
             file = json.load(open(args.__getattribute__(replaceable)))
             element[replaceable] = file[replaceable]
+        else:
+            print("Error: " + replaceable + " is an invalid replaceable object)")
+            print("List of valid replaceable objects: ")
+            print(all_replaceable_objects)
+            exit(0)
 
 
 def get_args():
@@ -96,13 +105,13 @@ def get_args():
     add = parser.add_argument  # shortcut
     add('-i', '--input', default="input.json", help='input file (read from input.json if not given)')
     add('-o', '--output', default="output.json", help='output file (write to output.json if not given)')
-    add('-ua', '--userAccesses', default="userAccesses.json",
+    add('-ua', '--user-accesses', dest="userAccesses", default="userAccesses.json",
         help='userAccesses file (read from userAccesses.json if not given)')
-    add('-uga', '--userGroupAccesses', default="userGroupAccesses.json",
+    add('-uga', '--userGroupAccesses', dest="userGroupAccesses", default="userGroupAccesses.json",
         help='userGroupAccesses file (read from userGroupAccesses.json if not given)')
-    add('-ro', '--replace-objects', nargs='+', default=replaceable_objects,
+    add('-ro', '--replace-objects', nargs='+', default=all_replaceable_objects,
         help='replace only the provided objects default: publicAccess, userAccesses, userGroupAccesses')
-    add('--public-access', default='--------', help='set public permissions. Default: no public access (--------)')
+    add('--public-access', default='--------', dest="publicAccess",  help='set public permissions. Default: no public access (--------)')
     add('--remove-ous', action='store_true', help='remove ous assignment from programs')
     add('--remove-catcombos', action='store_true', help='remove catcombos assignment from programs')
     add('--replace-ids', nargs='+', metavar='FROM TO', default=[],
