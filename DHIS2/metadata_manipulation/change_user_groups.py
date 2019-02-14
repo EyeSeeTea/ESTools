@@ -12,7 +12,6 @@ dhis_objects = [
     "indicators",
     "indicatorGroups",
     "programIndicators",
-    "programIndicators",
     "optionSets",
     "dataElements",
     "programs",
