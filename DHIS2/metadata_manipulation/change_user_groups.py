@@ -46,15 +46,10 @@ def main():
     replacements = {}
 
     if args.replace_ids:
-        n = len(args.replace_ids)
-        if n%2!=0:
-            sys.exit('Error: uneven number of ids to replace (%d), but ids should come '
-                     'in pairs (from, to)' % n)
-        else:
-            replacements = dict([(args.replace_ids[2 * i], args.replace_ids[2 * i + 1]) for i in range(n // 2)])
+        replacements = get_replacements(args.replace_ids)
 
-    input_file = json.load(open(args.input))
-    input_objects = [item for item in input_file.keys() if item not in args.exclude]
+    input_objects = get_input_objects(args.input, args.exclude)
+
     for dhis_object in input_objects:
         dhis_object_old = json.load(open(args.input)).get(dhis_object)
 
@@ -67,14 +62,9 @@ def main():
             for element in dhis_object_old:
                 replace_objects(args, element, replaceable_objects)
 
-                if dhis_object in ['programs', 'dataElements']:
-                    if args.remove_ous and element.get('organisationUnits'):
-                        element['organisationUnits'] = []
-                    if args.remove_catcombos and element.get('categoryCombo'):
-                        del element['categoryCombo']
+                remove_ous_and_catcombos(args, dhis_object, element)
 
-                if args.replace_ids and element['id'] in replacements.keys():
-                    element['id'] = replacements.get(element['id'])
+                replace_ids(args, element, replacements)
 
                 elements_new.append(element)
 
@@ -83,6 +73,35 @@ def main():
             output[dhis_object] = dhis_object_old
 
     json.dump(output, open(args.output, 'wt'), indent=2)
+
+
+def replace_ids(args, element, replacements):
+    if args.replace_ids and element['id'] in replacements.keys():
+        element['id'] = replacements.get(element['id'])
+
+
+def get_input_objects(input, excluded_objects):
+    input_file = json.load(open(input))
+    input_objects = [item for item in input_file.keys() if item not in excluded_objects]
+    return input_objects
+
+
+def get_replacements(ids):
+    n = len(ids)
+    if n % 2 != 0:
+        sys.exit('Error: uneven number of ids to replace (%d), but ids should come '
+                 'in pairs (from, to)' % n)
+    else:
+        replacements = dict([(ids[2 * i], ids[2 * i + 1]) for i in range(n // 2)])
+    return replacements
+
+
+def remove_ous_and_catcombos(args, dhis_object, element):
+    if dhis_object in ['programs', 'dataElements']:
+        if args.remove_ous and element.get('organisationUnits'):
+            element['organisationUnits'] = []
+        if args.remove_catcombos and element.get('categoryCombo'):
+            del element['categoryCombo']
 
 
 def replace_objects(args, element, replaceable_objects):
