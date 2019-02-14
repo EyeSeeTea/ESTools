@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Clone a dhis2 installation from another server.
@@ -26,8 +26,11 @@ def main():
     if args.no_color or not os.isatty(sys.stdout.fileno()):
         COLOR = False
 
-    cfg = get_config(args.config)
+    cfg = get_config(args.config, args.update_config)
     if args.check_only:
+        sys.exit()
+    elif args.update_config:
+        update_config(args.config)
         sys.exit()
 
     dir_local, dir_remote = cfg['server_dir_local'], cfg['server_dir_remote']
@@ -56,27 +59,17 @@ def main():
 
     if not args.manual_restart:
         start_tomcat(dir_local)
+        import_dir = cfg['post_process_import_dir'] if 'post_process_import_dir' in cfg else None
         if args.no_postprocess:
             log('No postprocessing done, as requested.')
         elif 'api_local' in cfg and 'postprocess' in cfg:
-            process.postprocess(cfg['api_local'], cfg['postprocess'])
+            process.postprocess(cfg['api_local'], cfg['postprocess']
+                                , import_dir)
         else:
             log('No postprocessing done.')
     else:
         log('Server not started automatically, as requested.')
         log('No postprocessing done.')
-
-
-def get_config(fname):
-    "Return dict with the options read from configuration file"
-    log('Reading from config file %s ...' % fname)
-    try:
-        with open(fname) as f:
-            config = json.load(f)
-        check_config(config)
-    except (AssertionError, IOError, ValueError) as e:
-        sys.exit('Error reading config file %s: %s' % (fname, e))
-    return config
 
 
 def get_args():
@@ -88,26 +81,52 @@ def get_args():
     add('--no-backups', action='store_true', help="don't make backups")
     add('--no-webapps', action='store_true', help="don't clone the webapps")
     add('--no-db', action='store_true', help="don't clone the database")
-    add('--no-postprocess', action='store_true', help="don't execute postprocessing actions")
+    add('--no-postprocess', action='store_true', help="don't do postprocessing")
     add('--manual-restart', action='store_true', help="don't stop/start tomcat")
     add('--post-sql', nargs='+', default=[], help='sql files to run post-clone')
     add('--post-clone-scripts', action='store_true',
-        help='execute all py and sh scripts in the post_clone_scripts_dir folder')
+        help='execute all py and sh scripts in post_clone_scripts_dir')
+    add('--post-import', action='store_true',
+        help='import to DHIS2 selected json files from post_process_import_dir')
+    add('--update-config', action='store_true', help='update the config file')
     add('--no-color', action='store_true', help="don't use colored output")
     return parser.parse_args()
 
 
+def get_config(fname, update):
+    "Return dict with the options read from configuration file"
+    log('Reading from config file %s ...' % fname)
+    try:
+        with open(fname) as f:
+            config = json.load(f)
+        if get_version(config) != 2:
+            if update:
+                update_config(fname)
+                sys.exit()
+            else:
+                raise ValueError('Old version of configuration file. Run with '
+                                 '--update-config to upgrade.')
+        check_config(config)
+    except (AssertionError, IOError, ValueError) as e:
+        sys.exit('Error reading config file %s: %s' % (fname, e))
+    return config
+
+
 def check_config(cfg):
-    "Assert all the options in configuration exist and have reasonable values"
+    "Assert all the mandatory options in configuration exist and have reasonable values"
     for option in ['backups_dir', 'backup_name', 'hostname_remote',
                    'server_dir_local', 'server_dir_remote',
                    'db_local', 'db_remote', 'war_local', 'war_remote']:
         assert option in cfg, 'Missing option "%s"' % option
-    for option in ['api_local', 'postprocess']:
-        if option not in cfg:
-            log('Option %s missing. Will not do postprocessing.' % option)
-    for path in ['backups_dir', 'server_dir_local', 'post_clone_scripts_dir']:
-        if cfg.has_key(path):
+
+    if 'api_local' not in cfg:
+        log('Option api_local missing. Will not do any postprocessing.')
+    elif 'postprocess' not in cfg:
+        log('Option postprocess missing. Will not do local postprocessing.')
+
+    for path in ['backups_dir', 'server_dir_local', 'post_clone_scripts_dir',
+                 'post_process_import_dir']:
+        if path in cfg:
             assert os.path.isdir(cfg[path]), \
                 '%s is not a directory: %s' % (path, cfg[path])
     assert (os.path.isfile(cfg['server_dir_local'] + '/bin/startup.sh') and
@@ -119,6 +138,68 @@ def check_config(cfg):
     for war in ['war_local', 'war_remote']:
         assert cfg[war].endswith('.war'), \
             'war file does not end with .war: %s' % cfg[war]
+    log('Configuration looks OK.')
+
+
+def update_config(fname):
+    "Update the configuration file from an old format to the current one"
+    with open(fname) as f:
+        config = json.load(f)
+
+    if get_version(config) == 2:
+        log('The current configuration file is valid. Nothing to update.')
+    else:
+        if 'postprocess' in config:
+            entries = []
+            for entry in config['postprocess']:
+                entries += update_entry(entry)
+            config['postprocess'] = entries
+        name, ext = os.path.splitext(fname)
+        fname_new = name + '_updated' + ext
+        log('Writing updated configuration in %s' % fname_new)
+        with open(fname_new, 'wt') as fnew:
+            json.dump(config, fnew, indent=2)
+
+
+def update_entry(entry_old):
+    "Return a list of dictionaries that correspond to the actions in entry"
+    entries = []
+
+    # Get the selected users part.
+    users = {}
+    if 'usernames' in entry_old:
+        users['selectUsernames'] = entry_old['usernames']
+    if 'fromGroups' in entry_old:
+        users['selectFromGroups'] = entry_old['fromGroups']
+
+    # Add a new entry for each action described in the old entry.
+    old_actions = ['addRoles', 'addRolesFromTemplate']
+    if all(action not in entry_old for action in old_actions):
+        entry_new = users.copy()
+        entry_new['action'] = 'activate'
+        entries.append(entry_new)
+    else:
+        for action in old_actions:
+            if action in entry_old:
+                entry_new = users.copy()
+                entry_new['action'] = action
+                entry_new[action] = entry_old[action]
+                entries.append(entry_new)
+
+    return entries
+
+
+
+def get_version(config):
+    "Return the highest version for which the given configuration is valid"
+    if 'postprocess' not in config or not config['postprocess']:
+        return 2
+    for entry in config['postprocess']:
+        if 'usernames' in entry or 'fromGroups' in entry:
+            return 1
+        if 'selectUsernames' in entry or 'selectFromGroups' in entry:
+            return 2
+    raise ValueError('Unknown version of configuration file.')
 
 
 def is_good_db_uri(uri):
@@ -134,7 +215,7 @@ def run(cmd):
 
 def log(txt):
     out = '[%s] %s' % (time.strftime('%Y-%m-%d %T'), txt)
-    print(magenta(out) if COLOR else out)
+    print((magenta(out) if COLOR else out))
     sys.stdout.flush()
 
 
@@ -142,17 +223,10 @@ def magenta(txt):
     return '\x1b[35m%s\x1b[0m' % txt
 
 
-def execute_scripts(scripts_folder):
-    scripts = []
-    files = os.listdir(scripts_folder)
-    for fname in files:
-        _, ext = os.path.splitext(fname)
-        if ext in ['.sh','.py']:
-            scripts.append(fname)
-
-    for script in sorted(scripts):
-        command = '%s/%s' % (scripts_folder, script)
-        run(command)
+def execute_scripts(dirname):
+    is_script = lambda fname: os.path.splitext(fname)[-1] in ['.sh', '.py']
+    for script in sorted(filter(is_script, os.listdir(dirname))):
+        run('"%s/%s"' % (dirname, script))
 
 
 def start_tomcat(server_path):
@@ -231,7 +305,7 @@ def empty_db(db_local):
                     "AND %(prefix)s_catalog='%(db_name)s'" %
                     {'prefix': prefix, 'name': name, 'db_name': db_name})
                 results_tuples = cur.fetchall()
-                results = set(zip(*results_tuples)[0] if results_tuples else [])
+                results = set(list(zip(*results_tuples))[0] if results_tuples else [])
 
                 return results - postgis_elements
 
