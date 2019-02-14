@@ -27,9 +27,17 @@ dhis_objects = [
 ]
 
 
+replaceable_objects = [
+    "publicAccess",
+    "userAccesses",
+    "userGroupAccesses"
+]
+
+
 def main():
     args = get_args()
     dhis_objects = [item for item in args.include if item not in args.exclude]
+    replaceable_objects = [item for item in args.replace_objects]
     output = {}
     replacements = {}
 
@@ -51,14 +59,9 @@ def main():
                 print('WARN: Ignoring not found object %s' % dhis_object)
                 continue
 
-            userAccesses_new = json.load(open(args.userAccess))['userAccesses']
-            userGroupAccesses_new = json.load(open(args.userGroupAccesses))['userGroupAccesses']
-
             elements_new = []
             for element in dhis_object_old:
-                element['publicAccess'] = args.public_access
-                element['userAccesses'] = userAccesses_new
-                element['userGroupAccesses'] = userGroupAccesses_new
+                replace_objects(args, element, replaceable_objects)
 
                 if dhis_object in ['programs', 'dataElements']:
                     if args.remove_ous and element.get('organisationUnits'):
@@ -78,6 +81,15 @@ def main():
     json.dump(output, open(args.output, 'wt'), indent=2)
 
 
+def replace_objects(args, element, replaceable_objects):
+    for replaceable in replaceable_objects:
+        if replaceable == "publicAccess":
+            element['publicAccess'] = args.public_access
+        else:
+            file = json.load(open(args.__getattribute__(replaceable)))
+            element[replaceable] = file[replaceable]
+
+
 def get_args():
     "Return arguments"
     parser = argparse.ArgumentParser(description=__doc__)
@@ -88,6 +100,8 @@ def get_args():
         help='userAccess file (read from userAccesses.json if not given')
     add('-uga', '--userGroupAccesses', default="userGroupAccesses.json",
         help='userGroupAccesses file (read from userGroupAccesses.json if not given')
+    add('-ro', '--replace-objects', nargs='+', default=replaceable_objects,
+        help='replace only the provided objects default: publicAccess, userAccesses, userGroupAccesses')
     add('--public-access', default='--------', help='set public permissions. Default: no public access (--------)')
     add('--remove-ous', action='store_true', help='remove ous assignment from programs')
     add('--remove-catcombos', action='store_true', help='remove catcombos assignment from programs')
