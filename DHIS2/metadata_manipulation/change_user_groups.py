@@ -36,7 +36,7 @@ all_replaceable_objects = [
 
 def main():
     args = get_args()
-    dhis_objects = [item for item in args.include if item not in args.exclude]
+    dhis_objects = [item for item in args.apply if item not in args.exclude]
     if args.replace_objects:
         replaceable_objects = [item for item in args.replace_objects]
     else:
@@ -126,7 +126,7 @@ def get_args():
         help='input file (read from input.json if not given)')
     add('-o', '--output', default="output.json",
         help='output file (write to output.json if not given)')
-    add('-ua', '--user-accesses', dest="userAccesses", default="userAccesses.json",
+    add('-ua', '--userAccesses', dest="userAccesses", default="userAccesses.json",
         help='userAccesses file (read from userAccesses.json if not given)')
     add('-uga', '--userGroupAccesses', dest="userGroupAccesses", default="userGroupAccesses.json",
         help='userGroupAccesses file (read from userGroupAccesses.json if not given)')
@@ -140,7 +140,7 @@ def get_args():
         help='remove catcombos assignment from programs')
     add('--replace-ids', nargs='+', metavar='FROM TO', default=[],
         help='ids to replace. NOTE: references are not updated!!!')
-    add('--include', nargs='+', default=dhis_objects,
+    add('--apply-to-objects', dest='apply', nargs='+', default=dhis_objects,
         help='DHIS2 objects to include. Default: All')
     add('--exclude', nargs='+', default=[],
         help='DHIS2 objects to exclude. Default: None')
