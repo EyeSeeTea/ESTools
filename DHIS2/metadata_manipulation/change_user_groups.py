@@ -78,6 +78,7 @@ def main():
 
     json.dump(output, open('output.json', 'wt'), indent=2)
 
+
 def get_args():
     "Return arguments"
     parser = argparse.ArgumentParser(description=__doc__)
@@ -90,6 +91,7 @@ def get_args():
     add('--include', nargs='+', default=dhis_objects, help='DHIS2 objects to include. Default: All')
     add('--exclude', nargs='+', default=[], help='DHIS2 objects to exclude. Default: None')
     return parser.parse_args()
+
 
 if __name__ == '__main__':
     main()
