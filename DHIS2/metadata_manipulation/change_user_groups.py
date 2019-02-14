@@ -42,32 +42,39 @@ def main():
         else:
             replacements = dict([(args.replace_ids[2 * i], args.replace_ids[2 * i + 1]) for i in range(n // 2)])
 
-    for dhis_object in dhis_objects:
+    input_file = json.load(open('input.json'))
+    input_objects = [item for item in input_file.keys() if item not in args.exclude]
+    for dhis_object in input_objects:
         dhis_object_old = json.load(open('input.json')).get(dhis_object)
 
-        if not dhis_object_old:
-            print('WARN: Ignoring not found object %s' % dhis_object)
-            continue
+        if dhis_object in dhis_objects:
+            if not dhis_object_old:
+                print('WARN: Ignoring not found object %s' % dhis_object)
+                continue
 
-        userGroupAccesses_new = json.load(open('userGroupAccesses.json'))['userGroupAccesses']
+            userAccesses_new = json.load(open('userAccesses.json'))['userAccesses']
+            userGroupAccesses_new = json.load(open('userGroupAccesses.json'))['userGroupAccesses']
 
-        elements_new = []
-        for element in dhis_object_old:
-            element['publicAccess'] = args.public_access
-            element['userGroupAccesses'] = userGroupAccesses_new
+            elements_new = []
+            for element in dhis_object_old:
+                element['publicAccess'] = args.public_access
+                element['userAccesses'] = userAccesses_new
+                element['userGroupAccesses'] = userGroupAccesses_new
 
-            if dhis_object in ['programs', 'dataElements']:
-                if args.remove_ous and element.get('organisationUnits'):
-                    element['organisationUnits'] = []
-                if args.remove_catcombos and element.get('categoryCombo'):
-                    del element['categoryCombo']
+                if dhis_object in ['programs', 'dataElements']:
+                    if args.remove_ous and element.get('organisationUnits'):
+                        element['organisationUnits'] = []
+                    if args.remove_catcombos and element.get('categoryCombo'):
+                        del element['categoryCombo']
 
-            if args.replace_ids and element['id'] in replacements.keys():
-                element['id'] = replacements.get(element['id'])
+                if args.replace_ids and element['id'] in replacements.keys():
+                    element['id'] = replacements.get(element['id'])
 
-            elements_new.append(element)
+                elements_new.append(element)
 
-        output[dhis_object] = elements_new
+            output[dhis_object] = elements_new
+        else:
+            output[dhis_object] = dhis_object_old
 
     json.dump(output, open('output.json', 'wt'), indent=2)
 
