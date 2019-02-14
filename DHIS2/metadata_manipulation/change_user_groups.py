@@ -95,11 +95,11 @@ def get_args():
     parser = argparse.ArgumentParser(description=__doc__)
     add = parser.add_argument  # shortcut
     add('-i', '--input', default="input.json", help='input file (read from input.json if not given)')
-    add('-o', '--output', default="output.json", help='output file (write to output.json if not given')
-    add('-ua', '--userAccess', default="userAccesses.json",
-        help='userAccess file (read from userAccesses.json if not given')
+    add('-o', '--output', default="output.json", help='output file (write to output.json if not given)')
+    add('-ua', '--userAccesses', default="userAccesses.json",
+        help='userAccesses file (read from userAccesses.json if not given)')
     add('-uga', '--userGroupAccesses', default="userGroupAccesses.json",
-        help='userGroupAccesses file (read from userGroupAccesses.json if not given')
+        help='userGroupAccesses file (read from userGroupAccesses.json if not given)')
     add('-ro', '--replace-objects', nargs='+', default=replaceable_objects,
         help='replace only the provided objects default: publicAccess, userAccesses, userGroupAccesses')
     add('--public-access', default='--------', help='set public permissions. Default: no public access (--------)')
