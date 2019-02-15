@@ -36,11 +36,20 @@ all_replaceable_objects = [
 
 def main():
     args = get_args()
+
+    validate_args(args)
+
     dhis_objects = [item for item in args.apply if item not in args.exclude]
-    if args.replace_objects:
-        replaceable_objects = [item for item in args.replace_objects]
+
+    if args.remove_objects:
+        modifiable_objects = [item for item in args.remove_objects]
+        action = remove_objects
+    elif args.replace_objects:
+        modifiable_objects = [item for item in args.replace_objects]
+        action = replace_objects
     else:
-        replaceable_objects = all_replaceable_objects
+        modifiable_objects = all_replaceable_objects
+        action = replace_objects
 
     output = {}
     replacements = {}
@@ -59,8 +68,9 @@ def main():
                 continue
 
             elements_new = []
+
             for element in dhis_object_old:
-                replace_objects(args, element, replaceable_objects)
+                action(args, element, modifiable_objects)
 
                 remove_ous_and_catcombos(args, dhis_object, element)
 
@@ -73,6 +83,12 @@ def main():
             output[dhis_object] = dhis_object_old
 
     json.dump(output, open(args.output, 'wt'), indent=2)
+
+
+def validate_args(args):
+    if args.remove_objects and args.replace_objects:
+        print('Error The options --replace-objects and --remove-objects are mutually exclusive.')
+        exit(0)
 
 
 def replace_ids(args, element, replacements):
@@ -118,6 +134,25 @@ def replace_objects(args, element, replaceable_objects):
             exit(0)
 
 
+def remove_objects(args, element, removable_object):
+    for replaceable in removable_object:
+        if replaceable in all_replaceable_objects:
+            remove_ids = get_list_of_removable_uids(args, replaceable)
+            new_element = []
+            for iter_element in element[replaceable]:
+                if iter_element['id'] not in remove_ids:
+                    new_element.append(iter_element)
+            element[replaceable] = new_element
+
+
+def get_list_of_removable_uids(args, replaceable):
+    file = json.load(open(args.__getattribute__(replaceable)))
+    remove_ids = []
+    for removable_element in file[replaceable]:
+        remove_ids.append(removable_element['id'])
+    return remove_ids
+
+
 def get_args():
     "Return arguments"
     parser = argparse.ArgumentParser(description=__doc__)
@@ -130,8 +165,10 @@ def get_args():
         help='userAccesses file (read from userAccesses.json if not given)')
     add('-uga', '--userGroupAccesses', dest="userGroupAccesses", default="userGroupAccesses.json",
         help='userGroupAccesses file (read from userGroupAccesses.json if not given)')
-    add('-ro', '--replace-objects', nargs='+', default=all_replaceable_objects,
+    add('-ro', '--replace-objects', nargs='+',
         help='replace only the provided objects default: publicAccess, userAccesses, userGroupAccesses')
+    add('--remove-objects', nargs='+',
+        help='delete the objects in the provided .json using its id. Example: userGroupAccesses')
     add('--public-access', default='--------', dest="publicAccess",
         help='set public permissions. Default: no public access (--------)')
     add('--remove-ous', action='store_true',
