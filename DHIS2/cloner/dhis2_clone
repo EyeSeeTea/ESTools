@@ -10,8 +10,7 @@ import os
 import time
 import json
 import argparse
-from pickle import TRUE
-from subprocess import PIPE, Popen
+from subprocess import Popen
 
 import psycopg2
 
