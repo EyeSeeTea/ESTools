@@ -52,7 +52,7 @@ sort_fields = []
 def main():
     args = get_args()
 
-    text = get_text(args.input)
+    text = get_input_files(args.input)
 
     text = expand(compact(text))  # normalize spacing
 
@@ -126,25 +126,25 @@ def file_arg_maybe_misplaced(fname, filters):
     return not fname and filters and not all(':' in x for x in filters)
 
 
-def get_text(input):
+def get_input_files(input):
     "Return a text with all the input files merged"
     text = None
 
-    for file in input:
-        file = read(file)
+    for fname in input:
+        fname = read(fname)
         if text is None:
-            text = file
+            text = fname
             continue
-        text = join(text, file)
+        text = join(text, fname)
 
     return text
 
 
-def join(text, file):
+def join(text, fname):
     "Return text with all the file root elements added"
     text = json.loads(text)
-    file = json.loads(file)
-    for key, value in file.items():
+    fname = json.loads(fname)
+    for key, value in fname.items():
         if key in text:
             text[key] += value
         elif isinstance(value, list):

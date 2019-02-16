@@ -406,6 +406,6 @@ def test_join():
     list_of_files.append(files_directory+"categoryOptions.json")
     expected_file = jcat.read(expected_join_json)
 
-    text = jcat.get_text(list_of_files)
+    text = jcat.get_input_files(list_of_files)
 
     assert jcat.compact(text) == jcat.compact(expected_file)
