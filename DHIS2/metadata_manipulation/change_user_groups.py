@@ -84,7 +84,7 @@ def main():
         else:
             output[dhis_object] = dhis_object_old
 
-    json.dump(output, open(args.output, 'wt'), indent=2)
+    json.dump(output, open(args.output, 'wt'), ensure_ascii=False, indent=2)
 
 
 def validate_args(args):
