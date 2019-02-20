@@ -45,7 +45,7 @@ def main():
         modifiable_objects = [item for item in args.remove_objects]
         action = remove_objects
     elif args.replace_objects:
-        modifiable_objects = [item for item in args.replace_objects]
+        modifiable_objects = [item for item in args.replace_objects if item in all_replaceable_objects]
         action = replace_objects
     else:
         modifiable_objects = all_replaceable_objects
@@ -60,7 +60,7 @@ def main():
     input_objects = get_input_objects(args.input, args.exclude)
 
     for dhis_object in input_objects:
-        dhis_object_old = json.load(open(args.input)).get(dhis_object)
+        dhis_object_old = json.load(open(args.input, encoding="utf-8")).get(dhis_object)
 
         if dhis_object in dhis_objects:
             if not dhis_object_old:
@@ -99,7 +99,7 @@ def replace_ids(args, element, replacements):
 
 
 def get_input_objects(input, excluded_objects):
-    input_file = json.load(open(input))
+    input_file = json.load(open(input, encoding="utf-8"))
     input_objects = [item for item in input_file.keys() if item not in excluded_objects]
     return input_objects
 

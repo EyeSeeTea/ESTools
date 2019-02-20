@@ -3,12 +3,14 @@
 """
 Clone a dhis2 installation from another server.
 """
-
+import errno
+import subprocess
 import sys
 import os
 import time
 import json
 import argparse
+from subprocess import Popen
 
 import psycopg2
 
@@ -249,9 +251,14 @@ def backup_war(backups_dir, dir_local, war_local):
 
 
 def get_webapps(route_local, war_local, route_remote, war_remote):
-    for subdir in ['webapps', 'files']:
-        run("rsync -a --delete '%s/%s/*' '%s/%s'" % (route_remote, subdir,
-                                                     route_local, subdir))
+    for mandatory, subdir in [[True, 'webapps'], [False, 'files']]:
+        cmd = ("rsync -a --delete %s/%s/* %s/%s" % (route_remote, subdir, route_local, subdir))
+        p = Popen(cmd, shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE,
+                  universal_newlines=True, stderr=subprocess.PIPE)
+        stdout, stderr = p.communicate()
+        if p.returncode != 0 and mandatory:
+            log('Mandatory folder %s failed to rsync' % subdir)
+            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT) + '\n' + stderr, subdir)
 
     if war_local != war_remote:
         commands = [
