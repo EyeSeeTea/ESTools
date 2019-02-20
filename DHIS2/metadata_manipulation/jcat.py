@@ -146,12 +146,15 @@ def join(text, fname):
     fname = json.loads(fname)
     for key, value in fname.items():
         if key in text:
-            text[key] += value
+            if isinstance(text[key], dict):
+                text[key] = [text[key], value]
+            else:
+                text[key] += value
         elif isinstance(value, list):
             text[key] = value
         else:
             text.update(value)
-    return json.dumps(text)
+    return json.dumps(text, ensure_ascii=False)
 
 
 def apply_replacements(text, replacements):
