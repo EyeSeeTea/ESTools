@@ -34,7 +34,6 @@ argument.
 It can be handy to manipulate metadata exported from dhis2, so it can
 be imported in another instance.
 """
-
 import sys
 import re
 from collections import namedtuple
@@ -52,7 +51,7 @@ sort_fields = []
 def main():
     args = get_args()
 
-    text = get_input_files(args.input)
+    text = get_text_from_input(args)
 
     text = expand(compact(text))  # normalize spacing
 
@@ -85,7 +84,8 @@ def get_args():
 
     parser = ArgumentParser(description=__doc__, formatter_class=fmt)
     add = parser.add_argument  # shortcut
-    add('-i', '--input', nargs='+', help='input single or multiple files')
+    add('input', nargs='*', help='input single or multiple files')
+
     add('-o', '--output', help='output file (write to stdout if not given')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--filters', nargs='+', metavar='FILTER',
@@ -126,35 +126,12 @@ def file_arg_maybe_misplaced(fname, filters):
     return not fname and filters and not all(':' in x for x in filters)
 
 
-def get_input_files(input):
-    "Return a text with all the input files merged"
-    text = None
-
-    for fname in input:
-        fname = read(fname)
-        if text is None:
-            text = fname
-            continue
-        text = join(text, fname)
-
+def get_text_from_input(args):
+    if len(args.input) > 0:
+        text = read_multiple_files(args.input)
+    else:
+        text = read(args.input)
     return text
-
-
-def join(text, fname):
-    "Return text with all the file root elements added"
-    text = json.loads(text)
-    fname = json.loads(fname)
-    for key, value in fname.items():
-        if key in text:
-            if isinstance(text[key], dict):
-                text[key] = [text[key], value]
-            else:
-                text[key] += value
-        elif isinstance(value, list):
-            text[key] = value
-        else:
-            text.update(value)
-    return json.dumps(text, ensure_ascii=False)
 
 
 def apply_replacements(text, replacements):
@@ -213,6 +190,37 @@ def read(fname):
     else:
         with open(fname) as fin:
             return fin.read()
+
+
+def read_multiple_files(input):
+    "Return a text with all the input files merged"
+    text = None
+
+    for fname in input:
+        fname = read(fname)
+        if text is None:
+            text = fname
+            continue
+        text = join(text, fname)
+
+    return text
+
+
+def join(text, fname):
+    "Return text with all the file root elements added"
+    text = json.loads(text)
+    fname = json.loads(fname)
+    for key, value in fname.items():
+        if key in text:
+            if isinstance(text[key], dict):
+                text[key] = [text[key], value]
+            else:
+                text[key] += value
+        elif isinstance(value, list):
+            text[key] = value
+        else:
+            text.update(value)
+    return json.dumps(text, ensure_ascii=False)
 
 
 def write(fname, text):
