@@ -197,14 +197,15 @@ def get_args():
         help='input file (read from input.json if not given)')
     add('-o', '--output', default="output.json",
         help='output file (write to output.json if not given)')
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-ro', '--replace-objects', nargs='+',
+        help='replace only the provided objects default: publicAccess, userAccesses, userGroupAccesses')
+    group.add_argument('--remove-objects', nargs='+',
+        help='delete the objects in the provided .json using its id. Example: userGroupAccesses')
     add('-ua', '--userAccesses', dest="userAccesses", default="userAccesses.json",
         help='userAccesses file (read from userAccesses.json if not given)')
     add('-uga', '--userGroupAccesses', dest="userGroupAccesses", default="userGroupAccesses.json",
         help='userGroupAccesses file (read from userGroupAccesses.json if not given)')
-    add('-ro', '--replace-objects', nargs='+',
-        help='replace only the provided objects default: publicAccess, userAccesses, userGroupAccesses')
-    add('--remove-objects', nargs='+',
-        help='delete the objects in the provided .json using its id. Example: userGroupAccesses')
     add('--public-access', default='--------', dest="publicAccess",
         help='set public permissions. Default: no public access (--------)')
     add('--remove-ous', action='store_true',
