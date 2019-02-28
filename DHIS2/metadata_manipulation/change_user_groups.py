@@ -62,6 +62,9 @@ def main():
     for dhis_object in input_objects:
         dhis_object_old = json.load(open(args.input, encoding="utf-8")).get(dhis_object)
 
+        if len(replacements) > 0:
+            dhis_object_old = recursive_action(replace_ids, args, dhis_object_old, replacements)
+
         if dhis_object in dhis_objects:
             if not dhis_object_old:
                 print('WARN: Ignoring not found object %s' % dhis_object)
@@ -75,8 +78,6 @@ def main():
                     action(args, element, modifiable_objects)
 
                     remove_ous_and_catcombos(args, dhis_object, element)
-
-                    replace_ids(args, element, replacements)
 
                     elements_new.append(element)
 
@@ -94,8 +95,11 @@ def validate_args(args):
 
 
 def replace_ids(args, element, replacements):
-    if args.replace_ids and element['id'] in replacements.keys():
-        element['id'] = replacements.get(element['id'])
+    if isinstance(element, dict):
+        for key in element.keys():
+            for replacement_key in replacements.keys():
+                if isinstance(element[key], str) and replacement_key in element[key]:
+                    element[key] = element[key].replace(replacement_key, replacements[replacement_key])
 
 
 def get_input_objects(input, excluded_objects):
@@ -214,7 +218,7 @@ def get_args():
     add('--exclude', nargs='+', default=[],
         help='DHIS2 objects to exclude. Default: None')
     add('-r', '--recursive', dest='recursive', action="store_true",
-        help='DHIS2 objects to exclude. Default: None')
+        help='apply replace or remove actions recursively.')
     return parser.parse_args()
 
 
