@@ -1,0 +1,89 @@
+{
+  "users": [{
+    "lastUpdated": "2018-12-14T15:44:49.211",
+    "id": "id1",
+    "href": "localhost",
+    "created": "2018-12-07T16:18:12.794",
+    "externalAccess": false,
+    "lastCheckedInterpretations": "2018-12-14T15:44:49.211",
+    "favorite": false,
+    "access": {
+      "read": true,
+      "update": true,
+      "externalize": true,
+      "delete": true,
+      "write": true,
+      "manage": true
+    },
+    "userCredentials": {
+      "lastUpdated": "2018-12-10T11:41:44.039",
+      "created": "2018-12-10T11:41:44.039",
+      "lastLogin": "2018-12-14T15:45:35.979",
+      "externalAuth": false,
+      "externalAccess": false,
+      "disabled": false,
+      "twoFA": false,
+      "passwordLastUpdated": "2018-12-14T11:55:57.691",
+      "invitation": false,
+      "selfRegistered": false,
+      "favorite": false,
+      "userInfo": {
+        "id": "id user info"
+      },
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": true,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "favorites": [],
+      "cogsDimensionConstraints": [],
+      "catDimensionConstraints": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userRoles": [
+        {
+          "id": "rol1"
+        },
+        {
+          "id": "rol2"
+        },
+        {
+          "id": "rol3"
+        }
+      ],
+      "userAccesses": []
+    },
+    "favorites": [],
+    "teiSearchOrganisationUnits": [
+      {
+        "id": "teiuid"
+      }
+    ],
+    "translations": [],
+    "organisationUnits": [
+      {
+        "id": "orgunituid"
+      }
+    ],
+    "dataViewOrganisationUnits": [
+      {
+        "id": "dataViewOrganisationUnitsuid"
+      }
+    ],
+    "userGroupAccesses": [],
+    "attributeValues": [],
+    "userGroups": [
+      {
+        "id": "userGroups1"
+      },
+      {
+        "id": "userGroups2"
+      }
+    ],
+    "userAccesses": []
+  }]
+}

@@ -1,0 +1,18 @@
+{
+  "pager": {
+  "page": 1,
+  "pageCount": 2,
+  "total": 2,
+  "pageSize": 50,
+  "nextPage": "localhost"
+  },
+  "categoryOptions": [
+  {
+    "id": "uid1",
+    "displayName": "Option1"
+  },
+  {
+    "id": "uid2",
+    "displayName": "Option2"
+  }]
+}
