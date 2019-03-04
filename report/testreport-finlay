@@ -1,0 +1,60 @@
+#!/bin/bash
+
+readonly time=$(date +%Y%m%d-%s)
+readonly log_dir="$(dirname $0)/log"
+readonly raw_log_file=$(mktemp)
+
+
+usage="
+ \n This is a bash script that estimates the size of:  \n
+ - each directories at /home (always) \n 
+ - each directories at [full path] directories (optional) \n
+ \n
+ Usage: ./script [full path 1] [full path 2] ...\n
+ [full path]: Write absolute path. But do not write last forward slash '/' \n
+ Example: ./script /mnt/big1 \n
+"
+
+if [ "$1" = "--help" -o "$1" = "-h" ]
+then
+       echo -e $usage
+       exit
+fi
+
+echo `hostname`  "- user report" > $raw_log_file
+
+# first, collect space for each path of each argument into final log file
+for var in "$@"
+do
+    chars=$(echo  $var | wc -m )
+    echo >> $raw_log_file
+    echo "# ${var##*/} :" | tr [[:lower:]] [[:upper:]]  >> $raw_log_file
+    du -xhs $var/* | awk '{print substr($2, $chars + 2,length($2)-1)  "\t" $1}' >> $raw_log_file
+done
+
+
+# colect space per user in /home into final log file
+colect() 
+{
+cd /home
+echo >> $raw_log_file 
+echo "# HOME :" >> $raw_log_file
+du -xhs * | awk '{print $2 "\t" $1 }' >> $raw_log_file
+
+echo ""  >> $raw_log_file
+echo "Total, used and free space of the whole machine:"  >> $raw_log_file
+df -h    >> $raw_log_file
+}
+
+
+send_notification()
+{ 
+  subject="" 
+  body=""
+  echo  "$subject;$body" >> "$raw_log_file"
+  wget -O /dev/null -q "http://arquimedes:1396" --post-file=$raw_log_file
+}
+
+colect
+send_notification
+
