@@ -207,7 +207,7 @@ def get_args():
     add('-o', '--output', default="output.json",
         help='output file (write to output.json if not given)')
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('-ro', '--replace-objects', nargs='+',
+    group.add_argument('--replace-objects', nargs='+',
         help='replace only the provided objects default: publicAccess, userAccesses, userGroupAccesses')
     group.add_argument('--remove-objects', nargs='+',
         help='delete the objects in the provided .json using its id. Example: userGroupAccesses')
