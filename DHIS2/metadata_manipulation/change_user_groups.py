@@ -37,8 +37,6 @@ all_replaceable_objects = [
 def main():
     args = get_args()
 
-    validate_args(args)
-
     dhis_objects = [item for item in args.apply if item not in args.exclude]
 
     if args.remove_objects:
@@ -93,12 +91,6 @@ def main():
             output[dhis_object] = dhis_object_old
 
     json.dump(output, open(args.output, 'wt'), ensure_ascii=False, indent=2)
-
-
-def validate_args(args):
-    if args.remove_objects and args.replace_objects:
-        print('Error The options --replace-objects and --remove-objects are mutually exclusive.')
-        exit(0)
 
 
 def replace_ids(args, element, replacements):
