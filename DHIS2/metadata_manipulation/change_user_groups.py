@@ -53,14 +53,21 @@ def main():
 
     output = {}
     replacements = {}
+    removable_ids = {}
 
     if args.replace_ids:
         replacements = get_replacements(args.replace_ids)
+
+    if args.remove_ids:
+        removable_ids = args.remove_ids
 
     input_objects = get_input_objects(args.input, args.exclude)
 
     for dhis_object in input_objects:
         dhis_object_old = json.load(open(args.input, encoding="utf-8")).get(dhis_object)
+
+        if len(removable_ids) > 0:
+            dhis_object_old = recursive_action(remove_ids, args, dhis_object_old, removable_ids)
 
         if len(replacements) > 0:
             dhis_object_old = recursive_action(replace_ids, args, dhis_object_old, replacements)
@@ -100,6 +107,16 @@ def replace_ids(args, element, replacements):
             for replacement_key in replacements.keys():
                 if isinstance(element[key], str) and replacement_key in element[key]:
                     element[key] = element[key].replace(replacement_key, replacements[replacement_key])
+
+
+def remove_ids(args, element, removable_ids):
+    if isinstance(element, list):
+        for child in element[:]:
+            if isinstance(child, dict) and "id" in child.keys() and child["id"] in removable_ids:
+                element.remove(child)
+    elif isinstance(element, dict) and "id" in element.keys() and element["id"] in removable_ids:
+        element["id"] = None
+        element.pop("id", None)
 
 
 def get_input_objects(input, excluded_objects):
@@ -214,6 +231,8 @@ def get_args():
         help='remove catcombos assignment from programs')
     add('--replace-ids', nargs='+', metavar='FROM TO', default=[],
         help='ids to replace. NOTE: references are not updated!!!')
+    add('--remove-ids', nargs='+', metavar='FROM TO', default=[],
+        help='ids to remove. NOTE: Remove the entire object')
     add('--apply-to-objects', dest='apply', nargs='+', default=dhis_objects,
         help='DHIS2 objects to include. Default: All')
     add('--exclude', nargs='+', default=[],
