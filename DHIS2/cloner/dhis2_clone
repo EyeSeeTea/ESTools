@@ -291,7 +291,7 @@ def empty_db(db_local):
     db_name = db_local.split('/')[-1]
     postgis_elements = {'geography_columns', 'geometry_columns',
                         'raster_columns', 'raster_overviews',
-                        'spatial_ref_sys'}
+                        'spatial_ref_sys', 'pg_stat_statements'}
 
     with psycopg2.connect(db_local) as conn:
         with conn.cursor() as cur:
