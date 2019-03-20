@@ -52,7 +52,7 @@ syncPath(){
                 [[ "$file_timestamp" -lt "$local_file_timestamp" ]];then
                         echo "Already exist: $filename"
                 #Ignore files with 0kb.
-                elif [[ "$size" == 0 -a ${type:0:1} == "-" ]]
+                elif [[ "$size" == 0 ]] && [[ ${type:0:1} == "-" ]]
                 then
                         echo "Ignore File with 0kb: $filename"
                 else
