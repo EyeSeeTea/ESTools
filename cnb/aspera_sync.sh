@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+alias aspera=~/.aspera/cli/bin/aspera 
 
 REMOTE_HOST="fileshare.rediris.es"
 REMOTE_USER="adrian@eyeseetea.com"
