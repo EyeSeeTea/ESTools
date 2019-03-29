@@ -167,7 +167,7 @@ def decode_filter(expression):
 def read_filters(fname):
     "Return list of filters [(part, field, regexp), ...] from file fname"
     filters = []
-    for line_dirty in open(fname):
+    for line_dirty in open(fname, encoding="utf-8"):
         line = line_dirty.strip()
         if line and not line.startswith('#'):
             filters.append(decode_filter(line))
@@ -185,10 +185,10 @@ def read(fname):
         zf = zipfile.ZipFile(fname)
         assert len(zf.filelist) == 1, \
             'Zip file "%s" should contain only one file' % fname
-        with zf.open(zf.filelist[0]) as fin:
+        with zf.open(zf.filelist[0], encoding="utf-8") as fin:
             return fin.read().decode('utf8')
     else:
-        with open(fname) as fin:
+        with open(fname, encoding="utf-8") as fin:
             return fin.read()
 
 
@@ -225,7 +225,7 @@ def join(text, fname):
 
 def write(fname, text):
     if fname:
-        with open(fname, 'wt') as fout:
+        with open(fname, 'wt', encoding="utf-8") as fout:
             fout.write(text)
     else:
         print(text, end='')
