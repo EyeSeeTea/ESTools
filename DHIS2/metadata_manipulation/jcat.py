@@ -390,7 +390,7 @@ def sort(x):
 
 def jstr(x):
     "Return a json representation of the given string"
-    return '"%s"' % x.replace('"', '\\"').replace('\n', '\\n')
+    return '"%s"' % x.replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r')
 
 
 def sort_key(x):
