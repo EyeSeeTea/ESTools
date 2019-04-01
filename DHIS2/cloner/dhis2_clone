@@ -57,7 +57,7 @@ def main():
         run_sql(db_local, args.post_sql)
 
     if args.post_clone_scripts:
-        execute_scripts(cfg['post_clone_scripts_dir'])
+        execute_post_clone_scripts(cfg['post_clone_scripts_dir'])
 
     if not args.manual_restart:
         start_tomcat(dir_local)
@@ -69,6 +69,10 @@ def main():
                                 , import_dir)
         else:
             log('No postprocessing done.')
+
+        if args.post_clone_scripts:
+            execute_scripts_post_tomcat(cfg['post_clone_scripts_dir'])
+
     else:
         log('Server not started automatically, as requested.')
         log('No postprocessing done.')
@@ -225,10 +229,23 @@ def magenta(txt):
     return '\x1b[35m%s\x1b[0m' % txt
 
 
-def execute_scripts(dirname):
+def execute_post_clone_scripts(dirname):
+    execute_scripts(dirname, False)
+
+
+def execute_scripts_post_tomcat(dirname):
+    execute_scripts(dirname, True)
+
+
+def execute_scripts(dirname, is_post_tomcat):
     is_script = lambda fname: os.path.splitext(fname)[-1] in ['.sh', '.py']
     for script in sorted(filter(is_script, os.listdir(dirname))):
-        run('"%s/%s"' % (dirname, script))
+        if is_post_tomcat:
+            if script.startswith("post"):
+                run('"%s/%s"' % (dirname, script))
+        else:
+            if not script.startswith("post"):
+                run('"%s/%s"' % (dirname, script))
 
 
 def start_tomcat(server_path):
