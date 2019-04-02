@@ -69,6 +69,10 @@ def main():
                                 , import_dir)
         else:
             log('No postprocessing done.')
+
+        if args.post_clone_scripts:
+            execute_scripts(cfg['post_clone_scripts_dir'], is_post_tomcat=True)
+
     else:
         log('Server not started automatically, as requested.')
         log('No postprocessing done.')
@@ -225,9 +229,14 @@ def magenta(txt):
     return '\x1b[35m%s\x1b[0m' % txt
 
 
-def execute_scripts(dirname):
+def execute_scripts(dirname, is_post_tomcat=False):
     is_script = lambda fname: os.path.splitext(fname)[-1] in ['.sh', '.py']
-    for script in sorted(filter(is_script, os.listdir(dirname))):
+    is_normal = lambda fname: not fname.startswith("post")
+    is_post = lambda fname: fname.startswith("post")
+    applied_filter = is_post if is_post_tomcat else is_normal
+    files_list = filter(applied_filter, os.listdir(dirname))
+
+    for script in sorted(filter(is_script, files_list)):
         run('"%s/%s"' % (dirname, script))
 
 
