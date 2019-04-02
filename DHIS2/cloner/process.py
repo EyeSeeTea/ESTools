@@ -125,7 +125,7 @@ def select_users(api, usernames, users_from_group_names):
                   get_users_by_group_names(api, users_from_group_names))
 
 def change_name(api, newname):
-    "Return users with from usernames and from groups users_from_group_names"
+    "Change server name"
     return change_server_name(api, newname)
 
 
@@ -190,7 +190,6 @@ def get_roles(user):
 
 
 def change_server_name(api, new_name):
-    "Return list of users corresponding to the given usernames"
     debug('Changing server name to: %s' % new_name)
 
     if not new_name:
