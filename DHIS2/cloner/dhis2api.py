@@ -34,6 +34,10 @@ class Dhis2Api:
     def get(self, path, params=None):
         return self._request('get', path, params=params)
 
+    def post_text(self, path, payload):
+        header = {'content-type': 'text/plain'}
+        return self._request('post', path, headers=header, data=payload)
+
     def post(self, path, payload, params=None):
         return self._request('post', path, params=params, json=payload)
 

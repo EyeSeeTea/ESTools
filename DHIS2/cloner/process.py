@@ -79,6 +79,9 @@ def execute(api, entry, cfg, import_dir):
     elif contains('selectFiles'):
         files = ['%s/%s' % (import_dir, filename) for filename in get('selectFiles')]
         debug('Files selected: %s' % ', '.join(x for x in files))
+    elif contains("changeServerName"):
+        result = change_name(api, get('changeServerName'))
+        debug('change server result: %s' % result['message'])
     else:
         debug('No selection.')
         return
@@ -95,6 +98,8 @@ def execute(api, entry, cfg, import_dir):
         add_roles_from_template(api, users, get('addRolesFromTemplate'))
     elif action == 'import':
         import_json(api, files)
+    elif action == 'changeServerName':
+        return
     else:
         raise ValueError('Unknown action: %s' % action)
 
@@ -118,6 +123,10 @@ def select_users(api, usernames, users_from_group_names):
     "Return users with from usernames and from groups users_from_group_names"
     return unique(get_users_by_usernames(api, usernames) +
                   get_users_by_group_names(api, users_from_group_names))
+
+def change_name(api, newname):
+    "Return users with from usernames and from groups users_from_group_names"
+    return change_server_name(api, newname)
 
 
 def activate(api, users):
@@ -178,6 +187,18 @@ def get_username(user):
 
 def get_roles(user):
     return user['userCredentials']['userRoles']
+
+
+def change_server_name(api, new_name):
+    "Return list of users corresponding to the given usernames"
+    debug('Changing server name to: %s' % new_name)
+
+    if not new_name:
+        return []
+
+    response = api.post_text('/26/systemSettings/applicationTitle',
+                        '%s' % ''.join(new_name))
+    return response
 
 
 def get_users_by_usernames(api, usernames):
