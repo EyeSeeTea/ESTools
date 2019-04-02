@@ -248,10 +248,11 @@ def change_server_name(api, new_name):
     debug('Changing server name to: %s' % new_name)
 
     if not new_name:
+        debug('No new name provided - Cancelling server name change')
         return []
 
-    response = api.post_text('/26/systemSettings/applicationTitle',
-                        '%s' % ''.join(new_name))
+    response = api.post('/26/systemSettings/applicationTitle',
+                        '%s' % ''.join(new_name), contenttype='text/plain')
 
     debug('change server result: %s' % response['message'])
 
