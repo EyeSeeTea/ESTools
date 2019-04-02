@@ -79,9 +79,9 @@ def execute(api, entry, cfg, import_dir):
     elif contains('selectFiles'):
         files = ['%s/%s' % (import_dir, filename) for filename in get('selectFiles')]
         debug('Files selected: %s' % ', '.join(x for x in files))
-    elif contains("changeServerName"):
-        result = change_name(api, get('changeServerName'))
-        debug('change server result: %s' % result['message'])
+    elif contains("selectServer"):
+        servers = get('selectServer')
+        debug('Servers selected: %s' % ', '.join(x for x in servers))
     else:
         debug('No selection.')
         return
@@ -99,7 +99,7 @@ def execute(api, entry, cfg, import_dir):
     elif action == 'import':
         import_json(api, files)
     elif action == 'changeServerName':
-        return
+        change_server_name(api, get('changeServerName'))
     else:
         raise ValueError('Unknown action: %s' % action)
 
@@ -123,10 +123,6 @@ def select_users(api, usernames, users_from_group_names):
     "Return users with from usernames and from groups users_from_group_names"
     return unique(get_users_by_usernames(api, usernames) +
                   get_users_by_group_names(api, users_from_group_names))
-
-def change_name(api, newname):
-    "Change server name"
-    return change_server_name(api, newname)
 
 
 def activate(api, users):
@@ -189,17 +185,6 @@ def get_roles(user):
     return user['userCredentials']['userRoles']
 
 
-def change_server_name(api, new_name):
-    debug('Changing server name to: %s' % new_name)
-
-    if not new_name:
-        return []
-
-    response = api.post_text('/26/systemSettings/applicationTitle',
-                        '%s' % ''.join(new_name))
-    return response
-
-
 def get_users_by_usernames(api, usernames):
     "Return list of users corresponding to the given usernames"
     debug('Get users: usernames=%s' % usernames)
@@ -257,6 +242,20 @@ def import_json(api, files, importStrategy='CREATE_AND_UPDATE', mergeMode='MERGE
                  summary.deleted, summary.ignored))
         responses[json_file] = summary
     return responses
+
+
+def change_server_name(api, new_name):
+    debug('Changing server name to: %s' % new_name)
+
+    if not new_name:
+        return []
+
+    response = api.post_text('/26/systemSettings/applicationTitle',
+                        '%s' % ''.join(new_name))
+
+    debug('change server result: %s' % response['message'])
+
+    return response
 
 
 def unique(xs):
