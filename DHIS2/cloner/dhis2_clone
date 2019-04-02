@@ -57,7 +57,7 @@ def main():
         run_sql(db_local, args.post_sql)
 
     if args.post_clone_scripts:
-        execute_post_clone_scripts(cfg['post_clone_scripts_dir'])
+        execute_scripts(cfg['post_clone_scripts_dir'])
 
     if not args.manual_restart:
         start_tomcat(dir_local)
@@ -71,7 +71,7 @@ def main():
             log('No postprocessing done.')
 
         if args.post_clone_scripts:
-            execute_scripts_post_tomcat(cfg['post_clone_scripts_dir'])
+            execute_scripts(cfg['post_clone_scripts_dir'], is_post_tomcat=True)
 
     else:
         log('Server not started automatically, as requested.')
@@ -227,14 +227,6 @@ def log(txt):
 
 def magenta(txt):
     return '\x1b[35m%s\x1b[0m' % txt
-
-
-def execute_post_clone_scripts(dirname):
-    execute_scripts(dirname)
-
-
-def execute_scripts_post_tomcat(dirname):
-    execute_scripts(dirname, is_post_tomcat=True)
 
 
 def execute_scripts(dirname, is_post_tomcat=False):
