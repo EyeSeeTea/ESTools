@@ -231,8 +231,10 @@ def magenta(txt):
 
 def execute_scripts(dirname, is_post_tomcat=False):
     is_script = lambda fname: os.path.splitext(fname)[-1] in ['.sh', '.py']
+    is_normal = lambda fname: not fname.startswith("post")
     is_post = lambda fname: fname.startswith("post")
-    files_list = filter(is_post, os.listdir(dirname)) if is_post_tomcat else os.listdir(dirname)
+    applied_filter = is_post if is_post_tomcat else is_normal
+    files_list = filter(applied_filter, os.listdir(dirname))
 
     for script in sorted(filter(is_script, files_list)):
         run('"%s/%s"' % (dirname, script))
