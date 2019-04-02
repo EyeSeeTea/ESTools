@@ -230,22 +230,20 @@ def magenta(txt):
 
 
 def execute_post_clone_scripts(dirname):
-    execute_scripts(dirname, False)
+    execute_scripts(dirname)
 
 
 def execute_scripts_post_tomcat(dirname):
-    execute_scripts(dirname, True)
+    execute_scripts(dirname, is_post_tomcat=True)
 
 
-def execute_scripts(dirname, is_post_tomcat):
+def execute_scripts(dirname, is_post_tomcat=False):
     is_script = lambda fname: os.path.splitext(fname)[-1] in ['.sh', '.py']
-    for script in sorted(filter(is_script, os.listdir(dirname))):
-        if is_post_tomcat:
-            if script.startswith("post"):
-                run('"%s/%s"' % (dirname, script))
-        else:
-            if not script.startswith("post"):
-                run('"%s/%s"' % (dirname, script))
+    is_post = lambda fname: fname.startswith("post")
+    files_list = filter(is_post, os.listdir(dirname)) if is_post_tomcat else os.listdir(dirname)
+
+    for script in sorted(filter(is_script, files_list)):
+        run('"%s/%s"' % (dirname, script))
 
 
 def start_tomcat(server_path):
