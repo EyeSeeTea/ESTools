@@ -79,6 +79,9 @@ def execute(api, entry, cfg, import_dir):
     elif contains('selectFiles'):
         files = ['%s/%s' % (import_dir, filename) for filename in get('selectFiles')]
         debug('Files selected: %s' % ', '.join(x for x in files))
+    elif contains("selectServer"):
+        servers = get('selectServer')
+        debug('Servers selected: %s' % ', '.join(x for x in servers))
     else:
         debug('No selection.')
         return
@@ -95,6 +98,8 @@ def execute(api, entry, cfg, import_dir):
         add_roles_from_template(api, users, get('addRolesFromTemplate'))
     elif action == 'import':
         import_json(api, files)
+    elif action == 'changeServerName':
+        change_server_name(api, get('changeServerName'))
     else:
         raise ValueError('Unknown action: %s' % action)
 
@@ -237,6 +242,21 @@ def import_json(api, files, importStrategy='CREATE_AND_UPDATE', mergeMode='MERGE
                  summary.deleted, summary.ignored))
         responses[json_file] = summary
     return responses
+
+
+def change_server_name(api, new_name):
+    debug('Changing server name to: %s' % new_name)
+
+    if not new_name:
+        debug('No new name provided - Cancelling server name change')
+        return []
+
+    response = api.post('/26/systemSettings/applicationTitle',
+                        '%s' % ''.join(new_name), contenttype='text/plain')
+
+    debug('change server result: %s' % response['message'])
+
+    return response
 
 
 def unique(xs):

@@ -1,0 +1,231 @@
+{
+  "users": [
+    {
+      "lastUpdated": "2019-01-14T14:43:15.119",
+      "id": "user2uid",
+      "href": "localhost",
+      "created": "2018-11-26T13:04:41.215",
+      "externalAccess": false,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": true,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "userCredentials": {
+        "lastUpdated": "2018-11-26T13:04:41.075",
+        "id": "userCredentialsuid",
+        "created": "2018-11-26T13:04:41.075",
+        "lastLogin": "2019-01-04T12:32:31.329",
+        "externalAuth": false,
+        "externalAccess": false,
+        "disabled": true,
+        "twoFA": false,
+        "passwordLastUpdated": "2018-12-21T16:58:01.685",
+        "invitation": false,
+        "selfRegistered": false,
+        "favorite": false,
+        "userInfo": {
+          "id": "userinfouid"
+        },
+        "access": {
+          "read": true,
+          "update": true,
+          "externalize": true,
+          "delete": true,
+          "write": true,
+          "manage": true
+        },
+        "favorites": [],
+        "cogsDimensionConstraints": [],
+        "catDimensionConstraints": [],
+        "translations": [],
+        "userGroupAccesses": [],
+        "attributeValues": [],
+        "userRoles": [
+          {
+            "id": "userRoles1"
+          },
+          {
+            "id": "userRoles2"
+          },
+          {
+            "id": "userRoles3"
+          },
+          {
+            "id": "userRoles4"
+          },
+          {
+            "id": "userRoles5"
+          },
+          {
+            "id": "userRoles6"
+          },
+          {
+            "id": "userRoles7"
+          },
+          {
+            "id": "userRoles8"
+          },
+          {
+            "id": "userRoles9"
+          }
+        ],
+        "userAccesses": []
+      },
+      "favorites": [],
+      "teiSearchOrganisationUnits": [],
+      "translations": [],
+      "organisationUnits": [
+        {
+          "id": "organisationUnitsuid"
+        }
+      ],
+      "dataViewOrganisationUnits": [
+        {
+          "id": "dataViewOrganisationUnitsuid"
+        }
+      ],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userGroups": [
+        {
+          "id": "userGroups1"
+        },
+        {
+          "id": "userGroups2"
+        },
+        {
+          "id": "userGroups3"
+        },
+        {
+          "id": "userGroups4"
+        },
+        {
+          "id": "userGroups5"
+        },
+        {
+          "id": "userGroups6"
+        },
+        {
+          "id": "userGroups7"
+        },
+        {
+          "id": "userGroups8"
+        },
+        {
+          "id": "userGroups9"
+        },
+        {
+          "id": "userGroups10"
+        }
+      ],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2018-12-14T15:44:49.211",
+      "id": "id1",
+      "href": "localhost",
+      "created": "2018-12-07T16:18:12.794",
+      "externalAccess": false,
+      "lastCheckedInterpretations": "2018-12-14T15:44:49.211",
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": true,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "userCredentials": {
+        "lastUpdated": "2018-12-10T11:41:44.039",
+        "created": "2018-12-10T11:41:44.039",
+        "lastLogin": "2018-12-14T15:45:35.979",
+        "externalAuth": false,
+        "externalAccess": false,
+        "disabled": false,
+        "twoFA": false,
+        "passwordLastUpdated": "2018-12-14T11:55:57.691",
+        "invitation": false,
+        "selfRegistered": false,
+        "favorite": false,
+        "userInfo": {
+          "id": "id user info"
+        },
+        "access": {
+          "read": true,
+          "update": true,
+          "externalize": true,
+          "delete": true,
+          "write": true,
+          "manage": true
+        },
+        "favorites": [],
+        "cogsDimensionConstraints": [],
+        "catDimensionConstraints": [],
+        "translations": [],
+        "userGroupAccesses": [],
+        "attributeValues": [],
+        "userRoles": [
+          {
+            "id": "rol1"
+          },
+          {
+            "id": "rol2"
+          },
+          {
+            "id": "rol3"
+          }
+        ],
+        "userAccesses": []
+      },
+      "favorites": [],
+      "teiSearchOrganisationUnits": [
+        {
+          "id": "teiuid"
+        }
+      ],
+      "translations": [],
+      "organisationUnits": [
+        {
+          "id": "orgunituid"
+        }
+      ],
+      "dataViewOrganisationUnits": [
+        {
+          "id": "dataViewOrganisationUnitsuid"
+        }
+      ],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userGroups": [
+        {
+          "id": "userGroups1"
+        },
+        {
+          "id": "userGroups2"
+        }
+      ],
+      "userAccesses": []
+    }
+  ],
+  "page": 1,
+  "pageCount": 2,
+  "total": 2,
+  "pageSize": 50,
+  "nextPage": "localhost",
+  "categoryOptions": [
+    {
+      "id": "uid1",
+      "displayName": "Option1"
+    },
+    {
+      "id": "uid2",
+      "displayName": "Option2"
+    }
+  ]
+}

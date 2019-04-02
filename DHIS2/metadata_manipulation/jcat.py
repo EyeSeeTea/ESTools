@@ -34,12 +34,12 @@ argument.
 It can be handy to manipulate metadata exported from dhis2, so it can
 be imported in another instance.
 """
-
 import sys
 import re
 from collections import namedtuple
 from argparse import ArgumentParser, RawDescriptionHelpFormatter as fmt
 import zipfile
+import json
 
 Filter = namedtuple('Filter', ['nesting', 'part', 'field', 'regexp'])
 
@@ -51,7 +51,8 @@ sort_fields = []
 def main():
     args = get_args()
 
-    text = read(args.file)
+    text = get_text_from_input(args)
+
     text = expand(compact(text))  # normalize spacing
 
     text = apply_replacements(text, args.replacements)
@@ -83,7 +84,8 @@ def get_args():
 
     parser = ArgumentParser(description=__doc__, formatter_class=fmt)
     add = parser.add_argument  # shortcut
-    add('file', nargs='?', help='input file (read from stdin if not given)')
+    add('input', nargs='*', help='input single or multiple files')
+
     add('-o', '--output', help='output file (write to stdout if not given')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--filters', nargs='+', metavar='FILTER',
@@ -105,15 +107,31 @@ def get_args():
 
     sort_fields = args.sort_fields
 
-    if file_arg_maybe_misplaced(args.file, args.filters):
+    validate_input_file(args.input)
+
+    if file_arg_maybe_misplaced(args.input, args.filters):
         print('Warning: no file given, but one of the filters looks '
               'like a filename.')
 
     return args
 
 
+def validate_input_file(input):
+    if input is None:
+        print('Error: a input file must be provided. Read jcat -h for more info.')
+        exit(0)
+
+
 def file_arg_maybe_misplaced(fname, filters):
     return not fname and filters and not all(':' in x for x in filters)
+
+
+def get_text_from_input(args):
+    if len(args.input) > 0:
+        text = read_multiple_files(args.input)
+    else:
+        text = read(args.input)
+    return text
 
 
 def apply_replacements(text, replacements):
@@ -149,7 +167,7 @@ def decode_filter(expression):
 def read_filters(fname):
     "Return list of filters [(part, field, regexp), ...] from file fname"
     filters = []
-    for line_dirty in open(fname):
+    for line_dirty in open(fname, encoding="utf-8"):
         line = line_dirty.strip()
         if line and not line.startswith('#'):
             filters.append(decode_filter(line))
@@ -167,16 +185,47 @@ def read(fname):
         zf = zipfile.ZipFile(fname)
         assert len(zf.filelist) == 1, \
             'Zip file "%s" should contain only one file' % fname
-        with zf.open(zf.filelist[0]) as fin:
+        with zf.open(zf.filelist[0], encoding="utf-8") as fin:
             return fin.read().decode('utf8')
     else:
-        with open(fname) as fin:
+        with open(fname, encoding="utf-8") as fin:
             return fin.read()
+
+
+def read_multiple_files(input):
+    "Return a text with all the input files merged"
+    text = None
+
+    for fname in input:
+        fname = read(fname)
+        if text is None:
+            text = fname
+            continue
+        text = join(text, fname)
+
+    return text
+
+
+def join(text, fname):
+    "Return text with all the file root elements added"
+    text = json.loads(text)
+    fname = json.loads(fname)
+    for key, value in fname.items():
+        if key in text:
+            if isinstance(text[key], dict):
+                text[key] = [text[key], value]
+            else:
+                text[key] += value
+        elif isinstance(value, list):
+            text[key] = value
+        else:
+            text.update(value)
+    return json.dumps(text, ensure_ascii=False)
 
 
 def write(fname, text):
     if fname:
-        with open(fname, 'wt') as fout:
+        with open(fname, 'wt', encoding="utf-8") as fout:
             fout.write(text)
     else:
         print(text, end='')
@@ -341,7 +390,8 @@ def sort(x):
 
 def jstr(x):
     "Return a json representation of the given string"
-    return '"%s"' % x.replace('"', '\\"').replace('\n', '\\n')
+    return '"%s"' % x.replace('\\"', '"').replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r')\
+        .replace('\t', '\\t').replace("''", "\'\'")
 
 
 def sort_key(x):
