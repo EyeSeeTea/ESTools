@@ -90,7 +90,7 @@ def main():
         else:
             output[dhis_object] = dhis_object_old
 
-    json.dump(output, open(args.output, 'wt'), ensure_ascii=False, indent=2)
+    json.dump(output, open(args.output, 'wt', encoding="utf-8"), ensure_ascii=False, indent=2)
 
 
 def replace_ids(args, element, replacements):
