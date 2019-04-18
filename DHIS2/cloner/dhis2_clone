@@ -19,11 +19,18 @@ import process
 
 TIME = time.strftime('%Y-%m-%d_%H%M')
 COLOR = True
+repodir = "."
+
+
+def import_github_json(repo_url, repo_destination, repo_branch, repo_path, import_dir):
+    command = ("bash import_git_files.sh %s %s %s %s %s" % (repo_url, repo_destination, repo_branch, repo_path, import_dir))
+    output, stderr = subprocess.Popen(command, shell=True).communicate()
+    print(output)
+    pass
 
 
 def main():
     global COLOR
-
     args = get_args()
     if args.no_color or not os.isatty(sys.stdout.fileno()):
         COLOR = False
@@ -34,6 +41,12 @@ def main():
     elif args.update_config:
         update_config(args.config)
         sys.exit()
+
+    import_dir = cfg['post_process_import_dir'] if 'post_process_import_dir' in cfg else None
+    if import_dir is not None and cfg['repo_url'] :
+        repo_url = cfg['repo_url']
+        repository_name = repo_url[repo_url.rindex("/")+1:repo_url.rindex(".")]
+        import_github_json(cfg['repo_url'], repository_name, cfg['repo_branch'], cfg['repo_folder'], import_dir)
 
     dir_local, dir_remote = cfg['server_dir_local'], cfg['server_dir_remote']
     db_local, db_remote = cfg['db_local'], cfg['db_remote']
@@ -61,7 +74,6 @@ def main():
 
     if not args.manual_restart:
         start_tomcat(dir_local)
-        import_dir = cfg['post_process_import_dir'] if 'post_process_import_dir' in cfg else None
         if args.no_postprocess:
             log('No postprocessing done, as requested.')
         elif 'api_local' in cfg and 'postprocess' in cfg:
