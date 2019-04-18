@@ -16,5 +16,6 @@ else
   debug "git clone -b $repo_branch $repo_url $repo_destination"
   git clone -b "$repo_branch" "$repo_url" "$repo_destination"
 fi
-pwd
-cp $repo_path/. $import_dir -r
+#copy files to import dir
+dir=`pwd`
+cp $dir"/"$repo_path/. $import_dir -r
