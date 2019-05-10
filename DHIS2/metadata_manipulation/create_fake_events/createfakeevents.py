@@ -77,7 +77,7 @@ def get_args():
     return args
 
 
-def create_tracked_entity_instance(trackedEntityInstanceUID, id, ou):
+def create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname):
     new_tracker_entity_instance = copy.deepcopy(tracker_entity_instance)
 
     new_tracker_entity_instance['trackedEntityInstance'] = trackedEntityInstanceUID
@@ -85,6 +85,7 @@ def create_tracked_entity_instance(trackedEntityInstanceUID, id, ou):
     for attribute in new_tracker_entity_instance['attributes']:
         if attribute['attribute'] is "AAkZm4ZxFw7":
             attribute['value'] = id
+    new_tracker_entity_instance['attributes'].append({'attribute': 'curur2uWaDy', 'value': ouname})
     return new_tracker_entity_instance
 
 
@@ -129,7 +130,7 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, post, fr
             ou = default_ou
             ouname = default_ouname
 
-        tracker_entity_instance_wrapper['trackedEntityInstances'].append(create_tracked_entity_instance(trackedEntityInstanceUID, id, ou))
+        tracker_entity_instance_wrapper['trackedEntityInstances'].append(create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname))
         enrollment_wrapper['enrollments'].append(create_enrollment(trackedEntityInstanceUID, enrollmentUID, ou))
         for key in event:
             value = event[key]
