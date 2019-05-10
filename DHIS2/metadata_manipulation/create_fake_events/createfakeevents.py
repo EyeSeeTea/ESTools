@@ -52,7 +52,7 @@ def main():
 
     api = dhis2api.Dhis2Api(args.server, args.username, args.password)
 
-    create_fake_events(json.load(open(args.input)), args.ETA_start_id, args.max_events, args.output_prefix, args.post)
+    create_fake_events(json.load(open(args.input)), args.ETA_start_id, args.max_events, args.output_prefix, args.post, args.from_files)
 
 
 def get_args():
@@ -68,6 +68,7 @@ def get_args():
     add('-p', '--password', help='password for authentication')
     add('-m', '--max-events', type=int,
         help='integer representing the max total number of events to be generated. events number will be min(m, number of events in events file)')
+    add('-k', '--from-files', action='store_true', help='upload from previously-generated files')
     add('-l', '--post', action='store_true', default=False, help='whether to post json files to remove server')
     add('-t', '--ETA-start-id', type=int, default=1000, help='integer representing the ETA tracked entity attribute registry id')
 
@@ -95,13 +96,13 @@ def create_enrollment(trackedEntityInstanceUID, enrollmentUID, ou):
     return new_enrollment
 
 
-def create_fake_events(events, ETA_start_id, max_events, output_prefix, post):
+def create_fake_events(events, ETA_start_id, max_events, output_prefix, post, from_files):
     id = ETA_start_id
     events_wrapper = {}
     events_wrapper['events'] = []
 
     for event in events['events']:
-        if max_events and max_events <= id-ETA_start_id:
+        if (max_events and max_events <= id-ETA_start_id) or from_files:
             break
         event.pop('coordinate', None)
         eventUID = get_code()
@@ -145,13 +146,14 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, post):
                 event[key] = enrollmentUID
         events_wrapper['events'].append(event)
 
-    tei_json = json.dumps(tracker_entity_instance_wrapper, ensure_ascii=False)
-    enrollments_json = json.dumps(enrollment_wrapper, ensure_ascii=False)
-    events_json = json.dumps(events_wrapper, ensure_ascii=False)
+    if not from_files:
+        tei_json = json.dumps(tracker_entity_instance_wrapper, ensure_ascii=False)
+        enrollments_json = json.dumps(enrollment_wrapper, ensure_ascii=False)
+        events_json = json.dumps(events_wrapper, ensure_ascii=False)
 
-    write("%s-teis.json" % output_prefix if output_prefix else output_prefix, tei_json)
-    write("%s-enrollments.json" % output_prefix if output_prefix else output_prefix, enrollments_json)
-    write("%s-events.json" % output_prefix if output_prefix else output_prefix, events_json)
+        write("%s-teis.json" % output_prefix if output_prefix else output_prefix, tei_json)
+        write("%s-enrollments.json" % output_prefix if output_prefix else output_prefix, enrollments_json)
+        write("%s-events.json" % output_prefix if output_prefix else output_prefix, events_json)
 
     if post:
         teis_json_payload = json.load(open("%s-teis.json" % output_prefix))
