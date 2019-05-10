@@ -18,8 +18,6 @@ import requests
 api = None
 user = ""
 password = ""
-teis_suffix = "teis"
-enrollments_suffix = "enrollments.json"
 
 ou1 = "D5I2C9AX5Su"
 ou1name = "ALERT Specialized Hospital"
@@ -33,9 +31,9 @@ default_ou = ou3
 default_ouname = ou3name
 
 #GLOBAL VARIABLES
-api_tei_endpoint = "/api/trackedEntityInstances/"
-api_enrollments_endpoint = "/api/enrollments/"
-api_events_endpoint = "/api/events"
+api_tei_endpoint = "/trackedEntityInstances"
+api_enrollments_endpoint = "/enrollments"
+api_events_endpoint = "/events"
 
 tracker_entity_instance = {"trackedEntity":"vKBCptkP30X","trackedEntityInstance":"%s", "orgUnit":"H8RixfF8ugH","attributes":[{"attribute":"AAkZm4ZxFw7","value":"%s"},{"attribute":"KJiJQCbeZUm"},{"attribute":"PWEXwF166y5"},{"attribute":"pEXMTtqbjKU","value":"1"}]}
 enrollment = {"trackedEntityInstance":"%s","enrollment":"%s", "program":"YGa3BmrwwiU","status":"ACTIVE","orgUnit":"H8RixfF8ugH","enrollmentDate":"2019-05-01","incidentDate":"2019-05-01"}
