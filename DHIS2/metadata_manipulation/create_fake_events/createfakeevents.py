@@ -104,6 +104,9 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, post):
         if max_events and max_events <= id-ETA_start_id:
             break
         event.pop('coordinate', None)
+        eventUID = get_code()
+        event['event'] = eventUID
+        event['href'] = "%s/%s" % (event['href'].rsplit('/', 1)[0], eventUID)
 
         id+=1
         print("%s" % id)
@@ -197,12 +200,6 @@ def get_code():
     output, error = process.communicate()
     print(output)
     return str(output).replace("b'", "").replace("\\n'", "")
-
-
-def post(call, url):
-    headers = {'Content-Type': 'application/json'}
-    response = requests.post(url, headers=headers, data=call, auth=(user, password))
-    print(response)
 
 
 if __name__ == '__main__':
