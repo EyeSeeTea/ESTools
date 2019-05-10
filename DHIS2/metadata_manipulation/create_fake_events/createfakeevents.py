@@ -107,6 +107,16 @@ def create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname, tei
         index = tei_position % (len(patient_ocupation_values))
         new_tracker_entity_instance['attributes'].append({"attribute": "KJiJQCbeZUm", "value": patient_ocupation_values[index]})
 
+        #age
+        if rand_percent(0.5):
+            new_tracker_entity_instance['attributes'].append({"attribute": "PWEXwF166y5", "value": "1"})
+            new_tracker_entity_instance['attributes'].append({"attribute": "jOs4ColrsGt", "value": random.randint(0, 100)})
+        else:
+            value = ( tei_position % 2 ) +1
+            new_tracker_entity_instance['attributes'].append({"attribute": "PWEXwF166y5", "value": "2"})
+            new_tracker_entity_instance['attributes'].append({"attribute": "lmxeOjRRNwB", "value": value})
+
+
     return new_tracker_entity_instance
 
 
