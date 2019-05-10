@@ -19,16 +19,10 @@ api = None
 user = ""
 password = ""
 
-ou1 = "D5I2C9AX5Su"
-ou1name = "ALERT Specialized Hospital"
-ou2 = "Kskp6Epquur"
-ou2name = "Dagemawi Minilik Hospital"
-ou3 = "wC99G51EbUw"
-ou3name = "St.Paul Hospital"
-ous = [ou1, ou2]
-ou_names = [ou1name, ou2name]
-default_ou = ou3
-default_ouname = ou3name
+ous = ["seHJdofSPcM","D5I2C9AX5Su","wP2zKq0dDpw","EC9GQrjJG0M","Kskp6Epquur","yWc1CTszR3s","svSQSBLTVz6","zEYrsiNUGIo","H8RixfF8ugH","NMCo2iNUAm7","cFWhCXPeazs","Zfw7xjrZuYI","hEAnDoYfUQz","ClT2KekuxPn","zXAaAXzwt4M","LbHui32cR3a","spoX966fQm4","morX5MCo9PO","g3AzPbBKS44","NWjR36LLNjt","bcy4159FETR","rtLnlu4GUI2","YOL13ptz4ef","SnYHrnchKjL","afomkmfy9xk","X8fwzT958By","wC99G51EbUw","UN3mvCgeGVT","PHAPQ5aPRNx","tT99dpUmSaa","RA5zxsbittk"]
+ou_names = ["AFR","ALERT Specialized Hospital","AMR","CHU P-Zaga","Dagemawi Minilik Hospital","EMR","EUR","Federal Democratic Republic of Ethiopia","Global","Kawolo General Hospital","Lubaga Hospital","Masaka Regional Referral Hospital","Mengo Hospital","Mubende Regional Referral Hospital","NA","Naguru China Uganda Hospital","Nay Pyi Taw General Hospital","North Okkalapa General Hospital","Onandjokwe Hospital","Oshakati State Hospital","Republic of Madagascar","Republic of Namibia","Republic of the Union of Myanmar","Republic of Uganda","SEAR","St. Francis Hospital Nsambya","St.Paul Hospital","St.Peter Tuberculosis Specialized Hospital","Tikur Anbessa Specialized Hospital","Tirunesh Beijing Hospital","WPR"]
+default_ou = "l5ionrzfp5t"
+default_ouname = "Yangon General Hospital"
 
 #GLOBAL VARIABLES
 api_tei_endpoint = "/trackedEntityInstances"
@@ -119,16 +113,11 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, post, fr
         print("enrollment:")
         enrollmentUID = get_code()
 
-        if event['orgUnit'] in ous:
-            index = ous.index(event['orgUnit'])
-            index +=1
-            if index == len(ous):
-                index = 0
-            ou = ous[index]
-            ouname = ou_names[index]
-        else:
-            ou = default_ou
-            ouname = default_ouname
+
+        index = (id-ETA_start_id) % (len(ous)-1)
+        ou = ous[index]
+        ouname = ou_names[index]
+        index += 1
 
         tracker_entity_instance_wrapper['trackedEntityInstances'].append(create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname))
         enrollment_wrapper['enrollments'].append(create_enrollment(trackedEntityInstanceUID, enrollmentUID, ou))
