@@ -148,12 +148,16 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, post):
 
     write("%s-teis.json" % output_prefix if output_prefix else output_prefix, tei_json)
     write("%s-enrollments.json" % output_prefix if output_prefix else output_prefix, enrollments_json)
-    write("%s-events" % output_prefix if output_prefix else output_prefix, events_json)
+    write("%s-events.json" % output_prefix if output_prefix else output_prefix, events_json)
 
     if post:
-        api.post(api_tei_endpoint, payload=tei_json)
-        api.post(api_enrollments_endpoint, payload=enrollments_json)
-        api.post(api_events_endpoint, payload=events_json)
+        teis_json_payload = json.load(open("%s-teis.json" % output_prefix))
+        enrollments_json_payload = json.load(open("%s-enrollments.json" % output_prefix))
+        events_json_payload = json.load(open("%s-events.json" % output_prefix))
+
+        api.post(api_tei_endpoint, payload=teis_json_payload)
+        api.post(api_enrollments_endpoint, payload=enrollments_json_payload)
+        api.post(api_events_endpoint, payload=events_json_payload)
 
     return
 
