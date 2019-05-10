@@ -1,65 +1,41 @@
 #!/usr/bin/env python3
 
 """
-Like cat on steroids to manipulate json files.
+Handy script to generate a set of events and upload them to a given server.
 
-Its main utility is to read json data like the one produced by the
-metadata export app in dhis2, and filter the different parts.
-
-It can read json from a file (even if it's a zip file) or from stdin,
-select a subset of sections, make string replacements, filter the
-different parts (letting only elements in them whose selected field
-matches the given regular expression), sort and compact the output.
-
-A simple filter would look like:
-  userGroups:name:HEP
-which would select from the "userGroups" section only the elements that
-have the letters "HEP" in some subfield called "name".
-
-Instead of "HEP" one can use any regular expression, for example "^HEP"
-if we want the name to start with "HEP", or "\.(dataentry|validator)$"
-if we want it to end exactly with ".dataentry" or ".validator".
-
-If instead of filtering sections we want to filter elements from
-subsections, the filter will have as many ":" at the beginning as the
-depth of the subsection. For example, to filter userGroupAccesses
-(which may be inside a userGroup) and select only those with a
-displayName that starts with HEP, the filter would look like:
-  ::userGroupAccesses:displayName:^HEP
-
-The filters can be either given with the --filters argument or read
-from a file that contains one filter per line, with the --filters-file
-argument.
-
-It can be handy to manipulate metadata exported from dhis2, so it can
-be imported in another instance.
+You can choose to upload them or to generate a couple of json files to be imported
 """
 import copy
 import sys
 from argparse import ArgumentParser, RawDescriptionHelpFormatter as fmt
-import zipfile
 import json
 import subprocess
+from create_fake_events import dhis2api
 
 import requests
 
 #CONFIG VARIABLES
+api = None
 user = ""
 password = ""
-start_id = 1000
-output_teis = "teis.json"
-output_enrollments = "enrollments.json"
-url = "https://extranet.who.int/dhis2-demo/%s"
+teis_suffix = "teis"
+enrollments_suffix = "enrollments.json"
+
 ou1 = "D5I2C9AX5Su"
 ou1name = "ALERT Specialized Hospital"
 ou2 = "Kskp6Epquur"
 ou2name = "Dagemawi Minilik Hospital"
 ou3 = "wC99G51EbUw"
 ou3name = "St.Paul Hospital"
+ous = [ou1, ou2]
+ou_names = [ou1name, ou2name]
+default_ou = ou3
+default_ouname = ou3name
 
 #GLOBAL VARIABLES
-api_tei = "api/trackedEntityInstances/"
-api_enrollments = "api/enrollments/"
+api_tei_endpoint = "/api/trackedEntityInstances/"
+api_enrollments_endpoint = "/api/enrollments/"
+api_events_endpoint = "/api/events"
 
 tracker_entity_instance = {"trackedEntity":"vKBCptkP30X","trackedEntityInstance":"%s", "orgUnit":"H8RixfF8ugH","attributes":[{"attribute":"AAkZm4ZxFw7","value":"%s"},{"attribute":"KJiJQCbeZUm"},{"attribute":"PWEXwF166y5"},{"attribute":"pEXMTtqbjKU","value":"1"}]}
 enrollment = {"trackedEntityInstance":"%s","enrollment":"%s", "program":"YGa3BmrwwiU","status":"ACTIVE","orgUnit":"H8RixfF8ugH","enrollmentDate":"2019-05-01","incidentDate":"2019-05-01"}
@@ -69,66 +45,37 @@ enrollment_wrapper = {'enrollments': []}
 
 
 def main():
+    global api
     args = get_args()
 
-    text = create_fake_events(read(args.__getattribute__("input")[0]))
+    if args.post and (not args.username or not args.password or not args.server):
+        print("ERROR: Please provide server, username and password")
+        sys.exit()
 
-    write(args.output, text)
+    api = dhis2api.Dhis2Api(args.server, args.username, args.password)
+
+    create_fake_events(json.load(open(args.input)), args.ETA_start_id, args.max_events, args.output_prefix, args.post)
 
 
 def get_args():
     "Parse command-line arguments and return them"
-    global sort_fields, user, password
 
     parser = ArgumentParser(description=__doc__, formatter_class=fmt)
     add = parser.add_argument  # shortcut
-    add('input', nargs='*', help='input single or multiple files')
 
-    add('-o', '--output', help='output file (write to stdout if not given')
+    add('-i', '--input', help='input file')
+    add('-o', '--output-prefix', help='output prefix for file name (write to stdout if not given')
+    add('-s', '--server', default="https://extranet.who.int/dhis2-demo", help="server URL")
+    add('-u', '--username', help='username for authentication')
+    add('-p', '--password', help='password for authentication')
+    add('-m', '--max-events', type=int,
+        help='integer representing the max total number of events to be generated. events number will be min(m, number of events in events file)')
+    add('-l', '--post', action='store_true', default=False, help='whether to post json files to remove server')
+    add('-t', '--ETA-start-id', type=int, default=1000, help='integer representing the ETA tracked entity attribute registry id')
 
     args = parser.parse_args()
 
     return args
-
-
-def get_text_from_input(args):
-    return read(args.input)
-
-
-def read(fname):
-    "Return contents of file, which works also for single zip files"
-    if not fname:
-        try:
-            return sys.stdin.read()
-        except KeyboardInterrupt:
-            sys.exit(130)  # same as cat
-    elif zipfile.is_zipfile(fname):
-        zf = zipfile.ZipFile(fname)
-        assert len(zf.filelist) == 1, \
-            'Zip file "%s" should contain only one file' % fname
-        with zf.open(zf.filelist[0], encoding="utf-8") as fin:
-            return fin.read().decode('utf8')
-    else:
-        with open(fname, encoding="utf-8") as fin:
-            return fin.read()
-
-
-def read(fname):
-    "Return contents of file, which works also for single zip files"
-    if not fname:
-        try:
-            return sys.stdin.read()
-        except KeyboardInterrupt:
-            sys.exit(130)  # same as cat
-    elif zipfile.is_zipfile(fname):
-        zf = zipfile.ZipFile(fname)
-        assert len(zf.filelist) == 1, \
-            'Zip file "%s" should contain only one file' % fname
-        with zf.open(zf.filelist[0], encoding="utf-8") as fin:
-            return fin.read().decode('utf8')
-    else:
-        with open(fname, encoding="utf-8") as fin:
-            return fin.read()
 
 
 def create_tracked_entity_instance(trackedEntityInstanceUID, id, ou):
@@ -150,28 +97,37 @@ def create_enrollment(trackedEntityInstanceUID, enrollmentUID, ou):
     return new_enrollment
 
 
-def create_fake_events(text):
-    global start_id
-    text = json.loads(text)
-    for event in text:
-        event.pop('coordinate', None)
-        start_id = start_id+1
-        print(start_id)
-        print("tei")
-        trackedEntityInstanceUID=get_code()
-        print("enroll")
-        enrollmentUID=get_code()
-        if event['orgUnit'] is ou1:
-            ou = ou2
-            ouname = ou2name
-        elif event['orgUnit'] is ou2:
-            ou = ou1
-            ouname = ou1name
-        else:
-            ou = ou3
-            ouname = ou3name
+def create_fake_events(events, ETA_start_id, max_events, output_prefix, post):
+    id = ETA_start_id
+    events_wrapper = {}
+    events_wrapper['events'] = []
 
-        tracker_entity_instance_wrapper['trackedEntityInstances'].append(create_tracked_entity_instance(trackedEntityInstanceUID, start_id, ou))
+    for event in events['events']:
+        if max_events and max_events <= id-ETA_start_id:
+            break
+        event.pop('coordinate', None)
+
+        id+=1
+        print("%s" % id)
+
+        print("tei:")
+        trackedEntityInstanceUID = get_code()
+
+        print("enrollment:")
+        enrollmentUID = get_code()
+
+        if event['orgUnit'] in ous:
+            index = ous.index(event['orgUnit'])
+            index +=1
+            if index == len(ous):
+                index = 0
+            ou = ous[index]
+            ouname = ou_names[index]
+        else:
+            ou = default_ou
+            ouname = default_ouname
+
+        tracker_entity_instance_wrapper['trackedEntityInstances'].append(create_tracked_entity_instance(trackedEntityInstanceUID, id, ou))
         enrollment_wrapper['enrollments'].append(create_enrollment(trackedEntityInstanceUID, enrollmentUID, ou))
         for key in event:
             value = event[key]
@@ -186,13 +142,22 @@ def create_fake_events(text):
                 event[key] = trackedEntityInstanceUID
             if key == "enrollment":
                 event[key] = enrollmentUID
+        events_wrapper['events'].append(event)
+
     tei_json = json.dumps(tracker_entity_instance_wrapper, ensure_ascii=False)
     enrollments_json = json.dumps(enrollment_wrapper, ensure_ascii=False)
-    post(tei_json, (url % api_tei))
-    post(enrollments_json, (url % api_enrollments))
-    write(output_teis, tei_json)
-    write(output_enrollments, enrollments_json)
-    return json.dumps(text, ensure_ascii=False)
+    events_json = json.dumps(events_wrapper, ensure_ascii=False)
+
+    write("%s-teis.json" % output_prefix if output_prefix else output_prefix, tei_json)
+    write("%s-enrollments.json" % output_prefix if output_prefix else output_prefix, enrollments_json)
+    write("%s-events" % output_prefix if output_prefix else output_prefix, events_json)
+
+    if post:
+        api.post(api_tei_endpoint, payload=tei_json)
+        api.post(api_enrollments_endpoint, payload=enrollments_json)
+        api.post(api_events_endpoint, payload=events_json)
+
+    return
 
 
 def write(fname, text):
