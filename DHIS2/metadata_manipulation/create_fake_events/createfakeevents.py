@@ -18,8 +18,6 @@ from create_fake_events import dhis2api
 #CONFIG VARIABLES
 
 api = None
-user = ""
-password = ""
 
 ous = ["seHJdofSPcM","D5I2C9AX5Su","wP2zKq0dDpw","EC9GQrjJG0M","Kskp6Epquur","yWc1CTszR3s","svSQSBLTVz6","zEYrsiNUGIo","H8RixfF8ugH","NMCo2iNUAm7","cFWhCXPeazs","Zfw7xjrZuYI","hEAnDoYfUQz","ClT2KekuxPn","zXAaAXzwt4M","LbHui32cR3a","spoX966fQm4","morX5MCo9PO","g3AzPbBKS44","NWjR36LLNjt","bcy4159FETR","rtLnlu4GUI2","YOL13ptz4ef","SnYHrnchKjL","afomkmfy9xk","X8fwzT958By","wC99G51EbUw","UN3mvCgeGVT","PHAPQ5aPRNx","tT99dpUmSaa","RA5zxsbittk"]
 ou_names = ["AFR","ALERT Specialized Hospital","AMR","CHU P-Zaga","Dagemawi Minilik Hospital","EMR","EUR","Federal Democratic Republic of Ethiopia","Global","Kawolo General Hospital","Lubaga Hospital","Masaka Regional Referral Hospital","Mengo Hospital","Mubende Regional Referral Hospital","NA","Naguru China Uganda Hospital","Nay Pyi Taw General Hospital","North Okkalapa General Hospital","Onandjokwe Hospital","Oshakati State Hospital","Republic of Madagascar","Republic of Namibia","Republic of the Union of Myanmar","Republic of Uganda","SEAR","St. Francis Hospital Nsambya","St.Paul Hospital","St.Peter Tuberculosis Specialized Hospital","Tikur Anbessa Specialized Hospital","Tirunesh Beijing Hospital","WPR"]
@@ -77,7 +75,7 @@ def get_args():
     return args
 
 
-def create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname, ETA_start_id, extended):
+def create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname, tei_position, extended):
     new_tracker_entity_instance = copy.deepcopy(tracker_entity_instance)
 
     new_tracker_entity_instance['trackedEntityInstance'] = trackedEntityInstanceUID
@@ -101,12 +99,12 @@ def create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname, ETA
     if extended:
         #patient_residence
         patient_residence_values = ["1", "2", "77"]
-        index = (id-ETA_start_id) % (len(patient_residence_values))
+        index = tei_position % (len(patient_residence_values))
         new_tracker_entity_instance['attributes'].append({"attribute": "na3ZJRtjpGH", "value": patient_residence_values[index]})
-        #patient_ocupation
 
+        #patient_ocupation
         patient_ocupation_values = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "77", "88", "99"]
-        index = (id-ETA_start_id) % (len(patient_ocupation_values))
+        index = tei_position % (len(patient_ocupation_values))
         new_tracker_entity_instance['attributes'].append({"attribute": "KJiJQCbeZUm", "value": patient_ocupation_values[index]})
 
     return new_tracker_entity_instance
@@ -122,6 +120,18 @@ def create_enrollment(trackedEntityInstanceUID, enrollmentUID, ou, enrollment_da
     return new_enrollment
 
 
+def gen_old_tei(events, max_events):
+    id = 0
+    old_tei_new_tei = dict()
+    for event in events:
+        if max_events > id:
+            trackedEntityInstanceUID = get_code()
+            if event['trackedEntityInstance'] not in old_tei_new_tei.keys():
+                old_tei_new_tei.update({event['trackedEntityInstance']: trackedEntityInstanceUID})
+        id = id + 1
+    return old_tei_new_tei
+
+
 def create_fake_events(events, ETA_start_id, max_events, output_prefix, post, from_files, start_date, end_date):
     id = ETA_start_id
     events_wrapper = {}
@@ -129,8 +139,9 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, post, fr
 
     if max_events == 0:
         max_events = len(events['events'])
-    number_of_core_events = int(max_events/2)
-
+    old_tei_new_tei = gen_old_tei(events['events'], max_events)
+    old_enr_new_enr = dict()
+    gen_teis = list()
     for event in events['events']:
         if (max_events and max_events <= id-ETA_start_id) or from_files:
             break
@@ -148,7 +159,6 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, post, fr
         print("%s" % id)
 
         print("tei:")
-        trackedEntityInstanceUID = get_code()
 
         print("enrollment:")
         enrollmentUID = get_code()
@@ -159,13 +169,20 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, post, fr
         ouname = ou_names[index]
         index += 1
 
-        if id - ETA_start_id > number_of_core_events:
+        if id - ETA_start_id > int(len(old_tei_new_tei)/2):
             extended = True
         else:
             extended = False
 
-        tracker_entity_instance_wrapper['trackedEntityInstances'].append(create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname, ETA_start_id, extended))
-        enrollment_wrapper['enrollments'].append(create_enrollment(trackedEntityInstanceUID, enrollmentUID, ou, enrollment_date))
+        trackedEntityInstanceUID = old_tei_new_tei[event['trackedEntityInstance']]
+        if trackedEntityInstanceUID not in gen_teis:
+            gen_teis.append(trackedEntityInstanceUID)
+            tracker_entity_instance_wrapper['trackedEntityInstances'].append(create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname, gen_teis.index(trackedEntityInstanceUID), extended))
+
+        if event['enrollment'] not in old_enr_new_enr.keys():
+            old_enr_new_enr.update({event['enrollment']: enrollmentUID})
+            enrollment_wrapper['enrollments'].append(create_enrollment(trackedEntityInstanceUID, enrollmentUID, ou, enrollment_date))
+
         for key in event:
             value = event[key]
 
@@ -241,6 +258,7 @@ def get_code():
 
 def rand_percent(percent):
     return random.random() < percent
+
 
 def strTimeProp(start, end, format, prop):
     """Get a time at a proportion of a range of two formatted times.
