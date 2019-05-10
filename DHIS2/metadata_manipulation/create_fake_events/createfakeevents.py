@@ -10,11 +10,13 @@ import sys
 from argparse import ArgumentParser, RawDescriptionHelpFormatter as fmt
 import json
 import subprocess
-from create_fake_events import dhis2api
+from random import random
 
 import requests
 
 #CONFIG VARIABLES
+from DHIS2.cloner import dhis2api
+
 api = None
 user = ""
 password = ""
@@ -60,7 +62,7 @@ def get_args():
     add('-s', '--server', default="https://extranet.who.int/dhis2-demo", help="server URL")
     add('-u', '--username', help='username for authentication')
     add('-p', '--password', help='password for authentication')
-    add('-m', '--max-events', type=int,
+    add('-m', '--max-events', type=int, default=0,
         help='integer representing the max total number of events to be generated. events number will be min(m, number of events in events file)')
     add('-k', '--from-files', action='store_true', help='upload from previously-generated files')
     add('-l', '--post', action='store_true', default=False, help='whether to post json files to remove server')
@@ -71,15 +73,38 @@ def get_args():
     return args
 
 
-def create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname):
+def create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname, ETA_start_id, extended):
     new_tracker_entity_instance = copy.deepcopy(tracker_entity_instance)
 
     new_tracker_entity_instance['trackedEntityInstance'] = trackedEntityInstanceUID
     new_tracker_entity_instance['orgUnit'] = ou
+    new_tracker_entity_instance['attributes'].append({'attribute': 'curur2uWaDy', 'value': ouname})
+
     for attribute in new_tracker_entity_instance['attributes']:
         if attribute['attribute'] is "AAkZm4ZxFw7":
             attribute['value'] = id
-    new_tracker_entity_instance['attributes'].append({'attribute': 'curur2uWaDy', 'value': ouname})
+        if attribute['attribute'] is "pEXMTtqbjKU":
+            if extended:
+                attribute['value'] = "2"
+
+    if rand_percent(0.66):
+        value = "M"
+    else:
+        value = "F"
+
+    new_tracker_entity_instance['attributes'].append({"attribute": "OkhvIL14Tbl", "value": value})
+
+    if extended:
+        #patient_residence
+        patient_residence_values = ["1", "2", "77"]
+        index = (id-ETA_start_id) % (len(patient_residence_values))
+        new_tracker_entity_instance['attributes'].append({"attribute": "na3ZJRtjpGH", "value": patient_residence_values[index]})
+        #patient_ocupation
+
+        patient_ocupation_values = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "77", "88", "99"]
+        index = (id-ETA_start_id) % (len(patient_ocupation_values))
+        new_tracker_entity_instance['attributes'].append({"attribute": "KJiJQCbeZUm", "value": patient_ocupation_values[index]})
+
     return new_tracker_entity_instance
 
 
@@ -95,7 +120,9 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, post, fr
     id = ETA_start_id
     events_wrapper = {}
     events_wrapper['events'] = []
-
+    if max_events == 0:
+        max_events = len(events['events'])
+    number_of_core_events = int(max_events/2)
     for event in events['events']:
         if (max_events and max_events <= id-ETA_start_id) or from_files:
             break
@@ -119,7 +146,12 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, post, fr
         ouname = ou_names[index]
         index += 1
 
-        tracker_entity_instance_wrapper['trackedEntityInstances'].append(create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname))
+        if id - ETA_start_id > number_of_core_events:
+            extended = True
+        else:
+            extended = False
+
+        tracker_entity_instance_wrapper['trackedEntityInstances'].append(create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname, ETA_start_id, extended))
         enrollment_wrapper['enrollments'].append(create_enrollment(trackedEntityInstanceUID, enrollmentUID, ou))
         for key in event:
             value = event[key]
@@ -144,7 +176,7 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, post, fr
         write("%s-teis.json" % output_prefix if output_prefix else output_prefix, tei_json)
         write("%s-enrollments.json" % output_prefix if output_prefix else output_prefix, enrollments_json)
         write("%s-events.json" % output_prefix if output_prefix else output_prefix, events_json)
-
+    
     if post:
         teis_json_payload = json.load(open("%s-teis.json" % output_prefix))
         enrollments_json_payload = json.load(open("%s-enrollments.json" % output_prefix))
@@ -192,6 +224,10 @@ def get_code():
     output, error = process.communicate()
     print(output)
     return str(output).replace("b'", "").replace("\\n'", "")
+
+
+def rand_percent(percent):
+    return random() < percent
 
 
 if __name__ == '__main__':
