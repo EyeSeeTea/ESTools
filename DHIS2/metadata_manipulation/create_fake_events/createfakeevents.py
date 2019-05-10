@@ -10,12 +10,12 @@ import sys
 from argparse import ArgumentParser, RawDescriptionHelpFormatter as fmt
 import json
 import subprocess
-from random import random
+import random
+import time
+from create_fake_events import dhis2api
 
-import requests
 
 #CONFIG VARIABLES
-from DHIS2.cloner import dhis2api
 
 api = None
 user = ""
@@ -48,7 +48,7 @@ def main():
 
     api = dhis2api.Dhis2Api(args.server, args.username, args.password)
 
-    create_fake_events(json.load(open(args.input)), args.ETA_start_id, args.max_events, args.output_prefix, args.post, args.from_files)
+    create_fake_events(json.load(open(args.input)), args.ETA_start_id, args.max_events, args.output_prefix, args.post, args.from_files, args.ETA_enrollment_start_date, args.ETA_enrollment_end_date)
 
 
 def get_args():
@@ -67,6 +67,10 @@ def get_args():
     add('-k', '--from-files', action='store_true', help='upload from previously-generated files')
     add('-l', '--post', action='store_true', default=False, help='whether to post json files to remove server')
     add('-t', '--ETA-start-id', type=int, default=1000, help='integer representing the ETA tracked entity attribute registry id')
+    add('-f', '--ETA-enrollment-start-date', default="2018-01-01T12:00:00.000",
+        help='date to be used as the start point to simulate enrollment dates')
+    add('-e', '--ETA-enrollment-end-date', default="2019-05-01T12:00:00.000",
+        help='date to be used as the end point to simulate enrollment dates')
 
     args = parser.parse_args()
 
@@ -108,28 +112,37 @@ def create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname, ETA
     return new_tracker_entity_instance
 
 
-def create_enrollment(trackedEntityInstanceUID, enrollmentUID, ou):
+def create_enrollment(trackedEntityInstanceUID, enrollmentUID, ou, enrollment_date):
     new_enrollment = copy.deepcopy(enrollment)
     new_enrollment['trackedEntityInstance'] = trackedEntityInstanceUID
     new_enrollment['enrollment'] = enrollmentUID
     new_enrollment['orgUnit'] = ou
+    new_enrollment['incidentDate'] = enrollment_date
+    new_enrollment['enrollmentDate'] = enrollment_date
     return new_enrollment
 
 
-def create_fake_events(events, ETA_start_id, max_events, output_prefix, post, from_files):
+def create_fake_events(events, ETA_start_id, max_events, output_prefix, post, from_files, start_date, end_date):
     id = ETA_start_id
     events_wrapper = {}
     events_wrapper['events'] = []
+
     if max_events == 0:
         max_events = len(events['events'])
     number_of_core_events = int(max_events/2)
+
     for event in events['events']:
         if (max_events and max_events <= id-ETA_start_id) or from_files:
             break
+
+        enrollment_date = randomDate(start_date, end_date, random.random())
+        event_date = randomDate(enrollment_date, end_date, random.random())
+
         event.pop('coordinate', None)
         eventUID = get_code()
         event['event'] = eventUID
         event['href'] = "%s/%s" % (event['href'].rsplit('/', 1)[0], eventUID)
+        event['eventDate'] = event_date
 
         id+=1
         print("%s" % id)
@@ -152,7 +165,7 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, post, fr
             extended = False
 
         tracker_entity_instance_wrapper['trackedEntityInstances'].append(create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname, ETA_start_id, extended))
-        enrollment_wrapper['enrollments'].append(create_enrollment(trackedEntityInstanceUID, enrollmentUID, ou))
+        enrollment_wrapper['enrollments'].append(create_enrollment(trackedEntityInstanceUID, enrollmentUID, ou, enrollment_date))
         for key in event:
             value = event[key]
 
@@ -227,7 +240,27 @@ def get_code():
 
 
 def rand_percent(percent):
-    return random() < percent
+    return random.random() < percent
+
+def strTimeProp(start, end, format, prop):
+    """Get a time at a proportion of a range of two formatted times.
+
+    start and end should be strings specifying times formated in the
+    given format (strftime-style), giving an interval [start, end].
+    prop specifies how a proportion of the interval to be taken after
+    start.  The returned time will be in the specified format.
+    """
+
+    stime = time.mktime(time.strptime(start, format))
+    etime = time.mktime(time.strptime(end, format))
+
+    ptime = stime + prop * (etime - stime)
+
+    return time.strftime(format, time.localtime(ptime))
+
+
+def randomDate(start, end, prop):
+    return strTimeProp(start, end, '%Y-%m-%dT%H:%M:%S.000', prop)
 
 
 if __name__ == '__main__':
