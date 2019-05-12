@@ -16,13 +16,9 @@ from create_fake_events import dhis2api
 
 
 #CONFIG VARIABLES
-
 api = None
-
-ous = ["seHJdofSPcM","D5I2C9AX5Su","wP2zKq0dDpw","EC9GQrjJG0M","Kskp6Epquur","yWc1CTszR3s","svSQSBLTVz6","zEYrsiNUGIo","H8RixfF8ugH","NMCo2iNUAm7","cFWhCXPeazs","Zfw7xjrZuYI","hEAnDoYfUQz","ClT2KekuxPn","zXAaAXzwt4M","LbHui32cR3a","spoX966fQm4","morX5MCo9PO","g3AzPbBKS44","NWjR36LLNjt","bcy4159FETR","rtLnlu4GUI2","YOL13ptz4ef","SnYHrnchKjL","afomkmfy9xk","X8fwzT958By","wC99G51EbUw","UN3mvCgeGVT","PHAPQ5aPRNx","tT99dpUmSaa","RA5zxsbittk"]
-ou_names = ["AFR","ALERT Specialized Hospital","AMR","CHU P-Zaga","Dagemawi Minilik Hospital","EMR","EUR","Federal Democratic Republic of Ethiopia","Global","Kawolo General Hospital","Lubaga Hospital","Masaka Regional Referral Hospital","Mengo Hospital","Mubende Regional Referral Hospital","NA","Naguru China Uganda Hospital","Nay Pyi Taw General Hospital","North Okkalapa General Hospital","Onandjokwe Hospital","Oshakati State Hospital","Republic of Madagascar","Republic of Namibia","Republic of the Union of Myanmar","Republic of Uganda","SEAR","St. Francis Hospital Nsambya","St.Paul Hospital","St.Peter Tuberculosis Specialized Hospital","Tikur Anbessa Specialized Hospital","Tirunesh Beijing Hospital","WPR"]
-default_ou = "l5ionrzfp5t"
-default_ouname = "Yangon General Hospital"
+ous = ["seHJdofSPcM","D5I2C9AX5Su","wP2zKq0dDpw","EC9GQrjJG0M","Kskp6Epquur","yWc1CTszR3s","svSQSBLTVz6","zEYrsiNUGIo","H8RixfF8ugH","x9QBaHzG5aE","iWyyxvoa6DW","K5eT5a9sTZw","Ai4Wdk8hVps","fNZ3ZRjM8pK","zXAaAXzwt4M","fLhr5TrrZxw","spoX966fQm4","morX5MCo9PO","g3AzPbBKS44","NWjR36LLNjt","bcy4159FETR","rtLnlu4GUI2","YOL13ptz4ef","SnYHrnchKjL","afomkmfy9xk","Q2amTGc70TX","wC99G51EbUw","UN3mvCgeGVT","PHAPQ5aPRNx","tT99dpUmSaa","RA5zxsbittk","l5ionrzfp5t"]
+ou_names = ["AFR","ALERT Specialized Hospital","AMR","CHU P-Zaga","Dagemawi Minilik Hospital","EMR","EUR","Federal Democratic Republic of Ethiopia","Global","Kawolo General Hospital","Lubaga Hospital","Masaka Regional Referral Hospital","Mengo Hospital","Mubende Regional Referral Hospital","NA","Naguru China Uganda Hospital","Nay Pyi Taw General Hospital","North Okkalapa General Hospital","Onandjokwe Hospital","Oshakati State Hospital","Republic of Madagascar","Republic of Namibia","Republic of the Union of Myanmar","Republic of Uganda","SEAR","St. Francis Hospital Nsambya","St.Paul Hospital","St.Peter Tuberculosis Specialized Hospital","Tikur Anbessa Specialized Hospital","Tirunesh Beijing Hospital","WPR","Yangon General Hospital"]
 
 #GLOBAL VARIABLES
 api_tei_endpoint = "/trackedEntityInstances"
@@ -46,7 +42,17 @@ def main():
 
     api = dhis2api.Dhis2Api(args.server, args.username, args.password)
 
-    create_fake_events(json.load(open(args.input)), args.ETA_start_id, args.max_events, args.output_prefix, args.post, args.from_files, args.ETA_enrollment_start_date, args.ETA_enrollment_end_date)
+    if not args.from_files:
+        create_fake_events(json.load(open(args.input)), args.ETA_start_id, args.max_events, args.output_prefix, args.ETA_enrollment_start_date, args.ETA_enrollment_end_date)
+
+    if args.post:
+        teis_json_payload = json.load(open("%s-teis.json" % args.output_prefix))
+        enrollments_json_payload = json.load(open("%s-enrollments.json" % args.output_prefix))
+        events_json_payload = json.load(open("%s-events.json" % args.output_prefix))
+
+        api.post(api_tei_endpoint, payload=teis_json_payload)
+        api.post(api_enrollments_endpoint, payload=enrollments_json_payload)
+        api.post(api_events_endpoint, payload=events_json_payload)
 
 
 def get_args():
@@ -142,7 +148,7 @@ def gen_old_tei(events, max_events):
     return old_tei_new_tei
 
 
-def create_fake_events(events, ETA_start_id, max_events, output_prefix, post, from_files, start_date, end_date):
+def create_fake_events(events, ETA_start_id, max_events, output_prefix, start_date, end_date):
     id = ETA_start_id
     events_wrapper = {}
     events_wrapper['events'] = []
@@ -153,7 +159,7 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, post, fr
     old_enr_new_enr = dict()
     gen_teis = list()
     for event in events['events']:
-        if (max_events and max_events <= id-ETA_start_id) or from_files:
+        if (max_events and max_events <= id-ETA_start_id):
             break
 
         enrollment_date = randomDate(start_date, end_date, random.random())
@@ -208,23 +214,13 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, post, fr
                 event[key] = enrollmentUID
         events_wrapper['events'].append(event)
 
-    if not from_files:
-        tei_json = json.dumps(tracker_entity_instance_wrapper, ensure_ascii=False)
-        enrollments_json = json.dumps(enrollment_wrapper, ensure_ascii=False)
-        events_json = json.dumps(events_wrapper, ensure_ascii=False)
+    tei_json = json.dumps(tracker_entity_instance_wrapper, ensure_ascii=False)
+    enrollments_json = json.dumps(enrollment_wrapper, ensure_ascii=False)
+    events_json = json.dumps(events_wrapper, ensure_ascii=False)
 
-        write("%s-teis.json" % output_prefix if output_prefix else output_prefix, tei_json)
-        write("%s-enrollments.json" % output_prefix if output_prefix else output_prefix, enrollments_json)
-        write("%s-events.json" % output_prefix if output_prefix else output_prefix, events_json)
-    
-    if post:
-        teis_json_payload = json.load(open("%s-teis.json" % output_prefix))
-        enrollments_json_payload = json.load(open("%s-enrollments.json" % output_prefix))
-        events_json_payload = json.load(open("%s-events.json" % output_prefix))
-
-        api.post(api_tei_endpoint, payload=teis_json_payload)
-        api.post(api_enrollments_endpoint, payload=enrollments_json_payload)
-        api.post(api_events_endpoint, payload=events_json_payload)
+    write("%s-teis.json" % output_prefix if output_prefix else output_prefix, tei_json)
+    write("%s-enrollments.json" % output_prefix if output_prefix else output_prefix, enrollments_json)
+    write("%s-events.json" % output_prefix if output_prefix else output_prefix, events_json)
 
     return
 
