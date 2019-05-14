@@ -25,7 +25,12 @@ api_tei_endpoint = "/trackedEntityInstances"
 api_enrollments_endpoint = "/enrollments"
 api_events_endpoint = "/events"
 
-tracker_entity_instance = {"trackedEntity":"vKBCptkP30X","trackedEntityInstance":"%s", "orgUnit":"H8RixfF8ugH","attributes":[{"attribute":"AAkZm4ZxFw7","value":"%s"},{"attribute":"pEXMTtqbjKU","value":"1"}]}
+tei_28_model = {"trackedEntity": "vKBCptkP30X", "trackedEntityInstance": "%s", "orgUnit": "H8RixfF8ugH", "attributes":[{"attribute": "AAkZm4ZxFw7", "value": "%s"}, {"attribute": "pEXMTtqbjKU", "value": "1"}]}
+tei_30_model = {"trackedEntityType": "vKBCptkP30X", "trackedEntityInstance": "%s", "orgUnit": "H8RixfF8ugH", "attributes":[{"attribute": "AAkZm4ZxFw7", "value": "%s"}, {"attribute": "pEXMTtqbjKU", "value": "1"}]}
+tei_models =  {}
+tei_models['2.28'] = tei_28_model
+tei_models['2.30'] = tei_30_model
+
 enrollment = {"trackedEntityInstance":"%s","enrollment":"%s", "program":"YGa3BmrwwiU","status":"ACTIVE","orgUnit":"H8RixfF8ugH","enrollmentDate":"2019-05-01","incidentDate":"2019-05-01"}
 
 tracker_entity_instance_wrapper = {'trackedEntityInstances': []}
@@ -43,7 +48,7 @@ def main():
     api = dhis2api.Dhis2Api(args.server, args.username, args.password)
 
     if not args.from_files:
-        create_fake_events(json.load(open(args.input)), args.ETA_start_id, args.max_events, args.output_prefix, args.ETA_enrollment_start_date, args.ETA_enrollment_end_date)
+        create_fake_events(json.load(open(args.input)), args.ETA_start_id, args.max_events, args.output_prefix, args.ETA_enrollment_start_date, args.ETA_enrollment_end_date, args.dhis2_version)
 
     if args.post:
         teis_json_payload = json.load(open("%s-teis.json" % args.output_prefix))
@@ -75,14 +80,15 @@ def get_args():
         help='date to be used as the start point to simulate enrollment dates')
     add('-e', '--ETA-enrollment-end-date', default="2019-05-01T12:00:00.000",
         help='date to be used as the end point to simulate enrollment dates')
+    add('-d', '--dhis2-version', default="2.28", help='DHIS2 server version')
 
     args = parser.parse_args()
 
     return args
 
 
-def create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname, tei_position, extended):
-    new_tracker_entity_instance = copy.deepcopy(tracker_entity_instance)
+def create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname, tei_position, extended, dhis2_version):
+    new_tracker_entity_instance = copy.deepcopy(tei_models[dhis2_version])
 
     new_tracker_entity_instance['trackedEntityInstance'] = trackedEntityInstanceUID
     new_tracker_entity_instance['orgUnit'] = ou
@@ -148,7 +154,7 @@ def gen_old_tei(events, max_events):
     return old_tei_new_tei
 
 
-def create_fake_events(events, ETA_start_id, max_events, output_prefix, start_date, end_date):
+def create_fake_events(events, ETA_start_id, max_events, output_prefix, start_date, end_date, dhis2_version):
     id = ETA_start_id
     events_wrapper = {}
     events_wrapper['events'] = []
@@ -193,7 +199,7 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, start_da
         trackedEntityInstanceUID = old_tei_new_tei[event['trackedEntityInstance']]
         if trackedEntityInstanceUID not in gen_teis:
             gen_teis.append(trackedEntityInstanceUID)
-            tracker_entity_instance_wrapper['trackedEntityInstances'].append(create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname, gen_teis.index(trackedEntityInstanceUID), extended))
+            tracker_entity_instance_wrapper['trackedEntityInstances'].append(create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname, gen_teis.index(trackedEntityInstanceUID), extended, dhis2_version))
 
         if event['enrollment'] not in old_enr_new_enr.keys():
             old_enr_new_enr.update({event['enrollment']: enrollmentUID})
