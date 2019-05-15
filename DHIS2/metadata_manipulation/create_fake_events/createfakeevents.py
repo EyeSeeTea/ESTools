@@ -88,6 +88,19 @@ def get_args():
 
 
 def create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname, tei_position, extended, dhis2_version):
+    #attribute UIDs
+    ETA_attribute_register_id_UID = "AAkZm4ZxFw7"
+    ETA_attribute_core_extended_UID = "pEXMTtqbjKU"
+    ETA_attribute_gender_UID = "OkhvIL14Tbl"
+    ETA_attribute_patient_residence_UID = "na3ZJRtjpGH"
+    ETA_attribute_patient_ocupation_UID ="KJiJQCbeZUm"
+    ETA_attribute_age_known_UID = "PWEXwF166y5"
+    ETA_attribute_age_UID = "jOs4ColrsGt"
+
+    #possible values
+    patient_residence_values = ["1", "2", "77"]
+    patient_ocupation_values = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "77", "88", "99"]
+
     new_tracker_entity_instance = copy.deepcopy(tei_models[dhis2_version])
 
     new_tracker_entity_instance['trackedEntityInstance'] = trackedEntityInstanceUID
@@ -95,39 +108,32 @@ def create_tracked_entity_instance(trackedEntityInstanceUID, id, ou, ouname, tei
     new_tracker_entity_instance['attributes'].append({'attribute': 'curur2uWaDy', 'value': ouname})
 
     for attribute in new_tracker_entity_instance['attributes']:
-        if attribute['attribute'] is "AAkZm4ZxFw7":
+        if attribute['attribute'] is ETA_attribute_register_id_UID:
             attribute['value'] = id
-        if attribute['attribute'] is "pEXMTtqbjKU":
-            if extended:
-                attribute['value'] = "2"
+        if attribute['attribute'] is ETA_attribute_core_extended_UID:
+            attribute['value'] = "2" if extended else "1"
 
     if rand_percent(0.66):
         value = "M"
     else:
         value = "F"
 
-    new_tracker_entity_instance['attributes'].append({"attribute": "OkhvIL14Tbl", "value": value})
+    new_tracker_entity_instance['attributes'].append({"attribute": ETA_attribute_gender_UID, "value": value})
 
     if extended:
         #patient_residence
-        patient_residence_values = ["1", "2", "77"]
         index = tei_position % (len(patient_residence_values))
-        new_tracker_entity_instance['attributes'].append({"attribute": "na3ZJRtjpGH", "value": patient_residence_values[index]})
+        new_tracker_entity_instance['attributes'].append({"attribute": ETA_attribute_patient_residence_UID, "value": patient_residence_values[index]})
 
         #patient_ocupation
-        patient_ocupation_values = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "77", "88", "99"]
         index = tei_position % (len(patient_ocupation_values))
-        new_tracker_entity_instance['attributes'].append({"attribute": "KJiJQCbeZUm", "value": patient_ocupation_values[index]})
+        new_tracker_entity_instance['attributes'].append({"attribute": ETA_attribute_patient_ocupation_UID, "value": patient_ocupation_values[index]})
 
         #age
-        if rand_percent(0.5):
-            new_tracker_entity_instance['attributes'].append({"attribute": "PWEXwF166y5", "value": "1"})
-            new_tracker_entity_instance['attributes'].append({"attribute": "jOs4ColrsGt", "value": random.randint(0, 100)})
-        else:
-            value = ( tei_position % 2 ) +1
-            new_tracker_entity_instance['attributes'].append({"attribute": "PWEXwF166y5", "value": "2"})
-            new_tracker_entity_instance['attributes'].append({"attribute": "lmxeOjRRNwB", "value": value})
-
+        value = (tei_position % 2) + 1
+        age_known = rand_percent(0.5)
+        new_tracker_entity_instance['attributes'].append({"attribute": ETA_attribute_age_known_UID, "value": "1" if age_known else "2"})
+        new_tracker_entity_instance['attributes'].append({"attribute": ETA_attribute_age_UID, "value": random.randint(0, 100) if age_known else value})
 
     return new_tracker_entity_instance
 
