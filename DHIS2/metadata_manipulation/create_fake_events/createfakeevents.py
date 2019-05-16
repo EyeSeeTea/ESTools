@@ -48,7 +48,7 @@ def main():
     api = dhis2api.Dhis2Api(args.server, args.username, args.password)
 
     if not args.from_files:
-        create_fake_events(json.load(open(args.input)), args.ETA_start_id, args.max_events, args.output_prefix, args.ETA_enrollment_start_date, args.ETA_enrollment_end_date, args.dhis2_version)
+        create_fake_events(json.load(open(args.input)), args.ETA_start_id, args.max_events, args.output_prefix, args.ETA_enrollment_start_date, args.ETA_enrollment_end_date, args.dhis2_version, args.seed_dhis2_version)
 
     if args.post:
         teis_json_payload = json.load(open("%s-teis.json" % args.output_prefix))
@@ -80,7 +80,8 @@ def get_args():
         help='date to be used as the start point to simulate enrollment dates')
     add('-e', '--ETA-enrollment-end-date', default="2019-05-01T12:00:00.000",
         help='date to be used as the end point to simulate enrollment dates')
-    add('-d', '--dhis2-version', default="2.28", help='DHIS2 server version')
+    add('-d', '--dhis2-version', default="2.28", help='destination DHIS2 server version')
+    add('-r', '--seed-dhis2-version', default="2.28", help='DHIS2 version for the events file used as seed')
 
     args = parser.parse_args()
 
@@ -160,7 +161,7 @@ def gen_old_tei(events, max_events):
     return old_tei_new_tei
 
 
-def create_fake_events(events, ETA_start_id, max_events, output_prefix, start_date, end_date, dhis2_version):
+def create_fake_events(events, ETA_start_id, max_events, output_prefix, start_date, end_date, dhis2_version, seed_dhis2_version):
     id = ETA_start_id
     events_wrapper = {}
     events_wrapper['events'] = []
@@ -182,6 +183,11 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, start_da
         event['event'] = eventUID
         event['href'] = "%s/%s" % (event['href'].rsplit('/', 1)[0], eventUID)
         event['eventDate'] = event_date
+        if dhis2_version == "2.30" and seed_dhis2_version == "2.28":
+            event.pop('enrollmentStatus', None)
+            event['status'] = "COMPLETED"
+            event.pop('attributeOptionCombo', None)
+            event.pop('attributeCategoryOptions', None)
 
         id+=1
         print("%s" % id)
