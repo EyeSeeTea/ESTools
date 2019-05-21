@@ -53,6 +53,11 @@ def main():
     if not args.no_db:
         get_db(db_local, db_remote, cfg['hostname_remote'])
 
+    if cfg['keep_data']:
+        start_tomcat(dir_local)
+        process.export_keep_data(cfg['api_local'], cfg['keep_data_folder'], cfg['keep_data'])
+        stop_tomcat(dir_local)
+
     if args.post_sql:
         run_sql(db_local, args.post_sql)
 
@@ -73,6 +78,8 @@ def main():
         if args.post_clone_scripts:
             execute_scripts(cfg['post_clone_scripts_dir'], is_post_tomcat=True)
 
+        if cfg['keep_data']:
+            import_keep_data(cfg['api_local'], cfg['keep_data_folder'], cfg['keep_data'])
     else:
         log('Server not started automatically, as requested.')
         log('No postprocessing done.')
@@ -347,6 +354,15 @@ def run_sql(db_local, post_sql):
     for fname in post_sql:
         run("psql -d '%s' < '%s'" % (db_local, fname))
 
+def import_keep_data(cfg, folder, keep_data):
+    for data in keep_data:
+        if data['type'] == 'dataset':
+            file = folder + "/" + data['dataset_uid']+data['ou_uid']+".json"
+            response = process.import_data_set(cfg, file)
+            if response.get('status') == 'OK':
+                log(folder + "/" + data['dataset_uid']+"-"+data['ou_uid']+".json imported")
+            else:
+                log(folder + "/" + data['dataset_uid']+"-"+data['ou_uid']+".json failed")
 
 
 if __name__ == '__main__':
