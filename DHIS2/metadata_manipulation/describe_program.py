@@ -12,6 +12,9 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
 
 import dhis2 as d2
 
+api_program_rules_query = "programRules.json?fields=id,program&paging=false"
+api_indicators_query = "indicators?filter=name:$like:ETA&fields=[id,name,numerator,denominator]&paging=false"
+
 
 def main():
     args = get_args()
@@ -41,14 +44,15 @@ def get_args():
 def describe_program(program_id):
     try:
         program = d2.get_object(program_id)
+        program_indicators = describe_program_indicators(id_list(program['programIndicators']))
+        rules = describe_rules(get_program_rules(program_id))
+        indicators = get_indicators()
         name = program['name']
         attribute_ids = [x['trackedEntityAttribute']['id'] for x in
                          program['programTrackedEntityAttributes']]
         attributes = describe_attributes(attribute_ids)
         stages = describe_stages(id_list(program['programStages']))
-        rules = describe_rules(id_list(program['programRules']))
         variables = describe_variables(id_list(program['programRuleVariables']))
-        program_indicators = describe_program_indicators(id_list(program['programIndicators']))
         return """%s (%s)
 
 Attributes
@@ -64,18 +68,57 @@ Variables
   %s
     
 Program Indicators
+  %s
+    
+Indicators
   %s""" % (name, program_id,
            attributes.replace('\n', '\n  '),
            stages.replace('\n', '\n  '),
            rules.replace('\n', '\n  '),
            variables.replace('\n', '\n  '),
-           program_indicators.replace('\n', '\n  '))
+           program_indicators.replace('\n', '\n  '),
+           indicators.replace('\n', '\n  '))
     except KeyError:
         return '***%s***' % program_id  # could not find it
 
 
 def id_list(a):  # we often get lists like [{'id': 'xxxx'}, {'id': 'yyyy'}, ...]
     return [x['id'] for x in a]
+
+
+def get_program_rules(program_id):
+    program_program_rules = list()
+    all_program_rules = d2.get(api_program_rules_query)
+    for program_rule in all_program_rules["programRules"]:
+        if program_rule['program']['id'] == program_id:
+            program_program_rules.append(program_rule['id'])
+    return program_program_rules
+
+
+def get_indicators():
+    indicators = list()
+    all_indicators = d2.get(api_indicators_query)
+    for indicator in all_indicators["indicators"]:
+        indicators.append(indicator)
+    return describe_indicators(indicators)
+
+
+def describe_indicators(indicator):
+    return '\n'.join(describe_indicator(x) for x in indicator)
+
+
+def describe_indicator(indicator):
+    try:
+        name = indicator['name']
+        numerator = "numerator: " + indicator['numerator']
+        denominator = "denominator: " + indicator['denominator']
+        id = indicator['id']
+        return """%s (%s):
+  %s -->
+    %s""" % (name, id, numerator, denominator)
+        return '%s (%s)' % (name, id)
+    except KeyError:
+        return '***%s***' % indicator  # could not find it
 
 
 def describe_attributes(attributes):
@@ -223,7 +266,7 @@ def describe_program_indicator(program_indicator_id):
         var = d2.get_object(program_indicator_id)
         name = var['name']
         extra = '\n expression: %s' % var['filter']
-        extra += '\n filter: %s' % var['filter']
+            extra += '\n filter: %s' % var['filter']
 
         return '%s (%s) -->%s' % (name, program_indicator_id, extra)
     except KeyError:
