@@ -265,9 +265,11 @@ def describe_program_indicator(program_indicator_id):
     try:
         var = d2.get_object(program_indicator_id)
         name = var['name']
-        extra = '\n expression: %s' % var['filter']
+        extra = ""
+        if('expression' in var.keys()):
+            extra = '\n expression: %s' % var['expression']
+        if ('filter' in var.keys()):
             extra += '\n filter: %s' % var['filter']
-
         return '%s (%s) -->%s' % (name, program_indicator_id, extra)
     except KeyError:
         return '***%s***' % program_indicator_id  # could not find it
