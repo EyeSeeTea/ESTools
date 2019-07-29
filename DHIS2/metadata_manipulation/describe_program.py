@@ -11,9 +11,11 @@ Get a description of a program.
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
 
 import dhis2 as d2
+import json
 
 api_program_rules_query = "programRules.json?fields=id,program&paging=false"
 api_indicators_query = "indicators?filter=name:$like:ETA&fields=[id,name,numerator,denominator]&paging=false"
+api_validator_query = "validationRules?%s&paging=false"
 
 
 def main():
@@ -21,24 +23,67 @@ def main():
 
     d2.USER = args.user
     d2.URLBASE = args.urlbase
+    if args.type.lower() == "program":
+        result = describe_program(args.program)
+    elif args.type.lower() == "validationrules":
+        result = get_validation_rules(args.filter)
 
-    program = describe_program(args.program)
     if args.output:
-        open(args.output, 'wt').write(program + '\n')
+        open(args.output, 'wt').write(result + '\n')
     else:
-        print(program)
+        print(result)
+
+
+def describe_validation_rules(validation_rule):
+    return '\n'.join(describe_validation_rule(x) for x in validation_rule)
 
 
 def get_args():
     parser = ArgumentParser(description=__doc__, formatter_class=fmt)
     add = parser.add_argument  # shortcut
     add('program', help='id of the program to describe')
+    add('-f', '--filter', metavar='filter', default='filter=name:$like:Mod&fields=[id,name,operator,periodType,instruction,leftSide,rightSide,notificationTemplates]',
+        help='filter, for example:  filter=name:$like:Mod')
+    add('-t', '--type', metavar='program', default='program',
+        help='program or validationrules')
     add('-o', '--output', help='output file')
     add('-u', '--user', metavar='USER:PASSWORD', required=True,
         help='username and password for server authentication')
     add('--urlbase', default='https://extranet-uat.who.int/dhis2',
         help='base url of the dhis server')
     return parser.parse_args()
+
+
+def get_validation_rules(filter):
+    try:
+        api_call = api_validator_query % filter
+        validation_rules = describe_validation_rules(d2.get(api_call)["validationRules"])
+        return """
+ValidationRules
+  %s""" % (validation_rules.replace('\n', '\n  '))
+    except KeyError:
+        return '***%s***' % filter  # could not find it
+
+
+def describe_validation_rule(validation_rule):
+    try:
+        name = validation_rule['name']
+        operator = "operator: " + validation_rule['operator']
+        if "leftSide" in validation_rule.keys():
+            leftSide = "leftSide: " + json.dumps(validation_rule['leftSide'])
+        if "rightSide" in validation_rule.keys():
+            rightSide = "rightSide: " + json.dumps(validation_rule['rightSide'])
+        if "notificationTemplates" in validation_rule.keys():
+            notificationTemplates = "notificationTemplates: " + json.dumps(validation_rule['notificationTemplates'])
+        id = validation_rule['id']
+        return """%s (%s):
+  %s -->
+    %s
+    %s
+    %s""" % (name, id, operator, leftSide, rightSide, notificationTemplates)
+        return '%s (%s)' % (name, id)
+    except KeyError:
+        return '***%s***' % id  # could not find it
 
 
 def describe_program(program_id):
