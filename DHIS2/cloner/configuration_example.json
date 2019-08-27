@@ -33,6 +33,12 @@
             "action": "addRolesFromTemplate",
             "addRolesFromTemplate": "teacher.template"
         },
+        {
+            "selectUsernames": ["guest"],
+            "selectFromGroups": ["program1"],
+            "action": "removeFromGroups",
+            "removeFromGroups": ["program1"]
+        },
         "https://raw.githubusercontent.com/EyeSeeTea/ESTools/master/DHIS2/cloner/configuration_example_only_postprocess.json"
     ]
 }
