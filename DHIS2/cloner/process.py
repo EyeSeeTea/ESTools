@@ -104,7 +104,7 @@ def execute(api, entry, cfg, import_dir):
         raise ValueError('Unknown action: %s' % action)
 
 
-def wait_for_server(api, delay=30, timeout=300):
+def wait_for_server(api, delay=90, timeout=900):
     "Sleep until server is ready to accept requests"
     debug('Check active API: %s' % api.api_url)
     time.sleep(delay)  # in case tomcat is still starting
@@ -251,7 +251,7 @@ def change_server_name(api, new_name):
         debug('No new name provided - Cancelling server name change')
         return []
 
-    response = api.post('/26/systemSettings/applicationTitle',
+    response = api.post('/30/systemSettings/applicationTitle',
                         '%s' % ''.join(new_name), contenttype='text/plain')
 
     debug('change server result: %s' % response['message'])
