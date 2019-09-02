@@ -41,7 +41,7 @@ def get_args():
     "Return arguments"
     parser = argparse.ArgumentParser(description=__doc__)
     add = parser.add_argument  # shortcut
-    add('--price', type=int, action='store', nargs='+', help="hourly rate")
+    add('--price', type=int, action='store', nargs='+', help="hourly rate (can be single value or one per hour entry)")
     add('--hours', type=float, default=[], nargs='+', help="hours dedicated per month")
     add('--extra', type=float, default=0.0, help="extra expenses (platzi)")
     add('--no-color', action='store_true', help="don't use colored output")
