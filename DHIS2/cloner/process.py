@@ -5,7 +5,7 @@ Example:
 
   import dhis2api
   import process
-  api = dhis2apis.Dhis2Api('http://localhost:8080/api',
+  api = dhis2api.Dhis2Api('http://localhost:8080/api',
                            username='admin', password='district')
   users = process.select_users(api, usernames=['test.dataentry'])
   process.add_roles(api, users, ['role1', 'role2'])
@@ -104,11 +104,13 @@ def execute(api, entry, cfg, import_dir):
         import_json(api, files)
     elif action == 'changeServerName':
         change_server_name(api, get('changeServerName'))
+    elif action == 'removeFromGroups':
+        remove_groups(api, users, get('removeFromGroups'))
     else:
         raise ValueError('Unknown action: %s' % action)
 
 
-def wait_for_server(api, delay=30, timeout=300):
+def wait_for_server(api, delay=90, timeout=900):
     "Sleep until server is ready to accept requests"
     debug('Check active API: %s' % api.api_url)
     time.sleep(delay)  # in case tomcat is still starting
@@ -179,6 +181,19 @@ def add_roles(api, users, roles_to_add):
         roles = unique(get_roles(user) + roles_to_add)
         user['userCredentials']['userRoles'] = roles
         api.put('/users/' + user['id'], user)
+
+
+def remove_groups(api, users, groups_to_remove_from):
+    debug('Removing %d users from %d groups...' %
+          (len(users), len(groups_to_remove_from)))
+    response = api.get('/userGroups', {
+        'paging': False,
+        'filter': 'name:in:[%s]' % ','.join(groups_to_remove_from),
+        'fields': ('id,name,users')})
+    for group in response['userGroups']:
+        group['users'] = [user for user in group['users']
+                          if user not in map(lambda element: pick(element, ['id']), users)]
+        api.put('/userGroups/' + group['id'], group)
 
 
 def get_username(user):
@@ -255,7 +270,7 @@ def change_server_name(api, new_name):
         debug('No new name provided - Cancelling server name change')
         return []
 
-    response = api.post('/26/systemSettings/applicationTitle',
+    response = api.post('/30/systemSettings/applicationTitle',
                         '%s' % ''.join(new_name), contenttype='text/plain')
 
     debug('change server result: %s' % response['message'])
@@ -328,6 +343,13 @@ def import_data_set(cfg, file):
     }, payload=file_to_import)
 
     return response
+
+
+def pick(element, properties):
+    result = {}
+    for property in properties:
+        result[property] = element[property]
+    return result
 
 
 def unique(xs):
