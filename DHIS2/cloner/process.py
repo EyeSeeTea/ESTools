@@ -129,9 +129,14 @@ def select_users(api, usernames, users_from_group_names):
 
 def activate(api, users):
     debug('Activating %d user(s)...' % len(users))
+    users_limited_by_50 = list()
     for user in users:
         user['userCredentials']['disabled'] = False
-        api.put('/users/' + user['id'], user)
+        users_limited_by_50.append(user)
+        if len(users_limited_by_50) == 50:
+            debug('Activating %d user(s)...' % len(users_limited_by_50))
+            api.post('/metadata?importStrategy=CREATE_AND_UPDATE&mergeMode=REPLACE', {"users": users_limited_by_50})
+            users_limited_by_50 = list()
 
 
 def delete_others(api, users):
