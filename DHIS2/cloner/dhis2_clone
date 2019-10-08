@@ -357,7 +357,7 @@ def run_sql(db_local, post_sql):
 def import_keep_data(cfg, folder, keep_data):
     for data in keep_data:
         if data['type'] == 'dataset':
-            debug('Importing dataset: ou %s program %s' % (data['ou_uid'], data['dataset_uid']))<Down>
+            debug('Importing dataset: ou %s program %s' % (data['ou_uid'], data['dataset_uid']))
             file = folder + "/" + data['dataset_uid']+data['ou_uid']+".json"
             response = process.import_data_set(cfg, file)
             if response.get('status') == 'OK':
