@@ -346,7 +346,9 @@ def export_data_set(start_date, end_date, ou_uid, dataset_uid, cfg):
     return response
 
 
-def import_data_set(cfg, file):
+def import_data_set(cfg, file, data):
+    debug('Importing dataset: ou %s program %s' % (data['ou_uid'], data['dataset_uid']))
+
     api = dhis2api.Dhis2Api(cfg['url'], cfg['username'], cfg['password'])
 
     wait_for_server(api)
@@ -357,6 +359,10 @@ def import_data_set(cfg, file):
                    '&strategy=NEW_AND_UPDATES&format=json&async=true', params={
     }, payload=file_to_import)
 
+    if response.get('status') == 'OK':
+        debug(data['dataset_uid'] + "-" + data['ou_uid'] + ".json imported")
+    else:
+        debug(data['dataset_uid'] + "-" + data['ou_uid'] + ".json failed")
     return response
 
 
