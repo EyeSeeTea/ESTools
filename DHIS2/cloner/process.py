@@ -128,25 +128,11 @@ def select_users(api, usernames, users_from_group_names):
 
 
 def activate(api, users):
-    debug('Activating %d user(s)...' % len(users))
-    users_limited_by_50 = list()
-    count = 0
-    for user in users:
-        user['userCredentials']['disabled'] = False
-        users_limited_by_50.append(user)
-        last_count_position=count
-        if len(users_limited_by_50) == 50:
-            count = count + len(users_limited_by_50)
-            post_activate(api, last_count_position, count, users_limited_by_50)
-            users_limited_by_50 = list()
-    if len(users_limited_by_50) > 0:
-        count = count + len(users_limited_by_50)
-        post_activate(api, last_count_position, count, users_limited_by_50)
-
-
-def post_activate(api, last_count_position, count, users_limited_by_50):
-    debug('Activating from %d to %d ...' % (last_count_position, count))
-    api.post('/metadata?importStrategy=CREATE_AND_UPDATE&mergeMode=REPLACE', {"users": users_limited_by_50})
+    group = 250
+    print('Activating %d user(s) in groups of %d ...' % (len(users), group))
+    for i in range(0, len(users), group):
+        print('Activating from %d to %d ...' % (i, min(len(users), i + group)))
+        api.post('/metadata?importStrategy=CREATE_AND_UPDATE&mergeMode=REPLACE', { "users": users[i:i+group] })
 
 
 def delete_others(api, users):
