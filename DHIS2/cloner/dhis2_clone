@@ -66,6 +66,10 @@ def main():
 
     if not args.manual_restart:
         start_tomcat(dir_local)
+
+        if cfg['keep_data']:
+            import_keep_data(cfg['api_local'], cfg['keep_data_folder'], cfg['keep_data'])
+
         import_dir = cfg['post_process_import_dir'] if 'post_process_import_dir' in cfg else None
         if args.no_postprocess:
             log('No postprocessing done, as requested.')
@@ -78,8 +82,6 @@ def main():
         if args.post_clone_scripts:
             execute_scripts(cfg['post_clone_scripts_dir'], is_post_tomcat=True)
 
-        if cfg['keep_data']:
-            import_keep_data(cfg['api_local'], cfg['keep_data_folder'], cfg['keep_data'])
     else:
         log('Server not started automatically, as requested.')
         log('No postprocessing done.')
