@@ -37,13 +37,16 @@ def main():
                             for user in item_row["userGroupAccesses"]:
                                 item_row["usergroupnames"].append(user_group_id_name[user["id"]])
                         if match:
-                            csv_final_file.writerow([key, item_row["name"], item_row["id"], ' || '.join(item_row["usergroupnames"])])
+                            public_access = None
+                            if 'publicAccess' in item_row.keys():
+                                public_access = item_row['publicAccess']
+                            csv_final_file.writerow([key, item_row["name"], item_row["id"], ' || '.join(item_row["usergroupnames"]), public_access])
 
 
 def create_csv(file):
     import csv
     csv_final_file = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    csv_final_file.writerow(['type', 'name', 'uid', 'usergroups'])
+    csv_final_file.writerow(['type', 'name', 'uid', 'usergroups', 'publicAccess'])
     return csv_final_file
 
 
