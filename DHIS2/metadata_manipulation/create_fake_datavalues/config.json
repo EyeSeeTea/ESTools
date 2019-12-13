@@ -1,42 +1,231 @@
 {
 	"config": {
-		"output_prefix": "datavalues",
-		"max_data_value_by_file": "5000",
-		"default_category_option_combo": "Xr12mI7VPn3",
-		"default_attribute_option_combo": "Xr12mI7VPn3",
+		"output_prefix": "datavalues_cc",
+		"max_data_value_by_file": "10000",
+		"default_category_option_combo": "HllvX50cXC0",
+		"default_attribute_option_combo": "HllvX50cXC0",
 		"user": "",
 		"password": "",
 		"url": "http://localhost:8083"
 	},
-	"datasets": [{
-		"id": "uid",
-		"period_type": "daily",
-		"start_date": "2018-11-11",
-		"end_date": "2019-12-12",
+	"datasets": [ {
+		"id": "VEM58nY22sO",
+		"period_type": "monthly",
+		"start_date": "2016-01-01",
+		"end_date": "2019-01-01",
 		"data_elements": [{
-				"id": "uid",
-				"coc": "uid",
-				"aoc": "uid",
+				"id": "GxlrIgMyEf4",
+				"coc": "oPcWGgS2Liz",
+				"rule": "malaria_cases"
+			},{
+				"id": "GxlrIgMyEf4",
+				"coc": "rtfSaMjPyq6",
+				"rule": "malaria_cases"
+			},{
+				"id": "GxlrIgMyEf4",
+				"coc": "hF0pQZIn6Ch",
+				"rule": "malaria_cases"
+			},{
+				"id": "S9nIxTMWplW",
+				"coc": "HllvX50cXC0",
+				"rule": "malaria_cases_pregnant"
+			}
+		],
+		"orgunits": [{
+			"id": "E4h5WBOg71F"
+		}]
+	},{
+		"id": "qNtxTrp56wV",
+		"period_type": "yearly",
+		"start_date": "2016-01-01",
+		"end_date": "2019-01-01",
+		"data_elements": [{
+				"id": "dFaBg0HpoIL",
+				"coc": "oPcWGgS2Liz",
+				"rule": "total_by_age"
+			},{
+				"id": "dFaBg0HpoIL",
+				"coc": "rtfSaMjPyq6",
+				"rule": "total_by_age"
+			},{
+				"id": "dFaBg0HpoIL",
+				"coc": "hF0pQZIn6Ch",
+				"rule": "total_by_age"
+			},{
+				"id": "NywGy6uMS5r",
+				"coc": "HllvX50cXC0",
+				"rule": "rand_percent"
+			}
+		],
+		"orgunits": [{
+			"id": "E4h5WBOg71F"
+		}]
+	},{
+		"id": "L6JenrS1kgt",
+		"period_type": "daily",
+		"start_date": "2018-11-01",
+		"end_date": "2019-12-10",
+		"data_elements": [{
+				"id": "uWYGA1xiwuZ",
+				"coc": "HllvX50cXC0",
+				"aoc": "HllvX50cXC0",
 				"rule": "rain"
 			},
 			{
-				"id": "uid",
+				"id": "RSJpUZqMoxC",
 				"rule": "temp"
 			}
 		],
 		"orgunits": [{
-			"id": "uid"
-		}, {
-			"id": "uid"
+			"id": "E4h5WBOg71F"
 		}]
 	}],
 	"rules": [{
-		"key": "temp",
-		"limit_up": "40",
-		"limit_down": "0"
+		"malaria_cases": {
+			"type": "malaria_cases",
+			"limit_up": "50",
+			"limit_down": "1",
+			"items": [{
+				"increase_month": "11",
+				"limit_up": "150",
+				"limit_down": "50"
+			}, {
+				"increase_month": "12",
+				"limit_up": "270",
+				"limit_down": "170"
+			}, {
+				"increase_month": "01",
+				"limit_up": "150",
+				"limit_down": "50"
+			}]
+		}
+	},{
+		"rand_percent": {
+			"type": "rand_percent",
+			"limit_up": "94",
+			"limit_down": "85",
+			"years": {
+				"2019": "17067171",
+				"2018": "16517220",
+				"2017": "15975765",
+				"2016": "15442824"
+			}
+		}
+	},{
+		"total_by_age": {
+			"type": "coc_percentage_yearly",
+			"years": {
+				"2019": "17067171",
+				"2018": "16517220",
+				"2017": "15975765",
+				"2016": "15442824"
+			},
+			"items": [{
+				"name": "0-4 years",
+				"coc": "oPcWGgS2Liz",
+				"percentage": "20.5"
+			}, {
+				"name": "5-14 years",
+				"coc": "rtfSaMjPyq6",
+				"percentage": "16.5"
+			}, {
+				"name": "15+",
+				"coc": "hF0pQZIn6Ch",
+				"percentage": "63"
+			}]
+		}
 	}, {
-		"key": "rain",
-		"limit_up": "32",
-		"limit_down": "0"
+		"temp": {
+			"type": "rand_limits",
+			"items": [{
+				"month": "01",
+				"limit_up": "21.4",
+				"limit_down": "32.7"
+			}, {
+				"month": "02",
+				"limit_up": "22.3",
+				"limit_down": "34.1"
+			}, {
+				"month": "03",
+				"limit_up": "23.5",
+				"limit_down": "33.9"
+			}, {
+				"month": "04",
+				"limit_up": "23.4",
+				"limit_down": "33.3"
+			}, {
+				"month": "05",
+				"limit_up": "22.9",
+				"limit_down": "32"
+			}, {
+				"month": "06",
+				"limit_up": "22.3",
+				"limit_down": "30.7"
+			}, {
+				"month": "07",
+				"limit_up": "22",
+				"limit_down": "29.1"
+			}, {
+				"month": "08",
+				"limit_up": "22.3",
+				"limit_down": "28.6"
+			}, {
+				"month": "09",
+				"limit_up": "21.9",
+				"limit_down": "30"
+			}, {
+				"month": "10",
+				"limit_up": "22.1",
+				"limit_down": "30.8"
+			}, {
+				"month": "11",
+				"limit_up": "22.2",
+				"limit_down": "32.1"
+			}, {
+				"month": "12",
+				"limit_up": "21.3",
+				"limit_down": "32.7"
+			}]
+		},
+		"rain": {
+			"type": "rand_total",
+			"items": [{
+				"month": "1",
+				"total": "18"
+			}, {
+				"month": "2",
+				"total": "32"
+			}, {
+				"month": "3",
+				"total": "91"
+			}, {
+				"month": "4",
+				"total": "152"
+			}, {
+				"month": "5",
+				"total": "250"
+			}, {
+				"month": "6",
+				"total": "295"
+			}, {
+				"month": "7",
+				"total": "295"
+			}, {
+				"month": "8",
+				"total": "291"
+			}, {
+				"month": "9",
+				"total": "329"
+			}, {
+				"month": "10",
+				"total": "323"
+			}, {
+				"month": "11",
+				"total": "63"
+			}, {
+				"month": "12",
+				"total": "13"
+			}]
+		}
 	}]
 }
