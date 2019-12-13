@@ -183,8 +183,12 @@ def get_value(dataset, dataelement, rules, date):
         date_key = item_key + get_date_key(date.year, date.month, date.day)
         if rule in rule_action.keys():
             print(rule_action[rule]["type"])
-
-            if rule_action[rule]["type"] == all_cases_admissions_increase:
+            all_cases_outpatient_percent_from_reference
+            if rule_action[rule]["type"] == all_cases_outpatient_percent_from_reference:
+                # sum two values and increase using random limits.
+                return calculate_all_cases_outpatient_percent_from_reference(active_total, dataelement, dataset, date, date_key,
+                                                                   rule, rule_action)
+            elif rule_action[rule]["type"] == all_cases_admissions_increase:
                 # sum two values and increase using random limits.
                 return calculate_all_cases_adminsion_increase_rule(active_total, dataelement, dataset, date, date_key,
                                                                    rule, rule_action)
@@ -326,6 +330,31 @@ def calculate_malaria_cases_sum_rule(active_total, dataelement, dataset, date, d
                          referenced_key[1])
         referenced_value[1] = active_total[referenced_item_key + get_date_key(date.year, date.month, "01")]
     active_total[date_key] = referenced_value[0] + referenced_value[1]
+    return active_total[date_key]
+
+def calculate_all_cases_outpatient_percent_from_reference(active_total, dataelement, dataset, date, date_key, rule, rule_action):
+    limit_up = rule_action[rule]["limit_up"]
+    limit_down = rule_action[rule]["limit_down"]
+    referenced_data_element = ""
+    referenced_coc = ""
+    referenced_key = ""
+    referenced_value = ""
+    for item in rule_action[rule]["items"]:
+        if item["active_data_element"] == dataelement["id"]:
+            if item["active_coc"] == dataelement["coc"]:
+                referenced_data_element = item["referenced_uid"]
+                referenced_coc = item["referenced_coc"]
+                referenced_key = item["referenced_key"]
+    if referenced_coc == "" or referenced_data_element == "":
+        print("referenced not found for:" + dataelement["id"] + " coc: " + dataelement["coc"])
+        return 0
+    else:
+        referenced_item_key = \
+            get_item_key(dataset, referenced_data_element, dataelement["orgUnit"], referenced_coc,
+                         referenced_key)
+        referenced_value = active_total[referenced_item_key + get_date_key(date.year, date.month, "01")]
+    active_total[date_key] = referenced_value + (
+        random.randint(int(limit_down), int(limit_up)))
     return active_total[date_key]
 
 
