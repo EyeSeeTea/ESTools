@@ -10,7 +10,7 @@ import argparse
 import random
 import numpy as np, numpy.random
 
-from cloner import dhis2api
+from DHIS2.cloner import dhis2api
 
 output_skell = {"dataValues": []}
 
@@ -167,7 +167,7 @@ def get_value(dataset, dataelement, rules, date):
     rule = dataelement["rule"]
     for rule_action in rules:
         item_key = dataset + "-" + dataelement["id"] + "-" + dataelement["orgUnit"] + "-" + dataelement["coc"] +"-" + rule
-        date_key = item_key+str(date.year) + "-" + get_month_with_zero_values(str(date.month)) + "-" + get_month_with_zero_values(str(date.day))
+        date_key = item_key + get_date_key(date.year, date.month, date.day)
         if rule in rule_action.keys():
             if rule_action[rule]["type"] == malaria_cases:
                 limit_down = rule_action[rule]["limit_down"]
@@ -180,7 +180,7 @@ def get_value(dataset, dataelement, rules, date):
                         extra_value = random.randint(int(limit_down), int(limit_up))
                         value = value + extra_value
 
-                active_total[item_key + str(date.year) + "-" + get_month_with_zero_values(str(date.month)) + "-" + "01"] = int(value)
+                active_total[item_key + get_date_key(date.year, date.month, "01")] = int(value)
                 return active_total[date_key]
 
             elif rule_action[rule]["type"] == rand_total:
@@ -219,10 +219,15 @@ def get_value(dataset, dataelement, rules, date):
     return 0
 
 
+def get_date_key(year, month, day):
+    return str(year) + "-" + get_month_with_zero_values(str(month)) + "-" + get_month_with_zero_values(
+        str(day))
+
+
 def get_percentage(date, item_key, percentage, total):
     value = round(int(float(total) * float(percentage)) / 100)
 
-    active_total[item_key + str(date.year) + "-" + get_month_with_zero_values(str(date.month)) + "-" + get_month_with_zero_values(str(date.day))] = int(value)
+    active_total[item_key + get_date_key(date.year, date.month, date.day)] = int(value)
     return active_total
 
 
@@ -234,7 +239,7 @@ def get_total_randomized_by_month_days(date, rule_item, item_key):
     listed = np.array(total_0_axis).tolist()
     day = 1
     for item in listed:
-        active_total[item_key + str(date.year)+"-"+get_month_with_zero_values(str(date.month))+ "-" +get_month_with_zero_values(str(day))] = (round(item, 2))
+        active_total[item_key + get_date_key(date.year, date.month, day)] = (round(item, 2))
         day = day + 1
     return active_total
 
@@ -243,14 +248,14 @@ def get_total_randomized_with_limits(date, rule_item, item_key):
     global active_total
 
     size = get_days(date)
-    active_total[item_key + str(date.year)+"-"+get_month_with_zero_values(str(date.month))+ "-" +get_month_with_zero_values(str(date.day))] = \
-            (round(random.uniform(float(rule_item["limit_down"]), float(rule_item["limit_up"])), 2))
+    active_total[item_key + get_date_key(date.year, date.month, date.day)] \
+        = (round(random.uniform(float(rule_item["limit_down"]), float(rule_item["limit_up"])), 2))
     rand_day = random.randint(1, size)
     other_rand = random.randint(1, size)
     while other_rand == rand_day:
         other_rand = random.randint(1, size)
-    active_total[item_key + str(date.year) + "-" + get_month_with_zero_values(str(date.month)) + "-" + get_month_with_zero_values(str(rand_day))] = rule_item["limit_down"]
-    active_total[item_key + str(date.year) + "-" + get_month_with_zero_values(str(date.month)) + "-" + get_month_with_zero_values(str(other_rand))] = rule_item["limit_up"]
+    active_total[item_key + get_date_key(date.year, date.month, rand_day)] = rule_item["limit_down"]
+    active_total[item_key + get_date_key(date.year, date.month, other_rand)] = rule_item["limit_up"]
 
     return active_total
 
