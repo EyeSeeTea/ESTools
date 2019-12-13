@@ -14,17 +14,53 @@
 		"start_date": "2016-01-01",
 		"end_date": "2019-01-01",
 		"data_elements": [{
+				"id": "cE8SDxizo5s",
+				"coc": "oPcWGgS2Liz",
+				"rule": "malaria_cases_admissions"
+			},{
+				"id": "cE8SDxizo5s",
+				"coc": "rtfSaMjPyq6",
+				"rule": "malaria_cases_admissions"
+			},{
+				"id": "cE8SDxizo5s",
+				"coc": "hF0pQZIn6Ch",
+				"rule": "malaria_cases_admissions"
+			},{
+				"id": "v0WZQQ6gKAX",
+				"coc": "oPcWGgS2Liz",
+				"rule": "malaria_cases_admissions"
+			},{
+				"id": "v0WZQQ6gKAX",
+				"coc": "rtfSaMjPyq6",
+				"rule": "malaria_cases_admissions"
+			},{
+				"id": "v0WZQQ6gKAX",
+				"coc": "hF0pQZIn6Ch",
+				"rule": "malaria_cases_admissions"
+			},{
+				"id": "kRasaq1REFp",
+				"coc": "oPcWGgS2Liz",
+				"rule": "malaria_cases_sum"
+			},{
+				"id": "kRasaq1REFp",
+				"coc": "rtfSaMjPyq6",
+				"rule": "malaria_cases_sum"
+			},{
+				"id": "kRasaq1REFp",
+				"coc": "hF0pQZIn6Ch",
+				"rule": "malaria_cases_sum"
+			},{
 				"id": "GxlrIgMyEf4",
 				"coc": "oPcWGgS2Liz",
-				"rule": "malaria_cases"
+				"rule": "referenced_percentage"
 			},{
 				"id": "GxlrIgMyEf4",
 				"coc": "rtfSaMjPyq6",
-				"rule": "malaria_cases"
+				"rule": "referenced_percentage"
 			},{
 				"id": "GxlrIgMyEf4",
 				"coc": "hF0pQZIn6Ch",
-				"rule": "malaria_cases"
+				"rule": "referenced_percentage"
 			},{
 				"id": "S9nIxTMWplW",
 				"coc": "HllvX50cXC0",
@@ -81,17 +117,70 @@
 		}]
 	}],
 	"rules": [{
-		"malaria_cases": {
-			"type": "malaria_cases",
-			"limit_up": "50",
-			"limit_down": "1",
+		"malaria_cases_sum": {
+			"type": "malaria_cases_sum",
+			"items": [{
+				"referenced_uid": "v0WZQQ6gKAX",
+				"referenced_coc": "oPcWGgS2Liz",
+				"referenced_uid2": "cE8SDxizo5s",
+				"referenced_coc2": "oPcWGgS2Liz",
+				"referenced_key": "malaria_cases_admissions",
+				"active_data_element": "kRasaq1REFp",
+				"active_coc": "oPcWGgS2Liz"
+			}, {
+				"referenced_uid": "v0WZQQ6gKAX",
+				"referenced_coc": "rtfSaMjPyq6",
+				"referenced_uid2": "cE8SDxizo5s",
+				"referenced_coc2": "rtfSaMjPyq6",
+				"referenced_key": "malaria_cases_admissions",
+				"active_data_element": "kRasaq1REFp",
+				"active_coc": "rtfSaMjPyq6"
+			}, {
+				"referenced_uid": "v0WZQQ6gKAX",
+				"referenced_coc": "hF0pQZIn6Ch",
+				"referenced_uid2": "cE8SDxizo5s",
+				"referenced_coc2": "hF0pQZIn6Ch",
+				"referenced_key": "malaria_cases_admissions",
+				"active_data_element": "kRasaq1REFp",
+				"active_coc": "hF0pQZIn6Ch"
+			}]
+		}
+	},{
+		"referenced_percentage": {
+			"type": "referenced_percentage",
+			"percentage": "4",
+			"items": [{
+				"referenced_uid": "v0WZQQ6gKAX",
+				"referenced_coc": "oPcWGgS2Liz",
+				"referenced_key": "malaria_cases_admissions",
+				"active_data_element": "GxlrIgMyEf4",
+				"active_coc": "oPcWGgS2Liz"
+			}, {
+				"referenced_uid": "v0WZQQ6gKAX",
+				"referenced_coc": "rtfSaMjPyq6",
+				"referenced_key": "malaria_cases_admissions",
+				"active_data_element": "GxlrIgMyEf4",
+				"active_coc": "rtfSaMjPyq6"
+			}, {
+				"referenced_uid": "v0WZQQ6gKAX",
+				"referenced_coc": "hF0pQZIn6Ch",
+				"referenced_key": "malaria_cases_admissions",
+				"active_data_element": "GxlrIgMyEf4",
+				"active_coc": "hF0pQZIn6Ch"
+			}]
+		}
+	},{
+		"malaria_cases_admissions": {
+			"type": "malaria_cases_admissions",
+			"limit_up": "150",
+			"limit_down": "50",
 			"items": [{
 				"increase_month": "11",
 				"limit_up": "150",
 				"limit_down": "50"
 			}, {
 				"increase_month": "12",
-				"limit_up": "270",
+				"limit_up": "210",
 				"limit_down": "170"
 			}, {
 				"increase_month": "01",

@@ -18,7 +18,8 @@ rand_limits = "rand_limits"
 rand_total = "rand_total"
 coc_percentage_yearly = "coc_percentage_yearly"
 rand_percent = "rand_percent"
-malaria_cases = "malaria_cases"
+malaria_cases_admissions = "malaria_cases_admissions"
+referenced_percentage = "referenced_percentage"
 
 daily ="daily"
 yearly = "yearly"
@@ -162,14 +163,18 @@ def get_days(date_value):
     return (date(date_value.year, date_value.month+1, 1) - date(date_value.year, date_value.month, 1)).days
 
 
+def get_item_key(dataset_id, dataelemet_id, orgunit_id, coc_id, rule):
+    return dataset_id + "-" + dataelemet_id + "-" + orgunit_id + "-" + coc_id + "-" + rule
+
+
 def get_value(dataset, dataelement, rules, date):
     global active_total
     rule = dataelement["rule"]
     for rule_action in rules:
-        item_key = dataset + "-" + dataelement["id"] + "-" + dataelement["orgUnit"] + "-" + dataelement["coc"] +"-" + rule
+        item_key = get_item_key(dataset, dataelement["id"], dataelement["orgUnit"], dataelement["coc"], rule)
         date_key = item_key + get_date_key(date.year, date.month, date.day)
         if rule in rule_action.keys():
-            if rule_action[rule]["type"] == malaria_cases:
+            if rule_action[rule]["type"] == malaria_cases_admissions:
                 limit_down = rule_action[rule]["limit_down"]
                 limit_up = rule_action[rule]["limit_up"]
                 value = random.randint(int(limit_down), int(limit_up))
@@ -181,6 +186,28 @@ def get_value(dataset, dataelement, rules, date):
                         value = value + extra_value
 
                 active_total[item_key + get_date_key(date.year, date.month, "01")] = int(value)
+                return active_total[date_key]
+            elif rule_action[rule]["type"] == referenced_percentage:
+                percentage = rule_action[rule]["percentage"]
+                referenced_data_element = ""
+                referenced_coc = ""
+                referenced_key = ""
+                for item in rule_action[rule]["items"]:
+                    if item["active_data_element"] == dataelement["id"]:
+                        if item["active_coc"] == dataelement["coc"]:
+                            referenced_data_element = item["referenced_uid"]
+                            referenced_coc = item["referenced_coc"]
+                            referenced_key = item["referenced_key"]
+
+                if referenced_coc == "" or referenced_data_element == "":
+                    print ("referenced not found for:" + dataelement["id"] + " coc: "+ dataelement["coc"])
+                    return 0
+                else:
+                    referenced_item_key =\
+                        get_item_key(dataset, referenced_data_element, dataelement["orgUnit"], referenced_coc, referenced_key)
+                    referenced_value = active_total[referenced_item_key + get_date_key(date.year, date.month, "01")]
+
+                get_percentage(date, item_key, percentage, referenced_value)
                 return active_total[date_key]
 
             elif rule_action[rule]["type"] == rand_total:
