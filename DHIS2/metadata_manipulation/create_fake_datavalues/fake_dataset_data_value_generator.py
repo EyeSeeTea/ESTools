@@ -14,16 +14,23 @@ from DHIS2.cloner import dhis2api
 
 output_skell = {"dataValues": []}
 
+#rules
 rand_limits = "rand_limits"
 rand_total = "rand_total"
 coc_percentage_yearly = "coc_percentage_yearly"
 rand_percent = "rand_percent"
 malaria_cases_admissions = "malaria_cases_admissions"
 referenced_percentage = "referenced_percentage"
+malaria_cases_sum = "malaria_cases_sum"
+all_cases_admissions_increase = "all_cases_admissions_increase"
+all_cases_outpatient_percent_from_reference = "all_cases_outpatient_percent_from_reference"
 
+#periods
 daily ="daily"
 yearly = "yearly"
 monthly = "monthly"
+
+#global key of values
 active_total = dict()
 
 
@@ -170,80 +177,189 @@ def get_item_key(dataset_id, dataelemet_id, orgunit_id, coc_id, rule):
 def get_value(dataset, dataelement, rules, date):
     global active_total
     rule = dataelement["rule"]
+
     for rule_action in rules:
         item_key = get_item_key(dataset, dataelement["id"], dataelement["orgUnit"], dataelement["coc"], rule)
         date_key = item_key + get_date_key(date.year, date.month, date.day)
         if rule in rule_action.keys():
-            if rule_action[rule]["type"] == malaria_cases_admissions:
-                limit_down = rule_action[rule]["limit_down"]
-                limit_up = rule_action[rule]["limit_up"]
-                value = random.randint(int(limit_down), int(limit_up))
-                for rule_item in rule_action[rule]["items"]:
-                    if rule_item["increase_month"] == get_month_with_zero_values(date.month):
-                        limit_down = rule_item["limit_down"]
-                        limit_up = rule_item["limit_up"]
-                        extra_value = random.randint(int(limit_down), int(limit_up))
-                        value = value + extra_value
+            print(rule_action[rule]["type"])
 
-                active_total[item_key + get_date_key(date.year, date.month, "01")] = int(value)
-                return active_total[date_key]
+            if rule_action[rule]["type"] == all_cases_admissions_increase:
+                # sum two values and increase using random limits.
+                return calculate_all_cases_adminsion_increase_rule(active_total, dataelement, dataset, date, date_key,
+                                                                   rule, rule_action)
+
+            elif rule_action[rule]["type"] == malaria_cases_sum:
+                # sum two existing values
+                return calculate_malaria_cases_sum_rule(active_total, dataelement, dataset, date, date_key, rule,
+                                                        rule_action)
+
+            elif rule_action[rule]["type"] == malaria_cases_admissions:
+                # generate random number with default random limits or month random increase based on limits
+                return calculate_malaria_cases_admissions(active_total, date, date_key, item_key, rule, rule_action)
+
             elif rule_action[rule]["type"] == referenced_percentage:
-                percentage = rule_action[rule]["percentage"]
-                referenced_data_element = ""
-                referenced_coc = ""
-                referenced_key = ""
-                for item in rule_action[rule]["items"]:
-                    if item["active_data_element"] == dataelement["id"]:
-                        if item["active_coc"] == dataelement["coc"]:
-                            referenced_data_element = item["referenced_uid"]
-                            referenced_coc = item["referenced_coc"]
-                            referenced_key = item["referenced_key"]
-
-                if referenced_coc == "" or referenced_data_element == "":
-                    print ("referenced not found for:" + dataelement["id"] + " coc: "+ dataelement["coc"])
-                    return 0
-                else:
-                    referenced_item_key =\
-                        get_item_key(dataset, referenced_data_element, dataelement["orgUnit"], referenced_coc, referenced_key)
-                    referenced_value = active_total[referenced_item_key + get_date_key(date.year, date.month, "01")]
-
-                get_percentage(date, item_key, percentage, referenced_value)
-                return active_total[date_key]
+                # calc percentage from existing value
+                return calculate_refernced_percentage_rule(active_total, dataelement, dataset, date, date_key, item_key,
+                                                           rule, rule_action)
 
             elif rule_action[rule]["type"] == rand_total:
-                for rule_item in rule_action[rule]["items"]:
-                    if int(rule_item["month"]) == date.month:
-                        if date_key not in active_total.keys():
-                            get_total_randomized_by_month_days(date, rule_item, item_key)
-                        return active_total[date_key]
+                # rand based on total number by month
+                return calculate_rand_total_rule(active_total, date, date_key, item_key, rule, rule_action)
 
             elif rule_action[rule]["type"] == rand_limits:
-                for rule_item in rule_action[rule]["items"]:
-                    if int(rule_item["month"]) == date.month:
-                        if date_key not in active_total.keys():
-                            get_total_randomized_with_limits(date, rule_item, item_key)
-                        return active_total[date_key]
+                # rand based on limits numbers by month
+                return calculate_rand_limits_rule(active_total, date, date_key, item_key, rule, rule_action)
 
             elif rule_action[rule]["type"] == coc_percentage_yearly:
-                items = rule_action[rule]["items"]
-                years = rule_action[rule]["years"]
-                total = years[str(date.year)]
-                for rule_item in items:
-                    if dataelement["coc"] == rule_item["coc"]:
-                        get_percentage(date, item_key, rule_item["percentage"], total)
-                        return active_total[date_key]
+                # calculate given percentage from given totals by year for yearly periods
+                return calculate_coc_percentage_yearly_rule(active_total, dataelement, date, date_key, item_key, rule,
+                                                            rule_action)
 
             elif rule_action[rule]["type"] == rand_percent:
-                limit_up = int(rule_action[rule]["limit_up"])
-                limit_down = int(rule_action[rule]["limit_down"])
-                random_percentage = random.randint(limit_down, limit_up)
-                years = rule_action[rule]["years"]
-                total = years[str(date.year)]
-                get_percentage(date, item_key, random_percentage, total)
-                return active_total[date_key]
+                return calculate_rand_percent_rule(active_total, date, date_key, item_key, rule, rule_action)
+            else:
+                print (rule_action[rule]["type"] + "not found")
 
     print ("not rule detected for %s" %(rule))
     return 0
+
+
+def calculate_rand_total_rule(active_total, date, date_key, item_key, rule, rule_action):
+    for rule_item in rule_action[rule]["items"]:
+        if int(rule_item["month"]) == date.month:
+            if date_key not in active_total.keys():
+                get_total_randomized_by_month_days(date, rule_item, item_key)
+    return active_total[date_key]
+
+
+def calculate_rand_limits_rule(active_total, date, date_key, item_key, rule, rule_action):
+    for rule_item in rule_action[rule]["items"]:
+        if int(rule_item["month"]) == date.month:
+            if date_key not in active_total.keys():
+                get_total_randomized_with_limits(date, rule_item, item_key)
+    return active_total[date_key]
+
+
+def calculate_coc_percentage_yearly_rule(active_total, dataelement, date, date_key, item_key, rule, rule_action):
+    items = rule_action[rule]["items"]
+    years = rule_action[rule]["years"]
+    total = years[str(date.year)]
+    for rule_item in items:
+        if dataelement["coc"] == rule_item["coc"]:
+            get_percentage(date, item_key, rule_item["percentage"], total)
+    return active_total[date_key]
+
+
+def calculate_rand_percent_rule(active_total, date, date_key, item_key, rule, rule_action):
+    # rand percentage based on total with limits for yearly periods
+    limit_up = int(rule_action[rule]["limit_up"])
+    limit_down = int(rule_action[rule]["limit_down"])
+    random_percentage = random.randint(limit_down, limit_up)
+    years = rule_action[rule]["years"]
+    total = years[str(date.year)]
+    get_percentage(date, item_key, random_percentage, total)
+    return active_total[date_key]
+
+
+def calculate_refernced_percentage_rule(active_total, dataelement, dataset, date, date_key, item_key, rule,
+                                        rule_action):
+    percentage = rule_action[rule]["percentage"]
+    referenced_data_element = ""
+    referenced_coc = ""
+    referenced_key = ""
+    for item in rule_action[rule]["items"]:
+        if item["active_data_element"] == dataelement["id"]:
+            if item["active_coc"] == dataelement["coc"]:
+                referenced_data_element = item["referenced_uid"]
+                referenced_coc = item["referenced_coc"]
+                referenced_key = item["referenced_key"]
+    if referenced_coc == "" or referenced_data_element == "":
+        print("referenced not found for:" + dataelement["id"] + " coc: " + dataelement["coc"])
+        return 0
+    else:
+        referenced_item_key = \
+            get_item_key(dataset, referenced_data_element, dataelement["orgUnit"], referenced_coc, referenced_key)
+        referenced_value = active_total[referenced_item_key + get_date_key(date.year, date.month, "01")]
+    get_percentage(date, item_key, percentage, referenced_value)
+    return active_total[date_key]
+
+
+def calculate_malaria_cases_admissions(active_total, date, date_key, item_key, rule, rule_action):
+    limit_down = rule_action[rule]["limit_down"]
+    limit_up = rule_action[rule]["limit_up"]
+    value = random.randint(int(limit_down), int(limit_up))
+    for rule_item in rule_action[rule]["items"]:
+        if rule_item["increase_month"] == get_month_with_zero_values(date.month):
+            limit_down = rule_item["limit_down"]
+            limit_up = rule_item["limit_up"]
+            extra_value = random.randint(int(limit_down), int(limit_up))
+            value = value + extra_value
+    active_total[item_key + get_date_key(date.year, date.month, "01")] = int(value)
+    return active_total[date_key]
+
+
+def calculate_malaria_cases_sum_rule(active_total, dataelement, dataset, date, date_key, rule, rule_action):
+    referenced_data_element = ['0', '0']
+    referenced_coc = ['0', '0']
+    referenced_key = ['0', '0']
+    referenced_value = ['0', '0']
+    for item in rule_action[rule]["items"]:
+        if item["active_data_element"] == dataelement["id"]:
+            if item["active_coc"] == dataelement["coc"]:
+                referenced_data_element[0] = item["referenced_uid"]
+                referenced_coc[0] = item["referenced_coc"]
+                referenced_key[0] = item["referenced_key"]
+                referenced_data_element[1] = item["referenced_uid2"]
+                referenced_coc[1] = item["referenced_coc2"]
+                referenced_key[1] = item["referenced_key2"]
+    if referenced_coc[0] == "0" or referenced_data_element[0] == "0":
+        print("referenced not found for:" + dataelement["id"] + " coc: " + dataelement["coc"])
+        return 0
+    else:
+        referenced_item_key = \
+            get_item_key(dataset, referenced_data_element[0], dataelement["orgUnit"], referenced_coc[0],
+                         referenced_key[0])
+        referenced_value[0] = active_total[referenced_item_key + get_date_key(date.year, date.month, "01")]
+        referenced_item_key = \
+            get_item_key(dataset, referenced_data_element[1], dataelement["orgUnit"], referenced_coc[1],
+                         referenced_key[1])
+        referenced_value[1] = active_total[referenced_item_key + get_date_key(date.year, date.month, "01")]
+    active_total[date_key] = referenced_value[0] + referenced_value[1]
+    return active_total[date_key]
+
+
+def calculate_all_cases_adminsion_increase_rule(active_total, dataelement, dataset, date, date_key, rule, rule_action):
+    limit_up = rule_action[rule]["limit_up"]
+    limit_down = rule_action[rule]["limit_down"]
+    referenced_data_element = ['0', '0']
+    referenced_coc = ['0', '0']
+    referenced_key = ['0', '0']
+    referenced_value = ['0', '0']
+    for item in rule_action[rule]["items"]:
+        if item["active_data_element"] == dataelement["id"]:
+            if item["active_coc"] == dataelement["coc"]:
+                referenced_data_element[0] = item["referenced_uid"]
+                referenced_coc[0] = item["referenced_coc"]
+                referenced_key[0] = item["referenced_key"]
+                referenced_data_element[1] = item["referenced_uid2"]
+                referenced_coc[1] = item["referenced_coc2"]
+                referenced_key[1] = item["referenced_key2"]
+    if referenced_coc[0] == "0" or referenced_data_element[0] == "0":
+        print("referenced not found for:" + dataelement["id"] + " coc: " + dataelement["coc"])
+        return 0
+    else:
+        referenced_item_key = \
+            get_item_key(dataset, referenced_data_element[0], dataelement["orgUnit"], referenced_coc[0],
+                         referenced_key[0])
+        referenced_value[0] = active_total[referenced_item_key + get_date_key(date.year, date.month, "01")]
+        referenced_item_key = \
+            get_item_key(dataset, referenced_data_element[1], dataelement["orgUnit"], referenced_coc[1],
+                         referenced_key[1])
+        referenced_value[1] = active_total[referenced_item_key + get_date_key(date.year, date.month, "01")]
+    active_total[date_key] = referenced_value[0] + referenced_value[1] + (
+        random.randint(int(limit_down), int(limit_up)))
+    return active_total[date_key]
 
 
 def get_date_key(year, month, day):
@@ -292,23 +408,23 @@ def generate_data_values(max_values, coc, aoc, data_sets, rules):
     data_values = list()
     data_values.append(copy.deepcopy(output_skell))
     for data_set in data_sets:
-            date_and_periods = get_dates(data_set["start_date"], data_set["end_date"], data_set["period_type"])
-            for date_and_period in date_and_periods:
-                for org_unit in data_set["orgunits"]:
-                    for data_element in data_set["data_elements"]:
-                        if "coc" in data_element.keys():
-                            coc = data_element["coc"]
-                        else:
-                            data_element["coc"] = coc
-                        if "aoc" in data_element.keys():
-                            aoc = data_element["aoc"]
-                        else:
-                            data_element["aoc"] = aoc
-                        data_element["orgUnit"] = org_unit["id"]
-                        data_value = get_data_value(data_element, data_set["id"], date_and_period, rules)
-                        count = check_data_value_limit(count, data_values, max_values)
-                        data_values[count]["dataValues"].append(data_value)
-                print (active_total)
+        date_and_periods = get_dates(data_set["start_date"], data_set["end_date"], data_set["period_type"])
+        for date_and_period in date_and_periods:
+            for org_unit in data_set["orgunits"]:
+                for data_element in data_set["data_elements"]:
+                    if "coc" in data_element.keys():
+                        coc = data_element["coc"]
+                    else:
+                        data_element["coc"] = coc
+                    if "aoc" in data_element.keys():
+                        aoc = data_element["aoc"]
+                    else:
+                        data_element["aoc"] = aoc
+                    data_element["orgUnit"] = org_unit["id"]
+                    data_value = get_data_value(data_element, data_set["id"], date_and_period, rules)
+                    count = check_data_value_limit(count, data_values, max_values)
+                    data_values[count]["dataValues"].append(data_value)
+            #print (active_total)
 
     return data_values
 
