@@ -177,7 +177,6 @@ def get_item_key(dataset_id, dataelemet_id, orgunit_id, coc_id, rule):
 def get_value(dataset, dataelement, rules, date):
     global active_total
     rule_key = dataelement["rule"]
-
     for rule_action in rules:
         if rule_action["rule_key"] != rule_key:
             continue
@@ -283,20 +282,21 @@ def calculate_referenced_percentage_by_sex(active_total, dataelement, dataset, d
                 sex_percentage = item["male_percent"]
             if item["female_coc"] == dataelement["coc"]:
                 referenced_data_element = item["referenced_uid"]
+                sex_percentage = item["female_percent"]
             if referenced_data_element != "":
                 referenced_coc = item["referenced_coc"]
                 referenced_key = item["referenced_key"]
-                sex_percentage = item["female_percent"]
     if referenced_coc == "" or referenced_data_element == "":
         print("referenced not found for:" + dataelement["id"] + " coc: " + dataelement["coc"] + "" + rule)
         return 0
     else:
-        referenced_item_key = \
-            get_item_key(dataset, referenced_data_element, dataelement["orgUnit"], referenced_coc, referenced_key)
-        referenced_value = active_total[referenced_item_key + get_date_key(date.year, date.month, "01")]
-    value = round(int(float(referenced_value) * float(percentage)) / 100)
-    get_percentage(date, item_key, sex_percentage, value)
-    return active_total[date_key]
+        referenced_item_key = get_item_key(dataset, referenced_data_element, dataelement["orgUnit"], referenced_coc, referenced_key)
+        referenced_complete_key = referenced_item_key + get_date_key(date.year, date.month, "01")
+        referenced_value = active_total[referenced_complete_key]
+        value = round(int(float(referenced_value) * float(percentage)) / 100)
+        value = round(int(float(value) * float(sex_percentage)) / 100)
+        active_total[item_key + get_date_key(date.year, date.month, date.day)] = int(value)
+        return active_total[date_key]
 
 
 def calculate_referenced_percentage_rule(active_total, dataelement, dataset, date, date_key, item_key, rule,
