@@ -25,6 +25,7 @@ referenced_percentage_by_sex = "referenced_percentage_by_sex"
 referenced_sum = "referenced_sum"
 referenced_sum_with_random_limits = "referenced_sum_with_random_limits"
 referenced_with_random_limits = "referenced_with_random_limits"
+referenced_percentage_with_cocs = "referenced_percentage_with_cocs"
 
 #periods
 daily ="daily"
@@ -180,8 +181,17 @@ def get_value(dataset, dataelement, rules, date):
     for rule_action in rules:
         if rule_action["rule_key"] != rule_key:
             continue
+        if rule_key == "Malaria_inpatients_pregnant":
+            print(rule_key)
         item_key = get_item_key(dataset, dataelement["id"], dataelement["orgUnit"], dataelement["coc"], rule_key)
         date_key = item_key + get_date_key(date.year, date.month, date.day)
+        if rule_action["type"] == referenced_percentage_with_cocs:
+            # sum of dataelement + cocs and apply percentage
+            return calculate_referenced_ce_cocs_and_percentage(active_total, dataelement, dataset, date, date_key, item_key, rule_action)
+
+        elif rule_action["type"] == referenced_percentage_by_sex:
+            # percentage of existing reference spited by sex
+            return calculate_referenced_percentage_by_sex(active_total, dataelement, dataset, date, date_key, item_key, rule_action)
 
         if rule_action["type"] == referenced_with_random_limits:
             # sum two values and increase using random limits.
@@ -207,6 +217,8 @@ def get_value(dataset, dataelement, rules, date):
                                                            rule_key, rule_action)
         elif rule_action["type"] == referenced_percentage:
             # percentage of existing reference
+            if rule_key == "malaria_deaths_pregnant":
+                print(rule_key)
             return calculate_referenced_percentage_rule(active_total, dataelement, dataset, date, date_key, item_key,
                                                             rule_key, rule_action)
         elif rule_action["type"] == rand_total:
@@ -220,7 +232,7 @@ def get_value(dataset, dataelement, rules, date):
         elif rule_action["type"] == coc_percentage_yearly:
             # calculate given percentage from given totals by year for yearly periods
             return calculate_coc_percentage_yearly_rule(active_total, dataelement, date, date_key, item_key, rule_key,
-                                                            rule_action)
+                                                        rule_action)
 
         elif rule_action["type"] == rand_percent:
             return calculate_rand_percent_rule(active_total, date, date_key, item_key, rule_key, rule_action)
@@ -229,6 +241,29 @@ def get_value(dataset, dataelement, rules, date):
 
     print ("not rule detected for %s" %(rule_key))
     return 0
+
+
+
+
+
+def calculate_referenced_ce_cocs_and_percentage(active_total, dataelement, dataset, date, date_key, item_key, rule_action):
+    percentage = rule_action["percentage"]
+    sum_of_references = 0
+    for item in rule_action["items"]:
+        if item["active_data_element"] == dataelement["id"]:
+            referenced_key = item["referenced_key"]
+            referenced_data_element = item["referenced_uid"]
+            for coc in item["referenced_cocs"]:
+                coc_id = coc["id"]
+                referenced_item_key = get_item_key(dataset, referenced_data_element, dataelement["orgUnit"],
+                                                   coc_id, referenced_key)
+                referenced_complete_key = referenced_item_key + get_date_key(date.year, date.month, "01")
+                referenced_value = active_total[referenced_complete_key]
+                sum_of_references = referenced_value+sum_of_references
+
+    value = round(int(float(sum_of_references) * float(percentage)) / 100)
+    active_total[date_key] = int(value)
+    return active_total[date_key]
 
 
 def calculate_rand_total_rule(active_total, date, date_key, item_key, rule, rule_action):
@@ -268,8 +303,7 @@ def calculate_rand_percent_rule(active_total, date, date_key, item_key, rule, ru
     return active_total[date_key]
 
 
-def calculate_referenced_percentage_by_sex(active_total, dataelement, dataset, date, date_key, item_key, rule,
-                                           rule_action):
+def calculate_referenced_percentage_by_sex(active_total, dataelement, dataset, date, date_key, item_key, rule_action):
     percentage = rule_action["percentage"]
     sex_percentage = ""
     referenced_data_element = ""
@@ -277,6 +311,7 @@ def calculate_referenced_percentage_by_sex(active_total, dataelement, dataset, d
     referenced_key = ""
     for item in rule_action["items"]:
         if item["active_data_element"] == dataelement["id"]:
+            referenced_key = item["referenced_key"]
             if item["male_coc"] == dataelement["coc"]:
                 referenced_data_element = item["referenced_uid"]
                 sex_percentage = item["male_percent"]
@@ -287,7 +322,7 @@ def calculate_referenced_percentage_by_sex(active_total, dataelement, dataset, d
                 referenced_coc = item["referenced_coc"]
                 referenced_key = item["referenced_key"]
     if referenced_coc == "" or referenced_data_element == "":
-        print("referenced not found for:" + dataelement["id"] + " coc: " + dataelement["coc"] + "" + rule)
+        print("referenced not found for:" + dataelement["id"] + " coc: " + dataelement["coc"] )
         return 0
     else:
         referenced_item_key = get_item_key(dataset, referenced_data_element, dataelement["orgUnit"], referenced_coc, referenced_key)
@@ -318,6 +353,7 @@ def calculate_referenced_percentage_rule(active_total, dataelement, dataset, dat
         referenced_item_key = \
             get_item_key(dataset, referenced_data_element, dataelement["orgUnit"], referenced_coc, referenced_key)
         referenced_value = active_total[referenced_item_key + get_date_key(date.year, date.month, "01")]
+
     get_percentage(date, item_key, percentage, referenced_value)
     return active_total[date_key]
 
@@ -430,7 +466,6 @@ def get_date_key(year, month, day):
 
 def get_percentage(date, item_key, percentage, total):
     value = round(int(float(total) * float(percentage)) / 100)
-
     active_total[item_key + get_date_key(date.year, date.month, date.day)] = int(value)
     return active_total
 
