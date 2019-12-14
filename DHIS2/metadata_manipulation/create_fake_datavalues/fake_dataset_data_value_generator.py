@@ -19,11 +19,12 @@ rand_limits = "rand_limits"
 rand_total = "rand_total"
 coc_percentage_yearly = "coc_percentage_yearly"
 rand_percent = "rand_percent"
-malaria_cases_admissions = "malaria_cases_admissions"
+rand_increase_by_month = "rand_increase_by_month"
 referenced_percentage = "referenced_percentage"
-malaria_cases_sum = "malaria_cases_sum"
-all_cases_admissions_increase = "all_cases_admissions_increase"
-all_cases_outpatient_percent_from_reference = "all_cases_outpatient_percent_from_reference"
+referenced_percentage_by_sex = "referenced_percentage_by_sex"
+referenced_sum = "referenced_sum"
+referenced_sum_with_random_limits = "referenced_sum_with_random_limits"
+referenced_with_random_limits = "referenced_with_random_limits"
 
 #periods
 daily ="daily"
@@ -164,7 +165,6 @@ def get_month_with_zero_values(month):
 
 def get_days(date_value):
     from datetime import date
-    print (date_value.month)
     if date_value.month == 12:
         return 31
     return (date(date_value.year, date_value.month+1, 1) - date(date_value.year, date_value.month, 1)).days
@@ -176,61 +176,64 @@ def get_item_key(dataset_id, dataelemet_id, orgunit_id, coc_id, rule):
 
 def get_value(dataset, dataelement, rules, date):
     global active_total
-    rule = dataelement["rule"]
+    rule_key = dataelement["rule"]
 
     for rule_action in rules:
-        item_key = get_item_key(dataset, dataelement["id"], dataelement["orgUnit"], dataelement["coc"], rule)
+        if rule_action["rule_key"] != rule_key:
+            continue
+        item_key = get_item_key(dataset, dataelement["id"], dataelement["orgUnit"], dataelement["coc"], rule_key)
         date_key = item_key + get_date_key(date.year, date.month, date.day)
-        if rule in rule_action.keys():
-            print(rule_action[rule]["type"])
-            all_cases_outpatient_percent_from_reference
-            if rule_action[rule]["type"] == all_cases_outpatient_percent_from_reference:
-                # sum two values and increase using random limits.
-                return calculate_all_cases_outpatient_percent_from_reference(active_total, dataelement, dataset, date, date_key,
-                                                                   rule, rule_action)
-            elif rule_action[rule]["type"] == all_cases_admissions_increase:
-                # sum two values and increase using random limits.
-                return calculate_all_cases_adminsion_increase_rule(active_total, dataelement, dataset, date, date_key,
-                                                                   rule, rule_action)
 
-            elif rule_action[rule]["type"] == malaria_cases_sum:
-                # sum two existing values
-                return calculate_malaria_cases_sum_rule(active_total, dataelement, dataset, date, date_key, rule,
-                                                        rule_action)
+        if rule_action["type"] == referenced_with_random_limits:
+            # sum two values and increase using random limits.
+            return calculate_referenced_sum_with_random_limit_increase(active_total, dataelement, dataset, date, date_key,
+                                                                           rule_key, rule_action)
+        elif rule_action["type"] == referenced_sum_with_random_limits:
+            # sum two values and increase using random limits.
+            return calculate_all_cases_adminsion_increase_rule(active_total, dataelement, dataset, date, date_key,
+                                                                   rule_key, rule_action)
 
-            elif rule_action[rule]["type"] == malaria_cases_admissions:
-                # generate random number with default random limits or month random increase based on limits
-                return calculate_malaria_cases_admissions(active_total, date, date_key, item_key, rule, rule_action)
+        elif rule_action["type"] == referenced_sum:
+            # sum two existing values
+            return calculate_referenced_sum_rule(active_total, dataelement, dataset, date, date_key, rule_key,
+                                                     rule_action)
 
-            elif rule_action[rule]["type"] == referenced_percentage:
-                # calc percentage from existing value
-                return calculate_refernced_percentage_rule(active_total, dataelement, dataset, date, date_key, item_key,
-                                                           rule, rule_action)
+        elif rule_action["type"] == rand_increase_by_month:
+            # generate random number with default random limits or month random increase based on limits
+            return calculate_malaria_cases_admissions(active_total, date, date_key, item_key, rule_action)
 
-            elif rule_action[rule]["type"] == rand_total:
-                # rand based on total number by month
-                return calculate_rand_total_rule(active_total, date, date_key, item_key, rule, rule_action)
+        elif rule_action["type"] == referenced_percentage_by_sex:
+            # percentage of existing reference spited by sex
+            return calculate_referenced_percentage_by_sex(active_total, dataelement, dataset, date, date_key, item_key,
+                                                           rule_key, rule_action)
+        elif rule_action["type"] == referenced_percentage:
+            # percentage of existing reference
+            return calculate_referenced_percentage_rule(active_total, dataelement, dataset, date, date_key, item_key,
+                                                            rule_key, rule_action)
+        elif rule_action["type"] == rand_total:
+            # rand based on total number by month
+            return calculate_rand_total_rule(active_total, date, date_key, item_key, rule_key, rule_action)
 
-            elif rule_action[rule]["type"] == rand_limits:
-                # rand based on limits numbers by month
-                return calculate_rand_limits_rule(active_total, date, date_key, item_key, rule, rule_action)
+        elif rule_action["type"] == rand_limits:
+            # rand based on limits numbers by month
+            return calculate_rand_limits_rule(active_total, date, date_key, item_key, rule_key, rule_action)
 
-            elif rule_action[rule]["type"] == coc_percentage_yearly:
-                # calculate given percentage from given totals by year for yearly periods
-                return calculate_coc_percentage_yearly_rule(active_total, dataelement, date, date_key, item_key, rule,
+        elif rule_action["type"] == coc_percentage_yearly:
+            # calculate given percentage from given totals by year for yearly periods
+            return calculate_coc_percentage_yearly_rule(active_total, dataelement, date, date_key, item_key, rule_key,
                                                             rule_action)
 
-            elif rule_action[rule]["type"] == rand_percent:
-                return calculate_rand_percent_rule(active_total, date, date_key, item_key, rule, rule_action)
-            else:
-                print (rule_action[rule]["type"] + "not found")
+        elif rule_action["type"] == rand_percent:
+            return calculate_rand_percent_rule(active_total, date, date_key, item_key, rule_key, rule_action)
+        else:
+            print (rule_action["type"] + "not found")
 
-    print ("not rule detected for %s" %(rule))
+    print ("not rule detected for %s" %(rule_key))
     return 0
 
 
 def calculate_rand_total_rule(active_total, date, date_key, item_key, rule, rule_action):
-    for rule_item in rule_action[rule]["items"]:
+    for rule_item in rule_action["items"]:
         if int(rule_item["month"]) == date.month:
             if date_key not in active_total.keys():
                 get_total_randomized_by_month_days(date, rule_item, item_key)
@@ -238,7 +241,7 @@ def calculate_rand_total_rule(active_total, date, date_key, item_key, rule, rule
 
 
 def calculate_rand_limits_rule(active_total, date, date_key, item_key, rule, rule_action):
-    for rule_item in rule_action[rule]["items"]:
+    for rule_item in rule_action["items"]:
         if int(rule_item["month"]) == date.month:
             if date_key not in active_total.keys():
                 get_total_randomized_with_limits(date, rule_item, item_key)
@@ -246,8 +249,8 @@ def calculate_rand_limits_rule(active_total, date, date_key, item_key, rule, rul
 
 
 def calculate_coc_percentage_yearly_rule(active_total, dataelement, date, date_key, item_key, rule, rule_action):
-    items = rule_action[rule]["items"]
-    years = rule_action[rule]["years"]
+    items = rule_action["items"]
+    years = rule_action["years"]
     total = years[str(date.year)]
     for rule_item in items:
         if dataelement["coc"] == rule_item["coc"]:
@@ -257,22 +260,52 @@ def calculate_coc_percentage_yearly_rule(active_total, dataelement, date, date_k
 
 def calculate_rand_percent_rule(active_total, date, date_key, item_key, rule, rule_action):
     # rand percentage based on total with limits for yearly periods
-    limit_up = int(rule_action[rule]["limit_up"])
-    limit_down = int(rule_action[rule]["limit_down"])
+    limit_up = int(rule_action["limit_up"])
+    limit_down = int(rule_action["limit_down"])
     random_percentage = random.randint(limit_down, limit_up)
-    years = rule_action[rule]["years"]
+    years = rule_action["years"]
     total = years[str(date.year)]
     get_percentage(date, item_key, random_percentage, total)
     return active_total[date_key]
 
 
-def calculate_refernced_percentage_rule(active_total, dataelement, dataset, date, date_key, item_key, rule,
-                                        rule_action):
-    percentage = rule_action[rule]["percentage"]
+def calculate_referenced_percentage_by_sex(active_total, dataelement, dataset, date, date_key, item_key, rule,
+                                           rule_action):
+    percentage = rule_action["percentage"]
+    sex_percentage = ""
     referenced_data_element = ""
     referenced_coc = ""
     referenced_key = ""
-    for item in rule_action[rule]["items"]:
+    for item in rule_action["items"]:
+        if item["active_data_element"] == dataelement["id"]:
+            if item["male_coc"] == dataelement["coc"]:
+                referenced_data_element = item["referenced_uid"]
+                sex_percentage = item["male_percent"]
+            if item["female_coc"] == dataelement["coc"]:
+                referenced_data_element = item["referenced_uid"]
+            if referenced_data_element != "":
+                referenced_coc = item["referenced_coc"]
+                referenced_key = item["referenced_key"]
+                sex_percentage = item["female_percent"]
+    if referenced_coc == "" or referenced_data_element == "":
+        print("referenced not found for:" + dataelement["id"] + " coc: " + dataelement["coc"] + "" + rule)
+        return 0
+    else:
+        referenced_item_key = \
+            get_item_key(dataset, referenced_data_element, dataelement["orgUnit"], referenced_coc, referenced_key)
+        referenced_value = active_total[referenced_item_key + get_date_key(date.year, date.month, "01")]
+    value = round(int(float(referenced_value) * float(percentage)) / 100)
+    get_percentage(date, item_key, sex_percentage, value)
+    return active_total[date_key]
+
+
+def calculate_referenced_percentage_rule(active_total, dataelement, dataset, date, date_key, item_key, rule,
+                                         rule_action):
+    percentage = rule_action["percentage"]
+    referenced_data_element = ""
+    referenced_coc = ""
+    referenced_key = ""
+    for item in rule_action["items"]:
         if item["active_data_element"] == dataelement["id"]:
             if item["active_coc"] == dataelement["coc"]:
                 referenced_data_element = item["referenced_uid"]
@@ -289,11 +322,11 @@ def calculate_refernced_percentage_rule(active_total, dataelement, dataset, date
     return active_total[date_key]
 
 
-def calculate_malaria_cases_admissions(active_total, date, date_key, item_key, rule, rule_action):
-    limit_down = rule_action[rule]["limit_down"]
-    limit_up = rule_action[rule]["limit_up"]
+def calculate_malaria_cases_admissions(active_total, date, date_key, item_key, rule_action):
+    limit_down = rule_action["limit_down"]
+    limit_up = rule_action["limit_up"]
     value = random.randint(int(limit_down), int(limit_up))
-    for rule_item in rule_action[rule]["items"]:
+    for rule_item in rule_action["items"]:
         if rule_item["increase_month"] == get_month_with_zero_values(date.month):
             limit_down = rule_item["limit_down"]
             limit_up = rule_item["limit_up"]
@@ -303,12 +336,12 @@ def calculate_malaria_cases_admissions(active_total, date, date_key, item_key, r
     return active_total[date_key]
 
 
-def calculate_malaria_cases_sum_rule(active_total, dataelement, dataset, date, date_key, rule, rule_action):
+def calculate_referenced_sum_rule(active_total, dataelement, dataset, date, date_key, rule, rule_action):
     referenced_data_element = ['0', '0']
     referenced_coc = ['0', '0']
     referenced_key = ['0', '0']
     referenced_value = ['0', '0']
-    for item in rule_action[rule]["items"]:
+    for item in rule_action["items"]:
         if item["active_data_element"] == dataelement["id"]:
             if item["active_coc"] == dataelement["coc"]:
                 referenced_data_element[0] = item["referenced_uid"]
@@ -332,14 +365,13 @@ def calculate_malaria_cases_sum_rule(active_total, dataelement, dataset, date, d
     active_total[date_key] = referenced_value[0] + referenced_value[1]
     return active_total[date_key]
 
-def calculate_all_cases_outpatient_percent_from_reference(active_total, dataelement, dataset, date, date_key, rule, rule_action):
-    limit_up = rule_action[rule]["limit_up"]
-    limit_down = rule_action[rule]["limit_down"]
+def calculate_referenced_sum_with_random_limit_increase(active_total, dataelement, dataset, date, date_key, rule, rule_action):
+    limit_up = rule_action["limit_up"]
+    limit_down = rule_action["limit_down"]
     referenced_data_element = ""
     referenced_coc = ""
     referenced_key = ""
-    referenced_value = ""
-    for item in rule_action[rule]["items"]:
+    for item in rule_action["items"]:
         if item["active_data_element"] == dataelement["id"]:
             if item["active_coc"] == dataelement["coc"]:
                 referenced_data_element = item["referenced_uid"]
@@ -359,13 +391,13 @@ def calculate_all_cases_outpatient_percent_from_reference(active_total, dataelem
 
 
 def calculate_all_cases_adminsion_increase_rule(active_total, dataelement, dataset, date, date_key, rule, rule_action):
-    limit_up = rule_action[rule]["limit_up"]
-    limit_down = rule_action[rule]["limit_down"]
+    limit_up = rule_action["limit_up"]
+    limit_down = rule_action["limit_down"]
     referenced_data_element = ['0', '0']
     referenced_coc = ['0', '0']
     referenced_key = ['0', '0']
     referenced_value = ['0', '0']
-    for item in rule_action[rule]["items"]:
+    for item in rule_action["items"]:
         if item["active_data_element"] == dataelement["id"]:
             if item["active_coc"] == dataelement["coc"]:
                 referenced_data_element[0] = item["referenced_uid"]
