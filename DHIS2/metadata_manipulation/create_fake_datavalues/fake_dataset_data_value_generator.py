@@ -19,6 +19,7 @@ rand_limits = "rand_limits"
 rand_total = "rand_total"
 coc_percentage_yearly = "coc_percentage_yearly"
 rand_percent = "rand_percent"
+rand_boolean = "rand_boolean"
 rand_increase_by_month = "rand_increase_by_month"
 referenced_percentage = "referenced_percentage"
 referenced_percentage_by_sex = "referenced_percentage_by_sex"
@@ -236,6 +237,9 @@ def get_value(dataset, dataelement, rules, date):
 
         elif rule_action["type"] == rand_percent:
             return calculate_rand_percent_rule(active_total, date, date_key, item_key, rule_key, rule_action)
+
+        elif rule_action["type"] == rand_boolean:
+            return calculate_rand_boolean_rule(active_total, date, date_key, item_key)
         else:
             print (rule_action["type"] + "not found")
 
@@ -292,6 +296,12 @@ def calculate_coc_percentage_yearly_rule(active_total, dataelement, date, date_k
     return active_total[date_key]
 
 
+def calculate_rand_boolean_rule(active_total, date, date_key, item_key):
+    # rand boolean
+    get_boolean(date, item_key)
+    return active_total[date_key]
+
+
 def calculate_rand_percent_rule(active_total, date, date_key, item_key, rule, rule_action):
     # rand percentage based on total with limits for yearly periods
     limit_up = int(rule_action["limit_up"])
@@ -309,8 +319,8 @@ def calculate_referenced_percentage_by_sex(active_total, dataelement, dataset, d
     referenced_data_element = ""
     referenced_coc = ""
     referenced_key = ""
-    print(rule_action)
-    if rule_action["rule_key"] == "referenced_percentage_by_sex_vivax_rdt_15":
+
+    if rule_action["rule_key"] == "investigated_0-4":
         print("debug")
     for item in rule_action["items"]:
         if item["active_data_element"] == dataelement["id"]:
@@ -334,7 +344,7 @@ def calculate_referenced_percentage_by_sex(active_total, dataelement, dataset, d
     referenced_item_key = get_item_key(dataset, referenced_data_element, dataelement["orgUnit"], referenced_coc, referenced_key)
     referenced_complete_key = referenced_item_key + get_date_key(date.year, date.month, "01")
     if referenced_complete_key not in active_total.keys():
-        print("debug")
+        print(rule_action)
     referenced_value = active_total[referenced_complete_key]
     value = round(int(float(referenced_value) * float(percentage)) / 100)
     value = round(int(float(value) * float(sex_percentage)) / 100)
@@ -470,6 +480,12 @@ def calculate_all_cases_adminsion_increase_rule(active_total, dataelement, datas
 def get_date_key(year, month, day):
     return str(year) + "-" + get_month_with_zero_values(str(month)) + "-" + get_month_with_zero_values(
         str(day))
+
+
+def get_boolean(date, item_key):
+    value = bool(random.getrandbits(1))
+    active_total[item_key + get_date_key(date.year, date.month, date.day)] = str(value)
+    return active_total
 
 
 def get_percentage(date, item_key, percentage, total):
