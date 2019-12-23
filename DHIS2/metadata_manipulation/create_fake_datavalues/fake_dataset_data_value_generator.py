@@ -279,10 +279,11 @@ def calculate_rand_total_rule(active_total, date, date_key, item_key, rule, rule
 
 
 def calculate_rand_limits_rule(active_total, date, date_key, item_key, rule, rule_action):
+    type = rule_action["output_type"]
     for rule_item in rule_action["items"]:
         if int(rule_item["month"]) == date.month:
             if date_key not in active_total.keys():
-                get_total_randomized_with_limits(date, rule_item, item_key)
+                get_total_randomized_with_limits(date, rule_item, item_key, type)
     return active_total[date_key]
 
 
@@ -507,12 +508,14 @@ def get_total_randomized_by_month_days(date, rule_item, item_key):
     return active_total
 
 
-def get_total_randomized_with_limits(date, rule_item, item_key):
+def get_total_randomized_with_limits(date, rule_item, item_key, type):
     global active_total
 
     size = get_days(date)
-    active_total[item_key + get_date_key(date.year, date.month, date.day)] \
-        = (round(random.uniform(float(rule_item["limit_down"]), float(rule_item["limit_up"])), 2))
+    value = (round(random.uniform(float(rule_item["limit_down"]), float(rule_item["limit_up"])), 2))
+    if type == "int":
+        value = int(value)
+    active_total[item_key + get_date_key(date.year, date.month, date.day)] = value
     rand_day = random.randint(1, size)
     other_rand = random.randint(1, size)
     while other_rand == rand_day:

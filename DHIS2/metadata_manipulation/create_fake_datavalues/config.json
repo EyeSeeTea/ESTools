@@ -1798,6 +1798,7 @@
 		{
 			"rule_key": "temp",
 			"type": "rand_limits",
+			"output_type": "float",
 			"items": [{
 					"month": "01",
 					"limit_up": "21.4",
@@ -1940,6 +1941,7 @@
 		{
 			"rule_key": "malaria_cases_guideline",
 			"type": "rand_limits",
+			"output_type": "int",
 			"items": [{
 					"month": "01",
 					"limit_up": "4000",
@@ -2005,6 +2007,7 @@
 		{
 			"rule_key": "malaria_cases_24",
 			"type": "rand_limits",
+			"output_type": "int",
 			"items": [{
 					"month": "01",
 					"limit_up": "4000",
