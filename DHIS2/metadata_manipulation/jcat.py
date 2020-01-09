@@ -320,7 +320,7 @@ def filter_parts(text, jfilter, multi=False):
             if not multi and current_field != '':
                 sys.exit('Error: multiple fields named "%s" in %s (you may run '
                          'with --multi)' % (jfilter.field, jfilter.part))
-            current_field = line.split('"')[3]  #   "field_name":"field_value"
+            current_field = line.split(':')[1].strip('"')
         else:  # keep adding to region
             current_region += line + '\n'
     return text_filtered
