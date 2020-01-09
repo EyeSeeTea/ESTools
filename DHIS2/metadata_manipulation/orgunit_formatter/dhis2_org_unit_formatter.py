@@ -16,7 +16,7 @@ def main():
         with open(file) as json_file:
             admin_1_org_units = json.load(json_file)
             reference_id = level - 3
-            parent_code, reference_id = get_parent_code(level, reference_id)
+            parent_code = get_parent_code(level, reference_id)
             name_col = ADM_VIZ_NAME % (str(reference_id))
             code_col = ADM_CODE % (str(reference_id))
 
