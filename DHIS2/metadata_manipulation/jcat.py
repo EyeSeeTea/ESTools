@@ -75,7 +75,10 @@ def main():
 
     text = fix(text)
 
-    write(args.output, text)
+    if args.stats:
+        print_stats(text)
+    else:
+        write(args.output, text)
 
 
 def get_args():
@@ -103,6 +106,7 @@ def get_args():
         default=['name', 'id', 'property'],
         help='fields to use for sorting the elements')
     add('-c', '--compact', action='store_true', help='output a compacted json')
+    add('-t', '--stats', action='store_true', help='print stats about json file instead of the file')
     args = parser.parse_args()
 
     sort_fields = args.sort_fields
@@ -222,6 +226,11 @@ def join(text, fname):
             text.update(value)
     return json.dumps(text, ensure_ascii=False)
 
+def print_stats(text):
+    "Prints the object keys and number of objects inside each collection at root level"
+    stats = json.loads(text)
+    for key, value in stats.items():
+        print("%s : %d objects" % (key, len(value)))
 
 def write(fname, text):
     if fname:
