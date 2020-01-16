@@ -6,7 +6,6 @@ ADM_VIZ_NAME = "ADM"+"%s"+"_VIZ_NAME"
 ADM_CODE = "ADM"+"%s"+"_CODE"
 new_org = list()
 
-
 def main():
     args = get_args()
     root_org_unit = args.root
@@ -71,12 +70,17 @@ def create_org_unit(org_unit, name_col, code_col, level, parent_col, root_org_un
         for org_unit_formatted in new_org:
             if org_unit_formatted["code"] == org_unit['properties'][parent_col]:
                 parent = org_unit_formatted["id"]
-
+    import datetime
+    date_object = datetime.date.today()
     formated_org_unit = {"id": id, "level": level, "name": name, "shortName": short_name,
                          "code": code, "leaf": False,
                          "featureType": featureType, "coordinates": coordinates,
                          "openingDate": "1970-01-01T00:00:00.000", "parent": {"id": parent},
-                         "translations": []}
+                         "translations": [],
+                         "attributeValues": [{"value": "Polio geodatabase, ["+str(date_object)+"]",
+                                              "attribute": {"id": "LmiNNUPlMxI", "name": "Org unit Source"}},
+                                             {"value": "Polio geodatabase, ["+str(date_object)+"]",
+                                              "attribute": {"id": "CxPTd6iKfUK", "name": "Shapefile source"}}]                         }
 
     add_translation(org_unit, formated_org_unit, "ARABIC", "ar")
     add_translation(org_unit, formated_org_unit, "SPANISH", "sp")
