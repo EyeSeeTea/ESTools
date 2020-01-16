@@ -80,7 +80,7 @@ def create_org_unit(org_unit, name_col, code_col, level, parent_col, root_org_un
                          "attributeValues": [{"value": "Polio geodatabase, ["+str(date_object)+"]",
                                               "attribute": {"id": "LmiNNUPlMxI", "name": "Org unit Source"}},
                                              {"value": "Polio geodatabase, ["+str(date_object)+"]",
-                                              "attribute": {"id": "CxPTd6iKfUK", "name": "Shapefile source"}}]                         }
+                                              "attribute": {"id": "CxPTd6iKfUK", "name": "Shapefile source"}}]}
 
     add_translation(org_unit, formated_org_unit, "ARABIC", "ar")
     add_translation(org_unit, formated_org_unit, "SPANISH", "sp")
