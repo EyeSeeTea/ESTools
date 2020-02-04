@@ -13,13 +13,19 @@ from colorama import Style
 COLOR = True
 price = 0.0
 hours = []
+irpf = 15.0
+iva = 21.0
 
 def main():
     global COLOR
+    global irpf
+    global iva
 
     args = get_args()
     hours = args.hours
     price = 0.0
+    irpf = args.irpf
+    iva = args.iva
 
     if 0.0 in args.price:
         print('ERROR: slaves are forbidden, please pay them something different from zero')
@@ -45,6 +51,8 @@ def get_args():
     add('--hours', type=float, default=[], nargs='+', help="hours dedicated per month")
     add('--extra', type=float, default=0.0, help="extra expenses (platzi)")
     add('--no-color', action='store_true', help="don't use colored output")
+    add('--irpf', type=float, action='store', default=15.0, help="IRPF deduction in percentage")
+    add('--iva', type=float, action='store', default=21.0, help="IVA in percentage")
     return parser.parse_args()
 
 
@@ -69,6 +77,15 @@ def print_invoice(prices, hours, extra=0.0):
 
     print('Extra: %s' % extra)
     total += extra
+    base = total
+    print('Base: %s' % total)
+    irpf_total = base * irpf / 100.0
+    iva_total = base * iva / 100.0
+    irpf_text = 'IRPF: -%s' % irpf_total
+    print(red(irpf_text) if COLOR else irpf_text)
+    print('IVA: %s' % iva_total)
+    total += iva_total
+    total -= irpf_total
     out = 'TOTAL: %s' % total
     print (green(out) if COLOR else out)
     print ('-----------')
