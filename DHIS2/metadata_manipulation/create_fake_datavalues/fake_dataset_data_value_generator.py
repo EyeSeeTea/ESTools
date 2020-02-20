@@ -182,8 +182,6 @@ def get_value(dataset, dataelement, rules, date):
     for rule_action in rules:
         if rule_action["rule_key"] != rule_key:
             continue
-        if rule_key == "Malaria_inpatients_pregnant":
-            print(rule_key)
         item_key = get_item_key(dataset, dataelement["id"], dataelement["orgUnit"], dataelement["coc"], rule_key)
         date_key = item_key + get_date_key(date.year, date.month, date.day)
         if rule_action["type"] == referenced_percentage_with_cocs:
@@ -218,8 +216,6 @@ def get_value(dataset, dataelement, rules, date):
                                                            rule_key, rule_action)
         elif rule_action["type"] == referenced_percentage:
             # percentage of existing reference
-            if rule_key == "malaria_deaths_pregnant":
-                print(rule_key)
             return calculate_referenced_percentage_rule(active_total, dataelement, dataset, date, date_key, item_key,
                                                             rule_key, rule_action)
         elif rule_action["type"] == rand_total:
@@ -271,10 +267,14 @@ def calculate_referenced_ce_cocs_and_percentage(active_total, dataelement, datas
 
 
 def calculate_rand_total_rule(active_total, date, date_key, item_key, rule, rule_action):
+    if "variance" in rule_action.keys():
+        variance = rule_action["variance"]
+    else:
+        variance = 0
     for rule_item in rule_action["items"]:
         if int(rule_item["month"]) == date.month:
             if date_key not in active_total.keys():
-                get_total_randomized_by_month_days(date, rule_item, item_key)
+                get_total_randomized_by_month_days(date, rule_item, item_key, variance)
     return active_total[date_key]
 
 
@@ -495,10 +495,13 @@ def get_percentage(date, item_key, percentage, total):
     return active_total
 
 
-def get_total_randomized_by_month_days(date, rule_item, item_key):
+def get_total_randomized_by_month_days(date, rule_item, item_key, variance):
     global active_total
+    total = float(rule_item["total"])
+    rand = random.randint(0, int(variance))
+    total = ((rand*total)/100) + total
     size = get_days(date)
-    array1 = np.random.dirichlet(np.ones(size), size=int(rule_item["total"]))
+    array1 = np.random.dirichlet(np.ones(size), size=(round(total)))
     total_0_axis = np.sum(array1, axis=0, dtype=float)
     listed = np.array(total_0_axis).tolist()
     day = 1
