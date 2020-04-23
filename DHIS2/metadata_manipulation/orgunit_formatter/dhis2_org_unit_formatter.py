@@ -3,6 +3,7 @@ import subprocess
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
 
 ADM_VIZ_NAME = "ADM"+"%s"+"_VIZ_NAME"
+ADM_NAME_ALTERNATIVE = "ADM"+"%s"+"_NAME"
 ADM_CODE = "ADM"+"%s"+"_CODE"
 new_org = list()
 
@@ -17,10 +18,11 @@ def main():
             reference_id = level - 3
             parent_code = get_parent_code(level, reference_id)
             name_col = ADM_VIZ_NAME % (str(reference_id))
+            name_col_alternative = ADM_NAME_ALTERNATIVE % (str(reference_id))
             code_col = ADM_CODE % (str(reference_id))
 
-            for org_unit_admin_0 in admin_1_org_units["features"]:
-                create_org_unit(org_unit_admin_0, name_col, code_col, level, parent_code, root_org_unit)
+            for org_unit in admin_1_org_units["features"]:
+                create_org_unit(org_unit, name_col, name_col_alternative, code_col, level, parent_code, root_org_unit)
         level = level + 1
 
     with open(output_file, 'w') as outfile:
@@ -53,11 +55,15 @@ def add_translation(org_unit, formated_org_unit, language, locale):
         })
 
 
-def create_org_unit(org_unit, name_col, code_col, level, parent_col, root_org_unit):
+def create_org_unit(org_unit, name_col, name_col_alt, code_col, level, parent_col, root_org_unit):
     id = get_code()
+
+    if len(org_unit['properties'][name_col]) == 0:
+        name_col = name_col_alt
     name = org_unit['properties'][name_col]
     short_name = org_unit['properties'][name_col]
-    code = org_unit['properties'][code_col]
+    old_code = org_unit['properties'][code_col]
+    code = org_unit['properties']["GUID"]
     type = org_unit['geometry']['type']
     if type == "MultiPolygon":
         featureType = "MULTI_POLYGON"
@@ -68,12 +74,13 @@ def create_org_unit(org_unit, name_col, code_col, level, parent_col, root_org_un
     parent = root_org_unit
     if parent_col is not None:
         for org_unit_formatted in new_org:
-            if org_unit_formatted["code"] == org_unit['properties'][parent_col]:
+            if org_unit_formatted["old_code"] == org_unit['properties'][parent_col]:
                 parent = org_unit_formatted["id"]
     import datetime
     date_object = datetime.date.today()
     formated_org_unit = {"id": id, "level": level, "name": name, "shortName": short_name,
                          "code": code, "leaf": False,
+                         "old_code": old_code,
                          "featureType": featureType, "coordinates": coordinates,
                          "openingDate": "1970-01-01T00:00:00.000", "parent": {"id": parent},
                          "translations": [],
