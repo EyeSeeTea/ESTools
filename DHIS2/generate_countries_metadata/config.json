@@ -1,0 +1,13 @@
+{
+  "config": {
+    "output_file": "who_member_options.json",
+    "reference_type": "categories",
+    "parent_id": "zEpgF6Sknx2",
+    "parent_type": "optionSet",
+    "reference_id": "x6fBSvAl03V",
+    "new_type": "options",
+    "user": "",
+    "password": "",
+    "url": "https://extranet.who.int/dhis2-dev"
+  }
+}
