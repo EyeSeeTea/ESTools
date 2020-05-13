@@ -132,7 +132,6 @@ def generate_updates(path_file, args):
     with open(join(output, path_file + "_update.sql"), 'w', encoding='utf-8') as file:
         file.write('/* ~~~~~~~~~~~~~~~~~~~~~~UPDATES~~~~~~~~~~~~~~~~ */\n')
         for item in output_data:
-            codes = list()
             queries = list()
 
             if args.datavalues:
@@ -185,6 +184,7 @@ def generate_count_values(path_file, args):
                 queries.append(show_count_of_tracked_entity_data_values_by_code)
             if args.trackedentitydatavaluesaudit:
                 queries.append(show_count_of_audit_tracked_entity_data_values_by_code)
+
             for query in queries:
                 for code in codes:
                     file.write(query % item[code])
