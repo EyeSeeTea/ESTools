@@ -2,9 +2,14 @@ import json
 import subprocess
 import sys
 
-from cloner import dhis2api
+
 import argparse
+
+from ESTools.DHIS2.cloner import dhis2api
+
 categories_api_call = "/categories/%s?fields=name,categoryOptions[name,shortName,code]&paging=false"
+organisation_units_api_call = "/organisationUnits?fields=id&filter=code:in:[%s]&paging=false&fields=organisationUnits[id]"
+organisation_unit_group_api_call = "/organisationUnitGroups/%s.json"
 key = ""
 new_item = dict()
 
@@ -18,7 +23,6 @@ def main():
     output_file = cfg["config"]["output_file"]
 
     new_type = cfg["config"]["new_type"]
-    new_item[new_type] = list()
 
     user = cfg["config"]["user"]
     password = cfg["config"]["password"]
@@ -33,13 +37,33 @@ def main():
         api_call = categories_api_call % reference_id
         key = "categoryOptions"
 
+
     referenced_json = api.get(api_call)[key]
-    count = 0
-    for item in referenced_json:
-        if parent_type == "optionSet":
+
+    new_item = ""
+    if parent_type == "organisationUnitGroups":
+        key = "organisationUnits"
+        organisation_units_code_list = [item["code"] for item in referenced_json]
+        #Get orgunit ids from codes:
+        api_call = organisation_units_api_call % ",".join(map(str, organisation_units_code_list))
+        organisation_units_id_list = api.get(api_call)
+        #Get parent organisationUnitGroup
+        api_call = organisation_unit_group_api_call % parent_id
+        organisation_unit_group_json = api.get(api_call)
+        #assign new orgunit id list to orgunitgroup
+        organisation_unit_group_json[key] = organisation_units_id_list[key]
+        #format json
+        new_item = {parent_type: [organisation_unit_group_json]}
+
+    elif parent_type == "optionSet":
+        count = 0
+        new_item[new_type] = list()
+        for item in referenced_json:
             count = count + 1
             new_item[new_type].append({"code": item["code"], "name": item["shortName"], "id": get_code(),
                                        "sortOrder": count, "optionSet": {"id": parent_id}, "favorites": [], "userGroupAccesses": []})
+
+
 
     with open(output_file, 'w')as outfile:
         json.dump(new_item, outfile, indent=True, ensure_ascii=False)
