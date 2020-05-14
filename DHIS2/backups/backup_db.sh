@@ -36,6 +36,7 @@ usage ()
 assign_periodicity () {
 if [ "$1" = "day-in-week" ] || [ "$1" = "week-in-month" ] || [ "$1" = "month-in-year" ]
 	then
+    backup_name=""
 		case $1 in
                         day-in-week )
                                 period_name=`date '+%A'  | tr 'a-z' 'A-Z'`
@@ -130,6 +131,7 @@ done
 
 assign_name () {
 	backup_name=$1
+	backup_name=${backup_name}-${timestamp}
 }
 
 check_status () {
@@ -147,9 +149,8 @@ backup () {
 	if [ "$backup_name" = "" ]
 	then
 		backup_name=$no_name
+	  backup_name=${backup_name}-${timestamp}
 	fi
-
-	backup_name=${backup_name}-${timestamp}
 
 	if [ "$format" = " -Fc" ]
 	then
@@ -160,13 +161,15 @@ backup () {
 	echo "[${timestamp}] Generating backup into ${backup_file}..."
 	pg_dump -d "postgresql://${db_user}:${db_pass}@${db_server}:5432/${db_name}" --no-owner --exclude-table 'aggregated*' --exclude-table 'analytics*' --exclude-table 'completeness*' --exclude-schema sys -f ${dump_dest_path}/${backup_file} ${format}
 	check_status 1
-	if [ "$db_remote_dest_server" != "" ] && [ "$fail" = 0 ]
+	if [ "$db_remote_dest_server" != "" ]
+  then
+    exit 0
+	fi
+	if [ "$fail" = 0 ]
 	then
 		echo "[${timestamp}] CP backup into ${db_remote_dest_server}..."
 		scp ${dump_dest_path}/${backup_file} ${db_remote_dest_server}:${dump_remote_dest_path}
 		check_status 2
-	else
-		echo "The cp of the other server is not executed because the backup has failed"
 	fi
 }
               
