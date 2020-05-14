@@ -9,10 +9,10 @@ db_pass=
 db_name=
 dump_dest_path=
 dump_remote_dest_path=
-db_remote_dest_server=
+
+####
+db_remote_dest_server=""
 fail=0
-
-
 period_name=""
 format="c"
 timestamp=$(date +%Y-%m-%d_%H%M)
@@ -45,7 +45,7 @@ if [ "$1" = "day-in-week" ] || [ "$1" = "week-in-month" ] || [ "$1" = "month-in-
                                 period_name=$((($(date +%-d)-1)/7+1))
 				case $period_name in
 					1 )
-						period_name="FIRST_WEEK-"
+						period_name="FIRST-WEEK-"
 						;;
 					2 )
 						period_name="SECOND-WEEK-"
@@ -115,7 +115,7 @@ assign_params () {
 	        -f | --format )
 					assign_format $2
 					shift 2
-	                                ;;
+	        ;;
 		-d | --destine)
 					assign_destine $2
 					shift 2
@@ -123,7 +123,7 @@ assign_params () {
 	        *)
 					assign_name $1 
 					shift
-	    	                        ;;
+	    	   ;;
     esac
 done
 }
@@ -151,13 +151,13 @@ backup () {
 
 	backup_name=${backup_name}-${timestamp}
 
-	if [ "$format" = "c" ]
+	if [ "$format" = " -Fc" ]
 	then
 		backup_name="${backup_name}_cformat.dump"
 	fi
 
 	backup_file=BACKUP-${period_name}-${backup_name}
-	
+	echo "[${timestamp}] Generating backup into ${backup_file}..."
 	pg_dump -d "postgresql://${db_user}:${db_pass}@${db_server}:5432/${db_name}" --no-owner --exclude-table 'aggregated*' --exclude-table 'analytics*' --exclude-table 'completeness*' --exclude-schema sys -f ${dump_dest_path}/${backup_file} ${format}
 	check_status 1
 	if [ "$db_remote_dest_server" != "" ] && [ "$fail" = 0 ]
