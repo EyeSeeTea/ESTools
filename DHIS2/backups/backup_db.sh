@@ -42,22 +42,22 @@ assign_periodicity() {
       period_name=$((($(date +%-d) - 1) / 7 + 1))
       case $period_name in
       1)
-        period_name="FIRST-WEEK-"
+        period_name="FIRST-WEEK"
         ;;
       2)
-        period_name="SECOND-WEEK-"
+        period_name="SECOND-WEEK"
         ;;
       3)
-        period_name="THIRD-WEEK-"
+        period_name="THIRD-WEEK"
         ;;
       4)
-        period_name="FOURTH-WEEK-"
+        period_name="FOURTH-WEEK"
         ;;
       esac
       ;;
     month-in-year)
       period_name=$(date +"%B" | tr 'a-z' 'A-Z')
-      period_name=$period_name"-MONTH-"
+      period_name=$period_name
       ;;
     esac
 
