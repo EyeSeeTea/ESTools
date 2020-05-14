@@ -14,7 +14,7 @@ dump_remote_dest_path=
 db_remote_dest_server=""
 fail=0
 period_name=""
-format="c"
+format="custom"
 timestamp=$(date +%Y-%m-%d_%H%M)
 no_name="MANUAL"
 backup_name=""
@@ -113,7 +113,7 @@ assign_params() {
 
 assign_name() {
   backup_name=$1
-  backup_name=-${backup_name}
+  backup_name=${backup_name}
 }
 
 check_status() {
@@ -133,7 +133,7 @@ backup() {
   fi
 
   backup_file=BACKUP-${dhis2_instance}-${period_name}${backup_name}
-  if [ "$format" = "c" ]; then
+  if [ "$format" = "custom" ]; then
     backup_file="${backup_file}_cformat.dump"
     echo "[${timestamp}] Generating custom backup into ${backup_file}..."
     pg_dump -d "postgresql://${db_user}:${db_pass}@${db_server}:5432/${db_name}" --no-owner --exclude-table 'aggregated*' --exclude-table 'analytics*' --exclude-table 'completeness*' --exclude-schema sys -f ${dump_dest_path}/${backup_file} -Fc
