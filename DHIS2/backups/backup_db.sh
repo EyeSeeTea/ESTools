@@ -132,16 +132,17 @@ backup() {
     backup_name=${backup_name}-${timestamp}
   fi
 
-  backup_file=BACKUP-${period_name}-${backup_name}
-  echo "[${timestamp}] Generating backup into ${backup_file}..."
+  backup_file=BACKUP-${dhis2_instance}-${period_name}-${backup_name}
   if [ "$format" = "c" ]; then
-    backup_name="${backup_name}_cformat.dump"
+    backup_file="${backup_file}_cformat.dump"
+    echo "[${timestamp}] Generating custom backup into ${backup_file}..."
     pg_dump -d "postgresql://${db_user}:${db_pass}@${db_server}:5432/${db_name}" --no-owner --exclude-table 'aggregated*' --exclude-table 'analytics*' --exclude-table 'completeness*' --exclude-schema sys -f ${dump_dest_path}/${backup_file} -Fc
   else
-    pg_dump -d "postgresql://${db_user}:${db_pass}@${db_server}:5432/${db_name}" --no-owner --exclude-table 'aggregated*' --exclude-table 'analytics*' --exclude-table 'completeness*' --exclude-schema sys -f ${dump_dest_path}/${backup_file} -Fp | gzip > ${backup_name}.sql.tar.gz
+    backup_file="${backup_file}.sql.tar.gz"
+    echo "[${timestamp}] Generating plain backup into ${backup_file}"
+    pg_dump -d "postgresql://${db_user}:${db_pass}@${db_server}:5432/${db_name}" --no-owner --exclude-table 'aggregated*' --exclude-table 'analytics*' --exclude-table 'completeness*' --exclude-schema sys -Fp | gzip > ${dump_dest_path}/${backup_file}
   fi
 
-  ${format}
   check_status 1
   if [ "$db_remote_dest_server" != "" ]; then
     exit 0
