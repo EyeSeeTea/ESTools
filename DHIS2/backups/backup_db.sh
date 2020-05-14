@@ -128,7 +128,6 @@ check_status() {
 
 backup() {
   if [ "$backup_name" = "" ] && [ "$period_name" = "" ]; then
-   then
     backup_name=$no_name
     backup_name=${backup_name}-${timestamp}
   fi
