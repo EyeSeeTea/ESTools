@@ -113,7 +113,7 @@ assign_params() {
 
 assign_name() {
   backup_name=$1
-  backup_name=${backup_name}
+  backup_name=-${backup_name}
 }
 
 check_status() {
@@ -129,10 +129,10 @@ check_status() {
 backup() {
   if [ "$backup_name" = "" ] && [ "$period_name" = "" ]; then
     backup_name=$no_name
-    backup_name=${backup_name}-${timestamp}
+    backup_name=-${backup_name}-${timestamp}
   fi
 
-  backup_file=BACKUP-${dhis2_instance}-${period_name}-${backup_name}
+  backup_file=BACKUP-${dhis2_instance}-${period_name}${backup_name}
   if [ "$format" = "c" ]; then
     backup_file="${backup_file}_cformat.dump"
     echo "[${timestamp}] Generating custom backup into ${backup_file}..."
@@ -144,7 +144,7 @@ backup() {
   fi
 
   check_status 1
-  if [ "$db_remote_dest_server" != "" ]; then
+  if [ "$db_remote_dest_server" == "" ]; then
     exit 0
   fi
   if [ "$fail" = 0 ]; then
