@@ -68,19 +68,9 @@ assign_periodicity() {
   fi
 }
 
-assign_format_param() {
-  if [ "$1" = "custom" ]; then
-    format=" -Fc"
-  else
-    if [ "$1" = "plain" ]; then
-      format=" -Fp | gzip > archivo archivo.sql.tar.gz "
-    fi
-  fi
-}
-
 assign_format() {
   if [ "$1" = "custom" ] || [ "$1" = "plain" ]; then
-    assign_format_param $1
+    format="$1"
   else
     echo "ERROR: invalid format"
     usage
@@ -123,7 +113,7 @@ assign_params() {
 
 assign_name() {
   backup_name=$1
-  backup_name=${backup_name}-${timestamp}
+  backup_name=${backup_name}
 }
 
 check_status() {
@@ -137,18 +127,22 @@ check_status() {
 }
 
 backup() {
-  if [ "$backup_name" = "" ]; then
+  if [ "$backup_name" = "" ] && [ "$period_name" = "" ]; then
+   then
     backup_name=$no_name
     backup_name=${backup_name}-${timestamp}
   fi
 
-  if [ "$format" = " -Fc" ]; then
-    backup_name="${backup_name}_cformat.dump"
-  fi
-
   backup_file=BACKUP-${period_name}-${backup_name}
   echo "[${timestamp}] Generating backup into ${backup_file}..."
-  pg_dump -d "postgresql://${db_user}:${db_pass}@${db_server}:5432/${db_name}" --no-owner --exclude-table 'aggregated*' --exclude-table 'analytics*' --exclude-table 'completeness*' --exclude-schema sys -f ${dump_dest_path}/${backup_file} ${format}
+  if [ "$format" = "c" ]; then
+    backup_name="${backup_name}_cformat.dump"
+    pg_dump -d "postgresql://${db_user}:${db_pass}@${db_server}:5432/${db_name}" --no-owner --exclude-table 'aggregated*' --exclude-table 'analytics*' --exclude-table 'completeness*' --exclude-schema sys -f ${dump_dest_path}/${backup_file} -Fc
+  else
+    pg_dump -d "postgresql://${db_user}:${db_pass}@${db_server}:5432/${db_name}" --no-owner --exclude-table 'aggregated*' --exclude-table 'analytics*' --exclude-table 'completeness*' --exclude-schema sys -f ${dump_dest_path}/${backup_file} -Fp | gzip > ${backup_name}.sql.tar.gz
+  fi
+
+  ${format}
   check_status 1
   if [ "$db_remote_dest_server" != "" ]; then
     exit 0
