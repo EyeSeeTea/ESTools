@@ -22,11 +22,11 @@ backup_name=""
 usage() {
   echo "~~~~~~~~~USAGE~~~~~~~~~~~~"
   echo "./backup_db.sh [NAME]"
-  echo "./backup_db.sh [NAME] --periodicity [PERIOD] --format [FORMAT NAME] --destine [DESTINE_HOST]"
+  echo "./backup_db.sh [NAME] --periodicity [PERIOD] --format [FORMAT NAME] --destination [DESTINATION_HOST]"
   echo "Valid periods: day-in-week week-in-month month-in-year"
   echo "Valid formats: custom / plain"
-  echo "Destine: host"
-  echo "Example: ./backup_db.sh --periodicity day-in-week --format custom --destine gva11sucherubi.who.int"
+  echo "Destination: host"
+  echo "Example: ./backup_db.sh --periodicity day-in-week --format custom --destination gva11sucherubi.who.int"
   echo "If no PERIOD is given, then a manual dump is generated with timestamp, otherwise the given period is used in the name of the destination file."
 }
 
@@ -78,11 +78,11 @@ assign_format() {
   fi
 }
 
-assign_destine() {
+assign_destination() {
   if [ "$1" != "" ]; then
     db_remote_dest_server="$1"
   else
-    echo "Error, destine is empty"
+    echo "Error, destination is empty"
     usage
     exit 1
   fi
@@ -99,8 +99,8 @@ assign_params() {
       assign_format $2
       shift 2
       ;;
-    -d | --destine)
-      assign_destine $2
+    -d | --destination)
+      assign_destination $2
       shift 2
       ;;
     *)
