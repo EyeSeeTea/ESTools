@@ -14,21 +14,29 @@ files = [f for f in filter(applied_filter, listdir(input_folder)) if isfile(join
 for path_file in files:
     with open(join(output_folder, path_file).replace(".json","")+".csv", mode='w') as csv_file:
         csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        with open(join(input_folder, path_file)) as json_file:
-            data = json.load(json_file)
-            for rule in data["messages"]:
-                csv_writer.writerow(['-----------------------------------------------'])
-                csv_writer.writerow(['imported', 'updated', 'ignored', 'total'])
-                imported = rule["stats"]["imported"]
-                updated = rule["stats"]["updated"]
-                ignored = rule["stats"]["ignored"]
-                total = rule["stats"]["imported"] + rule["stats"]["updated"] + rule["stats"]["ignored"]
-                csv_writer.writerow([imported, updated, ignored, total])
-                csv_writer.writerow(['uid', 'message', "", ""])
-                for messages in rule["report"]["messages"]:
-                    if "uid" in messages.keys():
-                        uid = messages["uid"]
-                    else:
-                        uid = None
-                    message = messages["message"]
-                    csv_writer.writerow([uid, message, "", ""])
+        with open(join(output_folder, path_file).replace(".json","_errors")+".csv", mode='w') as csv_file_errors:
+            csv_writer_errors = csv.writer(csv_file_errors, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            print(path_file)
+            with open(join(input_folder, path_file)) as json_file:
+                data = json.load(json_file)
+                count = 0
+                for rule in data["messages"]:
+                    if count == 0:
+                        csv_writer.writerow(['-----------------------------------------------'])
+                        csv_writer.writerow(['imported', 'updated', 'ignored', 'total'])
+                    imported = rule["stats"]["imported"]
+                    updated = rule["stats"]["updated"]
+                    ignored = rule["stats"]["ignored"]
+                    total = rule["stats"]["imported"] + rule["stats"]["updated"] + rule["stats"]["ignored"]
+                    csv_writer.writerow([imported, updated, ignored, total])
+
+                    if count == 0:
+                        csv_writer_errors.writerow(['uid', 'message', "", ""])
+                    for messages in rule["report"]["messages"]:
+                        if "uid" in messages.keys():
+                            uid = messages["uid"]
+                        else:
+                            uid = None
+                        message = messages["message"]
+                        csv_writer_errors.writerow([uid, message, "", ""])
+                    count = count +1
