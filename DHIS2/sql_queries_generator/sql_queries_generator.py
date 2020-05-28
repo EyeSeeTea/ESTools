@@ -3,7 +3,7 @@ import csv
 import os
 from os import listdir
 from os.path import isfile, join
-
+valid_references = ["optionSet", "dataElement"]
 NEW_ID = "new_id"
 
 NEW_CODE = "new_code"
@@ -15,27 +15,19 @@ OLD_CODE = "old_code"
 input = "input"
 output = "queries"
 
-update_data_value_codes_by_code_in_metadata_related = "update datavalue set value = '%s' where value like '%s' and " \
-                                                      "dataelementid in (select de.dataelementid from dataelement de " \
-                                                      "inner join optionset os on de.optionsetid=os.optionsetid " \
-                                                      "inner join optionvalue op on op.optionsetid=os.optionsetid " \
-                                                      "where op.uid like '%s');\n"
-update_audit_data_values_codes_by_code_in_metadata_related = "update datavalueaudit set value = '%s' " \
-                                                             "where value like '%s' and dataelementid in " \
-                                                             "(select de.dataelementid from dataelement de inner join optionset os " \
-                                                             "on de.optionsetid=os.optionsetid inner join optionvalue op " \
-                                                             "on op.optionsetid=os.optionsetid where op.uid like '%s');\n"
-update_tracked_entity_data_values_codes_by_code_in_metadata_related = "update trackedentitydatavalue set value = '%s' " \
-                                                                      "where value like '%s' and dataelementid in " \
-                                                                      "(select de.dataelementid from dataelement de inner join optionset os " \
-                                                                      "on de.optionsetid=os.optionsetid inner join optionvalue op " \
-                                                                      "on op.optionsetid=os.optionsetid where op.uid like '%s');\n"
-update_audit_tracked_entity_data_values_codes_by_code_in_metadata_related = "update trackedentitydatavalueaudit " \
-                                                                            "set value = '%s' where value like '%s' and dataelementid in " \
-                                                                            "(select de.dataelementid from dataelement de inner join optionset os " \
-                                                                            "on de.optionsetid=os.optionsetid inner join optionvalue op " \
-                                                                            "on op.optionsetid=os.optionsetid where op.uid like '%s');\n"
+update_data_value_codes_by_code = "update datavalue set value = '%s' where value like '%s';\n"
+update_only_dataelement = " and dataelementid " \
+                          "in (select de.dataelementid from dataelement de where de.uid like '%s');\n" \
 
+referenced_by_optionset = " and " \
+                            "dataelementid in (select de.dataelementid from dataelement de " \
+                            "inner join optionset os on de.optionsetid=os.optionsetid " \
+                            "inner join optionvalue op on op.optionsetid=os.optionsetid " \
+                            "where op.uid like '%s');\n"
+referenced_by_dataelement = " and dataelementid in (select de.dataelementid from dataelement de " \
+                            "inner join optionset os on de.optionsetid=os.optionsetid " \
+                            "inner join optionvalue op on op.optionsetid=os.optionsetid " \
+                            "where de.uid like '%s' and op.code = '%s');\n"
 update_data_value_codes_by_code = "update datavalue set value = '%s' where value like '%s';\n"
 update_audit_data_values_codes_by_code = "update datavalueaudit set value = '%s' where value like '%s';\n"
 update_tracked_entity_data_values_codes_by_code = "update trackedentitydatavalue set value = '%s' " \
@@ -90,14 +82,25 @@ show_audit_tracked_entity_data_values_by_code = "select p.uid as program_uid, p.
 
 def assign_csv_data(row):
     if row[0] != "" and row[2] != "" and row[1] != "" and row[3] != "":
-        output_data.append({OLD_CODE: row[0], OLD_ID: row[1],
-                            NEW_CODE: row[2], NEW_ID: row[3]})
+        output_data.append({OLD_CODE: row[0].replace("'", "''"), OLD_ID: row[1],
+                            NEW_CODE: row[2].replace("'", "''"), NEW_ID: row[3]})
+
+
+def check_references(uid_reference):
+    if uid_reference in valid_references:
+        return
+    else:
+        print(uid_reference + " is not valid reference. Valid references: " + ", ".join(valid_references))
+        quit()
 
 
 def main():
     global output_data
     output_data = dict()
     args = get_args()
+    check_references(args.uid_reference)
+    check_references(args.update_mode)
+
     is_csv = lambda fname: os.path.splitext(fname)[-1] in ['.csv']
     is_not_csv = lambda fname: not os.path.splitext(fname)[-1] in ['.csv']
     is_not_git = lambda fname: not fname.startswith(".git")
@@ -135,31 +138,31 @@ def generate_updates(path_file, args):
             queries = list()
 
             if args.datavalues:
-                if args.relation:
-                    queries.append(update_data_value_codes_by_code_in_metadata_related)
-                else:
                     queries.append(update_data_value_codes_by_code)
+
             if args.datavaluesaudit:
-                if args.relation:
-                    queries.append(update_audit_data_values_codes_by_code_in_metadata_related)
-                else:
                     queries.append(update_audit_data_values_codes_by_code)
+
             if args.trackedentitydatavalues:
-                if args.relation:
-                    queries.append(update_tracked_entity_data_values_codes_by_code_in_metadata_related)
-                else:
                     queries.append(update_tracked_entity_data_values_codes_by_code)
+
             if args.trackedentitydatavaluesaudit:
-                if args.relation:
-                    queries.append(update_audit_tracked_entity_data_values_codes_by_code_in_metadata_related)
-                else:
                     queries.append(update_audit_tracked_entity_data_values_codes_by_code)
 
             for query in queries:
-                if args.relation:
+                if args.update_mode == "dataElement":
+                    query = query.replace(";\n", update_only_dataelement)
                     file.write(query % (item[NEW_CODE], item[OLD_CODE], item[OLD_ID]))
-                else:
-                    file.write(query % (item[NEW_CODE], item[OLD_CODE]))
+                elif args.update_mode == "optionSet":
+                    if args.relation:
+                        if args.uid_reference == "optionSet":
+                            query = query.replace(";\n", referenced_by_optionset)
+                            file.write(query % (item[NEW_CODE], item[OLD_CODE], item[OLD_ID]))
+                        elif args.uid_reference == "dataElement":
+                            query = query.replace(";\n", referenced_by_dataelement)
+                            file.write(query % (item[NEW_CODE], item[OLD_CODE], item[OLD_ID], item[NEW_CODE]))
+                    else:
+                        file.write(query % (item[NEW_CODE], item[OLD_CODE]))
 
     print("Done")
 
@@ -248,6 +251,8 @@ def get_args():
     parser.set_defaults(new=True)
     add('--ignore-old-codes', dest='old', help='Ignore the old code queries', action='store_false')
     add('--ignore-relation-check', dest='relation', help='Ignore the relation check', action='store_false')
+    add('--uid-reference', metavar='FIELD', default='optionSet', help='references supported: dataelement/optionset')
+    add('--update-mode', metavar='FIELD', default='optionSet', help='references supported: dataelement/optionset')
     parser.set_defaults(relation=True)
     return parser.parse_args()
 
