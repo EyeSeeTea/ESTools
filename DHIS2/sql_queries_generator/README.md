@@ -17,6 +17,7 @@ The script can:
   --ignore-count-values 
                         Ignore the count values queries
   --ignore-updates      Ignore the updates queries
+  --ignore-delete       Ignore the delete queries
   --ignore-datavalues   Ignore the datavalues queries
   --ignore-trackedentitydatavalues
                         Ignore the trackedentitydatavalues queries
@@ -30,8 +31,9 @@ The script can:
   to generate the update queries (for example: 
   ignore the dataelement relation of a dataelement 
   with the optionset parent of the old option in the datavalues)
-
-
+  --uid-reference type of key to check the relations, options: optionSet/dataElement default: optionSet
+  --update-mode type of update query: optionset or dataelement, options: optionSet/dataElement default: optionSet
+  
 
 #Supported metadata
 - Only options for now.

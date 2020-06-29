@@ -15,7 +15,6 @@ OLD_CODE = "old_code"
 input = "input"
 output = "queries"
 
-update_data_value_codes_by_code = "update datavalue set value = '%s' where value like '%s';\n"
 update_only_dataelement = " and dataelementid " \
                           "in (select de.dataelementid from dataelement de where de.uid like '%s');\n" \
 
@@ -28,10 +27,22 @@ referenced_by_dataelement = " and dataelementid in (select de.dataelementid from
                             "inner join optionset os on de.optionsetid=os.optionsetid " \
                             "inner join optionvalue op on op.optionsetid=os.optionsetid " \
                             "where de.uid like '%s' and op.code = '%s');\n"
+delete_only_referenced_by_dataelement = " and dataelementid in (select de.dataelementid " \
+                                        "from dataelement de where de.uid like '%s');\n"
+
+delete_data_value_codes_by_code = "delete from datavalue where value like '%s';\n"
 update_data_value_codes_by_code = "update datavalue set value = '%s' where value like '%s';\n"
+
+delete_audit_data_values_codes_by_code = "delete from datavalueaudit where value like '%s';\n"
 update_audit_data_values_codes_by_code = "update datavalueaudit set value = '%s' where value like '%s';\n"
+
+delete_tracked_entity_data_values_codes_by_code = "delete from trackedentitydatavalue " \
+                                                  "where value like '%s';\n"
 update_tracked_entity_data_values_codes_by_code = "update trackedentitydatavalue set value = '%s' " \
                                                   "where value like '%s';\n"
+
+delete_audit_tracked_entity_data_values_codes_by_code = "delete from trackedentitydatavalueaudit " \
+                                                        "where value like '%s';\n"
 update_audit_tracked_entity_data_values_codes_by_code = "update trackedentitydatavalueaudit set value = '%s' " \
                                                         "where value like '%s';\n"
 
@@ -81,9 +92,15 @@ show_audit_tracked_entity_data_values_by_code = "select p.uid as program_uid, p.
 
 
 def assign_csv_data(row):
-    if row[0] != "" and row[2] != "" and row[1] != "" and row[3] != "":
-        output_data.append({OLD_CODE: row[0].replace("'", "''"), OLD_ID: row[1],
+    if row[0] != "" and row[2] != "" and row[1] != "":
+        if len(row) >= 4:
+            if row[3] != "":
+                output_data.append({OLD_CODE: row[0].replace("'", "''"), OLD_ID: row[1],
                             NEW_CODE: row[2].replace("'", "''"), NEW_ID: row[3]})
+            else:
+                if row[3] != "":
+                    output_data.append({OLD_CODE: row[0].replace("'", "''"), OLD_ID: row[1],
+                                        NEW_CODE: row[2].replace("'", "''"), NEW_ID: ""})
 
 
 def check_references(uid_reference):
@@ -122,6 +139,9 @@ def main():
                     line_count += 1
         if args.updates:
             generate_updates(path_file, args)
+            
+        if args.delete:
+            generate_delete(path_file, args)
 
         if args.count:
             generate_count_values(path_file, args)
@@ -163,6 +183,34 @@ def generate_updates(path_file, args):
                             file.write(query % (item[NEW_CODE], item[OLD_CODE], item[OLD_ID], item[NEW_CODE]))
                     else:
                         file.write(query % (item[NEW_CODE], item[OLD_CODE]))
+
+    print("Done")
+
+
+def generate_delete(path_file, args):
+    print("Processing delete")
+    with open(join(output, path_file + "_delete.sql"), 'w', encoding='utf-8') as file:
+        file.write('/* ~~~~~~~~~~~~~~~~~~~~~~DELETE~~~~~~~~~~~~~~~~ */\n')
+        for item in output_data:
+            queries = list()
+
+            if args.datavalues:
+                    queries.append(delete_data_value_codes_by_code)
+
+            if args.datavaluesaudit:
+                    queries.append(delete_audit_data_values_codes_by_code)
+
+            if args.trackedentitydatavalues:
+                    queries.append(delete_tracked_entity_data_values_codes_by_code)
+
+            if args.trackedentitydatavaluesaudit:
+                    queries.append(delete_audit_tracked_entity_data_values_codes_by_code)
+
+            for query in queries:
+                if args.relation:
+                    if args.uid_reference == "dataElement":
+                        query = query.replace(";\n", delete_only_referenced_by_dataelement)
+                        file.write(query % (item[OLD_CODE], item[OLD_ID]))
 
     print("Done")
 
@@ -234,6 +282,8 @@ def get_args():
     parser.set_defaults(count=True)
     add('--ignore-updates', dest='updates', help='Ignore the updates queries', action='store_false')
     parser.set_defaults(updates=True)
+    add('--ignore-delete', dest='delete', help='Ignore the delete queries', action='store_false')
+    parser.set_defaults(delete=True)
     add('--ignore-datavalues', dest='datavalues', help='Ignore the datavalues queries'
         , action='store_false')
     parser.set_defaults(datavalues=True)
