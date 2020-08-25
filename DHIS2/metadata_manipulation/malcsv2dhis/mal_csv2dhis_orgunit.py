@@ -127,7 +127,7 @@ def check_level(api, downloaded_country, row, server_org_unit, level, row_positi
         for org_unit in data["organisationUnits"]:
             if org_unit["name"].lower() == row[row_position].lower() \
                     or org_unit["shortName"].lower() == row[row_position].lower():
-                server_org_unit = data["organisationUnits"][0]
+                server_org_unit = org_unit
     return server_org_unit
 
 
