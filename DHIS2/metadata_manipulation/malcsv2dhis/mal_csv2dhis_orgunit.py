@@ -46,6 +46,7 @@ def main():
     user = cfg["user"]
     password = cfg["password"]
     server = cfg["server"]
+    api = dhis2api.Dhis2Api(server, user, password)
 
     is_csv = lambda fname: os.path.splitext(fname)[-1] in ['.csv']
     is_not_csv = lambda fname: not os.path.splitext(fname)[-1] in ['.csv']
@@ -66,7 +67,6 @@ def main():
                     line_count += 1
                 else:
                     line_count += 1
-                    api = dhis2api.Dhis2Api(server, user, password)
                     if downloaded_country != row[country]:
                         country_query = "/organisationUnits?filter=level:eq:%s&fields=name,shortName,id,path&filter=name:like:%s&paging=false" % (
                         "3", row[country])
