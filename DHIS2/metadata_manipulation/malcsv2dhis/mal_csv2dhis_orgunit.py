@@ -125,8 +125,12 @@ def check_level(api, downloaded_country, row, server_org_unit, level, row_positi
             downloaded_country, level)
         data = api.get(country_query)
         for org_unit in data["organisationUnits"]:
-            if org_unit["name"].lower() == row[row_position].lower() \
-                    or org_unit["shortName"].lower() == row[row_position].lower():
+            if (org_unit["name"].lower() == row[row_position].lower() \
+                    or org_unit["shortName"].lower() == row[row_position].lower()) or\
+                    (org_unit["name"].lower() in row[row_position].lower() \
+                    or org_unit["shortName"].lower() in row[row_position].lower()) or \
+                    (row[row_position].lower() in org_unit["name"].lower() \
+                    or row[row_position].lower() in org_unit["shortName"].lower() ):
                 server_org_unit = org_unit
     return server_org_unit
 
