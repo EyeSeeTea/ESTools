@@ -20,7 +20,6 @@ main() {
 
     local warfile=$1 port=$2
     jetty_runner "$warfile" "$port"
-    wait
 }
 
 main "$@"
