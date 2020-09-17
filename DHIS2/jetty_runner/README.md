@@ -2,7 +2,7 @@
 
 We need a `jetty-runner` JAR from the MVN repository. The last known working JAR is [jetty-runner-9.4.9.v20180320.jar](https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.4.9.v20180320/jetty-runner-9.4.9.v20180320.jar).
 
-Postgres: Use your local postgresql install or [mdillon/postgis:10](https://hub.docker.com/r/mdillon/postgis)
+Postgres: Use your local postgresql 10.x install or [mdillon/postgis:10](https://hub.docker.com/r/mdillon/postgis) with `docker run -p 5433:5432 ...` to expose the port to the host.
 
 Now create a configuration file `dhis.conf` in the same directory you have the WAR. An example (replace `sierra-leone` by your DB name):
 
@@ -11,7 +11,7 @@ Now create a configuration file `dhis.conf` in the same directory you have the W
 connection.dialect = org.hisp.dhis.hibernate.dialect.DhisPostgreSQLDialect
 connection.driver_class = org.postgresql.Driver
 connection.url = jdbc:postgresql:sierra-leone
-#connection.url = jdbc:postgresql://localhost:5433/sierra-leone # If 
+#connection.url = jdbc:postgresql://localhost:5433/sierra-leone # TCP access (docker)
 connection.username = postgres
 connection.password =
 connection.schema = update
