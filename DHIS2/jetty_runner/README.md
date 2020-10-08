@@ -33,8 +33,7 @@ The bash script automatically opens a debugging port at `$port - 1000`. So, in t
 - Install Intellij IDEA (the free Community Edition works fine).
 - Clone a dhis2-core with the exact build of the WAR you want to debug: `/api/system/info.json`-> revision -> `git checkout $revision`.
 - Create an Idea project from the dhis2-core sources.
-- Create a new debug configuration: `Run -> Debug -> Edit Configurations -> Remote -> +` 
-- Attributes: `Name=dhis2:8034, Debugger model=Attach to remote JVM, Host=localhost, port=7034` -> Apply
-- When the WAR is already running: `Run -> Debug -> dhis2:8034`.
+- Attach, option 1: Run -> Attach to process -> jetty-runner.jar
+- Attach, option 2: Create a new debug configuration: `Run -> Debug -> Edit Configurations -> Remote -> +` (`Name=dhis2:8034, Debugger model=Attach to remote JVM, Host=localhost, port=7034`) -> Apply. `Run -> Debug -> dhis2:8034`.
 
 Now you should see in the *Debug* panel: `Connected to the target VM, address: 'localhost:7034', transport: 'socket'`. You are now ready to add breakpoints and stop the server wherever you want to debug.
