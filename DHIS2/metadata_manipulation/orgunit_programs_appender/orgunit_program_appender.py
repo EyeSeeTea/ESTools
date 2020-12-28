@@ -2,7 +2,8 @@ import csv
 import json
 import os
 import sys
-from datetime import time
+import time as time
+from datetime import datetime as date
 from enum import Enum
 from os import listdir
 from os.path import isfile, join
@@ -17,7 +18,7 @@ query_orgunit_levels = "/organisationUnits.json?filter=path:like:%s/&filter=leve
 query_orgunit = "/organisationUnits/%s.json?fields=id&paging=false"
 query_orgunit_children = "/organisationUnits/%s.json?fields=children&paging=false"
 query_orgunit_descendants = "/organisationUnits/%s.json?includeDescendants=true&fields=id&paging=false"
-query_orgunitgroups = "/organisationUnitGroups/%s.json?fields=id&paging=false"
+query_orgunitgroups = "/organisationUnitGroups/%s.json?fields=organisationUnits&paging=false"
 
 
 class Children(Enum):
@@ -88,8 +89,8 @@ def generate_queries(data):
             query = query_orgunit % (item["orgUnit"])
         elif Children.level.name in children:
             import re
-            level = re.findall(r'\d+', children)
-            query = query_orgunit_children % (org_unit_uid, level)
+            level = int(re.findall(r'\d+', children)[0])
+            query = query_orgunit_levels % (org_unit_uid, level)
         elif Children.yes.name == children:
             query = query_orgunit_children % org_unit_uid
         elif Children.alldescendants.name == children:
@@ -100,7 +101,7 @@ def generate_queries(data):
 
 
 def append_org_units(programs_from_server, data):
-    for item in data:
+    for item in data["items"]:
         append_in_metadata(item, programs_from_server, "programs")
         append_in_metadata(item, programs_from_server, "dataSets")
 
@@ -111,30 +112,25 @@ def append_in_metadata(item, programs_from_server, key):
             if item["replace"]:
                 metadata_item["organisationUnits"] = item["organisationUnits"]
             else:
-                item_orgunits = set(item["organisationUnits"])
-                program_orgunits = set(metadata_item["organisationUnits"])
-                new_orgunits = list(item_orgunits - program_orgunits)
-                metadata_item["organisationUnits"] = program_orgunits + new_orgunits
+                for item_org_unit in item["organisationUnits"]:
+                    if item_org_unit not in metadata_item["organisationUnits"]:
+                        metadata_item["organisationUnits"].append(item_org_unit)
 
 
 def execute_queries(api, data):
-    for item in data:
+    for item in data["items"]:
         children = item["children"]
         query = item["query"]
         orgunits = api.get(query)
         #sleep some seconds between api calls
         time.sleep(3)
 
-        if Children.no == children:
-            item["organisationUnits"] = {"id": orgunits["id"]}
+        if Children.no.name == children:
+            item["organisationUnits"] = [{"id": orgunits["id"]}]
         elif Children.yes.name == children:
             item["organisationUnits"] = orgunits["children"]
-        elif Children.level.name == children or Children.alldescendants.name == children:
+        else:
             item["organisationUnits"] = orgunits["organisationUnits"]
-        elif Children.orgunitgroup.name == children:
-            for orgunitgroup in orgunits["organisationUnitGroup"]:
-                item["organisationUnits"] = orgunitgroup["organisationUnits"]
-
 
 
 def main():
@@ -180,9 +176,9 @@ def get_programs_from_server(api, data):
     return api.get(query_programs % (program_uids))
 
 
-def write_to_json(file, content):
-    from datetime import datetime
-    with open(join(file + "importer_"+ datetime.now() + ".json"), 'w', encoding='utf-8') as file:
+def write_to_json(path, content):
+    file_name = "result_" + str(date.now()).replace(" ", "").replace(":", "-").split(".")[0] + ".json"
+    with open(join(join(path, file_name)), 'w', encoding='utf-8') as file:
         json.dump(content, file, indent=4)
 
 
