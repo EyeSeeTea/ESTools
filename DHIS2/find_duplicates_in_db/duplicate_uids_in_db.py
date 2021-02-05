@@ -33,7 +33,5 @@ for table in tables:
                         print ({"id": row[0], "typeA": table, "typeB": tableB},)
 
 
-print("Records inserted successfully")
 con.close()
 
-print (tables["tables"])
