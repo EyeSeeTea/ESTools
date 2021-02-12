@@ -1,14 +1,32 @@
 {
   "servers": [
     {
-      "user": "",
-      "password": "",
-      "server": ""
+      "origin": {
+        "user": "",
+        "password": "",
+        "server": ""
+      },
+      "destine": {
+        "user": "",
+        "password": "",
+        "server": "",
+        "dataelement_uid": "",
+        "categoryoptioncombo_uid": ""
+      }
     },
     {
-      "user": "",
-      "password": "",
-      "server": ""
+      "origin": {
+        "user": "",
+        "password": "",
+        "server": ""
+      },
+      "destine": {
+        "user": "",
+        "password": "",
+        "server": "",
+        "data_element_uid": "",
+        "category_option_combo_uid": ""
+      }
     }
   ]
 }
