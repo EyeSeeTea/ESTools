@@ -1,6 +1,4 @@
-#! /usr/bin/env python
-import os
-import subprocess
+#!/usr/bin/env python
 import sys
 import csv
 import time
@@ -8,19 +6,28 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter as fmt
 from datetime import datetime
 from d2apy import dhis2api
 import json
+import os
+import gspread
 
-# subprocess.call('sudo node myscript.js', shell=True)
+proxy = 'http://openproxy.who.int:8080/'
 
-indicators_api_call = "/indicators.json?fields=id,name,shortName,numerator,denominator,filter,lastUpdatedBy[displayName],user[displayName],created,lastUpdated,userGroupAccesses,userAccess,publicAccess&paging=false"
+os.environ['http_proxy'] = proxy
+os.environ['HTTP_PROXY'] = proxy
+os.environ['https_proxy'] = proxy
+os.environ['HTTPS_PROXY'] = proxy
+
+indicators_api_call = "/indicators.json?fields=id,name,shortName,numerator,denominator,filter,lastUpdatedBy[displayName],user[displayName],created,lastUpdated,userGroupAccesses,userAccess,publicAccess&paging=false&filter=lastUpdated:gt:%s"
 update_datavalue = "/dataValues"
 post_content = "de=%s&co=%s&ds=FnYgTt843G2&ou=H8RixfF8ugH&pe=%s&value=%s"
 
 
-def get_indicators(api):
-    return api.get(indicators_api_call)
+def get_indicators(api, date):
+    url = indicators_api_call % date
+    return api.get(url.replace("\n", ""))
 
 
 def match_wrong_expressions(indicators, api, method):
+    print("match wrong expressions")
     indicators_with_wrong_expresions = {"indicators": []}
     for indicator in indicators["indicators"]:
         if method == "api":
@@ -78,16 +85,19 @@ def report_count_of_invalid_indicators(indicators, url, user, password, data_ele
     return api_destine_server.post(update_datavalue, params=query, payload="", contenttype='text/plain')
 
 
-def create_report(indicators, report_name, period, output_folder, csv_id):
-    name = 'indicators_report_' + report_name + '_' + period + '.csv'
+def create_report(indicators, report_name, exists, output_folder, csv_id):
+    name = 'indicators_report_' + report_name + '.csv'
     filename = os.path.join(output_folder, name)
-    with open(filename, mode='w') as report_file:
+    with open(filename, mode='a') as report_file:
         report_file_writer = csv.writer(report_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        report_file_writer.writerow(
-            ['uid', 'name', 'shortName', 'numerator', 'denominator', 'filter', 'user', 'lastUpdatedBy', 'created',
-             'lastUpdated', 'userGroupAccesses', 'userAccess', 'publicAccess', 'nominator_error', 'denominator_error',
-             'filter_error'])
+        if not exists:
+            report_file_writer.writerow(
+                ['uid', 'name', 'shortName', 'numerator', 'denominator', 'filter', 'user', 'lastUpdatedBy', 'created',
+                 'lastUpdated', 'userGroupAccesses', 'userAccess', 'publicAccess', 'nominator_error', 'denominator_error',
+                 'filter_error'])
         for indicator in indicators["indicators"]:
+            print("report: "+indicator["id"])
+
             try:
                 user = indicator["user"]["displayName"]
                 lastUpdatedBy = ""
@@ -119,29 +129,53 @@ def create_report(indicators, report_name, period, output_folder, csv_id):
             except:
                 print("error creating report for the  indicator: " + indicator["id"])
 
-    import gspread
+    print("fill gspread")
+    try:
+        gc = gspread.service_account()
 
-    gc = gspread.service_account()
-
-    content = open(filename, 'r').read()
-    gc.import_csv(csv_id, content)
+        content = open(filename, 'r').read()
+        gc.import_csv(csv_id, content)
+        print("gspread updated")
+    except:
+        print("gspread connection error")
 
 
 def main():
+    print("start")
     args = get_args()
     cfg = get_config(args.config)
     servers = cfg["servers"]
     period = datetime.today().strftime('%Y%m%d')
     for server in servers:
+        lastExecution = "1900-01-01"
+        from datetime import date
+
+        today = date.today()
+        date = today.strftime("%Y-%m-%d")
+        exists = False
+        if os.path.exists(server["time_control_file"]):
+            f = open(server["time_control_file"], "r")
+            lastExecution = f.read()
+            exists = True
+
         api_origin = dhis2api.Dhis2Api(server["origin"]["server"], server["origin"]["user"], server["origin"]["password"])
-        indicators = get_indicators(api_origin)
+        indicators = get_indicators(api_origin, lastExecution)
+        print("number of indicators"+str(len(indicators["indicators"])))
         print("Server:" + server["origin"]["server"])
         indicators = match_wrong_expressions(indicators, api_origin, server["method"])
-        create_report(indicators, server["report_name"], period, args.output, server["destine"]["id"])
+        if len(indicators["indicators"])==0:
+            continue
+        create_report(indicators, server["report_name"], exists, args.output, server["destine"]["id"])
         report_count_of_invalid_indicators(len(indicators['indicators']), server["destine"]["server"],
                                            server["destine"]["user"], server["destine"]["password"],
                                            server["destine"]["dataelement_uid"],
                                            server["destine"]["categoryoptioncombo_uid"], period)
+
+        with open(server["time_control_file"], 'w') as filetowrite:
+            filetowrite.write(date)
+
+
+    print("end")
 
 
 def get_config(fname):
