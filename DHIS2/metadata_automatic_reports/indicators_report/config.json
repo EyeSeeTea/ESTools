@@ -2,7 +2,8 @@
   "servers": [
     {
       "report_name": "",
-      "method": "api",
+      "method": "",
+      "time_control_file": "",
       "origin": {
         "user": "",
         "password": "",
@@ -11,15 +12,21 @@
       "destine": {
         "id": "",
         "user": "",
-        "password": "!",
+        "password": "",
         "server": "",
         "dataelement_uid": "",
-        "categoryoptioncombo_uid": ""
+        "categoryoptioncombo_uid": "",
+        "categoryoptioncombo_uid_dev_cont": "",
+        "categoryoptioncombo_uid_preprod": "",
+        "categoryoptioncombo_uid_preprod_cont": "",
+        "categoryoptioncombo_uid_prod": "",
+        "categoryoptioncombo_uid_demo": ""
       }
     },
     {
-      "report_name": "dev",
-      "method": "api",
+      "report_name": "",
+      "method": "",
+      "time_control_file": "",
       "origin": {
         "user": "",
         "password": "",
@@ -31,7 +38,12 @@
         "password": "",
         "server": "",
         "dataelement_uid": "",
-        "categoryoptioncombo_uid": ""
+        "categoryoptioncombo_uid": "",
+        "categoryoptioncombo_uid_dev_cont": "",
+        "categoryoptioncombo_uid_preprod": "",
+        "categoryoptioncombo_uid_preprod_cont": "",
+        "categoryoptioncombo_uid_prod": "",
+        "categoryoptioncombo_uid_demo": ""
       }
     }
   ]
