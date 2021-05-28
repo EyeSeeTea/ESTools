@@ -21,18 +21,21 @@ def get_rows(host):
 def iterate_queries(prod_rows, dev_rows, filename):
     with open(filename, mode='w') as employee_file:
         employee_writer = csv.writer(employee_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        employee_writer.writerow(['uid', 'path', 'name', 'shortName', 'code','uid', 'path', 'name', 'shortName', 'code'])
+        employee_writer.writerow(['uid', 'path', 'name', 'shortName', 'code','uid', 'path', 'name', 'shortName', 'code', 'samepath', 'samename', 'sameshortname', 'samecode'])
         for row in prod_rows:
+            exist = False
             for dev_row in dev_rows:
                 if (row[0] == dev_row[0]):
+                    exist = True
                     if (row == dev_row):
-                        d = row+ dev_row
-                        employee_writer.writerow(d)
                         continue
                     else:
-                        d = row
+                        d = row + dev_row + (row[1] == dev_row[1],) + (row[2] == dev_row[2],) +  (row[3] == dev_row[3],)+ (row[4] == dev_row[4],)
                         employee_writer.writerow(d)
                         continue
+            if not exist:
+                d = row
+                employee_writer.writerow(d)
 
 
 prod_rows = get_rows("172.27.0.2")
