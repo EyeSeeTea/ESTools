@@ -11,7 +11,11 @@
 
 set -e -u -o pipefail
 
-declare -A days_by_period=([daily]=7 [weekly]=31 [monthly]=365)
+declare -A days_by_period=(
+    [daily]=7
+    [weekly]=31
+    [monthly]=365
+)
 
 debug() {
     echo "$@" >&2
@@ -46,17 +50,14 @@ backup() {
         return 1
     fi
 
-    local timestamp dump_dest_path backup_file dump_path
+    local timestamp dump_dest_path dump_path
     timestamp=$(date +%Y-%m-%d_%H%M)
     dump_dest_path=$backups_path/$period
-    backup_file="backup-${period}-$timestamp.dump"
-    dump_path=${dump_dest_path}/${backup_file}
+    dump_path=${dump_dest_path}/backup-${period}-$timestamp.dump
 
     mkdir -p "$dump_dest_path"
     delete_old_files "$period" "$dump_dest_path"
     dump_database "$db_uri" "$dump_path"
-
-    echo "${dump_path}"
 }
 
 if [ $# -lt 3 ]; then
