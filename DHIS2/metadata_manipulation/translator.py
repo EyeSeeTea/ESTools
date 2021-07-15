@@ -1,15 +1,21 @@
 import json
 import xlrd
 from d2apy import dhis2api
-
+#How-to
+#download the google doc file as excel
+#open excel file and convert to xls
+#Change loc value by the excel file
+#Change lang by the lang
+#In the case of covid, the "QUESTION" rows are called " questions" and in PAHO only "question",
+# we must change that before run in line 81. Now is paho style.
 # Give the location of the file
-loc = ('datadictionary.xls')
-lang = "pt"
+loc = ('PAHO_nl.xls')
+lang = "nl"
 translation = {"translations":[
-    {"property":"FORM_NAME","locale":"pt","value": ""},
-    {"property":"NAME","locale":"pt","value":""},
-    {"property":"DESCRIPTION","locale":"pt","value":""},
-    {"property":"SHORT_NAME","locale":"pt","value":""}]}
+    {"property":"FORM_NAME","locale":lang, "value": ""},
+    {"property":"NAME","locale":lang, "value":""},
+    {"property":"DESCRIPTION","locale":lang, "value":""},
+    {"property":"SHORT_NAME","locale":lang, "value":""}]}
 
 # To open Workbook
 wb = xlrd.open_workbook(loc)
@@ -18,7 +24,7 @@ sheetsrange = range(wb.nsheets)
 def init_api(url, username, password):
     return dhis2api.Dhis2Api(url, username, password)
 
-api = init_api("https://", "user", "password")
+api = init_api("http://localhost:8080/", "admin", "district")
 
 options = list()
 dataelements = list()
@@ -53,7 +59,7 @@ for n in sheetsrange:
             option = api.get("/options/"+uid+".json?fields=*")
             option = insert_or_update_item(option, "NAME", name_translated)
             options.append(option)
-        elif " Info" in sheet.name and "General Info" not in sheet.name:
+        elif "form info" in sheet.name.lower() and "General Info" not in sheet.name:
             uid = sheet.row_values(i)[0]
             name_translated = sheet.row_values(i)[7]
             formname_translated = sheet.row_values(i)[3]
@@ -74,7 +80,7 @@ for n in sheetsrange:
                 programstages.append(programstage)
             else:
                 print(str(i)+"not found "+ uid)
-        elif " Questions" in sheet.name:
+        elif "Questions" in sheet.name:
             uid = sheet.row_values(i)[0]
             if uid == "":
                 continue
@@ -92,9 +98,7 @@ for n in sheetsrange:
             description_translated = sheet.row_values(i)[5]
             type = sheet.row_values(i)[10].lower()
             if type == "program":
-                #print(type + " uid: " + uid + " name: " + name_translated + " formname: " + formname_translated + " descname: " + description_translated)
                 program = api.get("/programs/" + uid + ".json?fields=*")
-
                 program = insert_or_update_item(program, "NAME", name_translated)
                 program = insert_or_update_item(program, "SHORT_NAME", shortname_translated)
                 programs.append(program)
