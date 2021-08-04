@@ -86,7 +86,7 @@ echo "current hash: $current_hash"
 echo ""
 
 echo "updating hash for ${INSTANCE} in ${OUTPUT_FOLDER}/${OUTPUT_FILE}"
-/bin/bash ${ESTOOLS_PATH}/DHIS2/dockers/get-image-config.sh $REPO $INSTANCE 2>/dev/null | jq '. | {instance: "'"${NAME}"'", hash: .Hostname}' > ${OUTPUT_FOLDER}/${OUTPUT_FILE}
+/bin/bash ${ESTOOLS_PATH}/DHIS2/dockers/get-image-config.sh $REPO $INSTANCE 2>/dev/null | jq '. | {instance: "'"${NAME}"'", hash: .digest}' > ${OUTPUT_FOLDER}/${OUTPUT_FILE}
 check_status
 echo ""
 
