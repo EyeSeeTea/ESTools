@@ -9,28 +9,8 @@ main() {
   local image=$1
   local tag=$2
   local token=$(get_token $image)
-  local digest=$(get_digest $image $tag $token)
 
-  get_image_configuration $image $token $digest
-}
-
-get_image_configuration() {
-  local image=$1
-  local token=$2
-  local digest=$3
-
-  echo "Retrieving Image Configuration.
-    IMAGE:  $image
-    TOKEN:  $token
-    DIGEST: $digest
-  " >&2
-
-  curl \
-    --silent \
-    --location \
-    --header "Authorization: Bearer $token" \
-    "https://registry-1.docker.io/v2/$image/blobs/$digest" \
-    | jq -r '.container_config'
+  get_image_configuration $image $tag $token
 }
 
 get_token() {
@@ -47,9 +27,8 @@ get_token() {
     | jq -r '.token'
 }
 
-# Retrieve the digest, now specifying in the header
-# that we have a token (so we can pe...
-get_digest() {
+# Response: { "mediaType": "application/vnd.docker.container.image.v1+json", "size": 100, "digest": "sha256:uuid" }
+get_image_configuration() {
   local image=$1
   local tag=$2
   local token=$3
@@ -65,7 +44,7 @@ get_digest() {
     --header "Accept: application/vnd.docker.distribution.manifest.v2+json" \
     --header "Authorization: Bearer $token" \
     "https://registry-1.docker.io/v2/$image/manifests/$tag" \
-    | jq -r '.config.digest'
+    | jq -r '.config'
 }
 
 check_args() {
