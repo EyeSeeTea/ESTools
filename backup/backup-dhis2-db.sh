@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 # Backup a postgres DHIS2 database. Tasks:
 #
@@ -61,21 +61,29 @@ delete_old_files() {
 }
 
 ark_aws() {
-    aws --profile "dhis_occ" --endpoint-url "https://s3.theark.cloud" "$@"
+    aws --profile "dhis2" --endpoint-url "https://s3.theark.cloud" "$@"
 }
 
-sync_to_s3() {
-    local backups_path=$1 remote_folder=$2
-    ark_aws s3 sync --delete "$backups_path" "s3://proj-app-dhis/$remote_folder/backups"
+get_from_s3() {
+    local backups_path=$1 s3_uri=$2
+    ark_aws s3 sync "$s3_uri/backups" "$backups_path"
+}
+
+copy_to_s3() {
+    local backups_path=$1 s3_uri=$2
+    ark_aws s3 sync --delete "$backups_path" "$s3_uri/backups"
 }
 
 backup() {
-    local db_uri=$1 backups_path=$2 remote_folder=$3 period=$4
+    local db_uri=$1 backups_path=$2 s3_uri=$3 period=$4
 
     if ! test "$period" = "daily" -o "$period" = "weekly" -o "$period" = "monthly"; then
         debug "Invalid period: $period"
         return 1
     fi
+
+    echo "Get files from S3: $s3_uri"
+    get_from_s3 "$backups_path" "$s3_uri"
 
     local timestamp dump_dest_path dump_path
     timestamp=$(date +%Y-%m-%d_%H%M)
@@ -87,8 +95,8 @@ backup() {
     dump_database "$db_uri" "$dump_path"
     echo "Dump file: $dump_path"
 
-    echo "Sync to S3: $remote_folder"
-    sync_to_s3 "$backups_path" "$remote_folder"
+    echo "Sync to S3: $s3_uri"
+    copy_to_s3 "$backups_path" "$s3_uri"
 
     echo "Done"
 }
