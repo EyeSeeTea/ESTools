@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # Backup a postgres DHIS2 database. Tasks:
 #
@@ -21,11 +21,29 @@ debug() {
     echo "$@" >&2
 }
 
+retry() {
+    local count=$1 status_code
+    shift 1
+
+    while true; do
+        if "$@"; then
+            break
+        else
+            status_code=$?
+            count=$((count - 1))
+
+            if test "$count" -le 0; then
+                exit $status_code
+            fi
+        fi
+    done
+}
+
 dump_database() {
     local db_uri=$1 dump_path=$2
     debug "[${timestamp}] Dump database: ${dump_path}"
 
-    pg_dump -d "${db_uri}" \
+    retry 3 pg_dump -d "${db_uri}" \
         --no-owner \
         --exclude-table 'aggregated*' \
         --exclude-table 'analytics*' \
@@ -42,8 +60,17 @@ delete_old_files() {
     find "${dump_dest_path}" -mtime "+$days" -print0 | xargs -0 -r -t -n1 rm
 }
 
+ark_aws() {
+    aws --profile "dhis_occ" --endpoint-url "https://s3.theark.cloud" "$@"
+}
+
+sync_to_s3() {
+    local backups_path=$1 remote_folder=$2
+    ark_aws s3 sync --delete "$backups_path" "s3://proj-app-dhis/$remote_folder/backups"
+}
+
 backup() {
-    local db_uri=$1 backups_path=$2 period=$3
+    local db_uri=$1 backups_path=$2 remote_folder=$3 period=$4
 
     if ! test "$period" = "daily" -o "$period" = "weekly" -o "$period" = "monthly"; then
         debug "Invalid period: $period"
@@ -58,10 +85,16 @@ backup() {
     mkdir -p "$dump_dest_path"
     delete_old_files "$period" "$dump_dest_path"
     dump_database "$db_uri" "$dump_path"
+    echo "Dump file: $dump_path"
+
+    echo "Sync to S3: $remote_folder"
+    sync_to_s3 "$backups_path" "$remote_folder"
+
+    echo "Done"
 }
 
 if [ $# -lt 3 ]; then
-    debug "Usage: $(basename "$0") DB_URI DESTINATION_DIR daily|weekly|monthly"
+    debug "Usage: $(basename "$0") DB_URI DESTINATION_DIR REMOTE_S3_FOLDER daily|weekly|monthly"
 else
     backup "$@"
 fi
