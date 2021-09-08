@@ -1,47 +1,36 @@
-## Backup script
+## Description
 
-The backup includes:
+Backup dhis2 database to S3.
 
-- Mysql dump.
-- Postgres dump.
-- Any file/directory in the local filesystem specified in a text file (one entry per line)
-
-And can be synced to some destination (local or remote) using efficient incremental backups with [rdiff-backup](http://www.nongnu.org/rdiff-backup/).
-
-## Example
-
-Example that sends the backup to `user@server:dest-directory`:
+### Setup
 
 ```
-$ cat <<EOF > backup-paths.txt
-/var/www/wordpress/wp-config.php
-/var/www/mediawiki/LocalSettings.php
-/home/ubuntu/.config/scipion-portal/scipion.conf
-EOF
-
-$ bash create-backup.sh \
-  --files-from=backup-paths.txt \
-  --mysql \
-  --postgres \
-  --destination user@server::dest-directory
+$ apt install awscli
 ```
 
-Note that `rsync-diff` URI needs double colon syntax (`::`).
-
-## Configure databases authentication
-
-### mysql
+Create a profile `dhis2` in the file `~/.aws/credentials` with your S3 credentials:
 
 ```
-$ cat ~/.my.cnf
-[client]
-user=USER
-password=PASSWORD
+[dhis2]
+aws_access_key_id = ACCESS_KEY
+aws_secret_access_key = SECRET_KEY
+region = us-east-1
 ```
 
-### postgres
+### Usage
 
 ```
-$ cat .pgpass
-localhost:5432:*:postgres:PASSWORD
+$ bash backup-dhis2-db.sh DATABASE_NAME DESTINATION s3://BUCKET daily|weekly|monthly
+```
+
+For example:
+
+```
+$ bash backup-dhis2-db.sh dhis2 /var/local/backups s3://occ-app-dhis daily
+```
+
+### S3 commands
+
+```
+$ aws --profile dhis2 --endpoint-url https://s3.theark.cloud s3 ls s3://occ-app-dhis --recursive
 ```
