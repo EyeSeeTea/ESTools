@@ -5,7 +5,6 @@ Print usernames and their openids, as they exist in a database dump.
 """
 
 import sys
-import os
 from subprocess import Popen, PIPE
 
 
