@@ -13,7 +13,7 @@ import json
 
 def main():
     try:
-        data = bytes.fromhex(read().strip().lstrip(r'\x'))
+        data = bytes.fromhex(read().strip().lstrip('\\').lstrip('x'))
 
         decoded = gzip.decompress(data)
 
@@ -26,7 +26,12 @@ def main():
 
 
 def read():
-    return input('Data string: ') if sys.stdin.isatty() else sys.stdin.read()
+    if not sys.stdin.isatty():
+        return sys.stdin.read()
+    elif len(sys.argv) > 1:
+        return sys.argv[1]
+    else:
+        return input('Data string: ')
 
 
 
