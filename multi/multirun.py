@@ -16,9 +16,9 @@ def main():
 
         nodes = get_nodes(args.hosts_file)
 
-        display = get_display(nodes, args.short, args.literal)
+        display = get_display(nodes, args.short)
 
-        for node, out in multirun(args.command, nodes, args.timeout):
+        for node, out in multirun(args.command, nodes, args.user, args.timeout):
             print(display(node, out))
 
     except (AssertionError, OSError) as e:
@@ -31,9 +31,9 @@ def get_arguments():
     add = parser.add_argument  # shortcut
     add('command', help='command to run')
     add('-f', '--hosts-file', default='hosts.txt', help='file with hosts')
-    add('-t', '--timeout', type=int, default=10, help='seconds to wait')
+    add('-u', '--user', help='user login in hosts')
+    add('-t', '--timeout', type=int, default=600, help='seconds to wait')
     add('-s', '--short', action='store_true', help='short output format')
-    add('-l', '--literal', action='store_true', help='do not parse response')
 
     return parser.parse_args()
 
@@ -56,22 +56,20 @@ def get_nodes(fname):
     return nodes
 
 
-def get_display(nodes, short, literal):
+def get_display(nodes, short=False):
     "Return a function that, given a node and its output, formats it prettily"
     if short:
-        fmt = '%%-%ds # %%s' % max(len(x) for x in nodes)
-        if literal:
-            return lambda node, out: fmt % (node, out)
-        else:
-            return lambda node, out: fmt % (node, out.replace('\n', ' '))
+        out_fmt = '%%-%ds => %%s' % max(len(x) for x in nodes)
+        return lambda node, out: out_fmt % (node, out.replace('\n', ' '))
     else:
         return lambda node, out: f'==> {node} <==\n{out}\n'
 
 
-def multirun(command, nodes, timeout=10, max_workers=10):
+def multirun(command, nodes, user=None, timeout=10, max_workers=10):
     "Run command in nodes and yield their output, computed in parallel"
     def run(node):
-        proc = sp.run(['ssh', node, '/bin/sh'], input=command.encode('utf8'),
+        proc = sp.run(['ssh'] + (['-l', user] if user else []) + [node, '/bin/bash'],
+                      input=command.encode('utf8'),
                       capture_output=True, timeout=timeout)
         stderr = proc.stderr.decode('utf8').strip()
         stdout = proc.stdout.decode('utf8').strip()
