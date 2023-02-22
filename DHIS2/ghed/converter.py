@@ -43,20 +43,20 @@ with open('GHED_datas.csv', mode ='r')as file:
         orgunit = line[0]
         code = line[1]
         period = line[4]
-        gghed_che = line[15]#duplicated
-        tran_shi = line[26]
-        che_ppp_pc = line[1200]
-        gdp_ppp_pc = line[1419]
-        fs5_che = line[1709]
-        hf2_che = line[1725]
-        hf3_che = line[1730]
-        che_ncu2020_pc = line[2554]
-        gghed_ncu2020_pc = line[2555] #duplicate
-        gghed_ncu2020_pc = line[2555]
-        gghed_gge=line[21]
-        gghed_gdp=line[20]
-        vhi_che=line[34]
-        hf1_che=line[1717]
+        gghed_che = line[15].replace(",",".")#duplicated
+        tran_shi = line[26].replace(",",".")
+        che_ppp_pc = line[1200].replace(",",".")
+        gdp_ppp_pc = line[1419].replace(",",".")
+        fs5_che = line[1709].replace(",",".")
+        hf2_che = line[1725].replace(",",".")
+        hf3_che = line[1730].replace(",",".")
+        che_ncu2020_pc = line[2554].replace(",",".")
+        gghed_ncu2020_pc = line[2555].replace(",",".") #duplicate
+        gghed_ncu2020_pc = line[2555].replace(",",".")
+        gghed_gge=line[21].replace(",",".")
+        gghed_gdp=line[20].replace(",",".")
+        vhi_che=line[34].replace(",",".")
+        hf1_che=line[1717].replace(",",".")
         public_ppp_pc = ""
         vhi_ppp_pc = ""
         oop_ncu2020_pc = ""
@@ -68,49 +68,49 @@ with open('GHED_datas.csv', mode ='r')as file:
         vhi_ncu2020_pc=""
         other_che=""
         if gghed_che != '':
-            datavalues.append({"dataElement": indicator_uid["gghed_che"], "value": gghed_che,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["gghed_che"], "value": gghed_che,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if hf2_che != '':
-            datavalues.append({"dataElement": indicator_uid["hf2_che"], "value": hf2_che,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["hf2_che"], "value": hf2_che,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if hf3_che != '':
-            datavalues.append({"dataElement": indicator_uid["hf3_che"], "value": hf3_che,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["hf3_che"], "value": hf3_che,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if che_ncu2020_pc != '':
-            datavalues.append({"dataElement": indicator_uid["che_ncu2020_pc"], "value": che_ncu2020_pc,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["che_ncu2020_pc"], "value": che_ncu2020_pc,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if gghed_ncu2020_pc != '':
-            datavalues.append({"dataElement": indicator_uid["gghed_ncu2020_pc"], "value": gghed_ncu2020_pc,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["gghed_ncu2020_pc"], "value": gghed_ncu2020_pc,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if fs5_che != '':
-            datavalues.append({"dataElement": indicator_uid["fs5_che"], "value": fs5_che,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["fs5_che"], "value": fs5_che,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if gdp_ppp_pc != '':
-            datavalues.append({"dataElement": indicator_uid["gdp_ppp_pc"], "value": gdp_ppp_pc,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["gdp_ppp_pc"], "value": gdp_ppp_pc,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if che_ppp_pc != '':
-            datavalues.append({"dataElement": indicator_uid["che_ppp_pc"], "value": che_ppp_pc,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["che_ppp_pc"], "value": che_ppp_pc,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if tran_shi != '':
-            datavalues.append({"dataElement": indicator_uid["tran_shi"], "value": tran_shi,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["tran_shi"], "value": tran_shi,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if oop_ppp_pc != '':
-            datavalues.append({"dataElement": indicator_uid["oop_ppp_pc"], "value": oop_ppp_pc,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["oop_ppp_pc"], "value": oop_ppp_pc,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if gghed_gge != '':
-            datavalues.append({"dataElement": indicator_uid["gghed_gge"], "value": gghed_gge,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["gghed_gge"], "value": gghed_gge,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if gghed_gdp != '':
-            datavalues.append({"dataElement": indicator_uid["gghed_gdp"], "value": gghed_gdp,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["gghed_gdp"], "value": gghed_gdp,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if vhi_che != '':
-            datavalues.append({"dataElement": indicator_uid["vhi_che"], "value": vhi_che,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["vhi_che"], "value": vhi_che,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if hf1_che != '':
-            datavalues.append({"dataElement": indicator_uid["hf1_che"], "value": hf1_che,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["hf1_che"], "value": hf1_che,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if vhi_ncu2020_pc != '':
-            datavalues.append({"dataElement": indicator_uid["vhi_ncu2020_pc"], "value": vhi_ncu2020_pc,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["vhi_ncu2020_pc"], "value": vhi_ncu2020_pc,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if other_che != '':
-            datavalues.append({"dataElement": indicator_uid["other_che"], "value": other_che,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["other_che"], "value": other_che,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if other_che != '':
-            datavalues.append({"dataElement": indicator_uid["other_che"], "value": other_che,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["other_che"], "value": other_che,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if public_ppp_pc != '':
-            datavalues.append({"dataElement": indicator_uid["public_ppp_pc"], "value": public_ppp_pc,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["public_ppp_pc"], "value": public_ppp_pc,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if public_ppp_pc != '':
-            datavalues.append({"dataElement": indicator_uid["public_ppp_pc"], "value": public_ppp_pc,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["public_ppp_pc"], "value": public_ppp_pc,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if oop_ncu2020_pc != '':
-            datavalues.append({"dataElement": indicator_uid["oop_ncu2020_pc"], "value": oop_ncu2020_pc,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["oop_ncu2020_pc"], "value": oop_ncu2020_pc,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if vhi_ppp_pc != '':
-            datavalues.append({"dataElement": indicator_uid["vhi_ppp_pc"], "value": vhi_ppp_pc,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["vhi_ppp_pc"], "value": vhi_ppp_pc,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
         if public_ppp_pc != '':
-            datavalues.append({"dataElement": indicator_uid["public_ppp_pc"], "value": public_ppp_pc,"orgunitname": orgunit, "code": code, "period": period+"0101","categoryOptionCombo": "Xr12mI7VPn3","attributeOptionCombo": "Xr12mI7VPn3" })
+            datavalues.append({"dataElement": indicator_uid["public_ppp_pc"], "value": public_ppp_pc,"orgUnitname": orgunit, "orgUnit": code, "period": period+"0101","categoryOptionCombo": "HllvX50cXC0","attributeOptionCombo": "HllvX50cXC0" })
 
         datavalueset = {"dataValues":datavalues}
     count=count+1
