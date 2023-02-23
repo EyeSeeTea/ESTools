@@ -12,7 +12,7 @@ def getPos(letra):
     posicion = ord(letra) - 64
     return posicion-1
 
-def getData(dataelement, programid, type, orgunitid, value):
+def getData(dataelement, programid, period, type, orgunitid, value):
     if value is None:
         return None
     if type == "datasets":
@@ -30,7 +30,7 @@ def getData(dataelement, programid, type, orgunitid, value):
             "orgUnit": orgunitid,
             "program": programid,
             "status": "ACTIVE",
-            "eventDate": period + "-01-01T00:00:00.000",
+            "eventDate": period ,
             "dataValues": [{
                 "storedBy": "leish2dhis script",
                 "dataElement": dataelement,
@@ -41,6 +41,12 @@ def getData(dataelement, programid, type, orgunitid, value):
 import openpyxl
 
 obj = openpyxl.load_workbook("input/"+filename)
+
+
+def getdate(period, pos):
+    return str(period)+ "-" + str(pos)+"-01T00:00:00.000"
+
+
 for sheetname in sheetsnames:
     print(sheetname)
     sheet = obj.get_sheet_by_name(sheetname)
@@ -71,7 +77,17 @@ for sheetname in sheetsnames:
             orgunitid = row[0]
             if valuecellsnumber == 1:
                 value = row[letterStartPos]
-            dhis2value = getData(dataelement,programid,type,orgunitid,value)
+                fixed_period = period
+                if (type == "programs"):
+                    fixed_period = period + "-01-01T00:00:00.000"
+                dhis2value = getData(dataelement, programid,period,type,orgunitid,value)
+            else:
+                for x in range(1, valuecellsnumber):
+                    fixed_period = period
+                    value = row[x+letterStartPos-1]
+                    if type == "programs":
+                        fixed_period = getdate(period, x)
+                    dhis2value = getData(dataelement, programid, fixed_period, type, orgunitid, value)
             if dhis2value is not None:
                 dhis2data.append(dhis2value)
 
