@@ -5,7 +5,25 @@ import subprocess
 
 stop = "***** PLEASE DON'T MODIFY THESE HEADERS *****"
 sheetsnames = ["Population", "VL", "CL"]
+endemic_optionset = ["ENDEMIC", "ENDEMICITY_DOUBTFUL", "PREVIOUSLY_REPORTED_CASES", "AT_RISK",
+                     "NO_AUTHOCHTHONOUS_CASES_REPORTED]"]
+fixOrgUnits = dict()
+fixOrgUnits["vGW4iEyxLOv"] = "N4ymCL5RSIn"
+fixOrgUnits["HqKgvQhHoy3"] = "bbFCXdo5j9T"
+fixOrgUnits["MSfuyy3tOQR"] = "uaDaMa0modO"
+fixOrgUnits["ooXCq3ZBxaV"] = "KgbZAa1EPHg"
+fixOrgUnits["DZZ125OWd8J"] = "cqBFwLIXRcH"
+fixOrgUnits["rHzAyLOeTgS"] = "gkaY3mQeM0R"
+fixOrgUnits["zlHkJUx9qql"] = "GLV6lqi0B0O"
+fixOrgUnits["C81JPWWymfa"] = "B3zC2a6SXU8"
+
 allOrgUnits = dict()
+
+def get_code():
+    command = "java CodeGenerator"
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
+    return str(output).replace("b'", "").replace("\\n'", "")
 
 # all orgunits
 # https://extranet.who.int/dhis2-dev/api/organisationUnits.csv?fields=id,name,shortName,path,level&filter=level:lt:7&paging=false
@@ -18,15 +36,17 @@ def getPos(letra):
 
 
 def fixValue(value):
-    if value in ["ENDEMIC","ENDEMICITY_DOUBTFUL","PREVIOUSLY_REPORTED_CASES","AT_RISK","NO_AUTHOCHTHONOUS_CASES_REPORTED]"]:
-        return ["ENDEMIC","ENDEMICITY_DOUBTFUL","PREVIOUSLY_REPORTED_CASES","AT_RISK","NO_AUTHOCHTHONOUS_CASES_REPORTED]"].index(value)+1
-
-    return value
+    if value in endemic_optionset:
+        return endemic_optionset.index(value) + 1
+    else:
+        return value
 
 
 def getData(dataelement, programid, period, type, orgunitid, value):
     if value is None or value == "":
         return None
+    if orgunitid in fixOrgUnits.keys():
+        orgunitid = fixOrgUnits[orgunitid]
     if type == "datasets":
         dhisvalue = {
             "dataElement": dataelement,
@@ -41,6 +61,7 @@ def getData(dataelement, programid, period, type, orgunitid, value):
             "programType": "WITHOUT_REGISTRATION",
             "orgUnit": orgunitid,
             "program": programid,
+            "event": get_code(),
             "status": "ACTIVE",
             "eventDate": period,
             "dataValues": [{
@@ -51,16 +72,15 @@ def getData(dataelement, programid, period, type, orgunitid, value):
     return dhisvalue
 
 
-
-
 def getdate(period, pos):
     return str(period) + "-" + str(pos) + "-01T00:00:00.000"
+
 
 def checkOrgUnit(uid, row, credentials, server):
     import requests
 
     # URL del recurso que se desea verificar si existe
-    url = server+'/api/organisationUnits/'+uid
+    url = server + '/api/organisationUnits/' + uid
 
     # Realizar la llamada a la API
     respuesta = requests.get(url, auth=credentials)
@@ -126,7 +146,7 @@ for archivo in archivos_xlsx:
                 for row in table[valuefirstrow:]:
                     orgunitid = row[0]
 
-                    allOrgUnits[row[0]]= str(json.dumps(row)) + " filename: "+ruta_archivo
+                    allOrgUnits[row[0]] = str(json.dumps(row)) + " filename: " + ruta_archivo
                     if valuecellsnumber == 1:
                         value = row[letterStartPos]
                         fixed_period = period
@@ -159,11 +179,11 @@ for archivo in archivos_xlsx:
                 with open("output/" + archivo.replace(".xlsx", "") + sheetname + ".json", "w") as outfile:
                     outfile.write(json_object)
         except:
-            print("hoja no encontrada"+ sheetname)
+            print("hoja no encontrada" + sheetname)
             print("fichero" + ruta_archivo)
 
-user, password, server= connect_parameters()
-    # Configurar las credenciales de autenticación básica
+user, password, server = connect_parameters()
+# Configurar las credenciales de autenticación básica
 credentials = (user, password)
 for orgunitkey in allOrgUnits.keys():
     checkOrgUnit(orgunitkey, allOrgUnits[orgunitkey], credentials, server)
