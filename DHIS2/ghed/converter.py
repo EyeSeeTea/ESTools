@@ -50,20 +50,21 @@ with open('GHED_datas.csv', mode='r') as file:
             orgunit = line[0]
             code = line[1]
             period = line[4]
-            gghed_che = line[15].replace(".", "").replace(",", ".")  # duplicated
-            tran_shi = line[26].replace(".", "").replace(",", ".")
-            che_ppp_pc = line[1200].replace(".", "").replace(",", ".")
-            gdp_ppp_pc = line[1419].replace(".", "").replace(",", ".")
-            fs5_che = line[1709].replace(".", "").replace(",", ".")
-            hf2_che = line[1725].replace(".", "").replace(",", ".")
-            hf3_che = line[1730].replace(".", "").replace(",", ".")
-            che_ncu2020_pc = line[2554].replace(".", "").replace(",", ".")
-            gghed_ncu2020_pc = line[2555].replace(".", "").replace(",", ".")  # duplicate
-            gghed_ncu2020_pc = line[2555].replace(".", "").replace(",", ".")
-            gghed_gge = line[21].replace(".", "").replace(",", ".")
-            gghed_gdp = line[20].replace(".", "").replace(",", ".")
-            vhi_che = line[34].replace(".", "").replace(",", ".")
-            hf1_che = line[1717].replace(".", "").replace(",", ".")
+            gghed_che = line[indicator_position["gghed_che"]].replace(".", "").replace(",", ".")  # duplicated
+            tran_shi = line[indicator_position["tran_shi"]].replace(".", "").replace(",", ".")
+            che_ppp_pc = line[indicator_position["che_ppp_pc"]].replace(".", "").replace(",", ".")
+            gdp_ppp_pc = line[indicator_position["gdp_ppp_pc"]].replace(".", "").replace(",", ".")
+            fs5_che = line[indicator_position["fs5_che"]].replace(".", "").replace(",", ".")
+            hf2_che = line[indicator_position["hf2_che"]].replace(".", "").replace(",", ".")
+            hf3_che = line[indicator_position["hf3_che"]].replace(".", "").replace(",", ".")
+            che_ncu2020_pc = line[indicator_position["che_ncu2020_pc"]].replace(".", "").replace(",", ".")
+            gghed_ncu2020_pc = line[indicator_position["gghed_ncu2020_pc"]].replace(".", "").replace(",", ".")
+            gghed_gge = line[indicator_position["gghed_gge"]].replace(".", "").replace(",", ".")
+            gghed_gdp = line[indicator_position["gghed_gdp"]].replace(".", "").replace(",", ".")
+            vhi_che = line[indicator_position["vhi_che"]].replace(".", "").replace(",", ".")
+            hf1_che = line[indicator_position["hf1_che"]].replace(".", "").replace(",", ".")
+            fs3_che = line[indicator_position["fs3_che"]].replace(".", "").replace(",", ".")
+            fs11_che = line[indicator_position["fs11_che"]].replace(".", "").replace(",", ".")
             public_ppp_pc = ""  # Public spending on health per person in current PPP
             vhi_ncu2020_pc = ""  # Voluntary health insurance spending per person in constant NCU
             vhi_ppp_pc = ""  # Voluntary health insurance spending per person in current PPP
@@ -75,8 +76,20 @@ with open('GHED_datas.csv', mode='r') as file:
             oop_che = ""  # Out-of-pocket payments as a share of current spending on health # "Health spending(health accounts)"    Breakdown of current spending on health by financing scheme
             # gghed_ncu2020_pc public_ppp_pc vhi_ncu2020_pc vhi_ppp_pc oop_ncu2020_pc oop_ppp_pc "Health spending(health accounts)"    Health spending per person  by financing scheme
 
-            other_che = str(100 - (getFloat(gghed_che) + getFloat(fs5_che) + getFloat(
-                oop_che)))  # 100-(gghed_che + fs5_che + oop_che)
+            other_che = ""
+            if gghed_che != "" and fs5_che != "" and oop_che != "":
+                other_che = str(100 - (getFloat(gghed_che) + getFloat(fs5_che) + getFloat(
+                    oop_che)))  # 100-(gghed_che + fs5_che + oop_che)
+            if fs3_che != '':
+                datavalues.append(
+                    {"dataElement": indicator_uid["fs3_che"], "value": fs3_che, "orgunitname": orgunit,
+                     "orgUnit": code, "period": period, "categoryOptionCombo": "HllvX50cXC0",
+                     "attributeOptionCombo": "HllvX50cXC0"})
+            if fs11_che != '':
+                datavalues.append(
+                    {"dataElement": indicator_uid["fs11_che"], "value": fs11_che, "orgunitname": orgunit,
+                     "orgUnit": code, "period": period, "categoryOptionCombo": "HllvX50cXC0",
+                     "attributeOptionCombo": "HllvX50cXC0"})
             if gghed_che != '':
                 datavalues.append(
                     {"dataElement": indicator_uid["gghed_che"], "value": gghed_che, "orgunitname": orgunit,
