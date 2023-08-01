@@ -1,0 +1,111 @@
+[
+  {
+    "type": "tomcat",
+    "server": "dev",
+    "url": "https://extranet.who.int/dhis2-dev",
+    "backups": "/backup/logs/db_backups.log",
+    "analytics": "/services/tomcats/dev/logs/dhis-analytics-table.log",
+    "host": "gva11sugenesect.who.int"
+  },
+  {
+    "type": "docker",
+    "server": "dev-cont",
+    "url": "https://extranet.who.int/dhis2-cont-dev",
+    "analytics": "/DHIS2_home/logs/dhis-analytics-table.log",
+    "cloning": "/backup/logs/clone-dev-cont.log",
+    "host": "gva11sugenesect.who.int"
+  },
+  {
+    "type": "monit",
+    "server": "dev",
+    "monit": "monit status",
+    "host": "gva11sugenesect.who.int"
+  },
+  {
+    "type": "docker",
+    "server": "preprod",
+    "url": "https://portal-uat.who.int/dhis2",
+    "analytics": "/DHIS2_home/logs/dhis-analytics-table.log",
+    "cloning": "/backup/logs/clone-dev-cont.log",
+    "host": "gva11sugastrodon.who.int"
+  },
+  {
+    "type": "docker",
+    "server": "preprod-cont",
+    "url": "https://extranet.who.int/dhis2-cont",
+    "analytics": "/DHIS2_home/logs/dhis-analytics-table.log",
+    "cloning": "/backup/logs/clone-dev-cont.log",
+    "host": "gva11sugastrodon.who.int"
+  },
+  {
+    "type": "monit",
+    "server": "preprod",
+    "monit": "monit status",
+    "host": "gva11sugastrodon.who.int"
+  },
+  {
+    "type": "docker",
+    "server": "training",
+    "url": "https://extranet.who.int/dhis2-demo",
+    "analytics": "/DHIS2_home/logs/dhis-analytics-table.log",
+    "cloning": "/backup/logs/clone-training.log",
+    "host": "gva11sucroconaw.who.int"
+  },
+  {
+    "type": "monit",
+    "server": "training",
+    "monit": "monit status",
+    "host": "gva11sucroconaw.who.int"
+  },
+  {
+    "type": "tomcat",
+    "server": "prod",
+    "url": "https://extranet.who.int/dhis2",
+    "backups": "/backup/logs/db_backups.log",
+    "analytics": "/services/tomcats/prod/logs/dhis-analytics-table.log",
+    "host": "gva11sucrustle.who.int"
+  },
+  {
+    "type": "monit",
+    "server": "prod",
+    "monit": "monit status",
+    "host": "gva11sucrustle.who.int"
+  },
+  {
+    "type": "tomcat",
+    "server": "prod-indiv",
+    "url": "https://extranet.who.int/dhis2-indiv",
+    "backups": "/backup/logs/db_backups.log",
+    "analytics": "/services/tomcats/prod-indiv/logs/dhis-analytics-table.log",
+    "host": "gva11sucryogonal.who.int"
+  },
+  {
+    "type": "monit",
+    "server": "prod-indiv",
+    "monit": "monit status",
+    "host": "gva11sucryogonal.who.int"
+  },
+  {
+    "type": "docker",
+    "server": "services",
+    "url": "https://extranet.who.int/dhis2-indiv",
+    "backups": "/backup/logs/db_backups.log",
+    "analytics": "/DHIS2_home/logs/dhis-analytics-table.log",
+    "cloning": "/backup/logs/clone-dev-cont.log",
+    "host": "gva11sucubchoo.who.int"
+  },
+  {
+    "type": "docker",
+    "server": "services",
+    "url": "https://extranet.who.int/dhis2-cont-indiv",
+    "analytics": "/DHIS2_home/logs/dhis-analytics-table.log",
+    "cloning": "/backup/logs/clone-dev-cont.log",
+    "host": "gva11sucubchoo.who.int"
+  },
+  {
+    "type": "monit",
+    "server": "services",
+    "monit": "monit status",
+    "host": "gva11sucubchoo.who.int"
+  }
+]
