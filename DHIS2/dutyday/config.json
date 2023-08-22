@@ -16,31 +16,19 @@
     "host": "gva11sugenesect.who.int"
   },
   {
-    "type": "monit",
-    "server": "dev",
-    "monit": "monit status",
-    "host": "gva11sugenesect.who.int"
-  },
-  {
     "type": "docker",
     "server": "preprod",
     "url": "https://portal-uat.who.int/dhis2",
     "analytics": "/DHIS2_home/logs/dhis-analytics-table.log",
-    "cloning": "/backup/logs/clone-dev-cont.log",
+    "cloning": "/backup/logs/clone-preprod.log",
     "host": "gva11sugastrodon.who.int"
   },
   {
     "type": "docker",
     "server": "preprod-cont",
-    "url": "https://extranet.who.int/dhis2-cont",
+    "url": "https://portal-uat.who.int/dhis2-cont",
     "analytics": "/DHIS2_home/logs/dhis-analytics-table.log",
-    "cloning": "/backup/logs/clone-dev-cont.log",
-    "host": "gva11sugastrodon.who.int"
-  },
-  {
-    "type": "monit",
-    "server": "preprod",
-    "monit": "monit status",
+    "cloning": "/backup/logs/clone-preprod-cont.log",
     "host": "gva11sugastrodon.who.int"
   },
   {
@@ -52,10 +40,12 @@
     "host": "gva11sucroconaw.who.int"
   },
   {
-    "type": "monit",
-    "server": "training",
-    "monit": "monit status",
-    "host": "gva11sucroconaw.who.int"
+    "type": "docker",
+    "server": "training-indiv",
+    "url": "https://extranet.who.int/dhis2-demo-indiv",
+    "analytics": "/DHIS2_home/logs/dhis-analytics-table.log",
+    "cloning": "/backup/logs/clone-training-indiv.log",
+    "host": "gva11sucubchoo.who.int"
   },
   {
     "type": "tomcat",
@@ -63,12 +53,6 @@
     "url": "https://extranet.who.int/dhis2",
     "backups": "/backup/logs/db_backups.log",
     "analytics": "/services/tomcats/prod/logs/dhis-analytics-table.log",
-    "host": "gva11sucrustle.who.int"
-  },
-  {
-    "type": "monit",
-    "server": "prod",
-    "monit": "monit status",
     "host": "gva11sucrustle.who.int"
   },
   {
@@ -80,32 +64,92 @@
     "host": "gva11sucryogonal.who.int"
   },
   {
+    "type": "docker",
+    "server": "preprod-indiv",
+    "url": "https://portal-uat.who.int/dhis2-indiv",
+    "backups": "/backup/logs/db_backups.log",
+    "analytics": "/DHIS2_home/logs/dhis-analytics-table.log",
+    "cloning": "/backup/logs/clone-preprod-indiv.log",
+    "host": "gva11sucubchoo.who.int"
+  },
+  {
+    "type": "docker",
+    "server": "preprod-cont-indiv",
+    "url": "https://portal-uat.who.int/dhis2-cont-indiv",
+    "analytics": "/DHIS2_home/logs/dhis-analytics-table.log",
+    "cloning": "/backup/logs/clone-preprod-cont-indiv.log",
+    "host": "gva11sucubchoo.who.int"
+  },
+  {
+    "type": "monit",
+    "server": "services",
+    "monit": "monit status",
+    "host": "gva11sucubchoo.who.int"
+  },
+  {
+    "type": "monit",
+    "server": "prod",
+    "monit": "monit status",
+    "host": "gva11sucrustle.who.int"
+  },
+  {
+    "type": "monit",
+    "server": "training",
+    "monit": "monit status",
+    "host": "gva11sucroconaw.who.int"
+  },
+  {
     "type": "monit",
     "server": "prod-indiv",
     "monit": "monit status",
     "host": "gva11sucryogonal.who.int"
   },
   {
-    "type": "docker",
-    "server": "services",
-    "url": "https://extranet.who.int/dhis2-indiv",
-    "backups": "/backup/logs/db_backups.log",
-    "analytics": "/DHIS2_home/logs/dhis-analytics-table.log",
-    "cloning": "/backup/logs/clone-dev-cont.log",
-    "host": "gva11sucubchoo.who.int"
-  },
-  {
-    "type": "docker",
-    "server": "services",
-    "url": "https://extranet.who.int/dhis2-cont-indiv",
-    "analytics": "/DHIS2_home/logs/dhis-analytics-table.log",
-    "cloning": "/backup/logs/clone-dev-cont.log",
-    "host": "gva11sucubchoo.who.int"
+    "type": "monit",
+    "server": "preprod",
+    "monit": "monit status",
+    "host": "gva11sugastrodon.who.int"
   },
   {
     "type": "monit",
-    "server": "services",
+    "server": "dev",
     "monit": "monit status",
+    "host": "gva11sugenesect.who.int"
+  },
+  {
+    "type": "diskspace",
+    "server": "services",
+    "command": "df -h",
     "host": "gva11sucubchoo.who.int"
+  },
+  {
+    "type": "diskspace",
+    "server": "prod",
+    "command": "df -h",
+    "host": "gva11sucrustle.who.int"
+  },
+  {
+    "type": "diskspace",
+    "server": "training",
+    "command": "df -h",
+    "host": "gva11sucroconaw.who.int"
+  },
+  {
+    "type": "diskspace",
+    "server": "prod-indiv",
+    "command": "df -h",
+    "host": "gva11sucryogonal.who.int"
+  },
+  {
+    "type": "diskspace",
+    "server": "preprod",
+    "command": "df -h",
+    "host": "gva11sugastrodon.who.int"
+  },
+  {
+    "type": "diskspace",
+    "server": "dev",
+    "command": "df -h",
+    "host": "gva11sugenesect.who.int"
   }
 ]

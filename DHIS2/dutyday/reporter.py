@@ -5,6 +5,8 @@ import subprocess
 import json
 
 import paramiko
+
+
 #this script will be executed on local docker with vpn active
 def execute_command_on_remote_machine(host, command):
     path_to_private_key = '/root/.ssh/id_rsa'  # ruta a tu archivo de clave privada SSH
@@ -21,21 +23,30 @@ def execute_command_on_remote_machine(host, command):
 
     return output
 
+
 def ask_clone(host, file):
     result = execute_command_on_remote_machine(host, "/home/tomcatuser/bin/logger.sh clonelogger "+file)
     return result
+
 
 def ask_monit(host):
     result = execute_command_on_remote_machine(host, "/home/tomcatuser/bin/logger.sh monitlogger")
     return result
 
+
 def ask_db(host, file):
     result = execute_command_on_remote_machine(host, "/home/tomcatuser/bin/logger.sh databaselogger "+file)
     return result
 
+
+def ask_space(host, command):
+    result = execute_command_on_remote_machine(host, command)
+    return result
+
+
 def ask_analytics(host, logfile, server, type):
     if type == "docker":
-        server = server + "-core"
+        server = server + ""
         analyticslog = execute_command_on_remote_machine(host, "/home/tomcatuser/bin/logger.sh analyticslogger docker " + server + " " +logfile)
         return analyticslog
     elif type == "tomcat":
@@ -44,6 +55,7 @@ def ask_analytics(host, logfile, server, type):
         return analyticslog
 
     print('Informe generado.')
+
 
 def runlogger(file):
     logger = ""
@@ -84,9 +96,17 @@ def runlogger(file):
 
             if "cloning" in item.keys():
                 logger = logger + "\n"
-                logger = logger + "Monit: " + item.get("host")
+                logger = logger + "Cloning: " + item.get("host")
                 logger = logger + "\n"
                 logger = logger + ask_clone(item.get("host"), item.get("cloning"))
+                logger = logger + "\n"
+
+
+            if type == "diskspace":
+                logger = logger + "\n"
+                logger = logger + "Disk Space: " + item.get("host")
+                logger = logger + "\n"
+                logger = logger + ask_space(item.get("host"), item.get("command"))
                 logger = logger + "\n"
 
             print('------')
