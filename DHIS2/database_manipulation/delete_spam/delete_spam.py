@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
 
 """
-Delete "spam" messages that arrived because of a bug in a report.
+Delete "spam" messages that arrived because of a bug in a report that are older than one week.
+
+Usage:
+
+Example of
+python3 ./delete_spam.py --dsn "host=localhost port=$docker_port dbname=dhis2 user=dhis"
+
 """
 
-# This program solved task https://app.clickup.com/t/3ajztmv
-
-# Example of how to reach a postgres db behind a docker:
-#   docker exec -it d2-docker-docker-eyeseetea-com-widpit-2-36-widp-preprod_db_1 bash
-#   nc -lk -p 1000 -e nc localhost 5432
-# and on the host computer launch this program using the port that is
-# redirected to 1000 in docker (find it with "docker ps").
-
 import sys
-import re
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
 
 import psycopg2
@@ -36,8 +33,8 @@ def get_args():
 
     add = parser.add_argument  # shortcut
     add('--uids',
-        default='kD52FGwJgDF,YdBcEIZpRHo,zu8v89yqrBV,H4atNsEuKxP,fa7DnTkWEOL',
-        help='comma spearated uids of users that received spam to delete')
+        default='kD52FGwJgDF,YdBcEIZpRHo,zu8v89yqrBV,H4atNsEuKxP,fa7DnTkWEOL,hfaMYUsDm8u',
+        help='comma separated list of uids of users that received spam to delete')
     # by default, the ones they asked us to remove of spam messages
     add('--subject', default=r'WMR Form monitoring%',
         help='Pattern in the subject of the spam messages')
@@ -49,7 +46,8 @@ def get_args():
 
 def delete_spam(cur, uids_spammed, subject):
     cur.execute(f"SELECT messageid FROM message "
-                f"  WHERE messagetext LIKE '{subject}'")
+                f"  WHERE messagetext LIKE '{subject}'"
+                f"    AND created < NOW() - INTERVAL '7 days';")
     spam_mids = cur.fetchall()
 
     for mid in spam_mids:
@@ -94,7 +92,6 @@ def delete_spam(cur, uids_spammed, subject):
                         f'  WHERE messageconversationid = {mcid}')
             cur.execute(f'DELETE FROM message '
                         f'  WHERE messageid = {mid}')
-
 
 
 if __name__ == '__main__':
