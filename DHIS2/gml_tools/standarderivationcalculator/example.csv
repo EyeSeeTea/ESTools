@@ -1,0 +1,13 @@
+name,uid,path,length,"select name, uid, path, LENGTH(coordinates) from organisationunit where length(coordinates)>1   order by LENGTH(coordinates) desc",Level
+Irian Jaya Barat,rCFQg5RBDzC,/H8RixfF8ugH/afomkmfy9xk/jVqoXv7rFns/rCFQg5RBDzC,4106025,,level4
+Papua,csLf8gPuCzi,/H8RixfF8ugH/afomkmfy9xk/jVqoXv7rFns/csLf8gPuCzi,2975896,,level4
+Maluku,h3sDMgGRzzl,/H8RixfF8ugH/afomkmfy9xk/jVqoXv7rFns/h3sDMgGRzzl,2729633,,level4
+Kepulauan Riau,NyeIQ2n43m8,/H8RixfF8ugH/afomkmfy9xk/jVqoXv7rFns/NyeIQ2n43m8,1963212,,level4
+Nusa Tenggara Timur,EeCV4nmLni6,/H8RixfF8ugH/afomkmfy9xk/jVqoXv7rFns/EeCV4nmLni6,1779508,,level4
+Maluku Utara,Acptco1K9VU,/H8RixfF8ugH/afomkmfy9xk/jVqoXv7rFns/Acptco1K9VU,1773258,,level4
+Sulawesi Tengah,vNk9i5eZ0os,/H8RixfF8ugH/afomkmfy9xk/jVqoXv7rFns/vNk9i5eZ0os,1667793,,level4
+Abu Dhabi,GxTrXzLwhlg,/H8RixfF8ugH/yWc1CTszR3s/aNIrqpwcKXv/GxTrXzLwhlg,1358660,,level4
+Milne Bay,tPzCF0CCEhw,/H8RixfF8ugH/RA5zxsbittk/Zav7juzGmEo/tPzCF0CCEhw,1334852,,level4
+Sind,jO20INsdwfQ,/H8RixfF8ugH/yWc1CTszR3s/yzAMOdV0Pmr/jO20INsdwfQ,1300884,,level4
+Bié,BtcvdnpMPLH,/H8RixfF8ugH/seHJdofSPcM/jFOZHDZpjPL/BtcvdnpMPLH,1266266,,level4
+Dhaka Division,pF3sVE7tZdk,/H8RixfF8ugH/afomkmfy9xk/dNLjKwsVjod/pF3sVE7tZdk,1242720,,level4
