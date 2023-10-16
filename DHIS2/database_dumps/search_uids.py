@@ -15,7 +15,7 @@ def main():
     fname = sys.argv[1]
     uids = sys.argv[2:]
 
-    cmd = (['pg_restore', '-f', '-', fname] if fname.endswith('.dump') else
+    cmd = (['pg_restore', fname] if fname.endswith('.dump') else
            ['cat', fname])
 
     print(f'Tables and columns in {fname} where any of the uids appear:')
