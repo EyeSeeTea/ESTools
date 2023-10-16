@@ -1,18 +1,29 @@
 {
     "backups_dir": "/home/user/backups",
     "backup_name": "TRAINING",
-    "server_dir_local": "/home/user/server",
+    "server_dir_local": "/usr/local/tomcat",
     "server_dir_remote": "/home/user/server",
     "hostname_remote": "prod",
     "db_local": "postgresql://user:pass@server_local:5432/db",
     "db_remote": "postgresql://user:pass@server_remote:5432/db",
-    "war_local": "dhis2-demo.war",
+    "keep_data_folder": "/home/user/keep_data",
+    "war_local": "dhis2.war",
     "war_remote": "dhis2.war",
     "api_local": {
         "url": "http://localhost:8080",
-        "username": "system",
-        "password": "System123"
+        "username": "user",
+        "password": "pass"
     },
+    "keep_data":[
+          {
+              "type": "dataset",
+              "ou_uid": "H8RixfF8ugH",
+              "dataset_uid": "Wxl8hxuOsIQ",
+              "startdate": "2014-04-01",
+              "enddate": "2019-04-30",
+              "removeuids": ["Lkjp0MFLDov"]
+          }
+    ],
     "postprocess": [
         {
             "selectUsernames": ["guest"],

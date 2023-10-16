@@ -13,6 +13,10 @@ Example:
 
 import sys
 import time
+
+import os
+from builtins import isinstance, list, dict, iter
+
 import requests
 import json
 
@@ -129,9 +133,24 @@ def select_users(api, usernames, users_from_group_names):
 
 def activate(api, users):
     debug('Activating %d user(s)...' % len(users))
+    users_limited_by_50 = list()
+    count = 0
     for user in users:
         user['userCredentials']['disabled'] = False
-        api.put('/users/' + user['id'], user)
+        users_limited_by_50.append(user)
+        last_count_position=count
+        if len(users_limited_by_50) == 50:
+            count = count + len(users_limited_by_50)
+            post_activate(api, last_count_position, count, users_limited_by_50)
+            users_limited_by_50 = list()
+    if len(users_limited_by_50) > 0:
+        count = count + len(users_limited_by_50)
+        post_activate(api, last_count_position, count, users_limited_by_50)
+
+
+def post_activate(api, last_count_position, count, users_limited_by_50):
+    debug('Activating from %d to %d ...' % (last_count_position, count))
+    api.post('/metadata?importStrategy=CREATE_AND_UPDATE&mergeMode=REPLACE', {"users": users_limited_by_50})
 
 
 def delete_others(api, users):
@@ -271,6 +290,79 @@ def change_server_name(api, new_name):
 
     debug('change server result: %s' % response['message'])
 
+    return response
+
+
+def remove_uids(json, uids):
+    elements_new = []
+    if 'dataValues' in json:
+        for element in json['dataValues']:
+            remove = remove_datalements(element, uids)
+            if not remove:
+                elements_new.append(element)
+    return elements_new
+
+
+def remove_datalements(element, removable_ids):
+    if isinstance(element, list):
+        for child in element[:]:
+            if isinstance(child, dict) and "dataElement" in child.keys() and child["dataElement"] in removable_ids:
+                return True
+    elif isinstance(element, dict) and "dataElement" in element.keys() and element["dataElement"] in removable_ids:
+        return True
+    return False
+
+
+def export_keep_data(api_local, folder, keep_data):
+    for data in keep_data:
+        if data['type'] == 'dataset':
+            values = export_data_set(data['startdate'],data['enddate'], data['ou_uid'], data['dataset_uid'], api_local)
+            if data['removeuids'] is not None:
+                values =remove_uids(values, data['removeuids'])
+            file = folder + "/" + data['dataset_uid']+data['ou_uid']+".json"
+
+            with open(file, 'wt', encoding="utf-8") as fout:
+                datavalues = json.dumps({"dataValues":values})
+                fout.write(datavalues)
+
+
+def export_data_set(start_date, end_date, ou_uid, dataset_uid, cfg):
+    api = dhis2api.Dhis2Api(cfg['url'], cfg['username'], cfg['password'])
+
+    wait_for_server(api)
+    debug('Exporting dataset: ou %s program %s' % (ou_uid, dataset_uid))
+
+    if not dataset_uid or not ou_uid:
+        debug('No uid provided - Cancelling export dataset')
+        return []
+
+    post_content = 'dataElementIdScheme=UID&orgUnitIdScheme=UID&includeDeleted' \
+                   '=false&children=true&categoryOptionComboIdScheme=CODE&start' \
+                   'Date=%s&endDate=%s&orgUnit=%s&dataSet=%s' \
+                   % (start_date, end_date, ou_uid, dataset_uid)
+
+    response = api.get("/dataValueSets.json", post_content)
+
+    return response
+
+
+def import_data_set(cfg, file, data):
+    debug('Importing dataset: ou %s program %s' % (data['ou_uid'], data['dataset_uid']))
+
+    api = dhis2api.Dhis2Api(cfg['url'], cfg['username'], cfg['password'])
+
+    wait_for_server(api)
+
+    file_to_import = json.load(open(file))
+    response = api.post('/dataValueSets.json?dataElementIdScheme=UID&dryRun=false&idScheme=CODE' \
+                   '&orgUnitIdScheme=UID&preheatCache=false&skipExistingCheck=false' \
+                   '&strategy=NEW_AND_UPDATES&format=json&async=true', params={
+    }, payload=file_to_import)
+
+    if response.get('status') == 'OK':
+        debug(data['dataset_uid'] + "-" + data['ou_uid'] + ".json imported")
+    else:
+        debug(data['dataset_uid'] + "-" + data['ou_uid'] + ".json failed")
     return response
 
 
