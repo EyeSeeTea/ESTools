@@ -2,7 +2,8 @@
 ## Description
 This script generates a report for the DHIS 2 instances contained in the `config.json` file.
 This report can recollect the analytics, backups and cloning logs, as well as get the monit events and the disk status.
-To access the servers the script uses ssh, the key path and user name can be set in the `reporter.py` file. 
+To access the servers the script uses ssh, the key path and user name can be set in the `reporter.py` file.
+Each server to be accessed need to have a copy of `logger.sh` in the same path and this path set in `reporter.py`.
 
 Both types of entries has these common fields:
 - type: This field indicates the type of the entry, accepted values are `tomcat`, `docker`, `monit` and `diskspace`.
