@@ -65,10 +65,11 @@ def create_org_unit(org_unit, name_col, name_col_alt, code_col, level, parent_co
     old_code = org_unit['properties'][code_col]
     code = org_unit['properties']["GUID"]
     type = org_unit['geometry']['type']
-    if type == "MultiPolygon":
-        featureType = "MULTI_POLYGON"
-    elif type == "Polygon":
-        featureType = "POLYGON"
+    featureType = type
+    # if type == "MultiPolygon":
+    #     featureType = "MULTI_POLYGON"
+    # elif type == "Polygon":
+    #     featureType = "POLYGON"
 
     coordinates = str(org_unit['geometry']['coordinates']).replace(" ", "")
     parent = root_org_unit
@@ -78,10 +79,11 @@ def create_org_unit(org_unit, name_col, name_col_alt, code_col, level, parent_co
                 parent = org_unit_formatted["id"]
     import datetime
     date_object = datetime.date.today()
+
     formated_org_unit = {"id": id, "level": level, "name": name, "shortName": short_name,
                          "code": code, "leaf": False,
                          "old_code": old_code,
-                         "featureType": featureType, "coordinates": coordinates,
+                         "geometry": {"type": featureType, "coordinates": coordinates},
                          "openingDate": "1970-01-01T00:00:00.000", "parent": {"id": parent},
                          "translations": [],
                          "attributeValues": [{"value": "Polio geodatabase, ["+str(date_object)+"]",
