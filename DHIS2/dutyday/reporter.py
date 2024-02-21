@@ -9,7 +9,7 @@ import paramiko
 
 #this script will be executed on local docker with vpn active
 def execute_command_on_remote_machine(host, command):
-    path_to_private_key = '/root/.ssh/id_rsa'  # ruta a tu archivo de clave privada SSH
+    path_to_private_key = '/root/.ssh/id_rsa'
     private_key = paramiko.RSAKey.from_private_key_file(path_to_private_key)
 
     client = paramiko.SSHClient()
@@ -65,7 +65,6 @@ def runlogger(file):
             logger = logger + "\n"
             logger = logger + "Type: {"+item['type']+"}, Server: {"+item['server']+"}"
             logger = logger + "\n"
-            # Accede a el Accede a elementos opcionales de manera segura
             url = item.get('url')
             if url:
                 logger = logger + "URL: "+url

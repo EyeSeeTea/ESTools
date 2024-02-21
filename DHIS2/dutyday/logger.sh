@@ -58,7 +58,7 @@ analyticslogger() {
     fi
     DAYS_BACK=2
 
-    # Calcula la fecha de inicio basándose en los días hacia atrás
+    # Calculates the start date based on days back
     START_DATE=$(date -d"-2 days" +%Y-%m-%d)+"|"+$(date -d"-1 days" +%Y-%m-%d)+"|"+$(date -d"-0 days" +%Y-%m-%d)
 
     START_LINE=$(grep -E "$START_DATE" $LOG_FILE | grep 'Table update start: analytics, earliest:'| grep 'last years=500')
