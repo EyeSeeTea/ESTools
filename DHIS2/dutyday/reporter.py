@@ -1,11 +1,9 @@
 import subprocess
-import datetime
-import sys
-import subprocess
 import json
 
 import paramiko
 import argparse
+import os
 
 hostdetails = dict()
 report_details = {}
@@ -19,8 +17,7 @@ def validate_host(host):
 
 def validate(item, key):
     if key not in item.keys():
-        print(f"Key {key} not found in item {item}.")
-        sys.exit(1)
+        raise ValueError(f"Key {key} not found in item {item}.")
     else:
         return item[key]
 
@@ -28,8 +25,9 @@ def validate(item, key):
 def local_update(config):
     branch = validate(config, "branch")
     url = validate(config, "url")
+    path = os.path.dirname(os.path.abspath(__file__)).replace("reporter.py", "")
     try:
-        subprocess.check_call(['python', 'githubupdater.py', url, branch])
+        subprocess.check_call(['python', path+'githubupdater.py', url, branch])
     except subprocess.CalledProcessError as e:
         print(f"Error al ejecutar repo_updater.py: {e}")
 
@@ -54,7 +52,7 @@ def validate_config(config_file):
 
 
 def update_scripts(data):
-    local_update(data)
+    local_update(data.config)
     update_servers(data)
 
 
