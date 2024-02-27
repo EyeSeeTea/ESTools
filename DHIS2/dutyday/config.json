@@ -1,30 +1,58 @@
-[
-  {
-    "type": "tomcat",
-    "server": "dev",
-    "url": "https://server.com/dev",
-    "backups": "/logs/backups.log",
-    "analytics": "/logs/analytics.log",
-    "host": "dev.host.com"
+{
+  "config": {
+    "version": "1.0.0",
+    "date": "2024-02-23",
+    "url": "https://github.com/proyect/repo/folder",
+    "branch": "branch",
+    "logtype": "order"
   },
-  {
-    "type": "docker",
-    "server": "dev-cont",
-    "url": "https://server.com/dev-cont",
-    "analytics": "/logs/analytics.log",
-    "cloning": "/logs/clone.log",
-    "host": "dev-cont.host.com"
-  },
-  {
-    "type": "monit",
-    "server": "aux",
-    "monit": "monit status",
-    "host": "aux.host.com"
-  },
-  {
-    "type": "diskspace",
-    "server": "aux",
-    "command": "df -h",
-    "host": "aux.host.com"
-  }
-]
+  "servers": [
+    {
+      "server_name": "customname_key_log",
+      "logger_path": "/github/folder",
+      "proxy": "http://proxy:8080/",
+      "type": "tomcat/docker",
+      "tomcat_folder": "/absolute/path/folder",
+      "docker_name": "docker.xxx.com/xxx/xxx",
+      "url": "https://url",
+      "user": "user",
+      "backups": "/absolute/path/folder",
+      "keyfile": "/absoultepath/.ssh/id_rsa",
+      "host": "hostname.com"
+    }
+  ],
+  "actions": [
+    {
+      "type": "github_update",
+      "description": "---------------------GITHUB-UPDATE---------------------",
+      "servers": ["customname_key_log"]
+    },
+    {
+      "type": "backups",
+      "description": "---------------------BACKUPS---------------------(custom header text)",
+      "servers": ["customname_key_log"]
+    },
+    {
+      "type": "monit",
+      "description": "---------------------MONIT-STATUS---------------------(custom header text)",
+      "servers": ["customname_key_log"]
+    },
+    {
+      "type": "analytics",
+      "description": "---------------------ANALYTICS---------------------(custom header text)",
+      "servers": ["customname_key_log"]
+    },
+    {
+      "type": "cloning",
+      "description": "---------------------Cloning---------------------(custom header text)",
+      "servers": ["customname_key_log"]
+    },
+
+    {
+      "type": "custom",
+      "description": "---------------------DISK-SPACE---------------------(custom header text)",
+      "command": "df -h",
+      "servers": ["customname_key_log"]
+    }
+  ]
+}
