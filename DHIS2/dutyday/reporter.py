@@ -54,7 +54,7 @@ def validate_config(config_file):
 
 
 def update_scripts(data):
-    local_update(data.config.url, data.config.branch)
+    local_update(data)
     update_servers(data)
 
 
@@ -209,7 +209,7 @@ if __name__ == '__main__':
     
     parser.add_argument('--file', type=str, required=True, help='Path to the config file.')
     parser.add_argument('--check', action='store_true', help='Mode in to check the config file. Not required. ')
-    parser.add_argument('--update', type=bool, help='Update report and logger files ', default=False)
+    parser.add_argument('--update', action='store_true', help='Update report and logger files ')
     parser.add_argument('--mode', type=str, help='Report mode print/printandpush/json/html ', default="print")
     
     args = parser.parse_args()
