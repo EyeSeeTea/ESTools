@@ -89,7 +89,7 @@ def run_action(host, action):
 
 
 def remote_update(host, url, branch):
-    result = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh githubupdater ", url, branch)
+    result = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh githubupdater "+url+" "+branch)
     return result
 
 
