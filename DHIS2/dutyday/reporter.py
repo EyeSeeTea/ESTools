@@ -24,7 +24,6 @@ def validate(item, key):
 
 def local_update(config):
     branch = validate(config, "branch")
-    url = validate(config, "url")
     path = validate(config, "path")
     try:
         subprocess.check_call(['python3', 'githubupdater.py', branch], cwd=path)
@@ -53,7 +52,7 @@ def validate_config(config_file):
 
 
 def update_scripts(data):
-    local_update(data.config)
+    local_update(data["config"])
     update_servers(data)
 
 
