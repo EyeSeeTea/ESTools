@@ -173,6 +173,12 @@ def update_servers(data):
                 remote_update(host, branch)
 
 
+def check_servers():
+    for server in hostdetails.keys():
+        host = hostdetails[server]
+        execute_command_on_remote_machine(host,  validate(host,"logger_path") + "logger.sh test_connection "+host.server_name)
+
+
 def run_logger(data):
         for item in data["actions"]:
             if "backups" == item.get("type"):
@@ -197,21 +203,24 @@ def run_logger(data):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Arguments --file: config file, --check check config file")
+    parser = argparse.ArgumentParser(description="Arguments --file: config file, --check-config check config file")
     
     parser.add_argument('--file', type=str, required=True, help='Path to the config file.')
-    parser.add_argument('--check', action='store_true', help='Mode in to check the config file. Not required. ')
-    parser.add_argument('--update', action='store_true', help='Update report and logger files ')
-    parser.add_argument('--mode', type=str, help='Report mode print/printandpush/json/html ', default="print")
+    parser.add_argument('--check-config', action='store_true', help='Mode in to check the config file.')
+    parser.add_argument('--check-servers', action='store_true', help='Mode in to check the server connection. ')
+    parser.add_argument('--update', action='store_true', help='Update report and logger files.')
+    parser.add_argument('--mode', type=str, help='Report mode print/printandpush/json/html', default="print")
     
     args = parser.parse_args()
 
     with open(args.file, 'r') as file:
         config = json.load(file)
-        if not args.check:
+        if not args.check_config:
             load_servers(config)
-        if args.check:
+        if args.check_config:
             validate_config(config)
+        elif args.check_servers:
+            check_servers()
         elif args.update:
             update_scripts(config)
         else:

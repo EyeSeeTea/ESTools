@@ -2,7 +2,10 @@
 #this file must be placed in the instances
 set +x
 
-logger_file="dutyday/logger.sh"
+test_connection() {
+  local servername=$1
+  echo $servername + "connected"
+}
 
 githubupdater() {
     local url=$1
@@ -77,8 +80,11 @@ case $command in
     githubupdater)
         githubupdater $@
         ;;
+    test_connection)
+        test_connection $@
+        ;;
     *)
-        echo "Comando desconocido: $command"
+        echo "Command not found: $command"
         exit 1
         ;;
 esac
