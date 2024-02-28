@@ -32,7 +32,8 @@ def local_update(config):
 
 
 def remote_update(host, url, branch):
-    print("\n"+execute_command_on_remote_machine(host, host["logger_path"] + "logger.sh githubupdater " + url + " " + branch))
+    print("trying to update"+ host["host"], host["logger_path"])
+    print("\n"+execute_command_on_remote_machine(host, host["logger_path"] + "logger.sh githubupdater " + host["type"] + " " + host["logger_path"] + host["branch"]))
 
 
 def validate_config(config_file):
@@ -172,11 +173,10 @@ def update_servers(data):
     for item in data["actions"]:
         if "github_update" == item.get("type"):
             for server in item.get("servers"):
-                print("Updating "+server["server_name"])
+                print("Updating "+server)
                 branch = validate(data["config"], "branch")
-                url = validate(config["config"], "url")
                 host = hostdetails[server]
-                remote_update(host, url, branch)
+                remote_update(host, branch)
 
 
 def run_logger(data):
