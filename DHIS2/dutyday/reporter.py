@@ -117,9 +117,12 @@ def analyze_custom_script(host, command):
     return result
 
 
-def analyze_analytics(host, logfile, docker_name, machine_type):
+def analyze_analytics(host):
+    machine_type = host.get("type")
+    logfile = host.get("analytics")
     if machine_type == "docker":
-        analyticslog = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh analyticslogger docker " + server + " " +docker_name)
+        docker_name = host.get("docker_name")
+        analyticslog = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh analyticslogger docker " + logfile + " " +docker_name)
         return analyticslog
     elif machine_type == "tomcat":
         analyticslog = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh analyticslogger tomcat " +logfile)
