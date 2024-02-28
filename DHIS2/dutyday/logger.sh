@@ -4,7 +4,7 @@ set +x
 
 test_connection() {
   local servername=$1
-  echo $servername + "connected"
+  echo "$servername connected"
 }
 
 githubupdater() {
