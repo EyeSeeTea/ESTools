@@ -32,8 +32,8 @@ clonelogger(){
 
 analyticslogger() {
     local type=$1
-    local host=$2
-    local file=$3
+    local file=$2
+    local host=$3
     
     LOG_FILE=$file
     if [ $type == "docker" ];then
