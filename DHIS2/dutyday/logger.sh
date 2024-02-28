@@ -12,7 +12,7 @@ githubupdater() {
     local branch=$2
     local command="${file}githubupdater.py"
     echo "Running githubupdater: file: $file branch: $branch command=$command"
-    python3 $command --repo-folder $file --branch $branch
+    python3 $command $file $branch
     echo "Github update finished"
 }
 
