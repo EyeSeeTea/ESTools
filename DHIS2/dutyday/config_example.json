@@ -1,10 +1,8 @@
 {
   "config": {
-    "version": "1.0.0",
-    "date": "2024-02-23",
     "url": "https://github.com/proyect/repo/folder",
     "branch": "branch",
-    "logtype": "order"
+    "path": "\\ESTools\\"
   },
   "servers": [
     {

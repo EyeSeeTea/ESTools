@@ -9,6 +9,7 @@ def update_from_repo(folder, branch='main', proxy=None):
             os.environ['https_proxy'] = proxy
         folder = folder.replace("logger.sh", "")
         folder = folder.replace("reporter.sh", "")
+        subprocess.check_call(['git', 'stash'], cwd=folder)
         subprocess.check_call(['git', 'checkout', branch], cwd=folder)
         # Fetch the latest changes
         subprocess.check_call(['git', 'pull'], cwd=folder)

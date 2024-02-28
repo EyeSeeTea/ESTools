@@ -25,9 +25,9 @@ def validate(item, key):
 def local_update(config):
     branch = validate(config, "branch")
     url = validate(config, "url")
-    path = os.path.dirname(os.path.abspath(__file__)).replace("reporter.py", "")
+    path = validate(config, "path")
     try:
-        subprocess.check_call(['python', path+'githubupdater.py', url, branch])
+        subprocess.check_call(['python3', 'githubupdater.py', branch], cwd=path)
     except subprocess.CalledProcessError as e:
         print(f"Error al ejecutar repo_updater.py: {e}")
 
@@ -48,6 +48,7 @@ def validate_config(config_file):
     config = validate(config_file, "config")
     validate(config, "url")
     validate(config, "branch")
+    validate(config, "path")
     print("Config file is valid.")
 
 
