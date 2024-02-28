@@ -10,10 +10,9 @@ test_connection() {
 githubupdater() {
     local file=$1
     local branch=$2
-    echo "Running githubupdater: file $branch"
-    echo "python githubupdater.py file $branch"
-    local script="${file}githubupdater.py"
-    python $script --repo_path $file --branch $branch
+    local command="${file}githubupdater.py"
+    echo "Running githubupdater: file: $file branch: $branch command=$command"
+    python3 $command --repo_path $file --branch $branch
     echo "Github update finished"
 }
 
