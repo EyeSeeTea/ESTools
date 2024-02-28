@@ -172,6 +172,7 @@ def update_servers(data):
     for item in data["actions"]:
         if "github_update" == item.get("type"):
             for server in item.get("servers"):
+                print("Updating "+server["server_name"])
                 branch = validate(data["config"], "branch")
                 url = validate(config["config"], "url")
                 host = hostdetails[server]
