@@ -32,7 +32,7 @@ def local_update(config):
 
 
 def remote_update(host, url, branch):
-    print("\n"+execute_command_on_remote_machine(host, host.logger_path + "logger.sh githubupdater " + url + " " + branch))
+    print("\n"+execute_command_on_remote_machine(host, host["logger_path"] + "logger.sh githubupdater " + url + " " + branch))
 
 
 def validate_config(config_file):
