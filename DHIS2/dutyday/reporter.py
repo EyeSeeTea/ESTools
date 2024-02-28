@@ -238,6 +238,7 @@ if __name__ == '__main__':
                     print("\n"+server+"\n")
                     for action_dict in report_details[server]:
                         for action_key,details in action_dict.items():
+                            print("------------------------"+server+"-----------------------")
                             print("------------------------"+action_key+"-----------------------")
                             print(details.get("description","Empty description")+"\n")
                             print(details.get("result","Empty result")+"\n")
@@ -251,8 +252,8 @@ if __name__ == '__main__':
                     print("<div class='instance'> <div class='server' <h1>" + server + "</h1>"+ "</div>")
                     for action_dict in report_details[server]:
                         for action_key,details in action_dict.items():
-                            print("<div class='action'> <div class='server' <h3>" + action_key + "</h3>" + "</div>")
-                            print("<div class='description' <p>" + details.get("description","Empty description") + "</p>"+ "</div>")
-                            print("<div class='result' <p>" + details.get("result","Empty result") + "</p>"+ "</div>")
+                            print("<div class='action' <p><h3>" + action_key + "</h3></p>" + "</div>")
+                            print("<div class='description' <p>" + details.get("description","Empty description").replace("\n","<br/>") + "</p>"+ "</div>")
+                            print("<div class='result' <p>" + details.get("result","Empty result").replace("\n","<br/>") + "</p>"+ "</div>")
                     print("</div>")
                 print("</body></html>")
