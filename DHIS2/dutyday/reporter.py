@@ -63,6 +63,8 @@ def execute_command_on_remote_machine(host, command):
 
     stdin, stdout, stderr = client.exec_command(command)
     output = stdout.read().decode().strip()
+    print(stderr.read().decode().strip())
+
 
     client.close()
 
