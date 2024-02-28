@@ -115,13 +115,12 @@ def analyze_custom_script(host, command):
     return result
 
 
-def analyze_analytics(host, logfile, server, type):
-    if type == "docker":
-        server = server + ""
-        analyticslog = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh analyticslogger docker " + server + " " +logfile)
+def analyze_analytics(host, logfile, docker_name, machine_type):
+    if machine_type == "docker":
+        analyticslog = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh analyticslogger docker " + server + " " +docker_name)
         return analyticslog
-    elif type == "tomcat":
-        analyticslog = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh analyticslogger tomcat " + server + " " +logfile)
+    elif machine_type == "tomcat":
+        analyticslog = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh analyticslogger tomcat " +logfile)
 
         return analyticslog
 
@@ -138,7 +137,7 @@ def load_host(server):
     type = server.get('type')
     tomcat = server.get('tomcat_folder')
     docker = server.get('docker_name')
-    logger_path = server.get("loggerpath")
+    logger_path = server.get("logger_path")
     host = server.get('host')
     url = server.get('url')
     user = server.get('user')
@@ -156,7 +155,7 @@ def load_host(server):
         "user": user,
         "backups": backups,
         "keyfile": keyfile,
-        "loggerpath": logger_path,
+        "logger_path": logger_path,
         "analytics": analytics,
         "cloning": cloning
     }
