@@ -31,9 +31,9 @@ def local_update(config):
         print(f"Error al ejecutar repo_updater.py: {e}")
 
 
-def remote_update(host, url, branch):
+def remote_update(host, branch):
     print("trying to update"+ host["host"], host["logger_path"])
-    print("\n"+execute_command_on_remote_machine(host, host["logger_path"] + "logger.sh githubupdater " + host["type"] + " " + host["logger_path"] + host["branch"]))
+    print("\n"+execute_command_on_remote_machine(host, host["logger_path"] + "logger.sh githubupdater " + host["type"] + " " + host["logger_path"] +" "+branch))
 
 
 def validate_config(config_file):
