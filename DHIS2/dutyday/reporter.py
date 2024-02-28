@@ -133,7 +133,7 @@ def analyze_analytics(host):
 
 def add_to_report(server, action, result, description):
     if server not in report_details.keys():
-        report_details.append({server: {}})
+        report_details[server] = []
     report_details[server].append({action: {"result": result, "description": description}})
 
 
@@ -143,7 +143,7 @@ def load_host(server):
         "server_name": server_name,
         "type": server.get('type'),
         "tomcat": server.get('tomcat_folder'),
-        "docker": server.get('docker_name'),
+        "docker_name": server.get('docker_name'),
         "host": server.get('host'),
         "url": server.get('url'),
         "user": server.get('user'),
