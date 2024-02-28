@@ -11,6 +11,8 @@ githubupdater() {
     local file=$1
     local branch=$2
     local command="${file}githubupdater.py"
+    export http_proxy=$3
+    export https_proxy=$3
     echo "Running githubupdater: file: $file branch: $branch command=$command"
     python3 $command $file $branch
     echo "Github update finished"

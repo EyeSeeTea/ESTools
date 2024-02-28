@@ -86,10 +86,10 @@ def run_action(host, action):
         return analyze_custom_script(host, action.command)
 
 
-def remote_update(host, branch):
+def remote_update(host, branch, proxy=""):
     print("trying to update"+ host["host"], host["logger_path"])
     file_path = host["logger_path"] + "logger.sh"
-    command = file_path + " githubupdater " + host["logger_path"] + " " + branch
+    command = file_path + " githubupdater " + host["logger_path"] + " " + branch + " " + proxy
     print(file_path)
     print(command)
     print("\n"+execute_command_on_remote_machine(host, command))
@@ -178,7 +178,7 @@ def update_servers(data):
                 print("----------------Updating "+server+"-------------")
                 branch = validate(data["config"], "branch")
                 host = hostdetails[server]
-                remote_update(host, branch)
+                remote_update(host, branch, host.get("proxy"))
                 print("----------------Updating "+server+" FINISHED-------------")
 
 
