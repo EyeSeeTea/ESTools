@@ -236,10 +236,10 @@ if __name__ == '__main__':
                     print("\n\n\n------------------------------------------------")
                     print("------------------------------------------------")
                     print("\n"+server+"\n")
-                    for action in report_details[server]:
-                        print("------------------------"+action.get("action")+"-----------------------")
-                        print(action.get("description")+"\n")
-                        print(action.get("result")+"\n")
+                    for action,details in report_details[server].items():
+                        print("------------------------"+action+"-----------------------")
+                        print(details.get("description","Empty description")+"\n")
+                        print(details.get("result","Empty result")+"\n")
                         print("------------------------END-----------------------")
                     print("------------------------------------------------")
                     print("------------------------------------------------")
@@ -248,8 +248,9 @@ if __name__ == '__main__':
                 print("<html><head><title>Report</title></head><body>")
                 for server in report_details.keys():
                     print("<div class='instance'> <div class='server' <h1>" + server + "</h1>"+ "</div>")
-                    for action in report_details[server].keys():
-                        print("<div class='description' <p>" + action.get("description") + "</p>"+ "</div>")
-                        print("<div class='result' <p>" + action.get("result") + "</p>"+ "</div>")
+                    for action,details in report_details[server].items():
+                        print("<div class='action'> <div class='server' <h3>" + action + "</h3>" + "</div>")
+                        print("<div class='description' <p>" + details.get("description","Empty description") + "</p>"+ "</div>")
+                        print("<div class='result' <p>" + details.get("result","Empty result") + "</p>"+ "</div>")
                     print("</div>")
                 print("</body></html>")
