@@ -59,12 +59,12 @@ def update_scripts(data):
 #this script will be executed on local docker with vpn active
 
 def execute_command_on_remote_machine(host, command):
-    path_to_private_key = host.keyfile
+    path_to_private_key = validate(host, "keyfile")
     private_key = paramiko.RSAKey.from_private_key_file(path_to_private_key)
 
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(host.hostname, username=host.username, pkey=private_key)
+    client.connect(validate(host, "host"), username=validate(host, "user"), pkey=private_key)
 
     stdin, stdout, stderr = client.exec_command(command)
     output = stdout.read().decode().strip()
@@ -89,24 +89,24 @@ def run_action(host, action):
 
 
 def remote_update(host, url, branch):
-    result = execute_command_on_remote_machine(host, host.logger_path + "logger.sh githubupdater ", url, branch)
+    result = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh githubupdater ", url, branch)
     return result
 
 
 def analyze_clone(host):
     validate(host, "cloning")
-    result = execute_command_on_remote_machine(host, host.logger_path + "logger.sh clonelogger "+host.cloning)
+    result = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh clonelogger "+validate(host,"cloning"))
     return result
 
 
 def analyze_monit(host):
-    result = execute_command_on_remote_machine(host, host.logger_path + "logger.sh monitlogger")
+    result = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh monitlogger")
     return result
 
 
 def analyze_db(host):
     validate(host, "backups")
-    result = execute_command_on_remote_machine(host, host.logger_path + "logger.sh databaselogger "+host.backups)
+    result = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh databaselogger "+validate(host,"backups"))
     return result
 
 
@@ -118,10 +118,10 @@ def analyze_custom_script(host, command):
 def analyze_analytics(host, logfile, server, type):
     if type == "docker":
         server = server + ""
-        analyticslog = execute_command_on_remote_machine(host, host.logger_path + "logger.sh analyticslogger docker " + server + " " +logfile)
+        analyticslog = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh analyticslogger docker " + server + " " +logfile)
         return analyticslog
     elif type == "tomcat":
-        analyticslog = execute_command_on_remote_machine(host, host.logger_path + "logger.sh analyticslogger tomcat " + server + " " +logfile)
+        analyticslog = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh analyticslogger tomcat " + server + " " +logfile)
 
         return analyticslog
 
