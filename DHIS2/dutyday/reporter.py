@@ -136,30 +136,20 @@ def add_to_report(server, action, result, description):
 
 def load_host(server):
     server_name = server.get('server_name')
-    type = server.get('type')
-    tomcat = server.get('tomcat_folder')
-    docker = server.get('docker_name')
-    logger_path = server.get("logger_path")
-    host = server.get('host')
-    url = server.get('url')
-    user = server.get('user')
-    backups = server.get('backups')
-    keyfile = server.get('keyfile')
-    analytics = server.get('analytics')
-    cloning = server.get('cloning')
     temp_dict = {
         "server_name": server_name,
-        "type": type,
-        "tomcat": tomcat,
-        "docker": docker,
-        "host": host,
-        "url": url,
-        "user": user,
-        "backups": backups,
-        "keyfile": keyfile,
-        "logger_path": logger_path,
-        "analytics": analytics,
-        "cloning": cloning
+        "type": server.get('type'),
+        "tomcat": server.get('tomcat_folder'),
+        "docker": server.get('docker_name'),
+        "host": server.get('host'),
+        "url": server.get('url'),
+        "user": server.get('user'),
+        "backups": server.get('backups'),
+        "keyfile": server.get('keyfile'),
+        "logger_path": server.get("logger_path"),
+        "analytics": server.get('analytics'),
+        "cloning": server.get('cloning'),
+        "proxy": server.get('proxy')
     }
     hostdetails[server_name] = {k: v for k, v in temp_dict.items() if v is not None}
 
