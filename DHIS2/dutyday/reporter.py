@@ -176,7 +176,7 @@ def update_servers(data):
 def check_servers():
     for server in hostdetails.keys():
         host = hostdetails[server]
-        execute_command_on_remote_machine(host,  validate(host,"logger_path") + "logger.sh test_connection "+host.server_name)
+        execute_command_on_remote_machine(host,  validate(host,"logger_path") + "logger.sh test_connection "+ validate(host, "server_name"))
 
 
 def run_logger(data):
