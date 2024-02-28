@@ -26,7 +26,7 @@ def local_update(config):
     branch = validate(config, "branch")
     path = validate(config, "path")
     try:
-        subprocess.check_call(['python3', 'githubupdater.py', branch], cwd=path)
+        subprocess.check_call(['python3', 'githubupdater.py', path, branch], cwd=path)
     except subprocess.CalledProcessError as e:
         print(f"Error al ejecutar repo_updater.py: {e}")
 
