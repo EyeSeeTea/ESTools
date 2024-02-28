@@ -30,12 +30,6 @@ def local_update(config):
     except subprocess.CalledProcessError as e:
         print(f"Error al ejecutar repo_updater.py: {e}")
 
-
-def remote_update(host, branch):
-    print("trying to update"+ host["host"], host["logger_path"])
-    print("\n"+execute_command_on_remote_machine(host, host["logger_path"] + "logger.sh githubupdater " + host["type"] + " " + host["logger_path"] +" "+branch))
-
-
 def validate_config(config_file):
     servers = validate(config_file, "servers")
     for server in servers:
@@ -89,9 +83,9 @@ def run_action(host, action):
         return analyze_custom_script(host, action.command)
 
 
-def remote_update(host, url, branch):
-    result = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh githubupdater "+url+" "+branch)
-    return result
+def remote_update(host, branch):
+    print("trying to update"+ host["host"], host["logger_path"])
+    print("\n"+execute_command_on_remote_machine(host, host["logger_path"] + "logger.sh githubupdater " + host["type"] + " " + host["logger_path"] +" "+branch))
 
 
 def analyze_clone(host):
