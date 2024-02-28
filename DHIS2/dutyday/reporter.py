@@ -47,6 +47,7 @@ def validate_config(config_file):
 
 
 def update_scripts(data):
+    print("----------------local update-------------")
     local_update(data["config"])
     update_servers(data)
 
@@ -170,13 +171,15 @@ def load_servers(data):
 
 
 def update_servers(data):
+    print("----------------servers update-------------")
     for item in data["actions"]:
         if "github_update" == item.get("type"):
             for server in item.get("servers"):
-                print("Updating "+server)
+                print("----------------Updating "+server+"-------------")
                 branch = validate(data["config"], "branch")
                 host = hostdetails[server]
                 remote_update(host, branch)
+                print("----------------Updating "+server+" FINISHED-------------")
 
 
 def check_servers():
