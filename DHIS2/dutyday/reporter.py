@@ -249,11 +249,11 @@ if __name__ == '__main__':
             elif args.mode == "html":
                 print("<html><head><title>Report</title></head><body>")
                 for server in report_details.keys():
-                    print("<div class='instance'> <div class='server' <h1>" + server + "</h1>"+ "</div>")
+                    print("<div class='instance'> <div class='server'> <h1>" + server + "</h1>"+ "</div>")
                     for action_dict in report_details[server]:
                         for action_key,details in action_dict.items():
-                            print("<div class='action' <p><h3>" + action_key + "</h3></p>" + "</div>")
-                            print("<div class='description' <p>" + details.get("description","Empty description").replace("\n","<br/>") + "</p>"+ "</div>")
-                            print("<div class='result' <p>" + details.get("result","Empty result").replace("\n","<br/>") + "</p>"+ "</div>")
+                            print("<div class='action'> <p><h3>" + action_key + "</h3></p>" + "</div>")
+                            print("<div class='description'> <p>" + details.get("description","Empty description").replace("\n","<br/>") + "</p>"+ "</div>")
+                            print("<div class='result'> <p>" + details.get("result","Empty result").replace("\n","<br/>") + "</p>"+ "</div>")
                     print("</div>")
                 print("</body></html>")
