@@ -236,8 +236,8 @@ if __name__ == '__main__':
                     print("\n\n\n------------------------------------------------")
                     print("------------------------------------------------")
                     print("\n"+server+"\n")
-                    for action in report_details[server].keys():
-                        print("------------------------Start_action-----------------------")
+                    for action in report_details[server]:
+                        print("------------------------"+action.get("action")+"-----------------------")
                         print(action.get("description")+"\n")
                         print(action.get("result")+"\n")
                         print("------------------------END-----------------------")
