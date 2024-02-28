@@ -228,15 +228,15 @@ if __name__ == '__main__':
         elif args.update:
             update_scripts(config)
         else:
-            result = run_logger(config)
+            run_logger(config)
             if args.mode == "json":
-                print(json.dumps(result))
+                print(json.dumps(report_details))
             elif args.mode == "print":
-                for server in result.keys():
+                for server in report_details.keys():
                     print("\n\n\n------------------------------------------------")
                     print("------------------------------------------------")
                     print("\n"+server+"\n")
-                    for action in result[server].keys():
+                    for action in report_details[server].keys():
                         print("------------------------Start_action-----------------------")
                         print(action.get("description")+"\n")
                         print(action.get("result")+"\n")
@@ -246,9 +246,9 @@ if __name__ == '__main__':
             
             elif args.mode == "html":
                 print("<html><head><title>Report</title></head><body>")
-                for server in result.keys():
+                for server in report_details.keys():
                     print("<div class='instance'> <div class='server' <h1>" + server + "</h1>"+ "</div>")
-                    for action in result[server].keys():
+                    for action in report_details[server].keys():
                         print("<div class='description' <p>" + action.get("description") + "</p>"+ "</div>")
                         print("<div class='result' <p>" + action.get("result") + "</p>"+ "</div>")
                     print("</div>")
