@@ -85,7 +85,11 @@ def run_action(host, action):
 
 def remote_update(host, branch):
     print("trying to update"+ host["host"], host["logger_path"])
-    print("\n"+execute_command_on_remote_machine(host, host["logger_path"] + "logger.sh githubupdater " + host["type"] + " " + host["logger_path"] +" "+branch))
+    file_path = host["logger_path"] + "logger.sh"
+    command = file_path + " githubupdater " + host["logger_path"] + " " + branch
+    print(file_path)
+    print(command)
+    print("\n"+execute_command_on_remote_machine(host, command))
 
 
 def analyze_clone(host):
