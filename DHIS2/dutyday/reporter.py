@@ -214,6 +214,8 @@ if __name__ == '__main__':
 
     with open(args.file, 'r') as file:
         config = json.load(file)
+        if "check" not in args.keys():
+            load_servers(config)
         if args.check:
             validate_config(config)
         elif args.update:
