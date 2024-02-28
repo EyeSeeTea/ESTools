@@ -72,18 +72,18 @@ def execute_command_on_remote_machine(host, command):
     return output
 
 
-def run_action(host, action):
-    validate(host, action.type)
-    if action.type == "cloning":
+def run_action(host, action, command=None):
+    validate(host, action)
+    if action == "cloning":
         return analyze_clone(host)
-    elif action.type == "monit":
+    elif action == "monit":
         return analyze_monit(host)
-    elif action.type == "backups":
+    elif action == "backups":
         return analyze_db(host)
-    elif action.type == "analytics":
+    elif action == "analytics":
         return analyze_analytics(host)
-    elif action.type == "custom":
-        return analyze_custom_script(host, action.command)
+    elif action == "custom":
+        return analyze_custom_script(host, command)
 
 
 def remote_update(host, branch, proxy=""):
@@ -197,7 +197,7 @@ def run_logger(data):
 
             if "custom" == item.get("type"):
                 for server in item.get("servers"):
-                    result = run_action(hostdetails[server], "custom")
+                    result = run_action(hostdetails[server], "custom", item.get("command"))
                     add_to_report(server, "custom", result, item.get('description'))
 
 
