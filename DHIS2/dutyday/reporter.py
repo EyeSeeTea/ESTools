@@ -73,14 +73,16 @@ def execute_command_on_remote_machine(host, command):
 
 
 def run_action(host, action, command=None):
-    validate(host, action)
     if action == "cloning":
+        validate(host, action)
         return analyze_clone(host)
     elif action == "monit":
         return analyze_monit(host)
     elif action == "backups":
+        validate(host, action)
         return analyze_db(host)
     elif action == "analytics":
+        validate(host, action)
         return analyze_analytics(host)
     elif action == "custom":
         return analyze_custom_script(host, command)
