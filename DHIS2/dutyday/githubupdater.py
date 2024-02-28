@@ -23,13 +23,13 @@ def update_from_repo(folder, branch='main', proxy=None):
 
 
 
-def main(repo_path, branch, proxy=None):
-    print(f"Updating repo from {repo_path}  {branch}.")
-    update_from_repo(repo_path, branch, proxy)
+def main(repo_folder, branch, proxy=None):
+    print(f"Updating repo in {repo_folder}  {branch}.")
+    update_from_repo(repo_folder, branch, proxy)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Update repo from Git.')
-    parser.add_argument('repo_path', help='Repo url')
+    parser.add_argument('repo_folder', help='Repo url')
     parser.add_argument('branch', help='Branch name')
     args = parser.parse_args()
 
