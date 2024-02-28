@@ -33,4 +33,4 @@ if __name__ == "__main__":
     parser.add_argument('branch', help='Branch name')
     args = parser.parse_args()
 
-    main(args.repo_path, args.branch)
+    main(args.repo_folder, args.branch)
