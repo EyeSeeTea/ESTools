@@ -13,6 +13,7 @@ githubupdater() {
     echo "Running githubupdater: $url $branch"
     echo "python githubupdater.py $url $branch"
     python githubupdater.py --repo_path $url --branch $branch
+    echo "Github update finished"
 }
 
 monitlogger() {
