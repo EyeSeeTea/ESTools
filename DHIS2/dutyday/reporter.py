@@ -227,6 +227,9 @@ def remove_excessive_info(log_text):
                           flags=re.MULTILINE)
     cleaned_log_response = re.sub(r'^.*Rule ETA.*$', 'RULE ERROR IN ETA"', cleaned_log_response,
                           flags=re.MULTILINE)
+    cleaned_log_response = re.sub(r'^.*Rule Validate ETA_.*$', 'RULE ERROR IN ETA_"', cleaned_log_response,
+                          flags=re.MULTILINE)
+
     cleaned_log = remove_suffix(cleaned_log_response)
     return cleaned_log
 
