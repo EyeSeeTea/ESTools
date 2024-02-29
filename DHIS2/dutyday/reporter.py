@@ -118,7 +118,7 @@ def analyze_catalina(host):
 
     for line in lines:
         # Remove the first 31 characters
-        line = remove_excesive_info(line[31:])
+        line = remove_excessive_info(line[31:])
 
         # Add the line to the dictionary and count occurrences
         line_count[line] = line_count.get(line, 0) + 1
@@ -199,12 +199,16 @@ def update_servers(data):
                 print("----------------Updating "+server+" FINISHED-------------")
 
 
-def remove_excesive_info(log_text):
+def remove_excessive_info(log_text):
     pattern = re.compile(r'^(.{4}).*?nested exception is org\.postgresql\.util\.PSQLException: ERROR: (.*?)$', re.MULTILINE)
 
     cleaned_log = pattern.sub(r'\1\2', log_text)
 
-    return cleaned_log
+    cleaned_log_response = re.sub(r'^.*AMR RULE ERROR.*$', 'RULE ERROR IN AMR"', cleaned_log,
+                          flags=re.MULTILINE)
+
+    return cleaned_log_response
+
 
 def check_servers():
     for server in hostdetails.keys():
