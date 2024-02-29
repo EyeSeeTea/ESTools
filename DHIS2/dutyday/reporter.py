@@ -200,11 +200,11 @@ def update_servers(data):
 
 
 def remove_excesive_info(log_text):
-    pattern = re.compile(r'(\d{3}\s.*?)\b\S*?org.postgresql.util.PSQLException:\b(.*?)(?=$|\n)', re.MULTILINE)
+    pattern = re.compile(r'^(.{4}).*?nested exception is org\.postgresql\.util\.PSQLException: ERROR: (.*?)$', re.MULTILINE)
 
-    log_modified = pattern.sub(r'\1\2', log_text)
+    cleaned_log = pattern.sub(r'\1\2', log_text)
 
-    return log_modified
+    return cleaned_log
 
 def check_servers():
     for server in hostdetails.keys():
