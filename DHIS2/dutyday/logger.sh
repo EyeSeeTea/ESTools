@@ -28,6 +28,12 @@ databaselogger() {
     tail -10 $file 2>&1
 }
 
+
+catalinaerrors() {
+    local file=$1
+    cat $file | grep "ERROR"
+}
+
 clonelogger(){
     local file=$1
     START_DATE=$(date -d 'last Saturday' '+%Y-%m-%d')
@@ -45,9 +51,9 @@ analyticslogger() {
     if [ $type == "docker" ];then
       dockerid=$(docker ps | grep $host"-core" | awk '{print $1}')
       if [[ -n $dockerid ]]; then
-        response=$(docker cp "${dockerid}:${file}" /backup/logs/)
+        response=$(docker cp "${dockerid}:${file}" /tmp/)
         file=$(basename $file)
-        LOG_FILE="/backup/logs/$file"
+        LOG_FILE="/tmp/$file"
       else
         echo "docker id not found"
         exit 1
@@ -65,7 +71,7 @@ analyticslogger() {
 # Main del script
 if [ $# -eq 0 ]; then
     echo ""
-    echo "No se proporcionaron argumentos"
+    echo "Arguments not provided"
     exit 1
 fi
 
@@ -90,6 +96,10 @@ case $command in
     test_connection)
         test_connection $@
         ;;
+    catalinaerrors)
+        catalinaerrors $@
+        ;;
+
     *)
         echo "Command not found: $command"
         exit 1

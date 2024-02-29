@@ -86,6 +86,8 @@ def run_action(host, action, command=None):
         return analyze_analytics(host)
     elif action == "custom":
         return analyze_custom_script(host, command)
+    elif action == "catalinaerrors":
+        return analyze_catalina(host)
 
 
 def remote_update(host, branch, proxy=""):
@@ -106,6 +108,25 @@ def analyze_clone(host):
 def analyze_monit(host):
     result = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh monitlogger")
     return result
+
+
+def analyze_catalina(host):
+    result = execute_command_on_remote_machine(host, validate(host, "logger_path") + "logger.sh catalinaerrors "+validate(host, "catalina_file"))
+    lines = result.strip().split('\n')
+    line_count = {}
+
+    for line in lines:
+        # Remove the first 31 characters
+        line = line[31:]
+
+        # Add the line to the dictionary and count occurrences
+        line_count[line] = line_count.get(line, 0) + 1
+
+    # Create the new variable with unique lines and the number of occurrences
+    new_content = ""
+    for line, count in line_count.items():
+        new_content += f"{count:03d} {line}\n"
+    return new_content
 
 
 def analyze_db(host):
@@ -144,7 +165,7 @@ def load_host(server):
     temp_dict = {
         "server_name": server_name,
         "type": server.get('type'),
-        "tomcat_folder": server.get('tomcat_folder'),
+        "catalina_file": server.get('catalina_file'),
         "docker_name": server.get('docker_name'),
         "host": server.get('host'),
         "url": server.get('url'),
@@ -205,6 +226,10 @@ def run_logger(data):
                     result = run_action(hostdetails[server], "custom", item.get("command"))
                     add_to_report(server, "custom", result, item.get('description'))
 
+            if "catalinaerrors" == item.get("type"):
+                for server in item.get("servers"):
+                    result = run_action(hostdetails[server], "catalinaerrors", hostdetails[server].get("catalina_file"))
+                    add_to_report(server, "catalinaerrors", result, item.get('description'))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Arguments --file: config file, --check-config check config file")
