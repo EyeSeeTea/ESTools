@@ -199,6 +199,25 @@ def update_servers(data):
                 print("----------------Updating "+server+" FINISHED-------------")
 
 
+def remove_suffix(text):
+    #remove proccess number
+    cleaned_line = re.sub(r'(\[.*?)-\d+\]', r'\1]', text)
+    #not remove final uid
+    uid_match = re.search(r'(UID:[^\s]+)$', cleaned_line)
+    if uid_match:
+        uid = uid_match.group(0)
+        cleaned_line = re.sub(r'(\[.*?\])(.*?)(UID:[^\s]+)$', r'\1 ' + uid, cleaned_line)
+    else:
+        #remove final token
+        cleaned_line = re.sub(r'(\[.*?\]).*$', r'\1', cleaned_line)
+
+        ultimo_indice = cleaned_line.rfind(')')
+        if ultimo_indice != -1:
+            cleaned_line = cleaned_line[:ultimo_indice + 2]
+
+    return cleaned_line
+
+
 def remove_excessive_info(log_text):
     pattern = re.compile(r'^(.{4}).*?nested exception is org\.postgresql\.util\.PSQLException: ERROR: (.*?)$', re.MULTILINE)
 
@@ -206,8 +225,10 @@ def remove_excessive_info(log_text):
 
     cleaned_log_response = re.sub(r'^.*Rule AMR_.*$', 'RULE ERROR IN AMR"', cleaned_log,
                           flags=re.MULTILINE)
-
-    return cleaned_log_response
+    cleaned_log_response = re.sub(r'^.*Rule ETA.*$', 'RULE ERROR IN ETA"', cleaned_log_response,
+                          flags=re.MULTILINE)
+    cleaned_log = remove_suffix(cleaned_log_response)
+    return cleaned_log
 
 
 def check_servers():
