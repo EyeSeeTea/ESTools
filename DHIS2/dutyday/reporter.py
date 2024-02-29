@@ -204,7 +204,7 @@ def remove_excessive_info(log_text):
 
     cleaned_log = pattern.sub(r'\1\2', log_text)
 
-    cleaned_log_response = re.sub(r'^.*AMR RULE ERROR.*$', 'RULE ERROR IN AMR"', cleaned_log,
+    cleaned_log_response = re.sub(r'^.*Rule AMR_.*$', 'RULE ERROR IN AMR"', cleaned_log,
                           flags=re.MULTILINE)
 
     return cleaned_log_response
