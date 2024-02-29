@@ -17,9 +17,9 @@ def update_from_repo(folder, branch='main', proxy=None):
         #subprocess.check_call(['git', 'reset', '--hard', f'origin/{branch}'], cwd=folder)
         # Clean up any untracked files
         #subprocess.check_call(['git', 'clean', '-fd'], cwd=folder)
-        print(f"Repositorio actualizado a la última versión de la rama '{branch}'.")
+        print(f"Repository updated '{branch}'.")
     except subprocess.CalledProcessError as e:
-        print(f"Error al actualizar el repositorio: {e}")
+        print(f"Error updating repository: {e}")
 
 
 
