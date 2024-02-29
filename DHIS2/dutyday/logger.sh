@@ -31,7 +31,7 @@ databaselogger() {
 
 catalinaerrors() {
     local file=$1
-    cat $file | grep "ERROR"
+    cat $file | grep "ERROR" | grep -v "Unable to render velocity template"
 }
 
 clonelogger(){

@@ -1,3 +1,4 @@
+import re
 import subprocess
 import json
 
@@ -117,7 +118,7 @@ def analyze_catalina(host):
 
     for line in lines:
         # Remove the first 31 characters
-        line = line[31:]
+        line = remove_excesive_info(line[31:])
 
         # Add the line to the dictionary and count occurrences
         line_count[line] = line_count.get(line, 0) + 1
@@ -197,6 +198,13 @@ def update_servers(data):
                 remote_update(host, branch, host.get("proxy"))
                 print("----------------Updating "+server+" FINISHED-------------")
 
+
+def remove_excesive_info(log_text):
+    pattern = re.compile(r'(\d{3}\s.*?)\b\S*?org.postgresql.util.PSQLException:\b(.*?)(?=$|\n)', re.MULTILINE)
+
+    log_modified = pattern.sub(r'\1\2', log_text)
+
+    return log_modified
 
 def check_servers():
     for server in hostdetails.keys():
