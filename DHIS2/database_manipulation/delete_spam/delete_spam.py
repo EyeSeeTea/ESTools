@@ -16,13 +16,18 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as fmt
 import psycopg2
 
 
+def log(level, type, *msg):
+    if msg and int(level) >= type:
+        print(*msg)
+
+
 def main():
     args = get_args()
 
     try:
         with psycopg2.connect(args.dsn) as conn:
             with conn.cursor() as cur:
-                delete_spam(cur, args.uids.split(','), args.subject)
+                delete_spam(cur, args.uids.split(','), args.subject, args.log_level)
 
     except (AssertionError, ValueError) as e:
         sys.exit(e)
@@ -40,15 +45,19 @@ def get_args():
         help='Pattern in the subject of the spam messages')
     add('--dsn', default='host=localhost dbname=dhishq user=dhishq_usr',
         help='data source name (string that describes the connection)')
+    add('--log-level', default='1',
+        help='log level (0=none, 1=default, 2=verbose)')
 
     return parser.parse_args()
 
 
-def delete_spam(cur, uids_spammed, subject):
+def delete_spam(cur, uids_spammed, subject, level):
     cur.execute(f"SELECT messageid FROM message "
                 f"  WHERE messagetext LIKE '{subject}'"
                 f"    AND created < NOW() - INTERVAL '7 days';")
     spam_mids = cur.fetchall()
+
+    log(level, 1, f'number of messages: {len(spam_mids)}')
 
     for mid in spam_mids:
         mid = mid[0]
@@ -59,7 +68,7 @@ def delete_spam(cur, uids_spammed, subject):
         assert len(mcid) == 1, 'len(mcid) = %d' % len(mcid)
         mcid = mcid[0][0]
 
-        print(f'messageid = {mid}  messageconversationid = {mcid}')
+        log(level, 2, f'messageid = {mid}  messageconversationid = {mcid}')
 
         cur.execute(f'SELECT usermessageid FROM messageconversation_usermessages '
                     f'  WHERE messageconversationid = {mcid}')
@@ -82,7 +91,7 @@ def delete_spam(cur, uids_spammed, subject):
                 cur.execute(f'DELETE FROM usermessage '
                             f'  WHERE usermessageid={umid}')
             else:
-                print('This unknown uid got spam:', uid)
+                log(level, 2, 'This unknown uid got spam:', uid)
                 all_recipients_spam = False
 
         if all_recipients_spam:
