@@ -63,6 +63,10 @@ delete_spam_docker() {
 delete_spam() {
     local conf_file=$1 docker_name=$2
 
+    local timestamp
+    timestamp=$(date +%Y-%m-%d_%H%M)
+    echo "[$timestamp] Deleting message spam"
+
     if [ -n "$docker_name" ]; then
         delete_spam_docker "$conf_file" "$docker_name"
     else

@@ -24,6 +24,8 @@ The `delete_spam.py` script has the following parameters:
   - `user`: The DB user to be used by the script.
   - `password`: The DB user password.
 
+- `log-level`: Choose the script log verbosity level, 0 means no logs, 1 means basic logs and 2 means verbose logs. Defaults to 1.
+
   By default it has the following value: 'host=localhost dbname=dhishq user=dhishq_usr'.
 
   Example:
