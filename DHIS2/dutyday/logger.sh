@@ -68,7 +68,7 @@ analyticslogger() {
     ERROR_LINES=$(grep -E "$START_DATE" $LOG_FILE | grep 'ERROR')
     printf "%s" "$START_LINE$END_LINE$ERROR_LINES" | awk '{gsub("T"," ",$3); print}' | sort -k3,3 -k4,4
 }
-# Main del script
+# Script starts here
 if [ $# -eq 0 ]; then
     echo ""
     echo "Arguments not provided"

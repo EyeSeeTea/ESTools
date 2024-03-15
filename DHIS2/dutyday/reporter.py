@@ -4,17 +4,9 @@ import json
 
 import paramiko
 import argparse
-import os
 
 hostdetails = dict()
 report_details = {}
-
-def validate_host(host):
-    validate(host, "server_name")
-    validate(host, "url")
-    validate(host, "user")
-    validate(host, "host")
-
 
 def validate(item, key):
     if key not in item.keys():
@@ -23,13 +15,12 @@ def validate(item, key):
         return item[key]
 
 
-def local_update(config):
-    branch = validate(config, "branch")
-    path = validate(config, "path")
-    try:
-        subprocess.check_call(['python3', 'githubupdater.py', path, branch], cwd=path)
-    except subprocess.CalledProcessError as e:
-        print(f"Error al ejecutar repo_updater.py: {e}")
+def validate_host(host):
+    validate(host, "server_name")
+    validate(host, "url")
+    validate(host, "user")
+    validate(host, "host")
+
 
 def validate_config(config_file):
     servers = validate(config_file, "servers")
@@ -47,13 +38,36 @@ def validate_config(config_file):
     print("Config file is valid.")
 
 
+def load_host(server):
+    server_name = server.get('server_name')
+    temp_dict = {
+        "server_name": server_name,
+        "type": server.get('type'),
+        "catalina_file": server.get('catalina_file'),
+        "docker_name": server.get('docker_name'),
+        "host": server.get('host'),
+        "url": server.get('url'),
+        "user": server.get('user'),
+        "backups": server.get('backups'),
+        "keyfile": server.get('keyfile'),
+        "logger_path": server.get("logger_path"),
+        "analytics": server.get('analytics'),
+        "cloning": server.get('cloning'),
+        "proxy": server.get('proxy')
+    }
+    hostdetails[server_name] = {k: v for k, v in temp_dict.items() if v is not None}
+
+
+def load_servers(data):
+    for server in data["servers"]:
+        load_host(server)
+        validate_host(hostdetails[server.get("server_name")])
+
 def update_scripts(data):
     print("----------------local update-------------")
     local_update(data["config"])
     update_servers(data)
 
-
-#this script will be executed on local docker with vpn active
 
 def execute_command_on_remote_machine(host, command):
     path_to_private_key = validate(host, "keyfile")
@@ -91,6 +105,17 @@ def run_action(host, action, command=None):
         return analyze_catalina(host)
 
 
+#this method output is printed always - not used by the report
+def local_update(config):
+    branch = validate(config, "branch")
+    path = validate(config, "path")
+    try:
+        subprocess.check_call(['python3', 'githubupdater.py', path, branch], cwd=path)
+    except subprocess.CalledProcessError as e:
+        print(f"Error executing repo_updater.py: {e}")
+
+
+#this method output is printed always - not used by the report
 def remote_update(host, branch, proxy=""):
     print("trying to update"+ host["host"], host["logger_path"])
     file_path = host["logger_path"] + "logger.sh"
@@ -98,6 +123,19 @@ def remote_update(host, branch, proxy=""):
     print(file_path)
     print(command)
     print("\n"+execute_command_on_remote_machine(host, command))
+
+
+#this method output is printed always - not used by the report
+def update_servers(data):
+    print("----------------servers update-------------")
+    for item in data["actions"]:
+        if "github_update" == item.get("type"):
+            for server in item.get("servers"):
+                print("----------------Updating "+server+"-------------")
+                branch = validate(data["config"], "branch")
+                host = hostdetails[server]
+                remote_update(host, branch, host.get("proxy"))
+                print("----------------Updating "+server+" FINISHED-------------")
 
 
 def analyze_clone(host):
@@ -109,25 +147,6 @@ def analyze_clone(host):
 def analyze_monit(host):
     result = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh monitlogger")
     return result
-
-
-def analyze_catalina(host):
-    result = execute_command_on_remote_machine(host, validate(host, "logger_path") + "logger.sh catalinaerrors "+validate(host, "catalina_file"))
-    lines = result.strip().split('\n')
-    line_count = {}
-
-    for line in lines:
-        # Remove the first 31 characters
-        line = remove_excessive_info(line[31:])
-
-        # Add the line to the dictionary and count occurrences
-        line_count[line] = line_count.get(line, 0) + 1
-
-    # Create the new variable with unique lines and the number of occurrences
-    new_content = ""
-    for line, count in line_count.items():
-        new_content += f"{count:03d} {line}\n"
-    return new_content
 
 
 def analyze_db(host):
@@ -150,55 +169,35 @@ def analyze_analytics(host):
         return analyticslog
     elif machine_type == "tomcat":
         analyticslog = execute_command_on_remote_machine(host, validate(host,"logger_path") + "logger.sh analyticslogger tomcat " +logfile)
-
         return analyticslog
 
-    print('Informe generado.')
 
-def add_to_report(server, action, result, description):
-    if server not in report_details.keys():
-        report_details[server] = []
-    report_details[server].append({action: {"result": result, "description": description}})
+def check_servers():
+    for server in hostdetails.keys():
+        host = hostdetails[server]
+        execute_command_on_remote_machine(host,  validate(host,"logger_path") + "logger.sh test_connection "+ validate(host, "server_name"))
 
+#this method is used to analyze the catalina logs removing the excessive info and counting the occurrences
+def analyze_catalina(host):
+    result = execute_command_on_remote_machine(host, validate(host, "logger_path") + "logger.sh catalinaerrors "+validate(host, "catalina_file"))
+    lines = result.strip().split('\n')
+    line_count = {}
 
-def load_host(server):
-    server_name = server.get('server_name')
-    temp_dict = {
-        "server_name": server_name,
-        "type": server.get('type'),
-        "catalina_file": server.get('catalina_file'),
-        "docker_name": server.get('docker_name'),
-        "host": server.get('host'),
-        "url": server.get('url'),
-        "user": server.get('user'),
-        "backups": server.get('backups'),
-        "keyfile": server.get('keyfile'),
-        "logger_path": server.get("logger_path"),
-        "analytics": server.get('analytics'),
-        "cloning": server.get('cloning'),
-        "proxy": server.get('proxy')
-    }
-    hostdetails[server_name] = {k: v for k, v in temp_dict.items() if v is not None}
+    for line in lines:
+        # Remove the first 31 characters
+        line = remove_excessive_info(line[31:])
+
+        # Add the line to the dictionary and count occurrences
+        line_count[line] = line_count.get(line, 0) + 1
+
+    # Create the new variable with unique lines and the number of occurrences
+    new_content = ""
+    for line, count in line_count.items():
+        new_content += f"{count:03d} {line}\n"
+    return new_content
 
 
-def load_servers(data):
-    for server in data["servers"]:
-        load_host(server)
-        validate_host(hostdetails[server.get("server_name")])
-
-
-def update_servers(data):
-    print("----------------servers update-------------")
-    for item in data["actions"]:
-        if "github_update" == item.get("type"):
-            for server in item.get("servers"):
-                print("----------------Updating "+server+"-------------")
-                branch = validate(data["config"], "branch")
-                host = hostdetails[server]
-                remote_update(host, branch, host.get("proxy"))
-                print("----------------Updating "+server+" FINISHED-------------")
-
-
+#this method remove the suffix to make the logs line uniques by error
 def remove_suffix(text):
     #remove proccess number
     cleaned_line = re.sub(r'(\[.*?)-\d+\]', r'\1]', text)
@@ -218,6 +217,7 @@ def remove_suffix(text):
     return cleaned_line
 
 
+#this method removes some hardcoded strings from the logs to make them more readable
 def remove_excessive_info(log_text):
     pattern = re.compile(r'^(.{4}).*?nested exception is org\.postgresql\.util\.PSQLException: ERROR: (.*?)$', re.MULTILINE)
 
@@ -234,10 +234,10 @@ def remove_excessive_info(log_text):
     return cleaned_log
 
 
-def check_servers():
-    for server in hostdetails.keys():
-        host = hostdetails[server]
-        execute_command_on_remote_machine(host,  validate(host,"logger_path") + "logger.sh test_connection "+ validate(host, "server_name"))
+def add_to_report(server, action, result, description):
+    if server not in report_details.keys():
+        report_details[server] = []
+    report_details[server].append({action: {"result": result, "description": description}})
 
 
 def run_logger(data):
@@ -274,7 +274,7 @@ if __name__ == '__main__':
     parser.add_argument('--check-config', action='store_true', help='Mode in to check the config file.')
     parser.add_argument('--check-servers', action='store_true', help='Mode in to check the server connection. ')
     parser.add_argument('--update', action='store_true', help='Update report and logger files.')
-    parser.add_argument('--mode', type=str, help='Report mode print/printandpush/json/html', default="print")
+    parser.add_argument('--mode', type=str, help='Report mode print/json/html', default="print")
     
     args = parser.parse_args()
 
