@@ -2,19 +2,32 @@
   "config": {
     "url": "https://github.com/proyect/repo/folder",
     "branch": "branch",
-    "path": "\\ESTools\\"
+    "path": "/ESTools/DHIS2/dutyday/"
   },
   "servers": [
     {
-      "server_name": "customname_key_log",
-      "logger_path": "/github/folder",
+      "server_name": "tomcat_example_key",
+      "type": "tomcat",
+      "catalina_file": "/absolute/path/folder/analytics.log",
+      "logger_path": "/absolutepath/ESTools/DHIS2/dutyday/",
       "proxy": "http://proxy:8080/",
-      "type": "tomcat/docker",
-      "tomcat_folder": "/absolute/path/folder",
-      "docker_name": "docker.xxx.com/xxx/xxx",
+      "backups": "/absolute/path/folder",
+      "analytics": "/absolute/path/folder/analytics.log",
+      "user": "user",
+      "keyfile": "/absoultepath/.ssh/id_rsa",
+      "host": "hostname.com"
+    },
+    {
+      "server_name": "docker_example_key",
+      "type": "docker",
+      "docker_name": "2.38-project-name",
+      "logger_path": "/absolutepath/ESTools/DHIS2/dutyday/",
+      "backups": "/absolute/path/folder/backups.log",
+      "proxy": "http://proxy:8080/",
+      "analytics": "/DHIS2_home/logs/dhis-analytics-table.log",
+      "cloning": "/absolute/path/folder/cloning.log",
       "url": "https://url",
       "user": "user",
-      "backups": "/absolute/path/folder",
       "keyfile": "/absoultepath/.ssh/id_rsa",
       "host": "hostname.com"
     }
@@ -23,34 +36,39 @@
     {
       "type": "github_update",
       "description": "---------------------GITHUB-UPDATE---------------------",
-      "servers": ["customname_key_log"]
+      "servers": ["docker_example_key", "tomcat_example_key"]
     },
     {
       "type": "backups",
       "description": "---------------------BACKUPS---------------------(custom header text)",
-      "servers": ["customname_key_log"]
+      "servers": ["docker_example_key", "tomcat_example_key"]
     },
     {
       "type": "monit",
       "description": "---------------------MONIT-STATUS---------------------(custom header text)",
-      "servers": ["customname_key_log"]
+      "servers": ["docker_example_key", "tomcat_example_key"]
     },
     {
       "type": "analytics",
       "description": "---------------------ANALYTICS---------------------(custom header text)",
-      "servers": ["customname_key_log"]
+      "servers": ["docker_example_key", "tomcat_example_key"]
     },
     {
       "type": "cloning",
       "description": "---------------------Cloning---------------------(custom header text)",
-      "servers": ["customname_key_log"]
+      "servers": ["docker_example_key"]
     },
 
     {
       "type": "custom",
       "description": "---------------------DISK-SPACE---------------------(custom header text)",
       "command": "df -h",
-      "servers": ["customname_key_log"]
+      "servers": ["docker_example_key", "tomcat_example_key"]
+    },
+    {
+      "type": "catalinaerrors",
+      "description": "--------------------CATALINA------------------",
+      "servers": ["tomcat_example_key"]
     }
   ]
 }
