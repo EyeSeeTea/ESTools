@@ -94,14 +94,18 @@ logtype: Specifies the logging order or style.
 ## Servers section
 
 List of server details where each server must have:
-server_name: Unique identifier used in actions.servers to reference the server.
+server_name: Unique identifier used in actions.servers to reference the server. Its used in the output report too.
 type: Specify if the server runs tomcat or docker for analytics. (tomcat or docker)
+docker_name: only required by docker type.
+cataline_file: Only required to read cataline log of tomcat instances.
+backups: Backup .log absolute path
+analytics: Analytics log .log absolute path
+cloning: Cloning log .log absolute path
 host: Hostname or IP address.
 user: Username for SSH connection.
 keyfile: Path to SSH private key.
 logger_path: Repository path on host.
 proxy: proxy to be used by github_updater
-Additional fields like proxy, catalina_file, docker_name, url, backups may be required based on actions.
 
 ## Actions
 
@@ -109,7 +113,7 @@ actions: Defines operations to perform on servers.
 Each action requires:
 
 type: Action type (github_update, backups, monit, analytics, cloning, custom).
-description: Human-readable description of the action.
+description: Human-readable description of the action to show in the report.
 servers: List of server_name identifiers to which the action applies.
 Some actions has other requirements:
 
@@ -129,12 +133,8 @@ The actions of type `cloning` entry has the following fields in the server entry
 
 The actions of type `catalinaerrors` entry has the following fields in the server entry:
 
-- cloning: The cloning log path.
+- cataline_file: The cataline log path.
 
 The actions of type `custom` entry has the following fields:
 
 - command: The command to be executed in the server.
-
-```
-
-```
