@@ -268,7 +268,7 @@ def run_logger(data):
                     add_to_report(server, "catalinaerrors", result, item.get('description'))
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Arguments --file: config file, --check-config check config file")
+    parser = argparse.ArgumentParser(description="This Python script is designed for comprehensive management and reporting across multiple instances, streamlining analytics gathering, backup management, cloning result log, and system health monitoring via SSH connections. ")
     
     parser.add_argument('--file', type=str, required=True, help='Path to the config file.')
     parser.add_argument('--check-config', action='store_true', help='Mode in to check the config file.')
