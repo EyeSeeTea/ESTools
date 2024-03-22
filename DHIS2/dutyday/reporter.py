@@ -14,7 +14,7 @@ separator = "------------------------"
 def print_separator(separator, text=None):
     if text:
         half_separator = separator[:len(separator)//2]
-        print(f"{half_separator}{text}{half_separator}")
+        print(f"\n{half_separator}{text}{half_separator}")
     else:
         print(separator)
 
@@ -339,7 +339,6 @@ if __name__ == '__main__':
                     print("\n\n\n")
                     print_separator(separator, None)
                     print_separator(separator, server)
-                    print("\n"+server+"\n")
                     for action_dict in report_details[server]:
                         for action_key, details in action_dict.items():
 
