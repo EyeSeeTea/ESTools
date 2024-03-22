@@ -8,7 +8,7 @@ import argparse
 hostdetails = dict()
 report_details = {}
 
-separator = "--------------------------------"
+separator = "-------------------------------------"
 
 
 def print_separator(separator, text=None):
