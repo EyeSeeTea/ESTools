@@ -59,7 +59,6 @@ analyticslogger() {
         exit 1
       fi
     fi
-    DAYS_BACK=2
 
     START_DATE=$(date -d"-2 days" +%Y-%m-%d)+"|"+$(date -d"-1 days" +%Y-%m-%d)+"|"+$(date -d"-0 days" +%Y-%m-%d)
 
