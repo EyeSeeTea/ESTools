@@ -1,6 +1,7 @@
 import subprocess
 import argparse
 
+
 def update_from_repo(folder, branch='main'):
     try:
         folder = folder.replace("logger.sh", "")
@@ -9,16 +10,16 @@ def update_from_repo(folder, branch='main'):
         subprocess.check_call(['git', 'checkout', branch], cwd=folder)
         # Fetch the latest changes
         subprocess.check_call(['git', 'pull'], cwd=folder)
-        
+
         print(f"Repository updated '{branch}'.")
     except subprocess.CalledProcessError as e:
         print(f"Error updating repository: {e}")
 
 
-
 def main(repo_folder, branch):
     print(f"Updating repo in {repo_folder}  {branch}.")
     update_from_repo(repo_folder, branch)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Update repo from Git.')
