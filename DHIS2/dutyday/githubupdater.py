@@ -1,12 +1,8 @@
-import os
 import subprocess
 import argparse
 
-def update_from_repo(folder, branch='main', proxy=None):
+def update_from_repo(folder, branch='main'):
     try:
-        if proxy:
-            os.environ['http_proxy'] = proxy
-            os.environ['https_proxy'] = proxy
         folder = folder.replace("logger.sh", "")
         folder = folder.replace("reporter.sh", "")
         subprocess.check_call(['git', 'stash'], cwd=folder)
@@ -20,9 +16,9 @@ def update_from_repo(folder, branch='main', proxy=None):
 
 
 
-def main(repo_folder, branch, proxy=None):
+def main(repo_folder, branch):
     print(f"Updating repo in {repo_folder}  {branch}.")
-    update_from_repo(repo_folder, branch, proxy)
+    update_from_repo(repo_folder, branch)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Update repo from Git.')
