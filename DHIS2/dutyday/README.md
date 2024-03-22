@@ -65,25 +65,25 @@ python reporter.py --file config.json --mode html > report.html
 
 ## Example Commands
 
-# Check the configuration file for validity:
+### Check the configuration file for validity:
 
 ```
 python reporter.py.py --file path/to/config.json --check-config
 ```
 
-# Check the external server connections:
+### Check the external server connections:
 
 ```
 python reporter.py.py --file path/to/config.json --check-servers
 ```
 
-# Update scripts from github based on the configuration file:
+### Update scripts from github based on the configuration file:
 
 ```
 python reporter.py.py --file path/to/config.json --update
 ```
 
-# Run the logger and generate a report in JSON format:
+### Run the logger and generate a report in JSON format:
 
 ```
 python reporter.py.py --file path/to/config.json --mode json
