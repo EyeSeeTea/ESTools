@@ -31,7 +31,9 @@ Based on the `config.json` entries the script retrieves the information and prin
 
 Ensure Python 3.x is installed on your system. Then, install the required Python package:
 
+```
 pip install paramiko
+```
 
 ## Configuration
 
@@ -55,29 +57,37 @@ python reporter.py --file config.json --mode html > report.html
 
 ## Command Line Arguments
 
---file: Path to the configuration file (required).
---check-config: Check the configuration file for validity (optional).
---check-servers: Check the external server connections.
---update: Update report and logger files in the host and in the external servers.
---mode: Set the report mode (print, json, html); default is print.
+- `--file`: Path to the configuration file (required).
+- `--check-config`: Check the configuration file for validity (optional).
+- `--check-servers`: Check the external server connections.
+- `--update`: Update report and logger files in the host and in the external servers.
+- `--mode`: Set the report mode (print, json, html); default is print.
 
 ## Example Commands
 
 # Check the configuration file for validity:
 
-python script_name.py --file path/to/config.json --check-config
+```
+python reporter.py.py --file path/to/config.json --check-config
+```
 
 # Check the external server connections:
 
-python script_name.py --file path/to/config.json --check-servers
+```
+python reporter.py.py --file path/to/config.json --check-servers
+```
 
 # Update scripts from github based on the configuration file:
 
-python script_name.py --file path/to/config.json --update
+```
+python reporter.py.py --file path/to/config.json --update
+```
 
 # Run the logger and generate a report in JSON format:
 
-python script_name.py --file path/to/config.json --mode json
+```
+python reporter.py.py --file path/to/config.json --mode json
+```
 
 ## Configuration File Format
 
@@ -85,56 +95,77 @@ The configuration file must be in JSON format and includes three main sections: 
 
 ## Config section
 
-config: Global settings applied to the script execution, such as repository URL, branch for updates, and logging type.
-path: Path of the repository.
-logger_path: (in the instances), path of the logger.sh file (used to update repository too).
-branch: Repository branch to target for operations.
-logtype: Specifies the logging order or style.
+- `config`: Global settings applied to the script execution, such as repository URL, branch for updates, and logging type.
+
+- `path`: Path of the repository.
+
+- `logger_path`: (in the instances), path of the logger.sh file (used to update repository too).
+
+- `branch`: Repository branch to target for operations.
+
+- `logtype`: Specifies the logging order or style.
 
 ## Servers section
 
 List of server details where each server must have:
-server_name: Unique identifier used in actions.servers to reference the server. Its used in the output report too.
-type: Specify if the server runs tomcat or docker for analytics. (tomcat or docker)
-docker_name: only required by docker type.
-cataline_file: Only required to read cataline log of tomcat instances.
-backups: Backup .log absolute path
-analytics: Analytics log .log absolute path
-cloning: Cloning log .log absolute path
-host: Hostname or IP address.
-user: Username for SSH connection.
-keyfile: Path to SSH private key.
-logger_path: Repository path on host.
-proxy: proxy to be used by github_updater
+
+- `server_name`: Unique identifier used in actions.servers to reference the server. Its used in the output report too.
+
+- `type`: Specify if the server runs tomcat or docker for analytics. (tomcat or docker).
+
+- `docker_name`: only required by docker type.
+
+- `catalina_file`: Only required to read catalina log of tomcat instances.
+
+- `backups`: Backup .log absolute path.
+
+- `analytics`: Analytics log .log absolute path.
+
+- `cloning`: Cloning log .log absolute path.
+
+- `host`: Hostname or IP address.
+
+- `user`: Username for SSH connection.
+
+- `keyfile`: Path to SSH private key.
+
+- `logger_path`: Repository path on host.
+
+- `proxy`: proxy to be used by github_updater.
 
 ## Actions
 
-actions: Defines operations to perform on servers.
-Each action requires:
+- `actions`: Defines operations to perform on servers.
+  Each action requires:
 
-type: Action type (github_update, backups, monit, analytics, cloning, custom).
-description: Human-readable description of the action to show in the report.
-servers: List of server_name identifiers to which the action applies.
+- `type`: Action type (github_update, backups, monit, analytics, cloning, custom).
+
+- `description`: Human-readable description of the action to show in the report.
+
+- `servers`: List of server_name identifiers to which the action applies.
+
 Some actions has other requirements:
 
 The actions of type `analytics` entry has the following fields in the server entry:
 
-- type: docker or tomcat
-- docker_name: required if the instance is a d2-docker
-- analytics: The path of the analytics file.
+- `type`: docker or tomcat
+
+- `docker_name`: required if the instance is a d2-docker
+
+- `analytics`: The path of the analytics file.
 
 The actions of type `backups` entry has the following fields in the server entry:
 
-- backups: The backup log path.
+- `backups`: The backup log path.
 
 The actions of type `cloning` entry has the following fields in the server entry:
 
-- cloning: The cloning log path.
+- `cloning`: The cloning log path.
 
 The actions of type `catalinaerrors` entry has the following fields in the server entry:
 
-- cataline_file: The cataline log path.
+- `catalina_file`: The catalina log path.
 
 The actions of type `custom` entry has the following fields:
 
-- command: The command to be executed in the server.
+- `command`: The command to be executed in the server.
