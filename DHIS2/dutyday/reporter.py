@@ -346,10 +346,9 @@ if __name__ == '__main__':
                             print_separator(separator, action_key)
                             print_separator(separator, details.get("description",
                                                                    "Empty description"))
-                            print_separator(separator, details.get("result",
-                                                                   "Empty result"))
-                            print_separator(separator, details.get("result",
-                                                                   "End"))
+                            print(details.get("result",
+                                              "Empty result"))
+                            print_separator(separator, "End")
                     print_separator(separator, None)
                     print_separator(separator, None)
 
