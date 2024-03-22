@@ -8,6 +8,16 @@ import argparse
 hostdetails = dict()
 report_details = {}
 
+separator = "------------------------------------------------"
+
+
+def print_separator(separator, text=None):
+    if text:
+        half_separator = separator[:len(separator)//2]
+        print(f"{half_separator}{text}{half_separator}")
+    else:
+        print(separator)
+
 
 def validate(item, key):
     if key not in item.keys():
@@ -67,7 +77,7 @@ def load_servers(data):
 
 
 def update_scripts(data):
-    print("----------------local update-------------")
+    print_separator(separator, "Updating scripts")
     local_update(data["config"])
     update_servers(data)
 
@@ -132,16 +142,15 @@ def remote_update(host, branch, proxy=""):
 
 # this method output is printed always - not used by the report
 def update_servers(data):
-    print("----------------servers update-------------")
+    print_separator(separator, "Updating remote servers")
     for item in data["actions"]:
         if "github_update" == item.get("type"):
             for server in item.get("servers"):
-                print("----------------Updating "+server+"-------------")
+                print_separator(separator, "Updating "+server)
                 branch = validate(data["config"], "branch")
                 host = hostdetails[server]
                 remote_update(host, branch, host.get("proxy"))
-                print("----------------Updating " +
-                      server+" FINISHED-------------")
+                print_separator(separator, "Updating "+server+" finished")
 
 
 def analyze_clone(host):
@@ -326,22 +335,24 @@ if __name__ == '__main__':
                 print(json.dumps(report_details))
             elif args.mode == "print":
                 for server in report_details.keys():
-                    print("\n\n\n------------------------------------------------")
-                    print("------------------------------------------------")
+                    print_separator(separator, None)
+                    print("\n\n\n")
+                    print_separator(separator, None)
+                    print_separator(separator, server)
                     print("\n"+server+"\n")
                     for action_dict in report_details[server]:
                         for action_key, details in action_dict.items():
-                            print("------------------------" +
-                                  server+"-----------------------")
-                            print("------------------------" +
-                                  action_key+"-----------------------")
-                            print(details.get("description",
-                                  "Empty description")+"\n")
-                            print(details.get("result", "Empty result")+"\n")
-                            print(
-                                "------------------------END-----------------------")
-                    print("------------------------------------------------")
-                    print("------------------------------------------------")
+
+                            print_separator(separator, server)
+                            print_separator(separator, action_key)
+                            print_separator(separator, details.get("description",
+                                                                   "Empty description"))
+                            print_separator(separator, details.get("result",
+                                                                   "Empty result"))
+                            print_separator(separator, details.get("result",
+                                                                   "End"))
+                    print_separator(separator, None)
+                    print_separator(separator, None)
 
             elif args.mode == "html":
                 print("<html><head><title>Report</title>")
