@@ -1,0 +1,74 @@
+{
+  "config": {
+    "url": "https://github.com/proyect/repo/folder",
+    "branch": "branch",
+    "path": "/ESTools/DHIS2/dutyday/"
+  },
+  "servers": [
+    {
+      "server_name": "tomcat_example_key",
+      "type": "tomcat",
+      "catalina_file": "/absolute/path/folder/analytics.log",
+      "logger_path": "/absolutepath/ESTools/DHIS2/dutyday/",
+      "proxy": "http://proxy:8080/",
+      "backups": "/absolute/path/folder",
+      "analytics": "/absolute/path/folder/analytics.log",
+      "user": "user",
+      "keyfile": "/absoultepath/.ssh/id_rsa",
+      "host": "hostname.com"
+    },
+    {
+      "server_name": "docker_example_key",
+      "type": "docker",
+      "docker_name": "2.38-project-name",
+      "logger_path": "/absolutepath/ESTools/DHIS2/dutyday/",
+      "backups": "/absolute/path/folder/backups.log",
+      "proxy": "http://proxy:8080/",
+      "analytics": "/DHIS2_home/logs/dhis-analytics-table.log",
+      "cloning": "/absolute/path/folder/cloning.log",
+      "url": "https://url",
+      "user": "user",
+      "keyfile": "/absoultepath/.ssh/id_rsa",
+      "host": "hostname.com"
+    }
+  ],
+  "actions": [
+    {
+      "type": "github_update",
+      "description": "---------------------GITHUB-UPDATE---------------------",
+      "servers": ["docker_example_key", "tomcat_example_key"]
+    },
+    {
+      "type": "backups",
+      "description": "---------------------BACKUPS---------------------(custom header text)",
+      "servers": ["docker_example_key", "tomcat_example_key"]
+    },
+    {
+      "type": "monit",
+      "description": "---------------------MONIT-STATUS---------------------(custom header text)",
+      "servers": ["docker_example_key", "tomcat_example_key"]
+    },
+    {
+      "type": "analytics",
+      "description": "---------------------ANALYTICS---------------------(custom header text)",
+      "servers": ["docker_example_key", "tomcat_example_key"]
+    },
+    {
+      "type": "cloning",
+      "description": "---------------------Cloning---------------------(custom header text)",
+      "servers": ["docker_example_key"]
+    },
+
+    {
+      "type": "custom",
+      "description": "---------------------DISK-SPACE---------------------(custom header text)",
+      "command": "df -h",
+      "servers": ["docker_example_key", "tomcat_example_key"]
+    },
+    {
+      "type": "catalinaerrors",
+      "description": "--------------------CATALINA------------------",
+      "servers": ["tomcat_example_key"]
+    }
+  ]
+}
