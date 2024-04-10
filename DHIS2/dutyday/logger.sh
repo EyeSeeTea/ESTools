@@ -104,6 +104,9 @@ test_connection)
 catalinaerrors)
     catalinaerrors "$@"
     ;;
+dockerharborclonelogger)
+    dockerharborclonelogger "$@"
+    ;;
 
 *)
     echo "Command not found: $command"
