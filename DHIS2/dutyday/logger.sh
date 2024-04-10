@@ -32,6 +32,12 @@ catalinaerrors() {
     grep "ERROR" "$file" | grep -v "Unable to render velocity template"
 }
 
+dockerharborclonelogger() {
+    local file=$1
+    TODAY=$(date '+%Y-%m-%d')
+    awk "/$TODAY/{flag=1} flag" "$file" | sed "s/'[^:]*:[^']*'/USER:PASSWORDHIDDEN/g "
+}
+
 clonelogger() {
     local file=$1
     START_DATE=$(date -d 'last Saturday' '+%Y-%m-%d')

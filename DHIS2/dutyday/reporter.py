@@ -69,6 +69,7 @@ def load_host(server):
         "logger_path": server.get("logger_path"),
         "analytics": server.get('analytics'),
         "cloning": server.get('cloning'),
+        "harborcloning": server.get('harborcloning'),
         "proxy": server.get('proxy')
     }
     hostdetails[server_name] = {k: v for k,
@@ -126,6 +127,9 @@ def run_action(host, action, command=None):
     if action == "cloning":
         validate(host, action)
         return analyze_clone(host)
+    elif action == "harborcloning":
+        validate(host, action)
+        return analyze_harbor_clone(host)
     elif action == "monit":
         return analyze_monit(host)
     elif action == "backups":
@@ -179,6 +183,13 @@ def analyze_clone(host):
     validate(host, "cloning")
     result = execute_command_on_remote_machine(host, validate(
         host, "logger_path") + "logger.sh clonelogger "+validate(host, "cloning"))
+    return result
+
+
+def analyze_harbor_clone(host):
+    validate(host, "harborcloning")
+    result = execute_command_on_remote_machine(host, validate(
+        host, "logger_path") + "logger.sh dockerharborclonelogger "+validate(host, "harborcloning"))
     return result
 
 
@@ -353,6 +364,11 @@ def run_logger(data):
         if "cloning" == item.get("type"):
             for server in item.get("servers"):
                 result = run_action(hostdetails[server], "cloning")
+                add_to_report(server, item, result)
+
+        if "harborcloning" == item.get("type"):
+            for server in item.get("servers"):
+                result = run_action(hostdetails[server], "harborcloning")
                 add_to_report(server, item, result)
 
         if "custom" == item.get("type"):
