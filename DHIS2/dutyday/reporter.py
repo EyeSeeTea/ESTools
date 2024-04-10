@@ -217,8 +217,10 @@ def analyze_analytics(host):
 def check_servers():
     for server in hostdetails.keys():
         host = hostdetails[server]
+        server_name = validate(host, "server_name")
+        print("checking server: " + server_name)
         execute_command_on_remote_machine(host,  validate(
-            host, "logger_path") + "logger.sh test_connection " + validate(host, "server_name"))
+            host, "logger_path") + "logger.sh test_connection " + server_name)
 
 # this method is used to analyze the catalina logs removing the excessive info and counting the occurrences
 
