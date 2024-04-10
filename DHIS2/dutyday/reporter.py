@@ -294,8 +294,9 @@ def add_to_report(server, action, result):
         {action_name: {"result": result, "description": description, "dataElement": dataElement}})
 
 
-def pushReportToServer(categoryOptionCombo, dataElement, result):
-    value_formatted = quote(result, safe='')
+def pushReportToServer(categoryOptionCombo, dataElement, value):
+    # escape firewall false positive
+    value = value.replace("alter table", "altertable")
     data = {"dataValues": [
         {
             "dataElement": dataElement,
@@ -303,7 +304,7 @@ def pushReportToServer(categoryOptionCombo, dataElement, result):
             "orgUnit": server_config.get("orgUnit"),
             "categoryOptionCombo": categoryOptionCombo,
             "attributeOptionCombo": "Xr12mI7VPn3",
-            "value": value_formatted,
+            "value": value,
             "storedBy": "widp_script"
         }
     ]
@@ -319,7 +320,9 @@ def pushReportToServer(categoryOptionCombo, dataElement, result):
         'Connection': 'keep-alive',
         'Content-Type': 'application/json'
     }
-    print(url)
+    print("Sending to: " + url)
+    print("pushing coc:" + categoryOptionCombo + " dataelement: "+dataElement)
+    print("result: "+result)
 
     if server_config.get("proxy", None):
         proxies = {
