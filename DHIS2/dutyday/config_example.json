@@ -1,12 +1,20 @@
 {
+  "report": {
+    "server": "http://localhost:8080",
+    "username": "user",
+    "password": "password",
+    "orgUnit": "H8RixfF8ugH",
+    "proxy": "http://proxy:8080/"
+  },
   "config": {
-    "url": "https://github.com/proyect/repo/folder",
-    "branch": "branch",
+    "url": "https://github.com/EyeSeeTea/ESTools/",
+    "branch": "master",
     "path": "/ESTools/DHIS2/dutyday/"
   },
   "servers": [
     {
       "server_name": "tomcat_example_key",
+      "categoryOptionCombo": "dU0wZ2ISmQA",
       "type": "tomcat",
       "catalina_file": "/absolute/path/folder/analytics.log",
       "logger_path": "/absolutepath/ESTools/DHIS2/dutyday/",
@@ -19,6 +27,7 @@
     },
     {
       "server_name": "docker_example_key",
+      "categoryOptionCombo": "dU0wZ2ISmQA",
       "type": "docker",
       "docker_name": "2.38-project-name",
       "logger_path": "/absolutepath/ESTools/DHIS2/dutyday/",
@@ -40,6 +49,7 @@
     },
     {
       "type": "backups",
+      "dataElement": "BCytw0TARJ0",
       "description": "---------------------BACKUPS---------------------(custom header text)",
       "servers": ["docker_example_key", "tomcat_example_key"]
     },
@@ -50,11 +60,13 @@
     },
     {
       "type": "analytics",
+      "dataElement": "qpgGXrkTrgj",
       "description": "---------------------ANALYTICS---------------------(custom header text)",
       "servers": ["docker_example_key", "tomcat_example_key"]
     },
     {
       "type": "cloning",
+      "dataElement": "sFLQxZe72Ym",
       "description": "---------------------Cloning---------------------(custom header text)",
       "servers": ["docker_example_key"]
     },
@@ -67,6 +79,7 @@
     },
     {
       "type": "catalinaerrors",
+      "dataElement": "kDL0aoZKYfV",
       "description": "--------------------CATALINA------------------",
       "servers": ["tomcat_example_key"]
     }

@@ -4,10 +4,14 @@ import json
 
 import paramiko
 import argparse
+from datetime import datetime
+from urllib.parse import quote
+import requests
+from requests.auth import HTTPBasicAuth
 
 hostdetails = dict()
 report_details = {}
-
+server_config = {}
 separator = "-------------------------------------"
 
 
@@ -53,6 +57,7 @@ def load_host(server):
     server_name = server.get('server_name')
     temp_dict = {
         "server_name": server_name,
+        "categoryOptionCombo":  server.get('categoryOptionCombo'),
         "type": server.get('type'),
         "catalina_file": server.get('catalina_file'),
         "docker_name": server.get('docker_name'),
@@ -74,6 +79,23 @@ def load_servers(data):
     for server in data["servers"]:
         load_host(server)
         validate_host(hostdetails[server.get("server_name")])
+
+
+def load_server_config(config):
+    config = validate(config, "report")
+    if config.get("username", None) is None or config.get("password", None) is None or config.get("server", None) is None:
+        print("Server, username and password are required to push the report")
+        exit(1)
+    elif config.get("dataSet", None) is None or config.get("orgUnit", None) is None:
+        print("dataSet and orgUnit are required to push the report")
+        exit(1)
+    else:
+        server_config = {"username": config.get("username"),
+                         "password": config.get("password"),
+                         "server": config.get("server"),
+                         "dataSet": config.get("dataSet"),
+                         "orgUnit": config.get("orgUnit")}
+        return server_config
 
 
 def update_scripts(data):
@@ -260,11 +282,55 @@ def remove_excessive_info(log_text):
     return cleaned_log
 
 
-def add_to_report(server, action, result, description):
+def add_to_report(server, action, result):
+    description = action.get("description")
+    action_name = action.get("type")
+    dataElement = action.get("dataElement")
     if server not in report_details.keys():
         report_details[server] = []
     report_details[server].append(
-        {action: {"result": result, "description": description}})
+        {action_name: {"result": result, "description": description, "dataElement": dataElement}})
+
+
+def pushReportToServer(categoryOptionCombo, dataElement, result, proxy):
+    value_formatted = quote(result, safe='')
+    data = {"dataValues": [
+        {
+            "dataElement": dataElement,
+            "period": datetime.now().strftime('%Y%m%d'),
+            "orgUnit": server_config.get("orgUnit"),
+            "categoryOptionCombo": categoryOptionCombo,
+            "attributeOptionCombo": "Xr12mI7VPn3",
+            "value": value_formatted,
+            "storedBy": "widp_script"
+        }
+    ]
+    }
+
+    url = server_config.get(
+        "server") + '/api/dataValueSets.json'
+
+    headers = {
+        'Accept': '*/*',
+        'Accept-Language': 'es-ES,es;q=0.9',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Content-Type': 'application/json'
+    }
+    print(url)
+
+    if server_config.get("proxy", None):
+        proxies = {
+            'http': server_config.get("proxy"),
+            'https': server_config.get("proxy"),
+        }
+        response = requests.post(url, json=data,
+                                 auth=HTTPBasicAuth(server_config.get("username"), server_config.get("password")), proxies=proxies, headers=headers)
+    else:
+        response = requests.post(url, json=data,
+                                 auth=HTTPBasicAuth(server_config.get("username"), server_config.get("password")), headers=headers)
+    print(response.text)
+    return response.status_code
 
 
 def run_logger(data):
@@ -272,34 +338,29 @@ def run_logger(data):
         if "backups" == item.get("type"):
             for server in item.get("servers"):
                 result = run_action(hostdetails[server], "backups")
-                add_to_report(server, "backups", result,
-                              item.get('description'))
+                add_to_report(server, item, result)
 
         if "analytics" == item.get("type"):
             for server in item.get("servers"):
                 result = run_action(hostdetails[server], "analytics")
-                add_to_report(server, "analytics", result,
-                              item.get('description'))
+                add_to_report(server, item, result)
 
         if "cloning" == item.get("type"):
             for server in item.get("servers"):
                 result = run_action(hostdetails[server], "cloning")
-                add_to_report(server, "cloning", result,
-                              item.get('description'))
+                add_to_report(server, item, result)
 
         if "custom" == item.get("type"):
             for server in item.get("servers"):
                 result = run_action(
                     hostdetails[server], "custom", item.get("command"))
-                add_to_report(server, "custom", result,
-                              item.get('description'))
+                add_to_report(server, item, result)
 
         if "catalinaerrors" == item.get("type"):
             for server in item.get("servers"):
                 result = run_action(
                     hostdetails[server], "catalinaerrors", hostdetails[server].get("catalina_file"))
-                add_to_report(server, "catalinaerrors",
-                              result, item.get('description'))
+                add_to_report(server, item, result)
 
 
 if __name__ == '__main__':
@@ -315,12 +376,17 @@ if __name__ == '__main__':
     parser.add_argument('--update', action='store_true',
                         help='Update report and logger files.')
     parser.add_argument('--mode', type=str,
-                        help='Report mode print/json/html', default="print")
+                        help='Report mode print/json/html/push')
 
     args = parser.parse_args()
 
+    # todo validate push params -> to function
+
     with open(args.file, 'r') as file:
         config = json.load(file)
+
+        if args.mode == "push":
+            server_config = load_server_config(config)
         if not args.check_config:
             load_servers(config)
         if args.check_config:
@@ -331,7 +397,29 @@ if __name__ == '__main__':
             update_scripts(config)
         else:
             run_logger(config)
-            if args.mode == "json":
+            if args.mode == "push":
+                print("Pushing the report to the server")
+                # todo: implement the push to the server
+                for server in report_details.keys():
+                    categoryOptionCombo = hostdetails[server].get(
+                        "categoryOptionCombo")
+                    if categoryOptionCombo is not None:
+                        for action_dict in report_details[server]:
+                            for action_key, details in action_dict.items():
+                                print(
+                                    f"Checking {action_key} data to the server")
+                                dataElement = details.get("dataElement", None)
+                                result = details.get("result", None)
+                                if dataElement and result:
+                                    print(
+                                        f"Pushing {action_key} data to the server")
+                                    status = pushReportToServer(
+                                        categoryOptionCombo, dataElement, result)
+                                    if status != 200:
+                                        print(
+                                            f"Error pushing {action_key} data to the server: {status} ")
+
+            elif args.mode == "json":
                 print(json.dumps(report_details))
             elif args.mode == "print":
                 for server in report_details.keys():
