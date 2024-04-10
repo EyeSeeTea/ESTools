@@ -93,7 +93,8 @@ def load_server_config(config):
         server_config = {"username": config.get("username"),
                          "password": config.get("password"),
                          "server": config.get("server"),
-                         "orgUnit": config.get("orgUnit")}
+                         "orgUnit": config.get("orgUnit"),
+                         "proxy": config.get("proxy", None)}
         return server_config
 
 
@@ -291,7 +292,7 @@ def add_to_report(server, action, result):
         {action_name: {"result": result, "description": description, "dataElement": dataElement}})
 
 
-def pushReportToServer(categoryOptionCombo, dataElement, result, proxy):
+def pushReportToServer(categoryOptionCombo, dataElement, result):
     value_formatted = quote(result, safe='')
     data = {"dataValues": [
         {
