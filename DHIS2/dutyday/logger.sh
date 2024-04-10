@@ -35,8 +35,11 @@ catalinaerrors() {
 clonelogger() {
     local file=$1
     START_DATE=$(date -d 'last Saturday' '+%Y-%m-%d')
+    NEXT_DAY=$(date -d "$START_DATE + 1 day" '+%Y-%m-%d')
     echo "$START_DATE"
     awk "/$START_DATE/{flag=1} flag" "$file" | grep "ERROR\|error\|FAIL\|Error\|OK\|$START_DATE" | sed "s/'[^:]*:[^']*'/USER:PASSWORDHIDDEN/g "
+    echo "$NEXT_DAY"
+    awk "/$NEXT_DAY/{flag=1} flag" "$file" | grep "ERROR\|error\|FAIL\|Error\|OK\|$NEXT_DAY" | sed "s/'[^:]*:[^']*'/USER:PASSWORDHIDDEN/g "
 }
 
 analyticslogger() {
