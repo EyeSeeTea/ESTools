@@ -86,14 +86,13 @@ def load_server_config(config):
     if config.get("username", None) is None or config.get("password", None) is None or config.get("server", None) is None:
         print("Server, username and password are required to push the report")
         exit(1)
-    elif config.get("dataSet", None) is None or config.get("orgUnit", None) is None:
-        print("dataSet and orgUnit are required to push the report")
+    elif config.get("orgUnit", None) is None:
+        print("orgUnit are required to push the report")
         exit(1)
     else:
         server_config = {"username": config.get("username"),
                          "password": config.get("password"),
                          "server": config.get("server"),
-                         "dataSet": config.get("dataSet"),
                          "orgUnit": config.get("orgUnit")}
         return server_config
 
