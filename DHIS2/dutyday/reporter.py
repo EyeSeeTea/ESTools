@@ -420,7 +420,6 @@ if __name__ == '__main__':
             run_logger(config)
             if args.mode == "push":
                 print("Pushing the report to the server")
-                # todo: implement the push to the server
                 for server in report_details.keys():
                     categoryOptionCombo = hostdetails[server].get(
                         "categoryOptionCombo")
