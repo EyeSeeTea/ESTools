@@ -38,7 +38,7 @@ def get_args():
 
     add = parser.add_argument  # shortcut
     add('--uids',
-        default='kD52FGwJgDF,YdBcEIZpRHo,zu8v89yqrBV,H4atNsEuKxP,fa7DnTkWEOL,hfaMYUsDm8u',
+        default='kD52FGwJgDF,YdBcEIZpRHo,zu8v89yqrBV,H4atNsEuKxP,fa7DnTkWEOL,hfaMYUsDm8u,BzA1s6Mb06r,pB6QDjTguml,vMvTcwfkbZ9,ZSMuo9QwpwL',
         help='comma separated list of uids of users that received spam to delete')
     # by default, the ones they asked us to remove of spam messages
     add('--subject', default=r'WMR Form monitoring%',
@@ -52,14 +52,18 @@ def get_args():
 
 
 def delete_spam(cur, uids_spammed, subject, level):
-    cur.execute(f"SELECT messageid FROM message "
+    cur.execute(f"SELECT messageid,created FROM message "
                 f"  WHERE messagetext LIKE '{subject}'"
                 f"    AND created < NOW() - INTERVAL '7 days';")
     spam_mids = cur.fetchall()
+    message_count = len(spam_mids)
 
-    log(level, 1, f'number of messages: {len(spam_mids)}')
+    log(level, 1, f'number of messages: {message_count}')
 
+    mid_delete_count = 0
     for mid in spam_mids:
+
+        created = mid[1]
         mid = mid[0]
 
         cur.execute(f'SELECT messageconversationid FROM messageconversation_messages '
@@ -91,16 +95,20 @@ def delete_spam(cur, uids_spammed, subject, level):
                 cur.execute(f'DELETE FROM usermessage '
                             f'  WHERE usermessageid={umid}')
             else:
-                log(level, 2, 'This unknown uid got spam:', uid)
+                log(level, 2, f'This unknown uid got spam: {uid} at: {created}')
                 all_recipients_spam = False
 
         if all_recipients_spam:
+            mid_delete_count += 1
             cur.execute(f'DELETE FROM messageconversation_messages '
                         f'  WHERE messageconversationid = {mcid}')
             cur.execute(f'DELETE FROM messageconversation '
                         f'  WHERE messageconversationid = {mcid}')
             cur.execute(f'DELETE FROM message '
                         f'  WHERE messageid = {mid}')
+
+    log(level, 1, f'number of messages deleted: {mid_delete_count}')
+    log(level, 1, f'number of messages with remaining suscribed users: {message_count - mid_delete_count}')
 
 
 if __name__ == '__main__':
