@@ -108,7 +108,7 @@ def delete_spam(cur, uids_spammed, subject, level):
                         f'  WHERE messageid = {mid}')
 
     log(level, 1, f'number of messages deleted: {mid_delete_count}')
-    log(level, 1, f'number of messages with remaining suscribed users: {message_count - mid_delete_count}')
+    log(level, 1, f'number of messages with users not in uids list: {message_count - mid_delete_count}')
 
 
 if __name__ == '__main__':
