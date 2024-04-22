@@ -401,80 +401,77 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    # todo validate push params -> to function
-
     with open(args.file, 'r') as file:
         config = json.load(file)
 
+    if args.mode == "push":
+        server_config = load_server_config(config)
+    if not args.check_config:
+        load_servers(config)
+    if args.check_config:
+        validate_config(config)
+    elif args.check_servers:
+        check_servers()
+    elif args.update:
+        update_scripts(config)
+    else:
+        run_logger(config)
         if args.mode == "push":
-            server_config = load_server_config(config)
-        if not args.check_config:
-            load_servers(config)
-        if args.check_config:
-            validate_config(config)
-        elif args.check_servers:
-            check_servers()
-        elif args.update:
-            update_scripts(config)
-        else:
-            run_logger(config)
-            if args.mode == "push":
-                print("Pushing the report to the server")
-                for server in report_details.keys():
-                    categoryOptionCombo = hostdetails[server].get(
-                        "categoryOptionCombo")
-                    if categoryOptionCombo is not None:
-                        for action_dict in report_details[server]:
-                            for action_key, details in action_dict.items():
+            print("Pushing the report to the server")
+            for server in report_details.keys():
+                categoryOptionCombo = hostdetails[server].get(
+                    "categoryOptionCombo")
+                if categoryOptionCombo is not None:
+                    for action_dict in report_details[server]:
+                        for action_key, details in action_dict.items():
+                            print(
+                                f"Checking {action_key} data to the server")
+                            dataElement = details.get("dataElement", None)
+                            result = details.get("result", None)
+                            if dataElement and result:
                                 print(
-                                    f"Checking {action_key} data to the server")
-                                dataElement = details.get("dataElement", None)
-                                result = details.get("result", None)
-                                if dataElement and result:
+                                    f"Pushing {action_key} data to the server")
+                                status = pushReportToServer(
+                                    categoryOptionCombo, dataElement, result)
+                                if status != 200:
                                     print(
-                                        f"Pushing {action_key} data to the server")
-                                    status = pushReportToServer(
-                                        categoryOptionCombo, dataElement, result)
-                                    if status != 200:
-                                        print(
-                                            f"Error pushing {action_key} data to the server: {status} ")
+                                        f"Error pushing {action_key} data to the server: {status} ")
 
-            elif args.mode == "json":
-                print(json.dumps(report_details))
-            elif args.mode == "print":
-                for server in report_details.keys():
-                    print_separator(separator, None)
-                    print("\n\n\n")
-                    print_separator(separator, None)
-                    print_separator(separator, server)
-                    for action_dict in report_details[server]:
-                        for action_key, details in action_dict.items():
-
-                            print_separator(separator, server)
-                            print_separator(separator, action_key)
-                            print_separator(separator, details.get("description",
-                                                                   "Empty description"))
-                            print(details.get("result",
-                                              "Empty result"))
-                            print_separator(separator, "End")
+        elif args.mode == "json":
+            print(json.dumps(report_details))
+        elif args.mode == "print":
+            for server in report_details.keys():
+                print_separator(separator, None)
+                print("\n\n\n")
+                print_separator(separator, None)
+                print_separator(separator, server)
+                for action_dict in report_details[server]:
+                    for action_key, details in action_dict.items():
+                        print_separator(separator, server)
+                        print_separator(separator, action_key)
+                        print_separator(separator, details.get("description",
+                                                               "Empty description"))
+                        print(details.get("result",
+                                          "Empty result"))
+                        print_separator(separator, "End")
                     print_separator(separator, None)
                     print_separator(separator, None)
 
-            elif args.mode == "html":
-                print("<html><head><title>Report</title>")
-                print("<style> #container { font-family: 'Courier New', Courier, monospace; margin: 20px; background-color: #f9f9f9; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); } .server h1, .action h3 { color: #333; background-color: #e9ecef; padding: 8px 12px; border-radius: 4px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); } .description p, .result p { color: #212529; background-color: #fff; padding: 8px 12px; margin-bottom: 8px; border: 1px solid #dee2e6; border-left-width: 5px; border-left-color: #007bff; border-radius: 4px; } .result p { border-left-color: #28a745; } span { color: red; } p { line-height: 1.5; } .result p, .description p { word-wrap: break-word; word-break: break-all; max-width: 100%; } </style>")
-                print("<script> document.addEventListener('DOMContentLoaded', () => { const elements = document.querySelectorAll('.description p, .result p'); elements.forEach(element => { element.innerHTML = element.innerHTML.replace(/(\d+)%/g, (match, number) => { return number >= 90 && number <= 100 ? `<span style=\"color: red;\">${match}</span>` : match; }); element.innerHTML = element.innerHTML.replace(/(error)/gi, `<span style=\"color: red;\">$1</span>`); element.innerHTML = element.innerHTML.replace(/(OK)/g, `<span style=\"color: green;\">$1</span>`); }); }); </script>")
-                print("</head><body>")
-                for server in report_details.keys():
-                    print("<div class='instance'> <div class='server'> <h1>" +
-                          server + "</h1>" + "</div>")
-                    for action_dict in report_details[server]:
-                        for action_key, details in action_dict.items():
-                            print("<div class='action'> <br><h3>" +
-                                  action_key + "</h3></br>" + "</div>")
-                            print("<div class='description'> <p>" + details.get("description",
-                                  "Empty description").replace("\n", "<br/>") + "</p>" + "</div>")
-                            print("<div class='result'> <p>" + details.get("result",
-                                  "Empty result").replace("\n", "<br/>") + "</p>" + "</div>")
-                    print("</div>")
-                print("</body></html>")
+        elif args.mode == "html":
+            print("<html><head><title>Report</title>")
+            print("<style> #container { font-family: 'Courier New', Courier, monospace; margin: 20px; background-color: #f9f9f9; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); } .server h1, .action h3 { color: #333; background-color: #e9ecef; padding: 8px 12px; border-radius: 4px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); } .description p, .result p { color: #212529; background-color: #fff; padding: 8px 12px; margin-bottom: 8px; border: 1px solid #dee2e6; border-left-width: 5px; border-left-color: #007bff; border-radius: 4px; } .result p { border-left-color: #28a745; } span { color: red; } p { line-height: 1.5; } .result p, .description p { word-wrap: break-word; word-break: break-all; max-width: 100%; } </style>")
+            print("<script> document.addEventListener('DOMContentLoaded', () => { const elements = document.querySelectorAll('.description p, .result p'); elements.forEach(element => { element.innerHTML = element.innerHTML.replace(/(\d+)%/g, (match, number) => { return number >= 90 && number <= 100 ? `<span style=\"color: red;\">${match}</span>` : match; }); element.innerHTML = element.innerHTML.replace(/(error)/gi, `<span style=\"color: red;\">$1</span>`); element.innerHTML = element.innerHTML.replace(/(OK)/g, `<span style=\"color: green;\">$1</span>`); }); }); </script>")
+            print("</head><body>")
+            for server in report_details.keys():
+                print("<div class='instance'> <div class='server'> <h1>" +
+                      server + "</h1>" + "</div>")
+                for action_dict in report_details[server]:
+                    for action_key, details in action_dict.items():
+                        print("<div class='action'> <br><h3>" +
+                              action_key + "</h3></br>" + "</div>")
+                        print("<div class='description'> <p>" + details.get("description",
+                                                                            "Empty description").replace("\n", "<br/>") + "</p>" + "</div>")
+                        print("<div class='result'> <p>" + details.get("result",
+                                                                       "Empty result").replace("\n", "<br/>") + "</p>" + "</div>")
+                print("</div>")
+            print("</body></html>")
