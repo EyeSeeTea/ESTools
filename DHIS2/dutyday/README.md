@@ -93,7 +93,7 @@ python reporter.py.py --file path/to/config.json --mode json
 
 The configuration file must be in JSON format and includes three main sections: config, servers, and actions.
 
-## Report section
+### Report section
 
 - `server`: Server url.
 
@@ -105,7 +105,7 @@ The configuration file must be in JSON format and includes three main sections: 
 
 - `proxy`: Proxy to push the reports (optional).
 
-## Config section
+### Config section
 
 - `config`: Global settings applied to the script execution, such as repository URL, branch for updates, and logging type.
 
@@ -113,7 +113,7 @@ The configuration file must be in JSON format and includes three main sections: 
 
 - `branch`: Repository branch to target for operations.
 
-## Servers section
+### Servers section
 
 List of server details where each server must have:
 
@@ -145,7 +145,7 @@ List of server details where each server must have:
 
 - `harborcloning`: Harbor d2-docker cloning log .log absolute path.
 
-## Actions
+### Actions
 
 - `actions`: Defines operations to perform on servers.
   Each action requires:
