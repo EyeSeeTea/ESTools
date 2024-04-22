@@ -396,8 +396,8 @@ if __name__ == '__main__':
                         help='Mode in to check the server connection. ')
     parser.add_argument('--update', action='store_true',
                         help='Update report and logger files.')
-    parser.add_argument('--mode', type=str,
-                        help='Report mode print/json/html/push')
+    parser.add_argument('mode', type=str, choices=['print', 'json', 'html', 'push'],
+                        help='Report mode to show the report')
 
     args = parser.parse_args()
 
