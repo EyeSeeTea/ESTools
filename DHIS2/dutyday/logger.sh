@@ -32,11 +32,20 @@ catalinaerrors() {
     grep "ERROR" "$file" | grep -v "Unable to render velocity template"
 }
 
+dockerharborclonelogger() {
+    local file=$1
+    TODAY=$(date '+%Y-%m-%d')
+    awk "/$TODAY/{flag=1} flag" "$file" | sed "s/'[^:]*:[^']*'/USER:PASSWORDHIDDEN/g "
+}
+
 clonelogger() {
     local file=$1
     START_DATE=$(date -d 'last Saturday' '+%Y-%m-%d')
+    NEXT_DAY=$(date -d "$START_DATE + 1 day" '+%Y-%m-%d')
     echo "$START_DATE"
     awk "/$START_DATE/{flag=1} flag" "$file" | grep "ERROR\|error\|FAIL\|Error\|OK\|$START_DATE" | sed "s/'[^:]*:[^']*'/USER:PASSWORDHIDDEN/g "
+    echo "$NEXT_DAY"
+    awk "/$NEXT_DAY/{flag=1} flag" "$file" | grep "ERROR\|error\|FAIL\|Error\|OK\|$NEXT_DAY" | sed "s/'[^:]*:[^']*'/USER:PASSWORDHIDDEN/g "
 }
 
 analyticslogger() {
@@ -59,7 +68,7 @@ analyticslogger() {
 
     START_DATE=$(date -d"-2 days" +%Y-%m-%d)+"|"+$(date -d"-1 days" +%Y-%m-%d)+"|"+$(date -d"-0 days" +%Y-%m-%d)
 
-    START_LINE=$(grep -E "$START_DATE" "$LOG_FILE" | grep 'Table update start: analytics, earliest:' | grep 'last years=500')
+    START_LINE=$(grep -E "$START_DATE" "$LOG_FILE" | grep 'Table update start: analytics, earliest:' | grep -E 'last years=500|last years=100')
     END_LINE=$(grep -E "$START_DATE" "$LOG_FILE" | grep 'Analytics tables updated' | grep -v ' 00:0')
     ERROR_LINES=$(grep -E "$START_DATE" "$LOG_FILE" | grep 'ERROR')
     printf "%s" "$START_LINE$END_LINE$ERROR_LINES" | awk '{gsub("T"," ",$3); print}' | sort -k3,3 -k4,4
@@ -94,6 +103,9 @@ test_connection)
     ;;
 catalinaerrors)
     catalinaerrors "$@"
+    ;;
+dockerharborclonelogger)
+    dockerharborclonelogger "$@"
     ;;
 
 *)

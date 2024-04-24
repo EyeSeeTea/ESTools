@@ -7,6 +7,7 @@ def update_from_repo(folder, branch='main'):
         folder = folder.replace("logger.sh", "")
         folder = folder.replace("reporter.sh", "")
         subprocess.check_call(['git', 'stash'], cwd=folder)
+        subprocess.check_call(['git', 'pull'], cwd=folder)
         subprocess.check_call(['git', 'checkout', branch], cwd=folder)
         # Fetch the latest changes
         subprocess.check_call(['git', 'pull'], cwd=folder)

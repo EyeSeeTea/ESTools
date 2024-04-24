@@ -1,12 +1,20 @@
 {
+  "report": {
+    "server": "http://localhost:8080",
+    "username": "user",
+    "password": "password",
+    "orgUnit": "uid",
+    "proxy": "http://proxy:8080/"
+  },
   "config": {
-    "url": "https://github.com/proyect/repo/folder",
-    "branch": "branch",
+    "url": "https://github.com/EyeSeeTea/ESTools/",
+    "branch": "master",
     "path": "/ESTools/DHIS2/dutyday/"
   },
   "servers": [
     {
       "server_name": "tomcat_example_key",
+      "categoryOptionCombo": "uid",
       "type": "tomcat",
       "catalina_file": "/absolute/path/folder/analytics.log",
       "logger_path": "/absolutepath/ESTools/DHIS2/dutyday/",
@@ -19,6 +27,7 @@
     },
     {
       "server_name": "docker_example_key",
+      "categoryOptionCombo": "uid",
       "type": "docker",
       "docker_name": "2.38-project-name",
       "logger_path": "/absolutepath/ESTools/DHIS2/dutyday/",
@@ -40,35 +49,44 @@
     },
     {
       "type": "backups",
-      "description": "---------------------BACKUPS---------------------(custom header text)",
+      "dataElement": "uid",
+      "description": "---------------------BACKUPS---------------------",
       "servers": ["docker_example_key", "tomcat_example_key"]
     },
     {
       "type": "monit",
-      "description": "---------------------MONIT-STATUS---------------------(custom header text)",
+      "description": "---------------------MONIT-STATUS---------------------",
       "servers": ["docker_example_key", "tomcat_example_key"]
     },
     {
       "type": "analytics",
-      "description": "---------------------ANALYTICS---------------------(custom header text)",
+      "dataElement": "uid",
+      "description": "---------------------ANALYTICS---------------------",
       "servers": ["docker_example_key", "tomcat_example_key"]
     },
     {
       "type": "cloning",
-      "description": "---------------------Cloning---------------------(custom header text)",
+      "dataElement": "uid",
+      "description": "---------------------Cloning---------------------",
       "servers": ["docker_example_key"]
     },
-
     {
       "type": "custom",
-      "description": "---------------------DISK-SPACE---------------------(custom header text)",
+      "description": "---------------------DISK-SPACE---------------------",
       "command": "df -h",
       "servers": ["docker_example_key", "tomcat_example_key"]
     },
     {
       "type": "catalinaerrors",
+      "dataElement": "uid",
       "description": "--------------------CATALINA------------------",
       "servers": ["tomcat_example_key"]
+    },
+    {
+      "type": "harborcloning",
+      "dataElement": "uid",
+      "description": "---------------------harborCloning---------------------",
+      "servers": ["docker_example_key"]
     }
   ]
 }

@@ -61,7 +61,7 @@ python reporter.py --file config.json --mode html > report.html
 - `--check-config`: Check the configuration file for validity (optional).
 - `--check-servers`: Check the external server connections.
 - `--update`: Update report and logger files in the host and in the external servers.
-- `--mode`: Set the report mode (print, json, html); default is print.
+- `--mode`: Set the report mode (print, json, html, push); default is print.
 
 ## Example Commands
 
@@ -93,23 +93,33 @@ python reporter.py.py --file path/to/config.json --mode json
 
 The configuration file must be in JSON format and includes three main sections: config, servers, and actions.
 
-## Config section
+### Report section
+
+- `server`: Server url.
+
+- `username`: Server username.
+
+- `password`: Sever password.
+
+- `orgUnit`: Orgunit to push the reports.
+
+- `proxy`: Proxy to push the reports (optional).
+
+### Config section
 
 - `config`: Global settings applied to the script execution, such as repository URL, branch for updates, and logging type.
 
 - `path`: Path of the repository.
 
-- `logger_path`: (in the instances), path of the logger.sh file (used to update repository too).
-
 - `branch`: Repository branch to target for operations.
 
-- `logtype`: Specifies the logging order or style.
-
-## Servers section
+### Servers section
 
 List of server details where each server must have:
 
 - `server_name`: Unique identifier used in actions.servers to reference the server. Its used in the output report too.
+
+- `categoryOptionCombo`: CategoryOptionCombo uid. Required to push to dhis2 instance.
 
 - `type`: Specify if the server runs tomcat or docker for analytics. (tomcat or docker).
 
@@ -133,7 +143,9 @@ List of server details where each server must have:
 
 - `proxy`: proxy to be used by github_updater.
 
-## Actions
+- `harborcloning`: Harbor d2-docker cloning log .log absolute path.
+
+### Actions
 
 - `actions`: Defines operations to perform on servers.
   Each action requires:
@@ -143,6 +155,8 @@ List of server details where each server must have:
 - `description`: Human-readable description of the action to show in the report.
 
 - `servers`: List of server_name identifiers to which the action applies.
+
+- `dataElement`: DataElement uid. Required to push to dhis2 instance.
 
 Some actions has other requirements:
 
@@ -169,3 +183,7 @@ The actions of type `catalinaerrors` entry has the following fields in the serve
 The actions of type `custom` entry has the following fields:
 
 - `command`: The command to be executed in the server.
+
+The actions of type `harborcloning` entry has the following fields in the server entry:
+
+- `harborcloning`: The harbor daily clone log path.
