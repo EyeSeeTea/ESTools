@@ -4,10 +4,14 @@ import json
 
 import paramiko
 import argparse
+from datetime import datetime
+from urllib.parse import quote
+import requests
+from requests.auth import HTTPBasicAuth
 
 hostdetails = dict()
 report_details = {}
-
+server_config = {}
 separator = "-------------------------------------"
 
 
@@ -53,6 +57,7 @@ def load_host(server):
     server_name = server.get('server_name')
     temp_dict = {
         "server_name": server_name,
+        "categoryOptionCombo":  server.get('categoryOptionCombo'),
         "type": server.get('type'),
         "catalina_file": server.get('catalina_file'),
         "docker_name": server.get('docker_name'),
@@ -64,6 +69,7 @@ def load_host(server):
         "logger_path": server.get("logger_path"),
         "analytics": server.get('analytics'),
         "cloning": server.get('cloning'),
+        "harborcloning": server.get('harborcloning'),
         "proxy": server.get('proxy')
     }
     hostdetails[server_name] = {k: v for k,
@@ -74,6 +80,23 @@ def load_servers(data):
     for server in data["servers"]:
         load_host(server)
         validate_host(hostdetails[server.get("server_name")])
+
+
+def load_server_config(config):
+    config = validate(config, "report")
+    if config.get("username", None) is None or config.get("password", None) is None or config.get("server", None) is None:
+        print("Server, username and password are required to push the report")
+        exit(1)
+    elif config.get("orgUnit", None) is None:
+        print("orgUnit are required to push the report")
+        exit(1)
+    else:
+        server_config = {"username": config.get("username"),
+                         "password": config.get("password"),
+                         "server": config.get("server"),
+                         "orgUnit": config.get("orgUnit"),
+                         "proxy": config.get("proxy", None)}
+        return server_config
 
 
 def update_scripts(data):
@@ -104,6 +127,9 @@ def run_action(host, action, command=None):
     if action == "cloning":
         validate(host, action)
         return analyze_clone(host)
+    elif action == "harborcloning":
+        validate(host, action)
+        return analyze_harbor_clone(host)
     elif action == "monit":
         return analyze_monit(host)
     elif action == "backups":
@@ -160,6 +186,13 @@ def analyze_clone(host):
     return result
 
 
+def analyze_harbor_clone(host):
+    validate(host, "harborcloning")
+    result = execute_command_on_remote_machine(host, validate(
+        host, "logger_path") + "logger.sh dockerharborclonelogger "+validate(host, "harborcloning"))
+    return result
+
+
 def analyze_monit(host):
     result = execute_command_on_remote_machine(
         host, validate(host, "logger_path") + "logger.sh monitlogger")
@@ -195,8 +228,10 @@ def analyze_analytics(host):
 def check_servers():
     for server in hostdetails.keys():
         host = hostdetails[server]
+        server_name = validate(host, "server_name")
+        print("checking server: " + server_name)
         execute_command_on_remote_machine(host,  validate(
-            host, "logger_path") + "logger.sh test_connection " + validate(host, "server_name"))
+            host, "logger_path") + "logger.sh test_connection " + server_name)
 
 # this method is used to analyze the catalina logs removing the excessive info and counting the occurrences
 
@@ -260,11 +295,58 @@ def remove_excessive_info(log_text):
     return cleaned_log
 
 
-def add_to_report(server, action, result, description):
+def add_to_report(server, action, result):
+    description = action.get("description")
+    action_name = action.get("type")
+    dataElement = action.get("dataElement")
     if server not in report_details.keys():
         report_details[server] = []
     report_details[server].append(
-        {action: {"result": result, "description": description}})
+        {action_name: {"result": result, "description": description, "dataElement": dataElement}})
+
+
+def pushReportToServer(categoryOptionCombo, dataElement, value):
+    # escape firewall false positive
+    value = value.replace("alter table", "altertable")
+    data = {"dataValues": [
+        {
+            "dataElement": dataElement,
+            "period": datetime.now().strftime('%Y%m%d'),
+            "orgUnit": server_config.get("orgUnit"),
+            "categoryOptionCombo": categoryOptionCombo,
+            "attributeOptionCombo": "Xr12mI7VPn3",
+            "value": value,
+            "storedBy": "widp_script"
+        }
+    ]
+    }
+
+    url = server_config.get(
+        "server") + '/api/dataValueSets.json'
+
+    headers = {
+        'Accept': '*/*',
+        'Accept-Language': 'es-ES,es;q=0.9',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Content-Type': 'application/json'
+    }
+    print("Sending to: " + url)
+    print("pushing coc:" + categoryOptionCombo + " dataelement: "+dataElement)
+    print("result: "+result)
+
+    if server_config.get("proxy", None):
+        proxies = {
+            'http': server_config.get("proxy"),
+            'https': server_config.get("proxy"),
+        }
+        response = requests.post(url, json=data,
+                                 auth=HTTPBasicAuth(server_config.get("username"), server_config.get("password")), proxies=proxies, headers=headers)
+    else:
+        response = requests.post(url, json=data,
+                                 auth=HTTPBasicAuth(server_config.get("username"), server_config.get("password")), headers=headers)
+    print(response.text)
+    return response.status_code
 
 
 def run_logger(data):
@@ -272,34 +354,34 @@ def run_logger(data):
         if "backups" == item.get("type"):
             for server in item.get("servers"):
                 result = run_action(hostdetails[server], "backups")
-                add_to_report(server, "backups", result,
-                              item.get('description'))
+                add_to_report(server, item, result)
 
         if "analytics" == item.get("type"):
             for server in item.get("servers"):
                 result = run_action(hostdetails[server], "analytics")
-                add_to_report(server, "analytics", result,
-                              item.get('description'))
+                add_to_report(server, item, result)
 
         if "cloning" == item.get("type"):
             for server in item.get("servers"):
                 result = run_action(hostdetails[server], "cloning")
-                add_to_report(server, "cloning", result,
-                              item.get('description'))
+                add_to_report(server, item, result)
+
+        if "harborcloning" == item.get("type"):
+            for server in item.get("servers"):
+                result = run_action(hostdetails[server], "harborcloning")
+                add_to_report(server, item, result)
 
         if "custom" == item.get("type"):
             for server in item.get("servers"):
                 result = run_action(
                     hostdetails[server], "custom", item.get("command"))
-                add_to_report(server, "custom", result,
-                              item.get('description'))
+                add_to_report(server, item, result)
 
         if "catalinaerrors" == item.get("type"):
             for server in item.get("servers"):
                 result = run_action(
                     hostdetails[server], "catalinaerrors", hostdetails[server].get("catalina_file"))
-                add_to_report(server, "catalinaerrors",
-                              result, item.get('description'))
+                add_to_report(server, item, result)
 
 
 if __name__ == '__main__':
@@ -314,59 +396,82 @@ if __name__ == '__main__':
                         help='Mode in to check the server connection. ')
     parser.add_argument('--update', action='store_true',
                         help='Update report and logger files.')
-    parser.add_argument('--mode', type=str,
-                        help='Report mode print/json/html', default="print")
+    parser.add_argument('--mode', type=str, choices=['print', 'json', 'html', 'push'],
+                        help='Report mode to show the report')
 
     args = parser.parse_args()
 
     with open(args.file, 'r') as file:
         config = json.load(file)
-        if not args.check_config:
-            load_servers(config)
-        if args.check_config:
-            validate_config(config)
-        elif args.check_servers:
-            check_servers()
-        elif args.update:
-            update_scripts(config)
-        else:
-            run_logger(config)
-            if args.mode == "json":
-                print(json.dumps(report_details))
-            elif args.mode == "print":
-                for server in report_details.keys():
-                    print_separator(separator, None)
-                    print("\n\n\n")
-                    print_separator(separator, None)
-                    print_separator(separator, server)
+
+    if args.mode == "push":
+        server_config = load_server_config(config)
+    if not args.check_config:
+        load_servers(config)
+    if args.check_config:
+        validate_config(config)
+    elif args.check_servers:
+        check_servers()
+    elif args.update:
+        update_scripts(config)
+    else:
+        run_logger(config)
+        if args.mode == "push":
+            print("Pushing the report to the server")
+            for server in report_details.keys():
+                categoryOptionCombo = hostdetails[server].get(
+                    "categoryOptionCombo")
+                if categoryOptionCombo is not None:
                     for action_dict in report_details[server]:
                         for action_key, details in action_dict.items():
+                            print(
+                                f"Checking {action_key} data to the server")
+                            dataElement = details.get("dataElement", None)
+                            result = details.get("result", None)
+                            if dataElement and result:
+                                print(
+                                    f"Pushing {action_key} data to the server")
+                                status = pushReportToServer(
+                                    categoryOptionCombo, dataElement, result)
+                                if status != 200:
+                                    print(
+                                        f"Error pushing {action_key} data to the server: {status} ")
 
-                            print_separator(separator, server)
-                            print_separator(separator, action_key)
-                            print_separator(separator, details.get("description",
-                                                                   "Empty description"))
-                            print(details.get("result",
-                                              "Empty result"))
-                            print_separator(separator, "End")
+        elif args.mode == "json":
+            print(json.dumps(report_details))
+        elif args.mode == "print":
+            for server in report_details.keys():
+                print_separator(separator, None)
+                print("\n\n\n")
+                print_separator(separator, None)
+                print_separator(separator, server)
+                for action_dict in report_details[server]:
+                    for action_key, details in action_dict.items():
+                        print_separator(separator, server)
+                        print_separator(separator, action_key)
+                        print_separator(separator, details.get("description",
+                                                               "Empty description"))
+                        print(details.get("result",
+                                          "Empty result"))
+                        print_separator(separator, "End")
                     print_separator(separator, None)
                     print_separator(separator, None)
 
-            elif args.mode == "html":
-                print("<html><head><title>Report</title>")
-                print("<style> #container { font-family: 'Courier New', Courier, monospace; margin: 20px; background-color: #f9f9f9; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); } .server h1, .action h3 { color: #333; background-color: #e9ecef; padding: 8px 12px; border-radius: 4px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); } .description p, .result p { color: #212529; background-color: #fff; padding: 8px 12px; margin-bottom: 8px; border: 1px solid #dee2e6; border-left-width: 5px; border-left-color: #007bff; border-radius: 4px; } .result p { border-left-color: #28a745; } span { color: red; } p { line-height: 1.5; } .result p, .description p { word-wrap: break-word; word-break: break-all; max-width: 100%; } </style>")
-                print("<script> document.addEventListener('DOMContentLoaded', () => { const elements = document.querySelectorAll('.description p, .result p'); elements.forEach(element => { element.innerHTML = element.innerHTML.replace(/(\d+)%/g, (match, number) => { return number >= 90 && number <= 100 ? `<span style=\"color: red;\">${match}</span>` : match; }); element.innerHTML = element.innerHTML.replace(/(error)/gi, `<span style=\"color: red;\">$1</span>`); element.innerHTML = element.innerHTML.replace(/(OK)/g, `<span style=\"color: green;\">$1</span>`); }); }); </script>")
-                print("</head><body>")
-                for server in report_details.keys():
-                    print("<div class='instance'> <div class='server'> <h1>" +
-                          server + "</h1>" + "</div>")
-                    for action_dict in report_details[server]:
-                        for action_key, details in action_dict.items():
-                            print("<div class='action'> <br><h3>" +
-                                  action_key + "</h3></br>" + "</div>")
-                            print("<div class='description'> <p>" + details.get("description",
-                                  "Empty description").replace("\n", "<br/>") + "</p>" + "</div>")
-                            print("<div class='result'> <p>" + details.get("result",
-                                  "Empty result").replace("\n", "<br/>") + "</p>" + "</div>")
-                    print("</div>")
-                print("</body></html>")
+        elif args.mode == "html":
+            print("<html><head><title>Report</title>")
+            print("<style> #container { font-family: 'Courier New', Courier, monospace; margin: 20px; background-color: #f9f9f9; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); } .server h1, .action h3 { color: #333; background-color: #e9ecef; padding: 8px 12px; border-radius: 4px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); } .description p, .result p { color: #212529; background-color: #fff; padding: 8px 12px; margin-bottom: 8px; border: 1px solid #dee2e6; border-left-width: 5px; border-left-color: #007bff; border-radius: 4px; } .result p { border-left-color: #28a745; } span { color: red; } p { line-height: 1.5; } .result p, .description p { word-wrap: break-word; word-break: break-all; max-width: 100%; } </style>")
+            print("<script> document.addEventListener('DOMContentLoaded', () => { const elements = document.querySelectorAll('.description p, .result p'); elements.forEach(element => { element.innerHTML = element.innerHTML.replace(/(\d+)%/g, (match, number) => { return number >= 90 && number <= 100 ? `<span style=\"color: red;\">${match}</span>` : match; }); element.innerHTML = element.innerHTML.replace(/(error)/gi, `<span style=\"color: red;\">$1</span>`); element.innerHTML = element.innerHTML.replace(/(OK)/g, `<span style=\"color: green;\">$1</span>`); }); }); </script>")
+            print("</head><body>")
+            for server in report_details.keys():
+                print("<div class='instance'> <div class='server'> <h1>" +
+                      server + "</h1>" + "</div>")
+                for action_dict in report_details[server]:
+                    for action_key, details in action_dict.items():
+                        print("<div class='action'> <br><h3>" +
+                              action_key + "</h3></br>" + "</div>")
+                        print("<div class='description'> <p>" + details.get("description",
+                                                                            "Empty description").replace("\n", "<br/>") + "</p>" + "</div>")
+                        print("<div class='result'> <p>" + details.get("result",
+                                                                       "Empty result").replace("\n", "<br/>") + "</p>" + "</div>")
+                print("</div>")
+            print("</body></html>")
