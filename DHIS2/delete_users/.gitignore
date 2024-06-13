@@ -1,0 +1,9 @@
+# Local files
+working_notes
+docker_log.log
+error*
+output*
+temp*
+
+# User exports
+user*
