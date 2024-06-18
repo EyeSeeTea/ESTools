@@ -1,0 +1,2 @@
+audittools is a python script to unify all the logs from start to end in a single file
+filteredunified is a python script to filter according input entries the big log file, and create at output a json file
