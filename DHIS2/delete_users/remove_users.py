@@ -14,7 +14,7 @@ def delete_objects(json_file, api_endpoint, username, password, error_json_file_
 
     # Extract IDs and send DELETE requests
     for item in data:
-        object_id = item.get('id')
+        object_id = item.get('ID')
         if object_id:
             url = f"{api_endpoint}/{object_id}"
             response = requests.delete(url, auth=(username, password))

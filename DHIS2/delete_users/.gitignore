@@ -4,6 +4,7 @@ docker_log.log
 error*
 output*
 temp*
+preprod*
 
 # User exports
 user*

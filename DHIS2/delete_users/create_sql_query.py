@@ -21,6 +21,8 @@ def extract_and_write_queries(temp_log_file, sql_output_file, user_to_takeover):
                         some_table = constraint_match.group(2)
                         if "lastupdateby" in some_constraint.lower():
                             query2 = f"update {some_table} set lastupdatedby=({query_user.strip()}) where lastupdatedby=({query1.strip()});\n"
+                        elif "lastupdatedby" in some_constraint.lower():
+                            query2 = f"update {some_table} set lastupdatedby=({query_user.strip()}) where lastupdatedby=({query1.strip()});\n"
                         elif "creator" in some_constraint.lower():
                             query2 = f"update {some_table} set creator=({query_user.strip()}) where creator=({query1.strip()});\n"
                         elif "assigneduserid" in some_constraint.lower():
