@@ -8,7 +8,7 @@ Steps:
 2. Following arguments are required for the script to run:
 ```
     json_file_path = '<path/to/users.json>'  # Path to JSON file downloaded/converted in step 1
-    api_endpoint = '<https://host_name.com/api/38/users>'  # API endpoint to send DELETE call
+    api_endpoint = '<https://host_name.com/api/38/users>'  # API endpoint to send DELETE call.
     username = '<username>'  # API username
     password = '<password>'  # API user password
     log_file_path = '<path/to/log_file_path>'  # Path to dhis2 log file 

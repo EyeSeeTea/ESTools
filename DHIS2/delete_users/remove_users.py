@@ -3,6 +3,7 @@ import requests
 import subprocess
 import threading
 import sys
+import time
 
 stop_event = threading.Event()
 
@@ -26,6 +27,7 @@ def delete_objects(json_file, api_endpoint, username, password, error_json_file_
                 with open(temp_log_file, 'a') as log:
                     log.write(message + "\n")
                 error_objects.append(item)
+            time.sleep(1)  # Sleep for 1 second between API calls
 
     # Write error objects to a different JSON file if there are users not deleted
     if error_objects:
@@ -50,6 +52,9 @@ def log_error_if_present(log_file_path, temp_log_file):
 def execute_create_sql_query_script(temp_log_file, sql_output_file, user_to_takeover):
     subprocess.run(["python3", "create_sql_query.py", temp_log_file, sql_output_file, user_to_takeover])
 
+def execute_init_sql_script(image, sql_init_file):
+    subprocess.run(["d2-docker", "run-sql", "-i", image, sql_init_file])
+
 def execute_sql_script(sql_output_file, image):
     subprocess.run(["d2-docker", "run-sql", "-i", image, sql_output_file])
 
@@ -64,11 +69,15 @@ def main():
     image = sys.argv[7] # dhis2 image name
     temp_log_file = 'temp_log.txt' # Input file to generate sql
     sql_output_file = 'output.sql'  # Output sql file
+    sql_init_file = [8] # init sql file per instance
 
     while True:
         # Create and start log thread
         log_thread = threading.Thread(target=log_error_if_present, args=(log_file_path, temp_log_file))
         log_thread.start()
+
+        # Run init sql script
+        has_errors = execute_init_sql_script(image, sql_init_file)
 
         # Run delete_objects function
         has_errors = delete_objects(json_file_path, api_endpoint, username, password, error_json_file_path, temp_log_file)
