@@ -1,25 +1,18 @@
-Remove users from DHIS2 app
+Remove users from DHIS2 instnces
 
 Scripts should be started on the server where dhis2 logs and dhis2 database are available.
 
 Steps:
 
 1. Download user list from "User extended app" using json format or convert existing csv to json
-2. Following arguments are required for the script to run:
+2. Create another csv file coping only ID column, use it only in step 3
+3. Copy newly created csv file to dhis2 DB container to this path: /var/lib/postgresql/data/init.csv
+4. Create .env file from .sample-env
+5. Run the script:
 ```
-    json_file_path = '<path/to/users.json>'  # Path to JSON file downloaded/converted in step 1
-    api_endpoint = '<https://host_name.com/api/38/users>'  # API endpoint to send DELETE call.
-    username = '<username>'  # API username
-    password = '<password>'  # API user password
-    log_file_path = '<path/to/log_file_path>'  # Path to dhis2 log file 
-    user_to_takeover = '<new_user>'  # User to use as new owner of the object
-    image = '<dhis2_image>'  # dhis2 image name
+python remove_users.py
 ```
-3. Run the script:
-```
-python -u remove_users.py <json_file_path> <api_endpoint> <username> <password> <log_file_path> <user_to_takeover> <image>
-```
-4. Run bash script clean_temp.sh to remove all temp files created
+6. Run bash script clean_temp.sh to remove all temp files created
 ```
 chmod +x clean_temp.sh && bash clean_temp.sh
 ```

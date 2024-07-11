@@ -8,3 +8,6 @@ preprod*
 
 # User exports
 user*
+
+# env files
+.env
