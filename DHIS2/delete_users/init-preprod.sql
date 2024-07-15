@@ -17,9 +17,7 @@ update document set userid=(select userinfoid from userinfo where username='dev.
 update document set lastupdatedby=(select userinfoid from userinfo where username='dev.user') where lastupdatedby in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 
 update trackedentitycomment set lastupdatedby=(select userinfoid from userinfo where username='dev.user') where lastupdatedby in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
-update trackedentitycomment set userid=(select userinfoid from userinfo where username='dev.user') where userid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 update trackedentityinstance set lastupdatedby=(select userinfoid from userinfo where username='dev.user') where lastupdatedby in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
-update trackedentityinstance set userid=(select userinfoid from userinfo where username='dev.user') where userid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 update trackedentityattribute set userid=(select userinfoid from userinfo where username='dev.user') where userid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 update trackedentityattribute set lastupdatedby=(select userinfoid from userinfo where username='dev.user') where lastupdatedby in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 update trackedentitytype set userid=(select userinfoid from userinfo where username='dev.user') where userid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
@@ -57,5 +55,5 @@ update usergroup set lastupdatedby=(select userinfoid from userinfo where userna
 update dataapproval set creator=(select userinfoid from userinfo where username='dev.user') where creator in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 update dataapprovalaudit set creator=(select userinfoid from userinfo where username='dev.user') where creator in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 update dataapprovalworkflow set userid=(select userinfoid from userinfo where username='dev.suer') where userid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
-update attribute set userid=(select userinfoid from userinfo where username='dev.user') where userid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids)););
+update attribute set userid=(select userinfoid from userinfo where username='dev.user') where userid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 update mapview set lastupdatedby=(select userinfoid from userinfo where username='dev.user') where lastupdatedby in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));

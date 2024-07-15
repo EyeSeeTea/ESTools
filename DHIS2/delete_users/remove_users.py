@@ -2,7 +2,7 @@ import json
 import requests
 import subprocess
 import threading
-#import sys
+import sys
 import os
 from dotenv import load_dotenv
 #import time
@@ -26,6 +26,7 @@ def delete_objects(json_file, api_endpoint, username, password, error_json_file_
                 print(f"Object with ID {object_id} deleted successfully")
             elif response.status_code == 409:
                 print(f"Object with ID {object_id} has document attached and can not be deleted!")
+                print()
             elif response.status_code == 404:
                 print(f"Object with ID {object_id} not exists, skiping.")
             else:
@@ -94,7 +95,7 @@ def main():
             # Stop the log thread
             stop_event.set()
             log_thread.join()
-            break
+            sys.exit(0)
 
         # Extract user IDs from failed deletes and create sql query to fix dependencies
         has_errors = execute_create_sql_query_script(temp_log_file, sql_output_file, user_to_takeover)
