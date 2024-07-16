@@ -3,6 +3,7 @@ copy tmp_list_userids from '/var/lib/postgresql/data/init.csv' DELIMITER ',' CSV
 
 select count(*) from userinfo where creatoruserid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 update userinfo set creatoruserid=(select userinfoid from userinfo where username='dev.user') where creatoruserid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
+update userinfo set lastupdatedby=(select userinfoid from userinfo where username='widp.deleted.reference') where lastupdatedby in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 
 select count(*) from fileresource where userid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 select count(*) from fileresource where lastupdatedby in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
