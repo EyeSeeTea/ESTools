@@ -30,7 +30,11 @@ def extract_and_write_queries(temp_log_file, sql_output_file, user_to_takeover):
                         else:
                             query2 = f"update {some_table} set userid=({query_user.strip()}) where userid=({query1.strip()});\n"
 
-                        outfile.write(query2)
+                        lines_present = set()
+                        for l in temp_log_file:
+                            if l not in lines_present:
+                                outfile.write(query2)
+                                lines_present.add(l)
 
 if __name__ == "__main__":
     
