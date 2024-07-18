@@ -84,6 +84,8 @@ update dataentryform set lastupdatedby=(select userinfoid from userinfo where us
 update attribute set userid=(select userinfoid from userinfo where username='dev.user') where userid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 update attribute set lastupdatedby=(select userinfoid from userinfo where username='dev.user') where lastupdatedby in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 update mapview set lastupdatedby=(select userinfoid from userinfo where username='dev.user') where lastupdatedby in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
+update mapview set userid=(select userinfoid from userinfo where username='dev.user') where userid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
+update map set userid=(select userinfoid from userinfo where username='dev.user') where userid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 update map set lastupdatedby=(select userinfoid from userinfo where username='dev.user') where lastupdatedby in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 update maplegendset set userid=(select userinfoid from userinfo where username='dev.user') where userid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 update maplegendset set lastupdatedby=(select userinfoid from userinfo where username='dev.user') where lastupdatedby in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
@@ -104,4 +106,5 @@ update categoryoptiongroup set userid=(select userinfoid from userinfo where use
 update validationnotificationtemplate set lastupdatedby=(select userinfoid from userinfo where username='dev.user') where lastupdatedby in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 update validationrule set userid=(select userinfoid from userinfo where username='dev.user') where userid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
 update validationrulegroup set userid=(select userinfoid from userinfo where username='dev.user') where userid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
-
+update externalfileresource set lastupdatedby=(select userinfoid from userinfo where username='widp.deleted.reference') where lastupdatedby in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
+update pushanalysis set lastupdatedby=(select userinfoid from userinfo where username='widp.deleted.reference') where lastupdatedby in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
