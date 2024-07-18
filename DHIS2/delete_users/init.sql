@@ -1,6 +1,4 @@
 create temp table tmp_list_userids (uid varchar);
-copy tmp_list_userids from '/var/lib/postgresql/data/init.csv' DELIMITER ',' CSV HEADER;
-#### second works in non docker, check if work in docker
 \copy tmp_list_userids from '/var/lib/postgresql/data/init.csv' DELIMITER ',' CSV HEADER;
 
 select count(*) from userinfo where creatoruserid in (select userinfoid from userinfo where uid in (select uid from tmp_list_userids));
