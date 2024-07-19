@@ -5,7 +5,7 @@ import threading
 import sys
 import os
 from dotenv import load_dotenv
-#import time
+import time
 
 load_dotenv()
 stop_event = threading.Event()
@@ -35,7 +35,7 @@ def delete_objects(json_file, api_endpoint, username, password, error_json_file_
                 with open(temp_log_file, 'a') as log:
                     log.write(message + "\n")
                 error_objects.append(item)
-            #time.sleep(1)  # Sleep for 1 second between API calls
+            time.sleep(1)  # Sleep for 1 second between API calls
 
     # Write error objects to a different JSON file if there are users not deleted
     if error_objects:
