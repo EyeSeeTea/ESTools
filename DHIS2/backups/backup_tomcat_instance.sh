@@ -198,7 +198,6 @@ backup() {
         BACKUP_NAME="-${BACKUP_NAME}-${TIMESTAMP}"
     fi
     backup_file_base="BACKUP-${dhis2_instance}-${PERIOD_NAME}${BACKUP_NAME}"
-    echo "${backup_file_base}"
 
     if backup_db "$backup_file_base"; then
         success
@@ -206,14 +205,12 @@ backup() {
         fail 1
     fi
 
-    echo "${backup_file_base}"
     if backup_dhis2_folders "$DHIS2_HOME" "${backup_file_base}"; then
         success
     else
         fail 3
     fi
 
-    echo "$DB_BACKUP_FILE" "$FILES_BACKUP_FILE"
     if [[ ! "$DB_REMOTE_DEST_SERVER" == "" ]]; then
         if copy_backup_to_remote "$DB_BACKUP_FILE" "$FILES_BACKUP_FILE"; then
             success
