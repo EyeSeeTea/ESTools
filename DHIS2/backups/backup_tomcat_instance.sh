@@ -13,7 +13,6 @@ export DHIS2_HOME="/path/to/dhis2_home"
 
 # Global variables
 DB_REMOTE_DEST_SERVER=""
-FAIL=0
 AUDIT=0
 PERIOD_NAME=""
 FORMAT="custom"
@@ -32,6 +31,10 @@ usage() {
     echo "Destination: host"
     echo "Example: ./backup_db.sh --periodicity day-in-week --format custom --destination gva11sucherubi.who.int"
     echo "If no PERIOD is given, then a manual dump is generated with timestamp, otherwise the given period is used in the name of the destination file."
+}
+
+get_timestamp() {
+    echo $(date +%Y-%m-%d_%H%M)
 }
 
 assign_periodicity() {
@@ -135,7 +138,6 @@ fail() {
     local status=$1
 
     echo FAIL
-    FAIL="$status"
     exit "$status"
 }
 
@@ -146,8 +148,8 @@ backup_dhis2_folders() {
     backup_file="${backup_file_base}_dhis2_files.tar.gz"
     FILES_BACKUP_FILE="${backup_file}"
 
-    echo "[${TIMESTAMP}] Generating DHIS2 files backup into ${backup_file}..."
-    tar --exclude="files/apps" -C "$dhis2_home" -czf "$backup_file" "files" "static"
+    echo "[$(get_timestamp)] Generating DHIS2 files backup into ${backup_file}..."
+    tar --exclude="files/apps" -C "$dhis2_home" -czf "${dump_dest_path}/${backup_file}" "files" "static"
 }
 
 backup_db() {
@@ -171,12 +173,12 @@ backup_db() {
     if [ "$FORMAT" = "custom" ]; then
         backup_file="${backup_file_base}_cformat.dump"
         DB_BACKUP_FILE="${backup_file}"
-        echo "[${TIMESTAMP}] Generating custom backup into ${backup_file}..."
+        echo "[$(get_timestamp)] Generating custom backup into ${backup_file}..."
         pg_dump -d "postgresql://${db_user}:${db_pass}@${db_server}:5432/${db_name}" "${pgdump_opts[@]}" -f "${dump_dest_path}/${backup_file}" -Fc
     else
-        backup_file="${backup_file}.sql.tar.gz"
+        backup_file="${backup_file_base}.sql.tar.gz"
         DB_BACKUP_FILE="${backup_file}"
-        echo "[${TIMESTAMP}] Generating plain backup into ${backup_file}"
+        echo "[$(get_timestamp)] Generating plain backup into ${backup_file}"
         pg_dump -d "postgresql://${db_user}:${db_pass}@${db_server}:5432/${db_name}" "${pgdump_opts[@]}" -Fp | gzip >"${dump_dest_path}/${backup_file}"
     fi
 }
@@ -184,7 +186,7 @@ backup_db() {
 copy_backup_to_remote() {
     local db_backup_file=$1 file_backup_file=$2
 
-    echo "[${TIMESTAMP}] CP backup into ${DB_REMOTE_DEST_SERVER}..."
+    echo "[$(get_timestamp)] CP backup into ${DB_REMOTE_DEST_SERVER}..."
     scp "${dump_dest_path}/${db_backup_file}" "${dump_dest_path}/${file_backup_file}" "${DB_REMOTE_DEST_SERVER}:${dump_remote_dest_path}"
 }
 
@@ -193,9 +195,10 @@ backup() {
 
     if [ "$BACKUP_NAME" = "" ] && [ "$PERIOD_NAME" = "" ]; then
         BACKUP_NAME=$NO_NAME
-        BACKUP_NAME=-${BACKUP_NAME}-${TIMESTAMP}
+        BACKUP_NAME="-${BACKUP_NAME}-${TIMESTAMP}"
     fi
     backup_file_base="BACKUP-${dhis2_instance}-${PERIOD_NAME}${BACKUP_NAME}"
+    echo "${backup_file_base}"
 
     if backup_db "$backup_file_base"; then
         success
@@ -203,13 +206,15 @@ backup() {
         fail 1
     fi
 
-    if backup_dhis2_folders "$DHIS2_HOME" "${dump_dest_path}/${backup_file_base}"; then
+    echo "${backup_file_base}"
+    if backup_dhis2_folders "$DHIS2_HOME" "${backup_file_base}"; then
         success
     else
         fail 3
     fi
 
-    if [[ ! "$DB_REMOTE_DEST_SERVER" == "" && "$FAIL" == 0 ]]; then
+    echo "$DB_BACKUP_FILE" "$FILES_BACKUP_FILE"
+    if [[ ! "$DB_REMOTE_DEST_SERVER" == "" ]]; then
         if copy_backup_to_remote "$DB_BACKUP_FILE" "$FILES_BACKUP_FILE"; then
             success
         else
