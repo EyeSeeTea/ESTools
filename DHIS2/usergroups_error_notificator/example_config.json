@@ -1,0 +1,9 @@
+{
+  "control_file": "absolute_path.txt",
+  "log_file": "absolute_path.txt",
+  "server": "https://server/dhis2/",
+  "mode": "ALL",
+  "user_ids": ["uid1", "uid2"],
+  "user": "username",
+  "password": "password"
+}
