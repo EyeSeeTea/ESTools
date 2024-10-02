@@ -7,7 +7,7 @@ import argparse
 changes_detected = False
 server = ""
 auth = ""
-all_users_request = "/api/users.json?fields=id&paging=false"
+all_users_request = "api/users.json?fields=id&paging=false"
 
 
 def get_user_groups(user_id):
@@ -37,28 +37,37 @@ def order_json(value):
     return value
 
 
+def getTime():
+    now = datetime.now()
+    formatted_date_time = now.strftime("%d_%m_%Y_%H_%M")
+    return formatted_date_time
+
+
 def main(config_path):
     global auth
     global server
     global changes_detected
+
+    print("Starting at:" + getTime())
     with open(config_path, 'r') as conf_file:
         config_data = json.load(conf_file)
     server = config_data.get('server')
     mode = config_data.get("mode")
-    if mode == "ALL":
-        user_ids = requests.get(server+all_users_request, auth=auth)
-    else:
-        user_ids = config_data.get("user_ids")
     username = config_data.get('user')
     password = config_data.get('password')
     auth = HTTPBasicAuth(username, password)
+    if mode == "ALL":
+        user_ids = requests.get(server+all_users_request, auth=auth).json()
+    else:
+        user_ids = config_data.get("user_ids")
     control_file = config_data.get("control_file")
     log_file = config_data.get("log_file")
 
-    for user_id in user_ids:
-        if check_user_changes(user_id, control_file, log_file):
+    for user_id in user_ids["users"]:
+        if check_user_changes(user_id["id"], control_file, log_file):
             changes_detected = True
 
+    print(getTime())
     if changes_detected:
         print("USERGROUP ERROR DETECTED")
     else:
@@ -74,8 +83,7 @@ def check_user_changes(user_id, control_users_file, log_file):
         usergroupsvalue = order_json(response_usergroups.json())
 
         if value != usergroupsvalue:
-            now = datetime.now()
-            formatted_date_time = now.strftime("%d_%m_%Y_%H_%M")
+            formatted_date_time = getTime()
             print(value)
             print(usergroupsvalue)
             print(formatted_date_time)
@@ -87,10 +95,14 @@ def check_user_changes(user_id, control_users_file, log_file):
 
             with open(log_file, 'a') as f:
                 f.write(formatted_date_time)
+                f.write("User usergroups")
                 f.write(value)
+                f.write("Usergroups filtered by user")
                 f.write(usergroupsvalue)
                 f.write("-----")
             return True
+        else:
+            print(user_id + " OK")
     return False
 
 
