@@ -1,0 +1,124 @@
+{
+    "custom_items": [
+        {
+            "id": 1,
+            "name": "milestone",
+            "name_plural": null,
+            "description": null,
+            "avatar": {
+                "source": null,
+                "value": null
+            }
+        },
+        {
+            "id": 1001,
+            "name": "Bug",
+            "name_plural": "Bugs",
+            "description": "Identifiez et suivez la résolution de bugs logiciels.",
+            "avatar": {
+                "source": "fas",
+                "value": "bug"
+            }
+        },
+        {
+            "id": 1002,
+            "name": "Ressource",
+            "name_plural": "Ressources",
+            "description": "Allouez et faites le suivi de ressources, comme le personnel ou l’équipement.",
+            "avatar": {
+                "source": "fas",
+                "value": "book"
+            }
+        },
+        {
+            "id": 1003,
+            "name": "Projet",
+            "name_plural": "Projets",
+            "description": "Gérez des ensembles complexes de tâches et de jalons dans un projet.",
+            "avatar": {
+                "source": "fas",
+                "value": "pencil-ruler"
+            }
+        },
+        {
+            "id": 1004,
+            "name": "Meeting",
+            "name_plural": "Meetings",
+            "description": "Meetings in a project",
+            "avatar": {
+                "source": "fas",
+                "value": "headphones"
+            }
+        },
+        {
+            "id": 1005,
+            "name": "Metadata dev",
+            "name_plural": "Metadata dev",
+            "description": "Metadata development task",
+            "avatar": {
+                "source": "fas",
+                "value": "clone"
+            }
+        },
+        {
+            "id": 1006,
+            "name": "Web dev",
+            "name_plural": "Web dev",
+            "description": "Web development task",
+            "avatar": {
+                "source": "fas",
+                "value": "code"
+            }
+        },
+        {
+            "id": 1007,
+            "name": "Management",
+            "name_plural": "Management",
+            "description": "Project Management task",
+            "avatar": {
+                "source": "fas",
+                "value": "users"
+            }
+        },
+        {
+            "id": 1008,
+            "name": "Mobile dev",
+            "name_plural": "Mobile dev",
+            "description": "Mobile development task",
+            "avatar": {
+                "source": "fas",
+                "value": "mobile-screen-button"
+            }
+        },
+        {
+            "id": 1009,
+            "name": "Sysadmin",
+            "name_plural": "Sysadmin",
+            "description": "Sysadmin task",
+            "avatar": {
+                "source": "fas",
+                "value": "coins"
+            }
+        },
+        {
+            "id": 1010,
+            "name": "Training",
+            "name_plural": "Trainings",
+            "description": "Training tasks",
+            "avatar": {
+                "source": "fas",
+                "value": "user-graduate"
+            }
+        },
+        {
+            "id": 1011,
+            "name": "Internal meeting",
+            "name_plural": "Internal meeting",
+            "description": "Internal meetings",
+            "avatar": {
+                "source": "fas",
+                "value": "headphones-simple"
+            }
+        }
+    ]
+}
