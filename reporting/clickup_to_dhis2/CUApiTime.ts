@@ -67,14 +67,12 @@ class TeamTimeTracker {
                   };
                 }
       
-                // Add tracked time to either billable or non-billable total
                 if (task.billable) {
                   listDurations[listId][customItemIdStr].trackedTime.billableDuration += duration;
                 } else {
                   listDurations[listId][customItemIdStr].trackedTime.nonBillableDuration += duration;
                 }
 
-                // Add estimated time to either billable or non-billable total
                 if (task.billable) {
                   listDurations[listId][customItemIdStr].estimatedTime.billableDuration += timeEstimate;
                 } else {
@@ -82,7 +80,6 @@ class TeamTimeTracker {
                 }
               }
 
-              // Add list-level totals to the output
               for (const listId of Object.keys(listDurations)) {
                 const listOutput: any = {
                   listId: listId,
@@ -108,7 +105,6 @@ class TeamTimeTracker {
                 teamDetails.lists.push(listOutput);
               }
   
-              // Add team details to the final output
               output.push(teamDetails);
 
         } else {
@@ -116,15 +112,13 @@ class TeamTimeTracker {
         }
       }
       const jsonOutput = JSON.stringify(output, null, 2);
-      console.log(jsonOutput); // Output in JSON format
+      console.log(jsonOutput);
     }
 }
   
-  // Example Usage
   const clickupApi = new ClickupApi(apiToken);
   const teamTimeTracker = new TeamTimeTracker(clickupApi);
   
-  // Call the async method from the TeamTimeTracker class
   teamTimeTracker.trackTimeForTeams(lastNDays)
     .then(() => console.log('Time tracking complete'))
     .catch(error => console.error('Error tracking time:', error));

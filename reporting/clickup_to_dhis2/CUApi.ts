@@ -10,7 +10,6 @@ const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
 export const apiToken: string = config.apiToken;
 export const lastNDays: number = config.lastNDays;
 
-// Define the base URL for the ClickUp API
 const baseUrl = "https://api.clickup.com/api/v2";
 
 export class ClickupApi {
