@@ -4,3 +4,5 @@ Copy config-sample.json to config.json and add appropriate clickup api key.
 
 yarn install
 yarn start
+
+Note: IDs of Task Types in custom_items.json
