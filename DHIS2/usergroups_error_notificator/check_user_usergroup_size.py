@@ -98,17 +98,17 @@ def save_control_file(date):
     print(f"Saved cache issue date to {control_file}")
 
 
-def compare_states_and_save(last_changed_data, current_data_after_wait, current_data_after_cache_clean):
+def compare_states_and_save(data_before_clean_cache, data_after_cache_clean):
     """Handles the comparison of states and decides when to save."""
-    if states_are_different(last_changed_data, current_data_after_cache_clean):
+    if states_are_different(data_before_clean_cache, data_after_cache_clean):
         print(
             "Clean cache fixed the problem. Saving the new state amd update control file.")
         save_usergroups_to_analyze(get_date())
-        save_state(last_values, current_data_after_cache_clean)
+        save_state(last_values, data_after_cache_clean)
         save_control_file(get_date())
     else:
         print("No cache issue detected. Legitimate changes detected. Saving new state.")
-        save_state(last_values, current_data_after_cache_clean)
+        save_state(last_values, data_after_cache_clean)
 
 
 def save_usergroups_to_analyze(date):
@@ -174,8 +174,7 @@ def main(config_path):
         current_data_after_cache_clean = sorted(
             new_response.json()["users"], key=lambda x: x['id'])
 
-        compare_states_and_save(
-            last_changed_data, current_data, current_data_after_cache_clean)
+        compare_states_and_save(current_data, current_data_after_cache_clean)
     else:
         print("No changes detected.")
 
