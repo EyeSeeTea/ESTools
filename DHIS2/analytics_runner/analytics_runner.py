@@ -7,7 +7,7 @@ CHECK_INTERVAL = 30  # 30 seconds
 
 MAINTENANCE_ENDPOINT = "/api/41/maintenance?analyticsTableClear=true"
 RESOURCE_TABLES_ENDPOINT = "/api/41/resourceTables"
-ANALYTICS_TABLES_ENDPOINT = "/api/41/resourceTables/analytics"
+ANALYTICS_TABLES_ENDPOINT = "/api/41/resourceTables/analytics?skipResourceTables=true"
 
 
 def get_request(url, auth):
