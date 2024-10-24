@@ -1,5 +1,6 @@
 {
   "server": "https://server/dhis2/",
   "user": "username",
-  "password": "password"
+  "password": "password",
+  "folder": "/path/to/save/control/files"
 }
