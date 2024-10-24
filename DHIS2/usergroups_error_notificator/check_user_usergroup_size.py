@@ -132,7 +132,6 @@ def main(config_path):
 
     monitor = DHIS2Monitor(config_data)
 
-    # This is used in the first execution.
     monitor.create_last_changed_file_if_not_exists()
 
     # Check if any user groups were updated recently and exit if true
