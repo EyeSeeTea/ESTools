@@ -83,7 +83,7 @@ assign_periodicity() {
     if [ "$1" = "day-in-week" ] || [ "$1" = "week-in-month" ] || [ "$1" = "month-in-year" ]; then
         case $1 in
         day-in-week)
-            PERIOD_NAME=$(date '+%A' | tr '[:upper:]' '[:lower:]')
+            PERIOD_NAME=$(date '+%A' | tr '[:lower:]' '[:upper:]')
             PERIOD_NAME="DAILY-${PERIOD_NAME}"
             ;;
         week-in-month)
