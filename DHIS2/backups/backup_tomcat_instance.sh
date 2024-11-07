@@ -107,7 +107,7 @@ assign_periodicity() {
             esac
             ;;
         month-in-year)
-            PERIOD_NAME=$(date +"%B" | tr '[:upper:]' '[:lower:]')
+            PERIOD_NAME=$(date +"%B" | tr '[:lower:]' '[:upper:]')
             PERIOD_NAME="MONTHLY-${PERIOD_NAME}"
             ;;
         esac
