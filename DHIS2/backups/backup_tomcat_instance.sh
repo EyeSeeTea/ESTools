@@ -238,12 +238,13 @@ copy_backup_to_remote() {
     local db_backup_file=$1 file_backup_file=$2
     local db_path="${dump_dest_path}/${db_backup_file}" files_path
 
-    if [ "$file_backup_file" != "" ]; then
-        files_path+=" ${dump_dest_path}/${file_backup_file}"
-    fi
-
     echo "[$(get_timestamp)] CP backup into ${DB_REMOTE_DEST_SERVER}..."
-    scp "${db_path}" "${files_path}" "${DB_REMOTE_DEST_SERVER}:${dump_remote_dest_path}"
+    if [ -n "$file_backup_file" ]; then
+        files_path="${dump_dest_path}/${file_backup_file}"
+        scp "${db_path}" "${files_path}" "${DB_REMOTE_DEST_SERVER}:${dump_remote_dest_path}"
+    else
+        scp "${db_path}" "${DB_REMOTE_DEST_SERVER}:${dump_remote_dest_path}"
+    fi
 }
 
 backup() {
