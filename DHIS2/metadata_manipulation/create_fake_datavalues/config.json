@@ -1,0 +1,2650 @@
+{
+	"config": {
+		"output_prefix": "datavalues_cc",
+		"max_data_value_by_file": "7500",
+		"default_category_option_combo": "HllvX50cXC0",
+		"default_attribute_option_combo": "HllvX50cXC0",
+		"user": "",
+		"password": "",
+		"url": "http://localhost:8083"
+	},
+	"datasets": [{
+		"id": "VEM58nY22sO",
+		"period_type": "monthly",
+		"start_date": "2010-01-01",
+		"end_date": "2019-12-01",
+		"data_elements": [{
+			"id": "cE8SDxizo5s",
+			"coc": "oPcWGgS2Liz",
+			"rule": "malaria_suspected_cases"
+		}, {
+			"id": "cE8SDxizo5s",
+			"coc": "rtfSaMjPyq6",
+			"rule": "malaria_suspected_cases"
+		}, {
+			"id": "cE8SDxizo5s",
+			"coc": "hF0pQZIn6Ch",
+			"rule": "malaria_suspected_cases"
+		}, {
+			"id": "v0WZQQ6gKAX",
+			"coc": "oPcWGgS2Liz",
+			"rule": "malaria_cases_admissions"
+		}, {
+			"id": "v0WZQQ6gKAX",
+			"coc": "rtfSaMjPyq6",
+			"rule": "malaria_cases_admissions"
+		}, {
+			"id": "v0WZQQ6gKAX",
+			"coc": "hF0pQZIn6Ch",
+			"rule": "malaria_cases_admissions"
+		},{
+			"id": "Eoc8cDA52c3",
+			"coc": "HllvX50cXC0",
+			"rule": "malaria_cases_24"
+		},{
+			"id": "HHpmA3PRXlJ",
+			"coc": "HllvX50cXC0",
+			"rule": "malaria_cases_guideline"
+		}, {
+			"id": "kRasaq1REFp",
+			"coc": "oPcWGgS2Liz",
+			"rule": "malaria_cases_sum"
+		}, {
+			"id": "kRasaq1REFp",
+			"coc": "rtfSaMjPyq6",
+			"rule": "malaria_cases_sum"
+		}, {
+			"id": "kRasaq1REFp",
+			"coc": "hF0pQZIn6Ch",
+			"rule": "malaria_cases_sum"
+		}, {
+			"id": "GxlrIgMyEf4",
+			"coc": "oPcWGgS2Liz",
+			"rule": "malaria_deaths"
+		}, {
+			"id": "GxlrIgMyEf4",
+			"coc": "rtfSaMjPyq6",
+			"rule": "malaria_deaths"
+		}, {
+			"id": "GxlrIgMyEf4",
+			"coc": "hF0pQZIn6Ch",
+			"rule": "malaria_deaths"
+		}, {
+			"id": "BjDrgVrkBI3",
+			"coc": "oPcWGgS2Liz",
+			"rule": "all_cases_admissions_increase"
+		}, {
+			"id": "BjDrgVrkBI3",
+			"coc": "rtfSaMjPyq6",
+			"rule": "all_cases_admissions_increase"
+		}, {
+			"id": "BjDrgVrkBI3",
+			"coc": "hF0pQZIn6Ch",
+			"rule": "all_cases_admissions_increase"
+		}, {
+			"id": "VL73cqNHxBJ",
+			"coc": "oPcWGgS2Liz",
+			"rule": "All-cause outpatient"
+		}, {
+			"id": "VL73cqNHxBJ",
+			"coc": "rtfSaMjPyq6",
+			"rule": "All-cause outpatient"
+		}, {
+			"id": "VL73cqNHxBJ",
+			"coc": "hF0pQZIn6Ch",
+			"rule": "All-cause outpatient"
+		}, {
+			"id": "SXGjaEobp6V",
+			"coc": "oPcWGgS2Liz",
+			"rule": "all-cause-deaths"
+		}, {
+			"id": "SXGjaEobp6V",
+			"coc": "rtfSaMjPyq6",
+			"rule": "all-cause-deaths"
+		}, {
+			"id": "SXGjaEobp6V",
+			"coc": "hF0pQZIn6Ch",
+			"rule": "all-cause-deaths"
+		}, {
+			"id": "DPNsg3wjxGm",
+			"coc": "b449dBrOSFK",
+			"rule": "tested_micro_0-4"
+		}, {
+			"id": "DPNsg3wjxGm",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "tested_micro_0-4"
+		}, {
+			"id": "DPNsg3wjxGm",
+			"coc": "j21YQgQ9GzP",
+			"rule": "tested_micro_5-14"
+		}, {
+			"id": "DPNsg3wjxGm",
+			"coc": "bWFxj7MF1qR",
+			"rule": "tested_micro_5-14"
+		}, {
+			"id": "DPNsg3wjxGm",
+			"coc": "AroSt3y4ir0",
+			"rule": "tested_micro_15"
+		}, {
+			"id": "DPNsg3wjxGm",
+			"coc": "kQBGXKMwoqR",
+			"rule": "tested_micro_15"
+		}, {
+			"id": "enVf9I39FRZ",
+			"coc": "b449dBrOSFK",
+			"rule": "tested_micro_positive_0-4"
+		},{
+			"id": "enVf9I39FRZ",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "tested_micro_positive_0-4"
+		}, {
+			"id": "enVf9I39FRZ",
+			"coc": "j21YQgQ9GzP",
+			"rule": "tested_micro_positive_5-14"
+		}, {
+			"id": "enVf9I39FRZ",
+			"coc": "bWFxj7MF1qR",
+			"rule": "tested_micro_positive_5-14"
+		}, {
+			"id": "enVf9I39FRZ",
+			"coc": "AroSt3y4ir0",
+			"rule": "tested_micro_positive_15"
+		}, {
+			"id": "enVf9I39FRZ",
+			"coc": "kQBGXKMwoqR",
+			"rule": "tested_micro_positive_15"
+		}, {
+			"id": "pmRn0GsUfr6",
+			"coc": "b449dBrOSFK",
+			"rule": "tested_rdt_0-4"
+		}, {
+			"id": "pmRn0GsUfr6",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "tested_rdt_0-4"
+		}, {
+			"id": "pmRn0GsUfr6",
+			"coc": "j21YQgQ9GzP",
+			"rule": "tested_rdt_5-14"
+		}, {
+			"id": "pmRn0GsUfr6",
+			"coc": "bWFxj7MF1qR",
+			"rule": "tested_rdt_5-14"
+		}, {
+			"id": "pmRn0GsUfr6",
+			"coc": "AroSt3y4ir0",
+			"rule": "tested_rdt_15"
+		},{
+			"id": "pmRn0GsUfr6",
+			"coc": "kQBGXKMwoqR",
+			"rule": "tested_rdt_15"
+		},{
+			"id": "vTRrNdOOT9g",
+			"coc": "b449dBrOSFK",
+			"rule": "tested_rdt_positive_0-4"
+		},{
+			"id": "vTRrNdOOT9g",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "tested_rdt_positive_0-4"
+		}, {
+			"id": "vTRrNdOOT9g",
+			"coc": "j21YQgQ9GzP",
+			"rule": "tested_rdt_positive_5-14"
+		}, {
+			"id": "vTRrNdOOT9g",
+			"coc": "bWFxj7MF1qR",
+			"rule": "tested_rdt_positive_5-14"
+		}, {
+			"id": "vTRrNdOOT9g",
+			"coc": "AroSt3y4ir0",
+			"rule": "tested_rdt_positive_15"
+		}, {
+			"id": "vTRrNdOOT9g",
+			"coc": "kQBGXKMwoqR",
+			"rule": "tested_rdt_positive_15"
+		}, {
+			"id": "IUrl6HtHVQI",
+			"coc": "b449dBrOSFK",
+			"rule": "referenced_percentage_by_sex_falciparum_rdt_0-4"
+		},{
+			"id": "IUrl6HtHVQI",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "referenced_percentage_by_sex_falciparum_rdt_0-4"
+		}, {
+			"id": "IUrl6HtHVQI",
+			"coc": "j21YQgQ9GzP",
+			"rule": "referenced_percentage_by_sex_falciparum_rdt_5-14"
+		}, {
+			"id": "IUrl6HtHVQI",
+			"coc": "bWFxj7MF1qR",
+			"rule": "referenced_percentage_by_sex_falciparum_rdt_5-14"
+		}, {
+			"id": "IUrl6HtHVQI",
+			"coc": "AroSt3y4ir0",
+			"rule": "referenced_percentage_by_sex_falciparum_rdt_15"
+		}, {
+			"id": "IUrl6HtHVQI",
+			"coc": "kQBGXKMwoqR",
+			"rule": "referenced_percentage_by_sex_falciparum_rdt_15"
+		}, {
+			"id": "yVGY0DGVPor",
+			"coc": "b449dBrOSFK",
+			"rule": "referenced_percentage_by_sex_vivax_rdt_0-4"
+		},{
+			"id": "yVGY0DGVPor",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "referenced_percentage_by_sex_vivax_rdt_0-4"
+		}, {
+			"id": "yVGY0DGVPor",
+			"coc": "j21YQgQ9GzP",
+			"rule": "referenced_percentage_by_sex_vivax_rdt_5-14"
+		}, {
+			"id": "yVGY0DGVPor",
+			"coc": "bWFxj7MF1qR",
+			"rule": "referenced_percentage_by_sex_vivax_rdt_5-14"
+		}, {
+			"id": "yVGY0DGVPor",
+			"coc": "AroSt3y4ir0",
+			"rule": "referenced_percentage_by_sex_vivax_rdt_15"
+		}, {
+			"id": "yVGY0DGVPor",
+			"coc": "kQBGXKMwoqR",
+			"rule": "referenced_percentage_by_sex_vivax_rdt_15"
+		},{
+			"id": "llpG8qA0SvG",
+			"coc": "b449dBrOSFK",
+			"rule": "referenced_percentage_by_sex_mixed_rdt_0-4"
+		},{
+			"id": "llpG8qA0SvG",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "referenced_percentage_by_sex_mixed_rdt_0-4"
+		}, {
+			"id": "llpG8qA0SvG",
+			"coc": "j21YQgQ9GzP",
+			"rule": "referenced_percentage_by_sex_mixed_rdt_5-14"
+		}, {
+			"id": "llpG8qA0SvG",
+			"coc": "bWFxj7MF1qR",
+			"rule": "referenced_percentage_by_sex_mixed_rdt_5-14"
+		}, {
+			"id": "llpG8qA0SvG",
+			"coc": "AroSt3y4ir0",
+			"rule": "referenced_percentage_by_sex_mixed_rdt_15"
+		}, {
+			"id": "llpG8qA0SvG",
+			"coc": "kQBGXKMwoqR",
+			"rule": "referenced_percentage_by_sex_mixed_rdt_15"
+		},{
+			"id": "jvjJ901K56K",
+			"coc": "b449dBrOSFK",
+			"rule": "referenced_percentage_by_sex_falciparum_micro_0-4"
+		},{
+			"id": "jvjJ901K56K",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "referenced_percentage_by_sex_falciparum_micro_0-4"
+		}, {
+			"id": "jvjJ901K56K",
+			"coc": "j21YQgQ9GzP",
+			"rule": "referenced_percentage_by_sex_falciparum_micro_5-14"
+		}, {
+			"id": "jvjJ901K56K",
+			"coc": "bWFxj7MF1qR",
+			"rule": "referenced_percentage_by_sex_falciparum_micro_5-14"
+		}, {
+			"id": "jvjJ901K56K",
+			"coc": "AroSt3y4ir0",
+			"rule": "referenced_percentage_by_sex_falciparum_micro_15"
+		}, {
+			"id": "jvjJ901K56K",
+			"coc": "kQBGXKMwoqR",
+			"rule": "referenced_percentage_by_sex_falciparum_micro_15"
+		}, {
+			"id": "yHS1RqIFeD7",
+			"coc": "b449dBrOSFK",
+			"rule": "referenced_percentage_by_sex_vivax_micro_0-4"
+		},{
+			"id": "yHS1RqIFeD7",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "referenced_percentage_by_sex_vivax_micro_0-4"
+		}, {
+			"id": "yHS1RqIFeD7",
+			"coc": "j21YQgQ9GzP",
+			"rule": "referenced_percentage_by_sex_vivax_micro_5-14"
+		}, {
+			"id": "yHS1RqIFeD7",
+			"coc": "bWFxj7MF1qR",
+			"rule": "referenced_percentage_by_sex_vivax_micro_5-14"
+		}, {
+			"id": "yHS1RqIFeD7",
+			"coc": "AroSt3y4ir0",
+			"rule": "referenced_percentage_by_sex_vivax_micro_15"
+		}, {
+			"id": "yHS1RqIFeD7",
+			"coc": "kQBGXKMwoqR",
+			"rule": "referenced_percentage_by_sex_vivax_micro_15"
+		},{
+			"id": "lgDGha7OO9o",
+			"coc": "b449dBrOSFK",
+			"rule": "referenced_percentage_by_sex_mixed_micro_0-4"
+		},{
+			"id": "lgDGha7OO9o",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "referenced_percentage_by_sex_mixed_micro_0-4"
+		}, {
+			"id": "lgDGha7OO9o",
+			"coc": "j21YQgQ9GzP",
+			"rule": "referenced_percentage_by_sex_mixed_micro_5-14"
+		}, {
+			"id": "lgDGha7OO9o",
+			"coc": "bWFxj7MF1qR",
+			"rule": "referenced_percentage_by_sex_mixed_micro_5-14"
+		}, {
+			"id": "lgDGha7OO9o",
+			"coc": "AroSt3y4ir0",
+			"rule": "referenced_percentage_by_sex_mixed_micro_15"
+		}, {
+			"id": "lgDGha7OO9o",
+			"coc": "kQBGXKMwoqR",
+			"rule": "referenced_percentage_by_sex_mixed_micro_15"
+		},{
+			"id": "iMcQ1MedqGo",
+			"coc": "b449dBrOSFK",
+			"rule": "referenced_percentage_by_sex_ovale_micro_0-4"
+		},{
+			"id": "iMcQ1MedqGo",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "referenced_percentage_by_sex_ovale_micro_0-4"
+		}, {
+			"id": "iMcQ1MedqGo",
+			"coc": "j21YQgQ9GzP",
+			"rule": "referenced_percentage_by_sex_ovale_micro_5-14"
+		}, {
+			"id": "iMcQ1MedqGo",
+			"coc": "bWFxj7MF1qR",
+			"rule": "referenced_percentage_by_sex_ovale_micro_5-14"
+		}, {
+			"id": "iMcQ1MedqGo",
+			"coc": "AroSt3y4ir0",
+			"rule": "referenced_percentage_by_sex_ovale_micro_15"
+		}, {
+			"id": "iMcQ1MedqGo",
+			"coc": "kQBGXKMwoqR",
+			"rule": "referenced_percentage_by_sex_ovale_micro_15"
+		},{
+			"id": "WNcIBqTodHr",
+			"coc": "b449dBrOSFK",
+			"rule": "referenced_percentage_by_sex_malariae_micro_0-4"
+		},{
+			"id": "WNcIBqTodHr",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "referenced_percentage_by_sex_malariae_micro_0-4"
+		}, {
+			"id": "WNcIBqTodHr",
+			"coc": "j21YQgQ9GzP",
+			"rule": "referenced_percentage_by_sex_malariae_micro_5-14"
+		}, {
+			"id": "WNcIBqTodHr",
+			"coc": "bWFxj7MF1qR",
+			"rule": "referenced_percentage_by_sex_malariae_micro_5-14"
+		}, {
+			"id": "WNcIBqTodHr",
+			"coc": "AroSt3y4ir0",
+			"rule": "referenced_percentage_by_sex_malariae_micro_15"
+		}, {
+			"id": "WNcIBqTodHr",
+			"coc": "kQBGXKMwoqR",
+			"rule": "referenced_percentage_by_sex_malariae_micro_15"
+		},{
+			"id": "QJUcVI1zY5y",
+			"coc": "b449dBrOSFK",
+			"rule": "referenced_percentage_by_sex_knowlesi_micro_0-4"
+		},{
+			"id": "QJUcVI1zY5y",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "referenced_percentage_by_sex_knowlesi_micro_0-4"
+		}, {
+			"id": "QJUcVI1zY5y",
+			"coc": "j21YQgQ9GzP",
+			"rule": "referenced_percentage_by_sex_knowlesi_micro_5-14"
+		}, {
+			"id": "QJUcVI1zY5y",
+			"coc": "bWFxj7MF1qR",
+			"rule": "referenced_percentage_by_sex_knowlesi_micro_5-14"
+		}, {
+			"id": "QJUcVI1zY5y",
+			"coc": "AroSt3y4ir0",
+			"rule": "referenced_percentage_by_sex_knowlesi_micro_15"
+		}, {
+			"id": "QJUcVI1zY5y",
+			"coc": "kQBGXKMwoqR",
+			"rule": "referenced_percentage_by_sex_knowlesi_micro_15"
+		},{
+			"id": "jtyuEfbNbkb",
+			"coc": "b449dBrOSFK",
+			"rule": "referenced_percentage_by_sex_otherspecies_micro_0-4"
+		},{
+			"id": "jtyuEfbNbkb",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "referenced_percentage_by_sex_otherspecies_micro_0-4"
+		}, {
+			"id": "jtyuEfbNbkb",
+			"coc": "j21YQgQ9GzP",
+			"rule": "referenced_percentage_by_sex_otherspecies_micro_5-14"
+		}, {
+			"id": "jtyuEfbNbkb",
+			"coc": "bWFxj7MF1qR",
+			"rule": "referenced_percentage_by_sex_otherspecies_micro_5-14"
+		}, {
+			"id": "jtyuEfbNbkb",
+			"coc": "AroSt3y4ir0",
+			"rule": "referenced_percentage_by_sex_otherspecies_micro_15"
+		}, {
+			"id": "jtyuEfbNbkb",
+			"coc": "kQBGXKMwoqR",
+			"rule": "referenced_percentage_by_sex_otherspecies_micro_15"
+		},{
+			"id": "ENIbHvgpaQR",
+			"coc": "HllvX50cXC0",
+			"rule": "rand_adult"
+		}, {
+			"id": "mIefFUftPpa",
+			"coc": "HllvX50cXC0",
+			"rule": "rand_children"
+		}, {
+			"id": "kc07jdV2C3B",
+			"coc": "HllvX50cXC0",
+			"rule": "rand_infant"
+		}, {
+			"id": "vfIbhthFgHT",
+			"coc": "HllvX50cXC0",
+			"rule": "rand_toddlers"
+		}, {
+			"id": "hEQeamIKO5z",
+			"coc": "HllvX50cXC0",
+			"rule": "rand_artesunate"
+		}, {
+			"id": "CHM9i82Xvid",
+			"coc": "HllvX50cXC0",
+			"rule": "rand_primaquine"
+		}, {
+			"id": "Md3xk3vlABx",
+			"coc": "HllvX50cXC0",
+			"rule": "rand_malaria"
+		}, {
+			"id": "g6T1sC2ZSFD",
+			"coc": "HllvX50cXC0",
+			"rule": "rand_sulf"
+		}, {
+			"id": "yMIgzlV9sES",
+			"coc": "HllvX50cXC0",
+			"rule": "rand_llin"
+		},
+			{
+			"id": "d7vgVlFnviU",
+			"coc": "HllvX50cXC0",
+			"rule": "Malaria_suspected_pregnant"
+		}, {
+			"id": "S9nIxTMWplW",
+			"coc": "HllvX50cXC0",
+			"rule": "Malaria_inpatients_pregnant"
+		}, {
+			"id": "rY7FJXnqwkM",
+			"coc": "HllvX50cXC0",
+			"rule": "Malaria_outpatient_pregnant"
+		}, {
+			"id": "qokS11KT7gD",
+			"coc": "HllvX50cXC0",
+			"rule": "malaria_deaths_pregnant"
+		}, {
+			"id": "Ppc51eaCPHb",
+			"coc": "b449dBrOSFK",
+			"rule": "investigated_0-4"
+		}, {
+			"id": "Ppc51eaCPHb",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "investigated_0-4"
+		}, {
+			"id": "Ppc51eaCPHb",
+			"coc": "j21YQgQ9GzP",
+			"rule": "investigated_5-14"
+		}, {
+			"id": "Ppc51eaCPHb",
+			"coc": "bWFxj7MF1qR",
+			"rule": "investigated_5-14"
+		}, {
+			"id": "Ppc51eaCPHb",
+			"coc": "AroSt3y4ir0",
+			"rule": "investigated_15"
+		}, {
+			"id": "Ppc51eaCPHb",
+			"coc": "kQBGXKMwoqR",
+			"rule": "investigated_15"
+		}, {
+			"id": "a4Cw4iPcMrY",
+			"coc": "b449dBrOSFK",
+			"rule": "classified_0-4"
+		}, {
+			"id": "a4Cw4iPcMrY",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "classified_0-4"
+		}, {
+			"id": "a4Cw4iPcMrY",
+			"coc": "j21YQgQ9GzP",
+			"rule": "classified_5-14"
+		}, {
+			"id": "a4Cw4iPcMrY",
+			"coc": "bWFxj7MF1qR",
+			"rule": "classified_5-14"
+		}, {
+			"id": "a4Cw4iPcMrY",
+			"coc": "AroSt3y4ir0",
+			"rule": "classified_15"
+		}, {
+			"id": "a4Cw4iPcMrY",
+			"coc": "kQBGXKMwoqR",
+			"rule": "classified_15"
+		}, {
+			"id": "HMUc4RajgaC",
+			"coc": "b449dBrOSFK",
+			"rule": "local_0-4"
+		}, {
+			"id": "HMUc4RajgaC",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "local_0-4"
+		}, {
+			"id": "HMUc4RajgaC",
+			"coc": "j21YQgQ9GzP",
+			"rule": "local_5-14"
+		}, {
+			"id": "HMUc4RajgaC",
+			"coc": "bWFxj7MF1qR",
+			"rule": "local_5-14"
+		}, {
+			"id": "HMUc4RajgaC",
+			"coc": "AroSt3y4ir0",
+			"rule": "local_15"
+		}, {
+			"id": "HMUc4RajgaC",
+			"coc": "kQBGXKMwoqR",
+			"rule": "local_15"
+		}, {
+			"id": "koNkg93tcFv",
+			"coc": "b449dBrOSFK",
+			"rule": "imported_0-4"
+		}, {
+			"id": "koNkg93tcFv",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "imported_0-4"
+		}, {
+			"id": "koNkg93tcFv",
+			"coc": "j21YQgQ9GzP",
+			"rule": "imported_5-14"
+		}, {
+			"id": "koNkg93tcFv",
+			"coc": "bWFxj7MF1qR",
+			"rule": "imported_5-14"
+		}, {
+			"id": "koNkg93tcFv",
+			"coc": "AroSt3y4ir0",
+			"rule": "imported_15"
+		}, {
+			"id": "koNkg93tcFv",
+			"coc": "kQBGXKMwoqR",
+			"rule": "imported_15"
+		},{
+			"id": "DYpakDmCvNG",
+			"coc": "b449dBrOSFK",
+			"rule": "indigenous_0-4"
+		}, {
+			"id": "DYpakDmCvNG",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "indigenous_0-4"
+		}, {
+			"id": "DYpakDmCvNG",
+			"coc": "j21YQgQ9GzP",
+			"rule": "indigenous_5-14"
+		}, {
+			"id": "DYpakDmCvNG",
+			"coc": "bWFxj7MF1qR",
+			"rule": "indigenous_5-14"
+		}, {
+			"id": "DYpakDmCvNG",
+			"coc": "AroSt3y4ir0",
+			"rule": "indigenous_15"
+		}, {
+			"id": "DYpakDmCvNG",
+			"coc": "kQBGXKMwoqR",
+			"rule": "indigenous_15"
+		},{
+			"id": "EQOuTaSaFOn",
+			"coc": "b449dBrOSFK",
+			"rule": "introduced_0-4"
+		}, {
+			"id": "EQOuTaSaFOn",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "introduced_0-4"
+		}, {
+			"id": "EQOuTaSaFOn",
+			"coc": "j21YQgQ9GzP",
+			"rule": "introduced_5-14"
+		}, {
+			"id": "EQOuTaSaFOn",
+			"coc": "bWFxj7MF1qR",
+			"rule": "introduced_5-14"
+		}, {
+			"id": "EQOuTaSaFOn",
+			"coc": "AroSt3y4ir0",
+			"rule": "introduced_15"
+		}, {
+			"id": "EQOuTaSaFOn",
+			"coc": "kQBGXKMwoqR",
+			"rule": "introduced_15"
+		},{
+			"id": "lY309oiMifk",
+			"coc": "b449dBrOSFK",
+			"rule": "induced_0-4"
+		}, {
+			"id": "lY309oiMifk",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "induced_0-4"
+		}, {
+			"id": "lY309oiMifk",
+			"coc": "j21YQgQ9GzP",
+			"rule": "induced_5-14"
+		}, {
+			"id": "lY309oiMifk",
+			"coc": "bWFxj7MF1qR",
+			"rule": "induced_5-14"
+		}, {
+			"id": "lY309oiMifk",
+			"coc": "AroSt3y4ir0",
+			"rule": "induced_15"
+		}, {
+			"id": "lY309oiMifk",
+			"coc": "kQBGXKMwoqR",
+			"rule": "induced_15"
+		},{
+			"id": "QFz6w4llj0h",
+			"coc": "b449dBrOSFK",
+			"rule": "relapsing_0-4"
+		}, {
+			"id": "QFz6w4llj0h",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "relapsing_0-4"
+		}, {
+			"id": "QFz6w4llj0h",
+			"coc": "j21YQgQ9GzP",
+			"rule": "relapsing_5-14"
+		}, {
+			"id": "QFz6w4llj0h",
+			"coc": "bWFxj7MF1qR",
+			"rule": "relapsing_5-14"
+		}, {
+			"id": "QFz6w4llj0h",
+			"coc": "AroSt3y4ir0",
+			"rule": "relapsing_15"
+		}, {
+			"id": "QFz6w4llj0h",
+			"coc": "kQBGXKMwoqR",
+			"rule": "relapsing_15"
+		}, {
+			"id": "TMaDgAn60aR",
+			"coc": "b449dBrOSFK",
+			"rule": "recrudescent_0-4"
+		}, {
+			"id": "TMaDgAn60aR",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "recrudescent_0-4"
+		}, {
+			"id": "TMaDgAn60aR",
+			"coc": "j21YQgQ9GzP",
+			"rule": "recrudescent_5-14"
+		}, {
+			"id": "TMaDgAn60aR",
+			"coc": "bWFxj7MF1qR",
+			"rule": "recrudescent_5-14"
+		}, {
+			"id": "TMaDgAn60aR",
+			"coc": "AroSt3y4ir0",
+			"rule": "recrudescent_15"
+		}, {
+			"id": "TMaDgAn60aR",
+			"coc": "kQBGXKMwoqR",
+			"rule": "recrudescent_15"
+		},
+		{
+			"id": "KNAg6VC23us",
+			"coc": "b449dBrOSFK",
+			"rule": "symptoms_0-4"
+		}, {
+			"id": "KNAg6VC23us",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "symptoms_0-4"
+		}, {
+			"id": "KNAg6VC23us",
+			"coc": "j21YQgQ9GzP",
+			"rule": "symptoms_5-14"
+		}, {
+			"id": "KNAg6VC23us",
+			"coc": "bWFxj7MF1qR",
+			"rule": "symptoms_5-14"
+		}, {
+			"id": "KNAg6VC23us",
+			"coc": "AroSt3y4ir0",
+			"rule": "symptoms_15"
+		}, {
+			"id": "KNAg6VC23us",
+			"coc": "kQBGXKMwoqR",
+			"rule": "symptoms_15"
+		},
+		{
+			"id": "a2hiTowGc0N",
+			"coc": "b449dBrOSFK",
+			"rule": "foci_0-4"
+		}, {
+			"id": "a2hiTowGc0N",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "foci_0-4"
+		}, {
+			"id": "a2hiTowGc0N",
+			"coc": "j21YQgQ9GzP",
+			"rule": "foci_5-14"
+		}, {
+			"id": "a2hiTowGc0N",
+			"coc": "bWFxj7MF1qR",
+			"rule": "foci_5-14"
+		}, {
+			"id": "a2hiTowGc0N",
+			"coc": "AroSt3y4ir0",
+			"rule": "foci_15"
+		}, {
+			"id": "a2hiTowGc0N",
+			"coc": "kQBGXKMwoqR",
+			"rule": "foci_15"
+		},
+		{
+			"id": "ra1VTaKQK60",
+			"coc": "b449dBrOSFK",
+			"rule": "foci_positive_0-4"
+		}, {
+			"id": "ra1VTaKQK60",
+			"coc": "t5FrQ0GTvGf",
+			"rule": "foci_positive_0-4"
+		}, {
+			"id": "ra1VTaKQK60",
+			"coc": "j21YQgQ9GzP",
+			"rule": "foci_positive_5-14"
+		}, {
+			"id": "ra1VTaKQK60",
+			"coc": "bWFxj7MF1qR",
+			"rule": "foci_positive_5-14"
+		}, {
+			"id": "ra1VTaKQK60",
+			"coc": "AroSt3y4ir0",
+			"rule": "foci_positive_15"
+		}, {
+			"id": "ra1VTaKQK60",
+			"coc": "kQBGXKMwoqR",
+			"rule": "foci_positive_15"
+		}],
+		"orgunits": [{
+			"id": "E4h5WBOg71F"
+		}]
+	}, {
+		"id": "qNtxTrp56wV",
+		"period_type": "yearly",
+		"start_date": "2010-01-01",
+		"end_date": "2019-12-01",
+		"data_elements": [{
+			"id": "dFaBg0HpoIL",
+			"coc": "oPcWGgS2Liz",
+			"rule": "total_by_age"
+		}, {
+			"id": "dFaBg0HpoIL",
+			"coc": "rtfSaMjPyq6",
+			"rule": "total_by_age"
+		}, {
+			"id": "dFaBg0HpoIL",
+			"coc": "hF0pQZIn6Ch",
+			"rule": "total_by_age"
+		}, {
+			"id": "NywGy6uMS5r",
+			"coc": "HllvX50cXC0",
+			"rule": "people_protected_by_irs"
+		}
+
+		],
+		"orgunits": [{
+			"id": "E4h5WBOg71F"
+		}]
+	}, {
+		"id": "L6JenrS1kgt",
+		"period_type": "daily",
+		"start_date": "2010-11-01",
+		"end_date": "2019-12-10",
+		"data_elements": [{
+				"id": "uWYGA1xiwuZ",
+				"coc": "HllvX50cXC0",
+				"aoc": "HllvX50cXC0",
+				"rule": "rain"
+			},
+			{
+				"id": "RSJpUZqMoxC",
+				"rule": "temp"
+			}
+		],
+		"orgunits": [{
+			"id": "E4h5WBOg71F"
+		}]
+	}],
+	"rules": [
+		{
+			"rule_key": "malaria_cases_sum",
+			"type": "referenced_sum",
+			"items": [{
+				"referenced_uid": "v0WZQQ6gKAX",
+				"referenced_coc": "oPcWGgS2Liz",
+				"referenced_key": "malaria_cases_admissions",
+				"referenced_uid2": "cE8SDxizo5s",
+				"referenced_coc2": "oPcWGgS2Liz",
+				"referenced_key2": "malaria_suspected_cases",
+				"active_data_element": "kRasaq1REFp",
+				"active_coc": "oPcWGgS2Liz"
+			},
+				{
+				"referenced_uid": "v0WZQQ6gKAX",
+				"referenced_coc": "rtfSaMjPyq6",
+				"referenced_key": "malaria_cases_admissions",
+				"referenced_uid2": "cE8SDxizo5s",
+				"referenced_coc2": "rtfSaMjPyq6",
+				"referenced_key2": "malaria_suspected_cases",
+				"active_data_element": "kRasaq1REFp",
+				"active_coc": "rtfSaMjPyq6"
+			},
+				{
+				"referenced_uid": "v0WZQQ6gKAX",
+				"referenced_coc": "hF0pQZIn6Ch",
+				"referenced_key": "malaria_cases_admissions",
+				"referenced_uid2": "cE8SDxizo5s",
+				"referenced_coc2": "hF0pQZIn6Ch",
+				"referenced_key2": "malaria_suspected_cases",
+				"active_data_element": "kRasaq1REFp",
+				"active_coc": "hF0pQZIn6Ch"
+			}]
+		},
+		{
+			"rule_key": "all_cases_admissions_increase",
+			"type": "referenced_sum_with_random_limits",
+			"limit_up": "1000",
+			"limit_down": "500",
+			"items": [{
+					"referenced_uid": "v0WZQQ6gKAX",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "malaria_cases_admissions",
+					"referenced_uid2": "cE8SDxizo5s",
+					"referenced_coc2": "oPcWGgS2Liz",
+					"referenced_key2": "malaria_suspected_cases",
+					"active_data_element": "BjDrgVrkBI3",
+					"active_coc": "oPcWGgS2Liz"
+				},
+				{
+					"referenced_uid": "v0WZQQ6gKAX",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "malaria_cases_admissions",
+					"referenced_uid2": "cE8SDxizo5s",
+					"referenced_coc2": "rtfSaMjPyq6",
+					"referenced_key2": "malaria_suspected_cases",
+					"active_data_element": "BjDrgVrkBI3",
+					"active_coc": "rtfSaMjPyq6"
+				},
+				{
+					"referenced_uid": "v0WZQQ6gKAX",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "malaria_cases_admissions",
+					"referenced_uid2": "cE8SDxizo5s",
+					"referenced_coc2": "hF0pQZIn6Ch",
+					"referenced_key2": "malaria_suspected_cases",
+					"active_data_element": "BjDrgVrkBI3",
+					"active_coc": "hF0pQZIn6Ch"
+				}
+			]
+		},
+		{
+			"rule_key": "All-cause outpatient",
+			"type": "referenced_with_random_limits",
+			"limit_up": "10000",
+			"limit_down": "500",
+			"items": [{
+					"referenced_uid": "BjDrgVrkBI3",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "all_cases_admissions_increase",
+					"active_data_element": "VL73cqNHxBJ",
+					"active_coc": "oPcWGgS2Liz"
+				},
+				{
+					"referenced_uid": "BjDrgVrkBI3",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "all_cases_admissions_increase",
+					"active_data_element": "VL73cqNHxBJ",
+					"active_coc": "rtfSaMjPyq6"
+				},
+				{
+					"referenced_uid": "BjDrgVrkBI3",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "all_cases_admissions_increase",
+					"active_data_element": "VL73cqNHxBJ",
+					"active_coc": "hF0pQZIn6Ch"
+				}
+			]
+		},
+		{
+			"rule_key": "all-cause-deaths",
+			"type": "referenced_percentage",
+			"percentage": "4",
+			"items": [{
+					"referenced_uid": "BjDrgVrkBI3",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "all_cases_admissions_increase",
+					"active_data_element": "SXGjaEobp6V",
+					"active_coc": "oPcWGgS2Liz"
+				},
+				{
+					"referenced_uid": "BjDrgVrkBI3",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "all_cases_admissions_increase",
+					"active_data_element": "SXGjaEobp6V",
+					"active_coc": "rtfSaMjPyq6"
+				},
+				{
+					"referenced_uid": "BjDrgVrkBI3",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "all_cases_admissions_increase",
+					"active_data_element": "SXGjaEobp6V",
+					"active_coc": "hF0pQZIn6Ch"
+				}
+			]
+		},
+		{
+			"rule_key": "Malaria_suspected_pregnant",
+			"type": "referenced_percentage_with_cocs",
+			"percentage": "57",
+			"items": [{
+					"referenced_uid": "v0WZQQ6gKAX",
+					"referenced_key": "malaria_cases_admissions",
+					"referenced_cocs": [
+						{
+							"id": "oPcWGgS2Liz","id": "rtfSaMjPyq6","id": "hF0pQZIn6Ch"
+						}
+					],
+					"active_data_element": "d7vgVlFnviU",
+					"active_coc": "HllvX50cXC0"
+			}
+			]
+		},
+		{
+			"rule_key": "Malaria_outpatient_pregnant",
+			"type": "referenced_percentage_with_cocs",
+			"percentage": "27",
+			"items": [{
+					"referenced_uid": "v0WZQQ6gKAX",
+					"referenced_key": "malaria_cases_admissions",
+					"referenced_cocs": [
+						{
+							"id": "oPcWGgS2Liz","id": "rtfSaMjPyq6","id": "hF0pQZIn6Ch"
+						}
+					],
+					"active_data_element": "rY7FJXnqwkM",
+					"active_coc": "HllvX50cXC0"
+			}
+			]
+		},
+		{
+			"rule_key": "Malaria_inpatients_pregnant",
+			"type": "referenced_percentage_with_cocs",
+			"percentage": "7",
+			"items": [{
+					"referenced_uid": "v0WZQQ6gKAX",
+					"referenced_key": "malaria_cases_admissions",
+					"referenced_cocs": [
+						{
+							"id": "oPcWGgS2Liz","id": "rtfSaMjPyq6","id": "hF0pQZIn6Ch"
+						}
+					],
+					"active_data_element": "S9nIxTMWplW",
+					"active_coc": "HllvX50cXC0"
+			}
+			]
+		},
+		{
+			"rule_key": "tested_micro_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "35",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "DPNsg3wjxGm",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "70",
+					"female_percent": "30"
+				}
+			]
+		},
+		{
+			"rule_key": "tested_micro_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "35",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "DPNsg3wjxGm",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "70",
+					"female_percent": "30"
+				}
+			]
+		},
+		{
+			"rule_key": "tested_micro_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "35",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "DPNsg3wjxGm",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "70",
+					"female_percent": "30"
+				}
+			]
+		},
+		{
+			"rule_key": "tested_micro_positive_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "65",
+			"items": [{
+					"referenced_uid": "DPNsg3wjxGm",
+					"referenced_key": "tested_micro_0-4",
+					"active_data_element": "enVf9I39FRZ",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "70",
+					"female_percent": "30"
+				}
+			]
+		},
+		{
+			"rule_key": "tested_micro_positive_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "65",
+			"items": [
+				{
+					"referenced_uid": "DPNsg3wjxGm",
+					"referenced_key": "tested_micro_5-14",
+					"active_data_element": "enVf9I39FRZ",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "30",
+					"female_percent": "70"
+				}
+			]
+		},
+		{
+			"rule_key": "tested_micro_positive_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "65",
+			"items": [
+				{
+					"referenced_uid": "DPNsg3wjxGm",
+					"referenced_key": "tested_micro_15",
+					"active_data_element": "enVf9I39FRZ",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "60",
+					"female_percent": "40"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_falciparum_micro_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "90",
+			"items": [{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_0-4",
+					"active_data_element": "jvjJ901K56K",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_falciparum_micro_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "90",
+			"items": [
+				{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_5-14",
+					"active_data_element": "jvjJ901K56K",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_falciparum_micro_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "90",
+			"items": [
+				{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_15",
+					"active_data_element": "jvjJ901K56K",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_vivax_micro_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "5",
+			"items": [{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_0-4",
+					"active_data_element": "yHS1RqIFeD7",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_vivax_micro_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "5",
+			"items": [
+				{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_5-14",
+					"active_data_element": "yHS1RqIFeD7",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_vivax_micro_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "5",
+			"items": [
+				{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_15",
+					"active_data_element": "yHS1RqIFeD7",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_mixed_micro_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_0-4",
+					"active_data_element": "lgDGha7OO9o",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_mixed_micro_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [
+				{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_5-14",
+					"active_data_element": "lgDGha7OO9o",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_mixed_micro_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [
+				{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_15",
+					"active_data_element": "lgDGha7OO9o",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_ovale_micro_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_0-4",
+					"active_data_element": "iMcQ1MedqGo",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_ovale_micro_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [
+				{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_5-14",
+					"active_data_element": "iMcQ1MedqGo",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_ovale_micro_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [
+				{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_15",
+					"active_data_element": "iMcQ1MedqGo",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_malariae_micro_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_0-4",
+					"active_data_element": "WNcIBqTodHr",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_malariae_micro_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [
+				{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_5-14",
+					"active_data_element": "WNcIBqTodHr",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_malariae_micro_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [
+				{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_15",
+					"active_data_element": "WNcIBqTodHr",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_knowlesi_micro_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_0-4",
+					"active_data_element": "QJUcVI1zY5y",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_knowlesi_micro_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [
+				{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_5-14",
+					"active_data_element": "QJUcVI1zY5y",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_knowlesi_micro_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [
+				{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_15",
+					"active_data_element": "QJUcVI1zY5y",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_otherspecies_micro_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_0-4",
+					"active_data_element": "jtyuEfbNbkb",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_otherspecies_micro_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [
+				{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_5-14",
+					"active_data_element": "jtyuEfbNbkb",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_otherspecies_micro_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [
+				{
+					"referenced_uid": "enVf9I39FRZ",
+					"referenced_key": "tested_micro_positive_15",
+					"active_data_element": "jtyuEfbNbkb",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "tested_rdt_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "65",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "pmRn0GsUfr6",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "70",
+					"female_percent": "30"
+				}
+			]
+		},
+		{
+			"rule_key": "tested_rdt_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "65",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "pmRn0GsUfr6",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "70",
+					"female_percent": "30"
+				}
+			]
+		},
+		{
+			"rule_key": "tested_rdt_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "100",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "pmRn0GsUfr6",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "70",
+					"female_percent": "30"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_falciparum_rdt_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "95",
+			"items": [{
+					"referenced_uid": "vTRrNdOOT9g",
+					"referenced_key": "tested_rdt_positive_0-4",
+					"active_data_element": "IUrl6HtHVQI",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_falciparum_rdt_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "95",
+			"items": [
+				{
+					"referenced_uid": "vTRrNdOOT9g",
+					"referenced_key": "tested_rdt_positive_5-14",
+					"active_data_element": "IUrl6HtHVQI",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_falciparum_rdt_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "95",
+			"items": [
+				{
+					"referenced_uid": "vTRrNdOOT9g",
+					"referenced_key": "tested_rdt_positive_15",
+					"active_data_element": "IUrl6HtHVQI",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_vivax_rdt_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "4",
+			"items": [{
+					"referenced_uid": "vTRrNdOOT9g",
+					"referenced_key": "tested_rdt_positive_0-4",
+					"active_data_element": "yVGY0DGVPor",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_vivax_rdt_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "4",
+			"items": [
+				{
+					"referenced_uid": "vTRrNdOOT9g",
+					"referenced_key": "tested_rdt_positive_5-14",
+					"active_data_element": "yVGY0DGVPor",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_vivax_rdt_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "4",
+			"items": [
+				{
+					"referenced_uid": "vTRrNdOOT9g",
+					"referenced_key": "tested_rdt_positive_15",
+					"active_data_element": "yVGY0DGVPor",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_mixed_rdt_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [{
+					"referenced_uid": "vTRrNdOOT9g",
+					"referenced_key": "tested_rdt_positive_0-4",
+					"active_data_element": "llpG8qA0SvG",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_mixed_rdt_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [
+				{
+					"referenced_uid": "vTRrNdOOT9g",
+					"referenced_key": "tested_rdt_positive_5-14",
+					"active_data_element": "llpG8qA0SvG",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "referenced_percentage_by_sex_mixed_rdt_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "1",
+			"items": [
+				{
+					"referenced_uid": "vTRrNdOOT9g",
+					"referenced_key": "tested_rdt_positive_15",
+					"active_data_element": "llpG8qA0SvG",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "100",
+					"female_percent": "100"
+				}
+			]
+		},
+		{
+			"rule_key": "tested_rdt_positive_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "65",
+			"items": [{
+					"referenced_uid": "pmRn0GsUfr6",
+					"referenced_key": "tested_rdt_0-4",
+					"active_data_element": "vTRrNdOOT9g",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "70",
+					"female_percent": "30"
+				}
+			]
+		},
+		{
+			"rule_key": "tested_rdt_positive_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "65",
+			"items": [
+				{
+					"referenced_uid": "pmRn0GsUfr6",
+					"referenced_key": "tested_rdt_5-14",
+					"active_data_element": "vTRrNdOOT9g",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "30",
+					"female_percent": "70"
+				}
+			]
+		},
+		{
+			"rule_key": "tested_rdt_positive_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "65",
+			"items": [
+				{
+					"referenced_uid": "pmRn0GsUfr6",
+					"referenced_key": "tested_rdt_15",
+					"active_data_element": "vTRrNdOOT9g",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "60",
+					"female_percent": "40"
+				}
+			]
+		},
+		{
+			"rule_key": "malaria_deaths_pregnant",
+			"type": "referenced_percentage",
+			"percentage": "4",
+			"items": [{
+				"referenced_uid": "S9nIxTMWplW",
+				"referenced_coc": "HllvX50cXC0",
+				"referenced_key": "Malaria_inpatients_pregnant",
+				"active_data_element": "qokS11KT7gD",
+				"active_coc": "HllvX50cXC0"
+			}]
+		},
+		{
+			"rule_key": "malaria_deaths",
+			"type": "referenced_percentage",
+			"percentage": "4",
+			"items": [{
+				"referenced_uid": "v0WZQQ6gKAX",
+				"referenced_coc": "oPcWGgS2Liz",
+				"referenced_key": "malaria_cases_admissions",
+				"active_data_element": "GxlrIgMyEf4",
+				"active_coc": "oPcWGgS2Liz"
+			}, {
+				"referenced_uid": "v0WZQQ6gKAX",
+				"referenced_coc": "rtfSaMjPyq6",
+				"referenced_key": "malaria_cases_admissions",
+				"active_data_element": "GxlrIgMyEf4",
+				"active_coc": "rtfSaMjPyq6"
+			}, {
+				"referenced_uid": "v0WZQQ6gKAX",
+				"referenced_coc": "hF0pQZIn6Ch",
+				"referenced_key": "malaria_cases_admissions",
+				"active_data_element": "GxlrIgMyEf4",
+				"active_coc": "hF0pQZIn6Ch"
+			}]
+		},
+		{
+			"rule_key": "malaria_cases_admissions",
+			"type": "rand_increase_by_month",
+			"limit_up": "20250",
+			"limit_down": "10250",
+			"items": [{
+				"increase_month": "11",
+				"limit_up": "30050",
+				"limit_down": "20050"
+			}, {
+				"increase_month": "12",
+				"limit_up": "35100",
+				"limit_down": "30070"
+			}, {
+				"increase_month": "01",
+				"limit_up": "30050",
+				"limit_down": "20040"
+			}]
+		},
+		{
+			"rule_key": "malaria_suspected_cases",
+			"type": "rand_increase_by_month",
+			"limit_up": "10050",
+			"limit_down": "5000",
+			"items": [{
+				"increase_month": "11",
+				"limit_up": "10050",
+				"limit_down": "5000"
+			}, {
+				"increase_month": "12",
+				"limit_up": "20010",
+				"limit_down": "10070"
+			}, {
+				"increase_month": "01",
+				"limit_up": "10050",
+				"limit_down": "5000"
+			}]
+		},
+		{
+			"rule_key": "people_protected_by_irs",
+			"type": "rand_percent",
+			"limit_up": "94",
+			"limit_down": "85",
+			"years": {
+				"2019": "17067171",
+				"2018": "16517220",
+				"2017": "15975765",
+				"2016": "15442824",
+				"2015": "15042824",
+				"2014": "14942824",
+				"2013": "14442824",
+				"2012": "13442824",
+				"2011": "12442824",
+				"2010": "11442824"
+			}
+		},
+		{
+			"rule_key": "total_by_age",
+			"type": "coc_percentage_yearly",
+			"years": {
+				"2019": "17067171",
+				"2018": "16517220",
+				"2017": "15975765",
+				"2016": "15442824",
+				"2015": "15042824",
+				"2014": "14942824",
+				"2013": "14442824",
+				"2012": "13442824",
+				"2011": "12442824",
+				"2010": "11442824"
+			},
+			"items": [{
+				"name": "0-4 years",
+				"coc": "oPcWGgS2Liz",
+				"percentage": "20.5"
+			}, {
+				"name": "5-14 years",
+				"coc": "rtfSaMjPyq6",
+				"percentage": "16.5"
+			}, {
+				"name": "15+",
+				"coc": "hF0pQZIn6Ch",
+				"percentage": "63"
+			}]
+		},
+		{
+			"rule_key": "temp",
+			"type": "rand_limits",
+			"output_type": "float",
+			"items": [{
+					"month": "01",
+					"limit_up": "21.4",
+					"limit_down": "32.7"
+				},
+				{
+					"month": "02",
+					"limit_up": "22.3",
+					"limit_down": "34.1"
+				},
+				{
+					"month": "03",
+					"limit_up": "23.5",
+					"limit_down": "33.9"
+				},
+				{
+					"month": "04",
+					"limit_up": "23.4",
+					"limit_down": "33.3"
+				},
+				{
+					"month": "05",
+					"limit_up": "22.9",
+					"limit_down": "32"
+				},
+				{
+					"month": "06",
+					"limit_up": "22.3",
+					"limit_down": "30.7"
+				},
+				{
+					"month": "07",
+					"limit_up": "22",
+					"limit_down": "29.1"
+				},
+				{
+					"month": "08",
+					"limit_up": "22.3",
+					"limit_down": "28.6"
+				},
+				{
+					"month": "09",
+					"limit_up": "21.9",
+					"limit_down": "30"
+				},
+				{
+					"month": "10",
+					"limit_up": "22.1",
+					"limit_down": "30.8"
+				},
+				{
+					"month": "11",
+					"limit_up": "22.2",
+					"limit_down": "32.1"
+				},
+				{
+					"month": "12",
+					"limit_up": "21.3",
+					"limit_down": "32.7"
+				}
+			]
+		},
+		{
+			"rule_key": "rain",
+			"type": "rand_total",
+			"items": [{
+				"month": "1",
+				"total": "18"
+			}, {
+				"month": "2",
+				"total": "32"
+			}, {
+				"month": "3",
+				"total": "91"
+			}, {
+				"month": "4",
+				"total": "152"
+			}, {
+				"month": "5",
+				"total": "250"
+			}, {
+				"month": "6",
+				"total": "295"
+			}, {
+				"month": "7",
+				"total": "295"
+			}, {
+				"month": "8",
+				"total": "291"
+			}, {
+				"month": "9",
+				"total": "329"
+			}, {
+				"month": "10",
+				"total": "323"
+			}, {
+				"month": "11",
+				"total": "63"
+			}, {
+				"month": "12",
+				"total": "13"
+			}]
+		},
+		{
+			"rule_key": "rand_adult",
+			"type": "rand_boolean"
+		},
+		{
+			"rule_key": "rand_children",
+			"type": "rand_boolean"
+		},
+		{
+			"rule_key": "rand_infant",
+			"type": "rand_boolean"
+		},
+		{
+			"rule_key": "rand_toddlers",
+			"type": "rand_boolean"
+		},
+		{
+			"rule_key": "rand_artesunate",
+			"type": "rand_boolean"
+		},
+		{
+			"rule_key": "rand_primaquine",
+			"type": "rand_boolean"
+		},
+		{
+			"rule_key": "rand_malaria",
+			"type": "rand_boolean"
+		},
+		{
+			"rule_key": "rand_sulf",
+			"type": "rand_boolean"
+		},
+		{
+			"rule_key": "rand_llin",
+			"type": "rand_boolean"
+		},
+		{
+			"rule_key": "malaria_cases_guideline",
+			"type": "rand_limits",
+			"output_type": "int",
+			"items": [{
+					"month": "01",
+					"limit_up": "4000",
+					"limit_down": "2000"
+				},
+				{
+					"month": "02",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "03",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "04",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "05",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "06",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "07",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "08",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "09",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "10",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "11",
+					"limit_up": "4000",
+					"limit_down": "2000"
+				},
+				{
+					"month": "12",
+					"limit_up": "5000",
+					"limit_down": "3000"
+				}
+			]
+		},
+		{
+			"rule_key": "malaria_cases_24",
+			"type": "rand_limits",
+			"output_type": "int",
+			"items": [{
+					"month": "01",
+					"limit_up": "4000",
+					"limit_down": "2000"
+				},
+				{
+					"month": "02",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "03",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "04",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "05",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "06",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "07",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "08",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "09",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "10",
+					"limit_up": "3000",
+					"limit_down": "1000"
+				},
+				{
+					"month": "11",
+					"limit_up": "4000",
+					"limit_down": "2000"
+				},
+				{
+					"month": "12",
+					"limit_up": "5000",
+					"limit_down": "3000"
+				}
+			]
+		},
+		{
+			"rule_key": "investigated_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "80",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "Ppc51eaCPHb",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "investigated_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "80",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "Ppc51eaCPHb",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "investigated_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "80",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "Ppc51eaCPHb",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "classified_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "40",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "a4Cw4iPcMrY",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "classified_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "40",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "a4Cw4iPcMrY",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "classified_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "40",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "a4Cw4iPcMrY",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "local_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "40",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "HMUc4RajgaC",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "local_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "40",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "HMUc4RajgaC",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "local_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "40",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "HMUc4RajgaC",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "imported_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "10",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "koNkg93tcFv",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "imported_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "10",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "koNkg93tcFv",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "imported_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "10",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "koNkg93tcFv",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "indigenous_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "10",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "DYpakDmCvNG",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "indigenous_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "10",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "DYpakDmCvNG",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "indigenous_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "10",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "DYpakDmCvNG",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "introduced_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "5",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "EQOuTaSaFOn",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "introduced_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "5",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "EQOuTaSaFOn",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "introduced_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "5",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "EQOuTaSaFOn",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "induced_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "5",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "lY309oiMifk",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "induced_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "5",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "lY309oiMifk",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "induced_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "5",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "lY309oiMifk",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "relapsing_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "15",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "QFz6w4llj0h",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "relapsing_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "15",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "QFz6w4llj0h",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "relapsing_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "15",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "QFz6w4llj0h",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "recrudescent_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "12",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "TMaDgAn60aR",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "recrudescent_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "12",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "TMaDgAn60aR",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "recrudescent_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "12",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "TMaDgAn60aR",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "symptoms_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "22",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "KNAg6VC23us",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "symptoms_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "22",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "KNAg6VC23us",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "symptoms_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "22",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "KNAg6VC23us",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "foci_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "30",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "a2hiTowGc0N",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "foci_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "30",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "a2hiTowGc0N",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "foci_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "30",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "a2hiTowGc0N",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "foci_positive_0-4",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "9",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "oPcWGgS2Liz",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "ra1VTaKQK60",
+					"male_coc": "b449dBrOSFK",
+					"female_coc": "t5FrQ0GTvGf",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "foci_positive_5-14",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "9",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "rtfSaMjPyq6",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "ra1VTaKQK60",
+					"male_coc": "j21YQgQ9GzP",
+					"female_coc": "bWFxj7MF1qR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		},
+		{
+			"rule_key": "foci_positive_15",
+			"type": "referenced_percentage_by_sex",
+			"percentage": "9",
+			"items": [{
+					"referenced_uid": "kRasaq1REFp",
+					"referenced_coc": "hF0pQZIn6Ch",
+					"referenced_key": "malaria_cases_sum",
+					"active_data_element": "ra1VTaKQK60",
+					"male_coc": "AroSt3y4ir0",
+					"female_coc": "kQBGXKMwoqR",
+					"male_percent": "35",
+					"female_percent": "65"
+				}
+			]
+		}
+	]
+}

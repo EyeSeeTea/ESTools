@@ -1,0 +1,42 @@
+{
+	"config": {
+		"output_prefix": "datavalues",
+		"max_data_value_by_file": "5000",
+		"default_category_option_combo": "Xr12mI7VPn3",
+		"default_attribute_option_combo": "Xr12mI7VPn3",
+		"user": "",
+		"password": "",
+		"url": "http://localhost:8083"
+	},
+	"datasets": [{
+		"id": "uid",
+		"period_type": "daily",
+		"start_date": "2018-11-11",
+		"end_date": "2019-12-12",
+		"data_elements": [{
+				"id": "uid",
+				"coc": "uid",
+				"aoc": "uid",
+				"rule": "rain"
+			},
+			{
+				"id": "uid",
+				"rule": "temp"
+			}
+		],
+		"orgunits": [{
+			"id": "uid"
+		}, {
+			"id": "uid"
+		}]
+	}],
+	"rules": [{
+		"key": "temp",
+		"limit_up": "40",
+		"limit_down": "0"
+	}, {
+		"key": "rain",
+		"limit_up": "32",
+		"limit_down": "0"
+	}]
+}
