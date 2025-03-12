@@ -1,0 +1,24 @@
+{
+  "user_master": "admin",
+  "password_master": "district",
+  "webhook_url": "https://",
+  "http_proxy": "http://",
+  "https_proxy": "http://",
+  "servers": [
+    {
+      "name": "local",
+      "url": "http://172.16.0.99:8223/",
+      "user": "customuser",
+      "password": "custompassword"
+    },
+    {
+      "name": "local",
+      "url": "https://play.im.dhis2.org/stable-2-41-3"
+    },
+    {
+      "name": "local",
+      "url": "https://play.im.dhis2.org/stable-2-42-1"
+    }
+  ],
+  "threshold_seconds": -3
+}
