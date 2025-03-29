@@ -13,6 +13,7 @@ import subprocess
 import random
 import time
 from create_fake_events import dhis2api
+from DHIS2.metadata_manipulation.common.common import get_code
 
 
 #CONFIG VARIABLES
