@@ -53,6 +53,11 @@ def main():
     if not args.no_db:
         get_db(db_local, db_remote, cfg['hostname_remote'])
 
+    if cfg['keep_data']:
+        start_tomcat(dir_local)
+        process.export_keep_data(cfg['api_local'], cfg['keep_data_folder'], cfg['keep_data'])
+        stop_tomcat(dir_local)
+
     if args.post_sql:
         run_sql(db_local, args.post_sql)
 
@@ -61,6 +66,10 @@ def main():
 
     if not args.manual_restart:
         start_tomcat(dir_local)
+
+        if cfg['keep_data']:
+            import_keep_data(cfg['api_local'], cfg['keep_data_folder'], cfg['keep_data'])
+
         import_dir = cfg['post_process_import_dir'] if 'post_process_import_dir' in cfg else None
         if args.no_postprocess:
             log('No postprocessing done, as requested.')
@@ -347,6 +356,11 @@ def run_sql(db_local, post_sql):
     for fname in post_sql:
         run("psql -d '%s' < '%s'" % (db_local, fname))
 
+def import_keep_data(cfg, folder, keep_data):
+    for data in keep_data:
+        if data['type'] == 'dataset':
+            file = folder + "/" + data['dataset_uid']+data['ou_uid']+".json"
+            response = process.import_data_set(cfg, file, data)
 
 
 if __name__ == '__main__':
