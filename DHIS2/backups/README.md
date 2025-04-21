@@ -8,7 +8,7 @@ Script meant to either be:
 - used with cron to perform periodical backups of a tomcat based DHIS2 instance.
 - launched manually to create a manual backup.
 
-It will make a backup of the database and compress the files from DHIS2 home, excluding the apps, if not skipped via `--exclude-files`.
+It will make a backup of the database and compress the files from DHIS2 home, excluding the apps, if not skipped via `--exclude-db` and/or `--exclude-files`.
 If the `--destination` option is used the backup will also be copied to a remote location.
 
 Backup name is composed by: "BACKUP-`INSTANCE`-`PERIOD`-`NAME`"
@@ -27,6 +27,7 @@ Options:
 - `-f, --format [custom | plain]`: Type of format used in `pg_dump`, custom means `-Fc` and plain means a compressed `-Fp`.
 - `-d, --destination [HOSTNAME]`: The hostname of the remote location where the backup will be copied.
 - `-n, --name [NAME]`: Custom name for `NAME` slot, if empty and not a periodic backup will default to "MANUAL".
+- `--exclude-db`: Exclude the database dump from the backup.
 - `--exclude-audit`: Exclude audit table.
 - `--exclude-files`: Exclude the DHIS2 files from the backup.
 
@@ -35,6 +36,11 @@ Options:
 Backup with custom name and excluding DHIS2 files:
 ```bash
 bash /path/to/backup_tomcat_instance.sh --name TEST --exclude-files
+```
+
+Backup files only with custom name:
+```bash
+bash /path/to/backup_tomcat_instance.sh --name TEST --exclude-db
 ```
 
 Backup with periodicity, excluding audit table and remote copy:

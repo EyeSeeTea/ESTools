@@ -13,6 +13,7 @@ export DHIS2_HOME="/path/to/dhis2_home"
 
 # Global variables
 DB_REMOTE_DEST_SERVER=""
+SKIP_DB=0
 SKIP_AUDIT=0
 SKIP_FILES=0
 PERIOD_NAME=""
@@ -59,7 +60,7 @@ usage() {
     formatted_print "Usage: backup_db.sh"
     formatted_print "or:    backup_db.sh --name [NAME] --periodicity [PERIOD] --format [FORMAT NAME] --destination [DESTINATION_HOST]"
     formatted_print ""
-    formatted_print "Make a backup of the DHIS2 database and files."
+    formatted_print "Make a backup of the DHIS2 database and/or files."
     formatted_print "If no PERIOD is given, then a manual dump is generated with timestamp as period, otherwise the given period is used in the name of the destination file."
     formatted_print "The backup name is composed by: BACKUP-DHIS2_INSTANCE-PERIOD-NAME"
     formatted_print ""
@@ -67,6 +68,7 @@ usage() {
     formatted_print "-p, --periodicity [day-in-week | week-in-month | month-in-year]: Used in scheduled backups to add a period identifier to the backup name. If not set the backup is created with a MANUAL-TIMESTAMP suffix."
     formatted_print "-f, --format [custom | plain]: Type of format used in pg_dump, custom means -Fc and plain means a compressed -Fp."
     formatted_print "-d, --destination [DESTINATION_HOST]: Remote host where the backup will be copied."
+    formatted_print "--exclude-db: Exclude the database dump from the backup."
     formatted_print "--exclude-audit: Exclude the audit table from the backup."
     formatted_print "--exclude-files: Exclude the DHIS2 files from the backup."
     formatted_print ""
@@ -151,6 +153,10 @@ process_options() {
         -n | --name)
             assign_name "$2"
             shift 2
+            ;;
+        --exclude-db)
+            SKIP_DB=1
+            shift
             ;;
         --exclude-audit)
             SKIP_AUDIT=1
@@ -260,10 +266,12 @@ backup() {
 
     backup_file_base="BACKUP-${dhis2_instance}-${PERIOD_NAME}${BACKUP_NAME}"
 
-    if backup_db "${backup_file_base}"; then
-        success
-    else
-        fail 1
+    if [ $SKIP_DB -eq 0 ]; then
+        if backup_db "${backup_file_base}"; then
+            success
+        else
+            fail 1
+        fi
     fi
 
     if [ $SKIP_FILES -eq 0 ]; then
