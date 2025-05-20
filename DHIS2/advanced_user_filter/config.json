@@ -1,0 +1,37 @@
+{
+  "INPUT_DIR": "input_fake",
+  "OUTPUT_DIR": "output_fake",
+  "DEPARTMENTS": [
+    { "name": "Example", "prefixes": ["ALP-", "X1"] },
+    { "name": "Example2", "prefixes": ["BRV"] }
+  ],
+  "ADDITIONAL_FILTERS": {
+    "twoFactorEnabled": true
+  },
+  "REQUIRED_GROUPS": ["FAKE Auth Group"],
+  "EXCLUDED_GROUPS": ["FAKE IT Department"],
+  "EXCLUDED_USERNAMES": ["john_doe_admin"],
+  "FILTER_DISABLED_USERS": true,
+  "DISABLED_USER_EXCEPTIONS": ["TEMPORARILY REACTIVATED"],
+  "COMPUTED_FIELDS": ["daysSinceLastLogin"],
+  "SELECTED_FIELDS": [
+    "id",
+    "username",
+    "firstName",
+    "surname",
+    "openId",
+    "email",
+    "lastLogin",
+    "userGroups",
+    "twoFactorEnabled",
+    "daysSinceLastLogin",
+    "created",
+    "userCredentials.passwordLastUpdated"
+  ],
+  "FIELD_NAME_TRANSLATIONS": {
+    "email": "Email Address",
+    "daysSinceLastLogin": "Days Since Last Login",
+    "userCredentials.passwordLastUpdated": "Last Password Change",
+    "created": "Account Creation Date"
+  }
+}
