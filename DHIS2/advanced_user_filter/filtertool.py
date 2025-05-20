@@ -28,7 +28,7 @@ DEPARTMENTS = get_mandatory_field(config, "DEPARTMENTS")
 SELECTED_FIELDS = get_mandatory_field(config, "SELECTED_FIELDS")
 FIELD_NAME_TRANSLATIONS = get_field(config, "FIELD_NAME_TRANSLATIONS", {})
 
-# Filtros opcionales
+# Not required filters
 ADDITIONAL_FILTERS = get_field(config, "ADDITIONAL_FILTERS", {})
 REQUIRED_GROUPS = get_field(config, "REQUIRED_GROUPS", [])
 EXCLUDED_GROUPS = get_field(config, "EXCLUDED_GROUPS", [])
