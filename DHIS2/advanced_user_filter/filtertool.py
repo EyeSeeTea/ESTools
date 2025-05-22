@@ -29,6 +29,11 @@ def parse_args():
         default=CONFIG_DEFAULT,
         help=f"Path to the config file (by default {CONFIG_DEFAULT})"
     )
+    parser.add_argument(
+        '--include-others',
+        action='store_true',
+        help='Creates a CSV for the users that do not belong to any other department'
+    )
     return parser.parse_args()
 
 def get_field(config, key, default):
@@ -214,7 +219,7 @@ def write_csv(users, department_name, source_file, fields):
 
     print(f"Saved: {output_path}")
 
-def process_files():
+def process_files(include_others):
     for file in os.listdir(INPUT_DIR):
         if not file.endswith(".json"):
             continue
@@ -226,13 +231,14 @@ def process_files():
             write_csv(dept_users, department["name"], file, SELECTED_FIELDS)
             for user in dept_users:
                 users_in_dept.add(user.get("id"))
-        other_users = [user for user in users if user.get("id") not in users_in_dept and user_passes(user)]
-        write_csv(other_users, "OTHER", file, SELECTED_FIELDS)
+        if include_others:
+            other_users = [user for user in users if user.get("id") not in users_in_dept and user_passes(user)]
+            write_csv(other_users, "OTHER", file, SELECTED_FIELDS)
 
 def main():
     args = parse_args()
     load_config(args.config)
-    process_files()
+    process_files(args.include_others)
 
 if __name__ == "__main__":
     main()
