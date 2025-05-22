@@ -191,6 +191,15 @@ def months_since(date_str):
     except Exception:
         return ""
 
+def days_since(date_str):
+    try:
+        date = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f")
+        now = datetime.now()
+        delta = now - date
+        return str(max(delta.days, 0))
+    except Exception:
+        return ""
+
 def compute_additional_fields(user):
     values = {}
     password_date = (
@@ -199,6 +208,11 @@ def compute_additional_fields(user):
         or user.get("created")
     )
     values["monthsSincePasswordUpdate"] = months_since(password_date)
+    lastlogin_date = (
+        user.get("lastLogin")
+        or user.get("created")
+    )
+    values["daysSinceLastLogin"] = days_since(lastlogin_date)
     return values
 
 def write_csv(users, department_name, source_file, fields):
