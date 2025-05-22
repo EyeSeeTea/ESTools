@@ -132,7 +132,6 @@ def user_passes(user):
                 ckey = computed.get(key, "")
                 op = ops.get(expected_expression["op"])
                 expected_value = expected_expression["value"]
-                x = op(ckey, expected_value)
                 if op is None:
                     raise ValueError(f"Operator not supported {expected_expression['op']}")
                 # try to convert to numbers before comparisson, but will still compare strings if not
