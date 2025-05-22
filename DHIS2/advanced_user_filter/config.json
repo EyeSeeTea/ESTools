@@ -14,6 +14,9 @@
   "FILTER_DISABLED_USERS": true,
   "DISABLED_USER_EXCEPTIONS": ["TEMPORARILY REACTIVATED"],
   "COMPUTED_FIELDS": ["daysSinceLastLogin"],
+  "COMPUTED_FILTERS": [
+     { "daysSinceLastLogin": {"op":">=", "value":"30"}}
+  ],
   "SELECTED_FIELDS": [
     "id",
     "username",
