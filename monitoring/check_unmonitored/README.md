@@ -14,14 +14,16 @@ Its mainly purpose is to notify the user to avoid leaving some services as unmon
 
 1. Clone this repository on your server:
 
-    ```bash
-    git clone https://github.com/EyeSeeTea/ESTools.git
-    cd ESTools/monitoring/check_unmonitored
+   ```bash
+   git clone https://github.com/EyeSeeTea/ESTools.git
+   cd ESTools/monitoring/check_unmonitored
+   ```
 
 2. Make sure the scripts have execution permissions:
 
-    ```bash
-    chmod +x check_unmonitor.sh alert_unmonitor.sh
+   ```bash
+   chmod +x check_unmonitor.sh alert_unmonitor.sh
+   ```
 
 ## Usage
 
@@ -35,15 +37,16 @@ Main logic is in `check_unmonitor.sh` whereas `alert_unmonitor.sh` is a wrapper 
 You may use `check_unmonitor.sh` at any time to get the list of unmonitored services without sending any notification.
 `alert_unmonitor.sh` is expected to be run periodically, so typical usage would be including in a crontab:
 
-```bash
-0 * * * * /ESTools/monitoring/check_unmonitored/alert_unmonitor.sh > /var/log/alert_unmonitor.log
-
+   ```bash
+   0 * * * * /ESTools/monitoring/check_unmonitored/alert_unmonitor.sh > /var/log/alert_unmonitor.log
+   ```
 
 ## Webhook Configuration
 
 Before running the script, edit the alert_unmonitor.sh file and set the WEBHOOK_URL variable to your webhook URL:
 
-    ```bash
-    WEBHOOK_URL="https://your-webhook-url.com"
+   ```bash
+   WEBHOOK_URL="https://your-webhook-url.com"
+   ```
 
 you may also change other details like the proxy configuration or other details like the time it waits before sending an alert or what regex to filter the service names
