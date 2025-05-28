@@ -241,14 +241,23 @@ backup_db() {
 }
 
 copy_backup_to_remote() {
-    local db_backup_file=$1 file_backup_file=$2
+    local db_backup_file=$1 files_backup_file=$2
     local db_path="${dump_dest_path}/${db_backup_file}" files_path
+    local dump_remote_dest_path="${dump_remote_dest_path}/${dhis2_instance}"
 
-    echo "[$(get_timestamp)] CP backup into ${DB_REMOTE_DEST_SERVER}..."
-    if [ -n "$file_backup_file" ]; then
-        files_path="${dump_dest_path}/${file_backup_file}"
+    if [ -z "$db_backup_file" ] && [ -z "$files_backup_file" ]; then
+        error "[$(get_timestamp)] No backup files to copy."
+        return 1
+    fi
+
+    if [ -n "$files_backup_file" ] && [ -n "$db_backup_file" ]; then
+        echo "[$(get_timestamp)] copy DB and files backup into ${DB_REMOTE_DEST_SERVER}..."
         scp "${db_path}" "${files_path}" "${DB_REMOTE_DEST_SERVER}:${dump_remote_dest_path}"
-    else
+    elif [ -n "$files_backup_file" ]; then
+        echo "[$(get_timestamp)] copy files backup into ${DB_REMOTE_DEST_SERVER}..."
+        scp "${files_path}" "${DB_REMOTE_DEST_SERVER}:${dump_remote_dest_path}"
+    elif [ -n "$db_backup_file" ]; then
+        echo "[$(get_timestamp)] copy DB backup into ${DB_REMOTE_DEST_SERVER}..."
         scp "${db_path}" "${DB_REMOTE_DEST_SERVER}:${dump_remote_dest_path}"
     fi
 }
