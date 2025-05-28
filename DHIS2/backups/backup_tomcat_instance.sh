@@ -180,6 +180,15 @@ process_options() {
         esac
 
     done
+
+    if [ "$SKIP_DB" -eq 1 ] && [ "$SKIP_FILES" -eq 1 ]; then
+        error "[$(get_timestamp)] The options --exclude-db and --exclude-files are mutually exclusive."
+        exit 1
+    fi
+
+    if [ "$SKIP_DB" -eq 1 ] && [ "$SKIP_AUDIT" -eq 1 ]; then
+        echo "[$(get_timestamp)] The option --exclude-audit is not applicable when --exclude-db is set."
+    fi
 }
 
 assign_name() {
