@@ -209,13 +209,19 @@ fail() {
 
 backup_dhis2_folders() {
     local dhis2_home=$1 backup_file_base=$2
-    local backup_file
+    local backup_file tar_folders
 
     backup_file="${backup_file_base}_dhis2_files.tar.gz"
     FILES_BACKUP_FILE="${backup_file}"
 
+    if [[ -d "static" ]]; then
+        tar_folders=("files" "static")
+    else
+        tar_folders=("files")
+    fi
+
     echo "[$(get_timestamp)] Generating DHIS2 files backup into ${backup_file}..."
-    tar --exclude="files/apps" -C "${dhis2_home}" -czf "${dump_dest_path}/${backup_file}" "files" "static"
+    tar --exclude="files/apps" -C "${dhis2_home}" -chzf "${dump_dest_path}/${backup_file}" "${tar_folders[@]}"
 }
 
 backup_db() {
