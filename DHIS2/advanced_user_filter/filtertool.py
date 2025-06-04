@@ -1,12 +1,40 @@
+import argparse
 import json
 import csv
 import os
+import operator
 from datetime import datetime
 
 # === CONFIGURATION LOADED FROM JSON ===
 
-with open("config.json", encoding="utf-8") as f:
-    config = json.load(f)
+CONFIG_DEFAULT = "config.json"
+NOT_EMPTY = '__NOT_EMPTY__'
+MISSING = '__MISSING__'
+PRESENT = '__PRESENT__'
+
+ops = {
+    "==": operator.eq,
+    "!=": operator.ne,
+    ">": operator.gt,
+    ">=": operator.ge,
+    "<": operator.lt,
+    "<=": operator.le
+}
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Process an input json file to extract several CSV files based on a configuration file. Optionally set a specific config file instead of the default")
+    parser.add_argument(
+        "--config",
+        type=str,
+        default=CONFIG_DEFAULT,
+        help=f"Path to the config file (by default {CONFIG_DEFAULT})"
+    )
+    parser.add_argument(
+        '--include-others',
+        action='store_true',
+        help='Creates a CSV for the users that do not belong to any other department'
+    )
+    return parser.parse_args()
 
 def get_field(config, key, default):
     value = config.get(key)
@@ -20,22 +48,31 @@ def get_mandatory_field(config, key):
         raise ValueError(f"Missing or empty mandatory configuration key: '{key}'")
     return value
 
+def load_config(config_file):
+    global INPUT_DIR, OUTPUT_DIR, DEPARTMENTS, SELECTED_FIELDS, FIELD_NAME_TRANSLATIONS
+    global ADDITIONAL_FILTERS, REQUIRED_GROUPS, EXCLUDED_GROUPS, EXCLUDED_USERNAMES, FILTER_DISABLED_USERS, DISABLED_USER_EXCEPTIONS, COMPUTED_FIELDS, REQUIRED_ALL_GROUPS, COMPUTED_FILTERS
+    if not os.path.isfile(config_file):
+        raise FileNotFoundError(f"Error: Missing config file '{config_file}'")
 
+    with open(config_file, encoding="utf-8") as f:
+        config = json.load(f)
 
-INPUT_DIR = get_field(config, "INPUT_DIR", "INPUT_DIR")
-OUTPUT_DIR = get_field(config, "OUTPUT_DIR", "OUTPUT_DIR")
-DEPARTMENTS = get_mandatory_field(config, "DEPARTMENTS")
-SELECTED_FIELDS = get_mandatory_field(config, "SELECTED_FIELDS")
-FIELD_NAME_TRANSLATIONS = get_field(config, "FIELD_NAME_TRANSLATIONS", {})
-
-# Not required filters
-ADDITIONAL_FILTERS = get_field(config, "ADDITIONAL_FILTERS", {})
-REQUIRED_GROUPS = get_field(config, "REQUIRED_GROUPS", [])
-EXCLUDED_GROUPS = get_field(config, "EXCLUDED_GROUPS", [])
-EXCLUDED_USERNAMES = get_field(config, "EXCLUDED_USERNAMES", [])
-FILTER_DISABLED_USERS = get_field(config, "FILTER_DISABLED_USERS", False)
-DISABLED_USER_EXCEPTIONS = get_field(config, "DISABLED_USER_EXCEPTIONS", [])
-COMPUTED_FIELDS = get_field(config, "COMPUTED_FIELDS", [])
+    INPUT_DIR = get_field(config, "INPUT_DIR", "INPUT_DIR")
+    OUTPUT_DIR = get_field(config, "OUTPUT_DIR", "OUTPUT_DIR")
+    DEPARTMENTS = get_mandatory_field(config, "DEPARTMENTS")
+    SELECTED_FIELDS = get_mandatory_field(config, "SELECTED_FIELDS")
+    FIELD_NAME_TRANSLATIONS = get_field(config, "FIELD_NAME_TRANSLATIONS", {})
+    
+    # Not required filters
+    ADDITIONAL_FILTERS = get_field(config, "ADDITIONAL_FILTERS", {})
+    REQUIRED_GROUPS = get_field(config, "REQUIRED_GROUPS", [])
+    REQUIRED_ALL_GROUPS = get_field(config, "REQUIRED_ALL_GROUPS", [])
+    EXCLUDED_GROUPS = get_field(config, "EXCLUDED_GROUPS", [])
+    EXCLUDED_USERNAMES = get_field(config, "EXCLUDED_USERNAMES", [])
+    FILTER_DISABLED_USERS = get_field(config, "FILTER_DISABLED_USERS", False)
+    DISABLED_USER_EXCEPTIONS = get_field(config, "DISABLED_USER_EXCEPTIONS", [])
+    COMPUTED_FIELDS = get_field(config, "COMPUTED_FIELDS", [])
+    COMPUTED_FILTERS = get_field(config, "COMPUTED_FILTERS", [])
 
 def load_users(file_path):
     with open(file_path, "r", encoding="utf-8") as f:
@@ -43,6 +80,10 @@ def load_users(file_path):
 
 def user_in_groups(user, target_groups):
     return any(group.get("name") in target_groups for group in user.get("userGroups", []))
+
+def user_in_all_groups(user, target_groups):
+    user_group_names = {group.get("name") for group in user.get("userGroups", [])}
+    return all(target in user_group_names for target in target_groups)
 
 def has_group_prefix(user, prefixes):
     for group in user.get("userGroups", []):
@@ -66,12 +107,42 @@ def user_passes(user):
     if FILTER_DISABLED_USERS and is_disabled(user):
         return False
     for key, expected_value in ADDITIONAL_FILTERS.items():
-        if user.get(key) != expected_value:
-            return False
+        if expected_value == NOT_EMPTY:
+            if not user.get(key):  # False for None, '', [], {}, 0, false
+                return False
+        elif expected_value == MISSING:
+            if key in user:
+                return False
+        elif expected_value == PRESENT:
+            if key not in user:
+                return False
+        else:
+            if user.get(key) != expected_value:
+                return False
     if REQUIRED_GROUPS and not user_in_groups(user, REQUIRED_GROUPS):
+        return False
+    if REQUIRED_ALL_GROUPS and not user_in_all_groups(user, REQUIRED_ALL_GROUPS):
         return False
     if EXCLUDED_GROUPS and user_in_groups(user, EXCLUDED_GROUPS):
         return False
+    if COMPUTED_FILTERS:
+        computed = compute_additional_fields(user)
+        for computed_filter in COMPUTED_FILTERS:
+            for key, expected_expression in computed_filter.items():
+                ckey = computed.get(key, "")
+                op = ops.get(expected_expression["op"])
+                expected_value = expected_expression["value"]
+                if op is None:
+                    raise ValueError(f"Operator not supported {expected_expression['op']}")
+                # try to convert to numbers before comparisson, but will still compare strings if not
+                try:
+                    ckey = float(ckey)
+                    expected_value = float(expected_value)
+                except (ValueError, TypeError):
+                    pass 
+
+                if not op(ckey, expected_value):
+                    return False
     return True
 
 def format_value(value):
@@ -119,13 +190,28 @@ def months_since(date_str):
     except Exception:
         return ""
 
+def days_since(date_str):
+    try:
+        date = datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%f")
+        now = datetime.now()
+        delta = now - date
+        return str(max(delta.days, 0))
+    except Exception:
+        return ""
+
 def compute_additional_fields(user):
     values = {}
     password_date = (
-        user.get("userCredentials", {}).get("passwordLastUpdated")
+        user.get("passwordLastUpdated")
+        or user.get("userCredentials", {}).get("passwordLastUpdated")
         or user.get("created")
     )
     values["monthsSincePasswordUpdate"] = months_since(password_date)
+    lastlogin_date = (
+        user.get("lastLogin")
+        or user.get("created")
+    )
+    values["daysSinceLastLogin"] = days_since(lastlogin_date)
     return values
 
 def write_csv(users, department_name, source_file, fields):
@@ -146,18 +232,26 @@ def write_csv(users, department_name, source_file, fields):
 
     print(f"Saved: {output_path}")
 
-def process_files():
+def process_files(include_others):
     for file in os.listdir(INPUT_DIR):
         if not file.endswith(".json"):
             continue
         path = os.path.join(INPUT_DIR, file)
         users = load_users(path)
+        users_in_dept = set()
         for department in DEPARTMENTS:
             dept_users = filter_users(users, department)
             write_csv(dept_users, department["name"], file, SELECTED_FIELDS)
+            for user in dept_users:
+                users_in_dept.add(user.get("id"))
+        if include_others:
+            other_users = [user for user in users if user.get("id") not in users_in_dept and user_passes(user)]
+            write_csv(other_users, "OTHER", file, SELECTED_FIELDS)
 
 def main():
-    process_files()
+    args = parse_args()
+    load_config(args.config)
+    process_files(args.include_others)
 
 if __name__ == "__main__":
     main()
