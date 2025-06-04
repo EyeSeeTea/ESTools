@@ -1,0 +1,27 @@
+{
+  "proxy": {
+    "http": "http://your-proxy:port",
+    "https": "http://your-proxy:port"
+  },
+  "output_server": "https://",
+  "token":"",
+  "data_element_ids": {
+    "total": "HF0iZZ0NqDE",
+    "public_objects": "ulfI0WDmW92"
+  },
+  "dataset_id": "FnYgTt843G2",
+  "org_unit_id": "H8RixfF8ugH",
+  "sql_views": {
+    "public_objects": "sNvGgFza3YR",
+    "total": "RIw9kc7N4g4"
+  },
+  "max_retries": 5,
+  "retry_interval_seconds": 60,
+  "servers": [
+    {
+      "url": "https://",
+      "co": "uid",
+      "token": ""
+    }
+  ]
+}
