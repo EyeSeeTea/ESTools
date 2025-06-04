@@ -1,0 +1,13 @@
+# Local files
+working_notes
+docker_log.log
+error*
+output*
+temp*
+preprod*
+
+# User exports
+user*
+
+# env files
+.env
