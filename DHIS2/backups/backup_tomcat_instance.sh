@@ -257,8 +257,9 @@ backup_db() {
 
 copy_backup_to_remote() {
     local db_backup_file=$1 files_backup_file=$2
-    local db_path="${dump_dest_path}/${db_backup_file}" files_path
-    local dump_remote_dest_path="${dump_remote_dest_path}/${dhis2_instance}"
+    local db_path="${dump_dest_path}/${db_backup_file}"
+    local files_path="${dump_dest_path}/${files_backup_file}"
+    local dump_remote_dest_path="${dump_remote_dest_path}/."
 
     if [ -z "$db_backup_file" ] && [ -z "$files_backup_file" ]; then
         error "[$(get_timestamp)] No backup files to copy."
