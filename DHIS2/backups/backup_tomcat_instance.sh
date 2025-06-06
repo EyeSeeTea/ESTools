@@ -13,6 +13,7 @@ export DHIS2_HOME="/path/to/dhis2_home"
 
 # Global variables
 DB_REMOTE_DEST_SERVER=""
+SKIP_DB=0
 SKIP_AUDIT=0
 SKIP_FILES=0
 PERIOD_NAME=""
@@ -59,7 +60,7 @@ usage() {
     formatted_print "Usage: backup_db.sh"
     formatted_print "or:    backup_db.sh --name [NAME] --periodicity [PERIOD] --format [FORMAT NAME] --destination [DESTINATION_HOST]"
     formatted_print ""
-    formatted_print "Make a backup of the DHIS2 database and files."
+    formatted_print "Make a backup of the DHIS2 database and/or files."
     formatted_print "If no PERIOD is given, then a manual dump is generated with timestamp as period, otherwise the given period is used in the name of the destination file."
     formatted_print "The backup name is composed by: BACKUP-DHIS2_INSTANCE-PERIOD-NAME"
     formatted_print ""
@@ -67,6 +68,7 @@ usage() {
     formatted_print "-p, --periodicity [day-in-week | week-in-month | month-in-year]: Used in scheduled backups to add a period identifier to the backup name. If not set the backup is created with a MANUAL-TIMESTAMP suffix."
     formatted_print "-f, --format [custom | plain]: Type of format used in pg_dump, custom means -Fc and plain means a compressed -Fp."
     formatted_print "-d, --destination [DESTINATION_HOST]: Remote host where the backup will be copied."
+    formatted_print "--exclude-db: Exclude the database dump from the backup."
     formatted_print "--exclude-audit: Exclude the audit table from the backup."
     formatted_print "--exclude-files: Exclude the DHIS2 files from the backup."
     formatted_print ""
@@ -152,6 +154,10 @@ process_options() {
             assign_name "$2"
             shift 2
             ;;
+        --exclude-db)
+            SKIP_DB=1
+            shift
+            ;;
         --exclude-audit)
             SKIP_AUDIT=1
             shift
@@ -174,6 +180,15 @@ process_options() {
         esac
 
     done
+
+    if [ "$SKIP_DB" -eq 1 ] && [ "$SKIP_FILES" -eq 1 ]; then
+        error "[$(get_timestamp)] The options --exclude-db and --exclude-files are mutually exclusive."
+        exit 1
+    fi
+
+    if [ "$SKIP_DB" -eq 1 ] && [ "$SKIP_AUDIT" -eq 1 ]; then
+        echo "[$(get_timestamp)] The option --exclude-audit is not applicable when --exclude-db is set."
+    fi
 }
 
 assign_name() {
@@ -194,13 +209,19 @@ fail() {
 
 backup_dhis2_folders() {
     local dhis2_home=$1 backup_file_base=$2
-    local backup_file
+    local backup_file tar_folders
 
     backup_file="${backup_file_base}_dhis2_files.tar.gz"
     FILES_BACKUP_FILE="${backup_file}"
 
+    if [[ -d "static" ]]; then
+        tar_folders=("files" "static")
+    else
+        tar_folders=("files")
+    fi
+
     echo "[$(get_timestamp)] Generating DHIS2 files backup into ${backup_file}..."
-    tar --exclude="files/apps" -C "${dhis2_home}" -czf "${dump_dest_path}/${backup_file}" "files" "static"
+    tar --exclude="files/apps" -C "${dhis2_home}" -chzf "${dump_dest_path}/${backup_file}" "${tar_folders[@]}"
 }
 
 backup_db() {
@@ -235,14 +256,24 @@ backup_db() {
 }
 
 copy_backup_to_remote() {
-    local db_backup_file=$1 file_backup_file=$2
-    local db_path="${dump_dest_path}/${db_backup_file}" files_path
+    local db_backup_file=$1 files_backup_file=$2
+    local db_path="${dump_dest_path}/${db_backup_file}"
+    local files_path="${dump_dest_path}/${files_backup_file}"
+    local dump_remote_dest_path="${dump_remote_dest_path}/."
 
-    echo "[$(get_timestamp)] CP backup into ${DB_REMOTE_DEST_SERVER}..."
-    if [ -n "$file_backup_file" ]; then
-        files_path="${dump_dest_path}/${file_backup_file}"
+    if [ -z "$db_backup_file" ] && [ -z "$files_backup_file" ]; then
+        error "[$(get_timestamp)] No backup files to copy."
+        return 1
+    fi
+
+    if [ -n "$files_backup_file" ] && [ -n "$db_backup_file" ]; then
+        echo "[$(get_timestamp)] copy DB and files backup into ${DB_REMOTE_DEST_SERVER}..."
         scp "${db_path}" "${files_path}" "${DB_REMOTE_DEST_SERVER}:${dump_remote_dest_path}"
-    else
+    elif [ -n "$files_backup_file" ]; then
+        echo "[$(get_timestamp)] copy files backup into ${DB_REMOTE_DEST_SERVER}..."
+        scp "${files_path}" "${DB_REMOTE_DEST_SERVER}:${dump_remote_dest_path}"
+    elif [ -n "$db_backup_file" ]; then
+        echo "[$(get_timestamp)] copy DB backup into ${DB_REMOTE_DEST_SERVER}..."
         scp "${db_path}" "${DB_REMOTE_DEST_SERVER}:${dump_remote_dest_path}"
     fi
 }
@@ -260,10 +291,12 @@ backup() {
 
     backup_file_base="BACKUP-${dhis2_instance}-${PERIOD_NAME}${BACKUP_NAME}"
 
-    if backup_db "${backup_file_base}"; then
-        success
-    else
-        fail 1
+    if [ $SKIP_DB -eq 0 ]; then
+        if backup_db "${backup_file_base}"; then
+            success
+        else
+            fail 1
+        fi
     fi
 
     if [ $SKIP_FILES -eq 0 ]; then
