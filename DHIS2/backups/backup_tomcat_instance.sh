@@ -65,7 +65,7 @@ usage() {
     formatted_print "The backup name is composed by: BACKUP-DHIS2_INSTANCE-PERIOD-NAME"
     formatted_print ""
     formatted_print "Options:"
-    formatted_print "-p, --periodicity [day-in-week | week-in-month | month-in-year]: Used in scheduled backups to add a period identifier to the backup name. If not set the backup is created with a MANUAL-TIMESTAMP suffix."
+    formatted_print "-p, --periodicity [day-in-week | week-in-month | month-in-year | yearly]: Used in scheduled backups to add a period identifier to the backup name. If not set the backup is created with a MANUAL-TIMESTAMP suffix."
     formatted_print "-f, --format [custom | plain]: Type of format used in pg_dump, custom means -Fc and plain means a compressed -Fp."
     formatted_print "-d, --destination [DESTINATION_HOST]: Remote host where the backup will be copied."
     formatted_print "--exclude-db: Exclude the database dump from the backup."
@@ -82,7 +82,7 @@ get_timestamp() {
 TIMESTAMP=$(get_timestamp)
 
 assign_periodicity() {
-    if [ "$1" = "day-in-week" ] || [ "$1" = "week-in-month" ] || [ "$1" = "month-in-year" ]; then
+    if [ "$1" = "day-in-week" ] || [ "$1" = "week-in-month" ] || [ "$1" = "month-in-year" ] || [ "$1" = "yearly" ]; then
         case $1 in
         day-in-week)
             PERIOD_NAME=$(date '+%A' | tr '[:lower:]' '[:upper:]')
@@ -111,6 +111,10 @@ assign_periodicity() {
         month-in-year)
             PERIOD_NAME=$(date +"%B" | tr '[:lower:]' '[:upper:]')
             PERIOD_NAME="MONTHLY-${PERIOD_NAME}"
+            ;;
+        yearly)
+            PERIOD_NAME=$(date +"%Y")
+            PERIOD_NAME="YEARLY-${PERIOD_NAME}"
             ;;
         esac
 
