@@ -30,10 +30,19 @@ INVALID_FORMAT="ERROR: invalid format:"
 INVALID_PERIOD="ERROR: invalid period:"
 INVALID_DESTINATION="ERROR: invalid destination:"
 
+get_timestamp() {
+    date --iso-8601='seconds'
+}
+
+log() {
+    local message=$1
+    echo "[$(get_timestamp)] $message"
+}
+
 error() {
     local message=$1
 
-    echo "$message" >&2
+    echo "[$(get_timestamp)] $message" >&2
 }
 
 unknown_option() {
@@ -73,10 +82,6 @@ usage() {
     formatted_print "--exclude-files: Exclude the DHIS2 files from the backup."
     formatted_print ""
     formatted_print "Example: ./backup_db.sh --periodicity day-in-week --format custom --destination hostname.example"
-}
-
-get_timestamp() {
-    date +%Y-%m-%d_%H%M
 }
 
 TIMESTAMP=$(get_timestamp)
@@ -186,12 +191,12 @@ process_options() {
     done
 
     if [ "$SKIP_DB" -eq 1 ] && [ "$SKIP_FILES" -eq 1 ]; then
-        error "[$(get_timestamp)] The options --exclude-db and --exclude-files are mutually exclusive."
+        error "ERROR: The options --exclude-db and --exclude-files are mutually exclusive."
         exit 1
     fi
 
     if [ "$SKIP_DB" -eq 1 ] && [ "$SKIP_AUDIT" -eq 1 ]; then
-        echo "[$(get_timestamp)] The option --exclude-audit is not applicable when --exclude-db is set."
+        log "WARNING: The option --exclude-audit is not applicable when --exclude-db is set."
     fi
 }
 
@@ -201,13 +206,13 @@ assign_name() {
 }
 
 success() {
-    echo OK
+    log "OK"
 }
 
 fail() {
     local status=$1
 
-    echo FAIL
+    error "FAIL"
     exit "$status"
 }
 
@@ -224,7 +229,7 @@ backup_dhis2_folders() {
         tar_folders=("files")
     fi
 
-    echo "[$(get_timestamp)] Generating DHIS2 files backup into ${backup_file}..."
+    log "Generating DHIS2 files backup into ${backup_file}..."
     tar --exclude="files/apps" -C "${dhis2_home}" -chzf "${dump_dest_path}/${backup_file}" "${tar_folders[@]}"
 }
 
@@ -249,12 +254,12 @@ backup_db() {
     if [ "$FORMAT" = "custom" ]; then
         backup_file="${backup_file_base}_cformat.dump"
         DB_BACKUP_FILE="${backup_file}"
-        echo "[$(get_timestamp)] Generating custom backup into ${backup_file}..."
+        log "Generating custom backup into ${backup_file}..."
         pg_dump -d "postgresql://${db_user}:${db_pass}@${db_server}:5432/${db_name}" "${pgdump_opts[@]}" -f "${dump_dest_path}/${backup_file}" -Fc
     else
         backup_file="${backup_file_base}.sql.tar.gz"
         DB_BACKUP_FILE="${backup_file}"
-        echo "[$(get_timestamp)] Generating plain backup into ${backup_file}"
+        log "Generating plain backup into ${backup_file}"
         pg_dump -d "postgresql://${db_user}:${db_pass}@${db_server}:5432/${db_name}" "${pgdump_opts[@]}" -Fp | gzip >"${dump_dest_path}/${backup_file}"
     fi
 }
@@ -266,18 +271,18 @@ copy_backup_to_remote() {
     local dump_remote_dest_path="${dump_remote_dest_path}/."
 
     if [ -z "$db_backup_file" ] && [ -z "$files_backup_file" ]; then
-        error "[$(get_timestamp)] No backup files to copy."
+        error "No backup files to copy."
         return 1
     fi
 
     if [ -n "$files_backup_file" ] && [ -n "$db_backup_file" ]; then
-        echo "[$(get_timestamp)] copy DB and files backup into ${DB_REMOTE_DEST_SERVER}..."
+        log "copy DB and files backup into ${DB_REMOTE_DEST_SERVER}..."
         scp "${db_path}" "${files_path}" "${DB_REMOTE_DEST_SERVER}:${dump_remote_dest_path}"
     elif [ -n "$files_backup_file" ]; then
-        echo "[$(get_timestamp)] copy files backup into ${DB_REMOTE_DEST_SERVER}..."
+        log "copy files backup into ${DB_REMOTE_DEST_SERVER}..."
         scp "${files_path}" "${DB_REMOTE_DEST_SERVER}:${dump_remote_dest_path}"
     elif [ -n "$db_backup_file" ]; then
-        echo "[$(get_timestamp)] copy DB backup into ${DB_REMOTE_DEST_SERVER}..."
+        log "copy DB backup into ${DB_REMOTE_DEST_SERVER}..."
         scp "${db_path}" "${DB_REMOTE_DEST_SERVER}:${dump_remote_dest_path}"
     fi
 }
