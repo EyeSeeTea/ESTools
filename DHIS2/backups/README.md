@@ -23,7 +23,7 @@ bash /path/to/backup_tomcat_instance.sh [OPTION]....
 
 Options:
 
-- `-p, --periodicity [day-in-week | week-in-month | month-in-year]`: Used in scheduled backups to add a period identifier to the backup name. If not set the backup is created with a `TIMESTAMP` in place of the period.
+- `-p, --periodicity [day-in-week | week-in-month | month-in-year | yearly]`: Used in scheduled backups to add a period identifier to the backup name. If not set the backup is created with a `TIMESTAMP` in place of the period.
 - `-f, --format [custom | plain]`: Type of format used in `pg_dump`, custom means `-Fc` and plain means a compressed `-Fp`.
 - `-d, --destination [HOSTNAME]`: The hostname of the remote location where the backup will be copied.
 - `-n, --name [NAME]`: Custom name for `NAME` slot, if empty and not a periodic backup will default to "MANUAL".
