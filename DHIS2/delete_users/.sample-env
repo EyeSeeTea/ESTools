@@ -1,0 +1,8 @@
+JSON_FILE_PATH="" # Path to JSON file with users to be deleted
+API_ENDPOINT="" # API endpoint DELETE users (example: http://localhost:8080/api/38/users)
+USERNAME="" # API username
+PASSWD="" # API password
+LOG_FILE_PATH="" # Path to dhis2 log file 
+USER_TO_TAKEOVER="" # User to use as new owner of the object
+DHIS2_DATA_IMAGE="" # Dhis2 image name
+SQL_INIT_FILE="" # Init sql file (init.sql, or init-preprod.sql only for preprod)
