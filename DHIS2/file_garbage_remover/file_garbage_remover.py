@@ -31,13 +31,10 @@ def run(command, check=True, capture=False):
 
 
 def find_container_id(name_pattern):
-    """Find the container ID based on a name substring."""
-    result = run(["docker", "ps", "--format", "{{.ID}}\t{{.Names}}"], capture=True)
-    for line in result.stdout.strip().splitlines():
-        cid, name = line.split("\t")
-        if name_pattern in name:
-            return cid
-    return None
+    """Find the container ID based on a name substring. Retrieves first match only"""
+    result = run(["docker", "ps", "--format", "{{.ID}}", "-f", f"name={name_pattern}"], capture=True)
+    lines = result.stdout.strip().splitlines()
+    return lines[0] if lines else None
 
 
 def slugify(instance_name):
@@ -52,8 +49,7 @@ def main():
 
     instance_name = args.instance
     container_slug = slugify(instance_name)
-    db_container_match = container_slug + "-db-1"
-    core_container_match = container_slug + "-core-1"
+    core_container_match = container_slug.replace("dhis2-data-", "") + "-core-1"
 
     print("Writing SQL file...")
     with open(LOCAL_SQL_FILE, "w") as f:
@@ -70,22 +66,15 @@ def main():
                 f.write(f"{line}\n")
 
     print("Identifying containers...")
-    db_container = find_container_id(db_container_match.replace("dhis2-data-", ""))
-    core_container = find_container_id(core_container_match.replace("dhis2-data-",""))
-    print(db_container)
+    core_container = find_container_id(core_container_match)
     print(core_container)
-    if not db_container or not core_container:
-        print("Could not find DB or Core container.")
-        print(f"Looked for: {db_container_match}, {core_container_match}")
-        sys.exit(1)
 
-    print(f"DB container: {db_container}")
     print(f"Core container: {core_container}")
 
     print("Copying file list to Core container...")
     run(["docker", "cp", LOCAL_LIST_FILE, f"{core_container}:{REMOTE_LIST_FILE}"])
 
-    print(f"Deleting orphaned files in Core container... {core_container} {db_container_match}")
+    print(f"Deleting orphaned files in Core container... {core_container}")
     delete_cmd = f"""
     bash -c '
     if [ ! -f "{REMOTE_LIST_FILE}" ]; then
