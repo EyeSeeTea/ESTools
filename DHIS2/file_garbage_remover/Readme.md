@@ -18,14 +18,14 @@ Run the script in either test or force mode.
 Test Mode (dry-run):
 
 ```
-export DB_PASSWORD_FILE_G='your_password'
+export DB_PASSWORD_FG='your_password'
 ./file_garbage_remover_tomcat.py --test --config /path/to/config.json
 ```
 
 Force Mode (apply changes):
 
 ```
-export DB_PASSWORD_FILE_G='your_password'
+export DB_PASSWORD_FG='your_password'
 ./file_garbage_remover_tomcat.py --force --config /path/to/config.json
 ```
 
@@ -43,7 +43,7 @@ config.json File Requirements:
 
 Ensure file_base_path and temp_file_path exist and are valid directories.
 
-Password should be provided through the environment variable DB_PASSWORD_FILE_G.
+Password should be provided through the environment variable DB_PASSWORD_FG.
 
 Bash wrapper example:
 ```
@@ -51,11 +51,11 @@ Bash wrapper example:
 MODE="${1:-test}"
 [[ "$MODE" != "test" && "$MODE" != "force" ]] && echo "Invalid mode." && exit 1
 
-DB_PASSWORD_FILE_G=db_password
+DB_PASSWORD_FG=db_password
 
 python3 /path/to/script/bin/file_garbage_remover/file_garbage_remover_tomcat.py --config /path/to/script/bin/file_garbage_remover/config.json --$MODE 2>&1 | tee -a /path/to/logs/orphan_cleanup.log
 
-unset DB_PASSWORD_FILE_G
+unset DB_PASSWORD_FG
 ```
 
 ## file_garbage_remover_docker.py

@@ -130,7 +130,7 @@ def main():
         log(f"❌ Missing required config keys: {', '.join(missing_keys)}")
         sys.exit(1)
 
-    db_password = os.environ.get("DB_PASSWORD_FILE_G")
+    db_password = os.environ.get("DB_PASSWORD_FG")
     if not db_password:
         log("❌ Missing required environment variable: DB_PASSWORD")
         sys.exit(1)
