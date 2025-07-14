@@ -29,6 +29,10 @@ SQL_DELETE_ORIGINAL = """
     DELETE FROM fileresource WHERE fileresourceid = %(fid)s;
 """
 
+SQL_CREATE_TABLE_IF_NOT_EXIST = """
+    CREATE TABLE IF NOT EXISTS fileresourcesaudit AS TABLE fileresource WITH NO DATA;
+"""
+
 def log(message):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     if isinstance(message, str):
@@ -59,8 +63,10 @@ def get_matching_document_files(storage_key, base_dir):
 def update_db(fileresourceid, cursor, conn, dry_run=False):
     if dry_run:
         log("[DRY RUN] Would execute:")
-        log(f"  {SQL_INSERT_AUDIT.strip()} with fileresourceid = '{fileresourceid}'")
-        log(f"  {SQL_DELETE_ORIGINAL.strip()} with fileresourceid = '{fileresourceid}'")
+        log(f"  {SQL_INSERT_AUDIT.strip()}")
+        log(f"  with parameters: {{'fid': '{fileresourceid}'}}")
+        log(f"  {SQL_DELETE_ORIGINAL.strip()} ")
+        log(f"  with parameters: {{'fid': '{fileresourceid}'}}")
     else:
         try:
             cursor.execute(SQL_INSERT_AUDIT, {"fid": fileresourceid})
@@ -102,12 +108,10 @@ def move_files(file_list, file_base_path, temp_file_path, dry_run=False):
 def ensure_audit_table_exists(cursor, dry_run=False):
     if dry_run:
         log("[DRY RUN] Would execute:")
-        log(" CREATE TABLE IF NOT EXISTS fileresourcesaudit AS TABLE fileresource WITH NO DATA;")
+        log(SQL_CREATE_TABLE_IF_NOT_EXIST)
     else:
         log("Ensuring 'fileresourcesaudit' table exists...")
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS fileresourcesaudit AS TABLE fileresource WITH NO DATA;
-        """)
+        cursor.execute(SQL_CREATE_TABLE_IF_NOT_EXIST)
         log("'fileresourcesaudit' table ready.")
 
 def main():
