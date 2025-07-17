@@ -132,7 +132,7 @@ def main():
 
     db_password = os.environ.get("DB_PASSWORD_FG")
     if not db_password:
-        log("❌ Missing required environment variable: DB_PASSWORD")
+        log("❌ Missing required environment variable: DB_PASSWORD_FG")
         sys.exit(1)
 
     db_url = f"postgresql://{config['db_user']}:{db_password}@{config['db_host']}:{config['db_port']}/{config['db_name']}"
