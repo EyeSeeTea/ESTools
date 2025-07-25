@@ -9,7 +9,7 @@ Included Scripts
 
 ### Description:
 
-Designed for production environments. Identifies orphaned file resources (only documents for now), moves the files to a temporary directory, and archives corresponding database entries into a special table(fileresourcesaudit) before deleting them from the original database table.
+Designed for production environments. Identifies orphaned file resources (documents or datavalues (files or images attached to a value)), moves the files to a temporary directory, and archives corresponding database entries into a special table(fileresourcesaudit) before deleting them from the original database table.
 
 ### Usage:
 
