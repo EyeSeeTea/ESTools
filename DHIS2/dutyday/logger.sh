@@ -73,6 +73,15 @@ analyticslogger() {
     ERROR_LINES=$(grep -E "$START_DATE" "$LOG_FILE" | grep 'ERROR')
     printf "%s" "$START_LINE$END_LINE$ERROR_LINES" | awk '{gsub("T"," ",$3); print}' | sort -k3,3 -k4,4
 }
+
+spacealertsummary() {
+    local file=$1
+    grep -E "$(for i in {0..6}; do date -d "$i days ago" '+%Y-%m-%d'; done | paste -sd'|' -)" /var/log/monit.log | grep space
+}
+
+spacesummary() {
+    df -P -h | tr -s ' ' '|'  |  sed '1s/^S\.ficheros/Filesystem/'
+} 
 # Script starts here
 if [ $# -eq 0 ]; then
     echo ""
@@ -106,6 +115,12 @@ catalinaerrors)
     ;;
 dockerharborclonelogger)
     dockerharborclonelogger "$@"
+    ;;
+spacealertsummary)
+    spacealertsummary "$@"
+    ;;
+spacesummary)
+    spacesummary "$@"
     ;;
 
 *)

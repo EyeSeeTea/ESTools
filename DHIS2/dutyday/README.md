@@ -150,7 +150,7 @@ List of server details where each server must have:
 - `actions`: Defines operations to perform on servers.
   Each action requires:
 
-- `type`: Action type (github_update, backups, monit, analytics, cloning, custom).
+- `type`: Action type (github_update, backups, monit, analytics, cloning, diskspace, custom).
 
 - `description`: Human-readable description of the action to show in the report.
 
@@ -179,6 +179,8 @@ The actions of type `cloning` entry has the following fields in the server entry
 The actions of type `catalinaerrors` entry has the following fields in the server entry:
 
 - `catalina_file`: The catalina log path.
+
+The actions of type `diskspace` gather disk usage information for common mount points and the last lines from `monit.log` related to disk space or inode alerts. No extra configuration is needed.
 
 The actions of type `custom` entry has the following fields:
 

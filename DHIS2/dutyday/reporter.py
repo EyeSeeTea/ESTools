@@ -78,6 +78,7 @@ def load_host(server):
 
 def load_servers(data):
     for server in data["servers"]:
+        print(server)
         load_host(server)
         validate_host(hostdetails[server.get("server_name")])
 
@@ -124,6 +125,20 @@ def execute_command_on_remote_machine(host, command):
 
 
 def run_action(host, action, command=None):
+    """
+    run_action should return a report_details like this:
+    {
+        "<server_name>": [
+            {
+                "<action_key>": {
+                    "dataElement": "<DHIS2 Data Element UID>",  # required for push
+                    "result": "<string value>",                 # required for push
+                    "description": "<human-readable text>"      # optional, for display only
+                }
+            },
+            ...
+        ]
+    }"""
     if action == "cloning":
         validate(host, action)
         return analyze_clone(host)
@@ -142,6 +157,8 @@ def run_action(host, action, command=None):
         return analyze_custom_script(host, command)
     elif action == "catalinaerrors":
         return analyze_catalina(host)
+    elif action == "diskspace":
+        return analyze_disk_space(host, command) 
 
 
 # this method output is printed always - not used by the report
@@ -223,6 +240,72 @@ def analyze_analytics(host):
         analyticslog = execute_command_on_remote_machine(host, validate(
             host, "logger_path") + "logger.sh analyticslogger tomcat " + logfile)
         return analyticslog
+
+
+def proccess_partition_size_output(partitions, df_output, description):
+    """
+    Process the output of the df command to extract disk space information.
+    """
+    import json
+
+    if not df_output or not df_output.strip():
+        return {}
+
+    lines = [ln.strip() for ln in df_output.strip().splitlines() if ln.strip()]
+    if not lines or len(lines) == 1:
+        return {}
+
+    headers = lines[:1][0].split("|")
+    data_lines = lines[1:]
+    results = []
+    for partition in partitions:
+        for line in data_lines:
+            cols = [c.strip() for c in line.split("|")]
+            if partition in cols[0]:
+                for key, value in partitions[partition].items():
+                    try:
+                        idx = headers.index(key)
+                        print(f"{key} -> índice {idx}")
+                        print(f"{cols[idx]}")
+                        results.append({
+                            "description": description +" "+ partition,
+                            "result": str(cols[idx]),
+                            "dataElement":partitions[partition][key]
+                        })
+                    except ValueError:
+                        print(f"{key} no está en headers")
+    return results
+
+
+def analyze_disk_space(host, disk_config):
+    """
+    - At the end execute spacesummary (df -P -h) monitalertsummary (7 days).
+    """
+    description = "Space analysis"
+    partitions = disk_config.get("partitions", {}) or {}
+    monit_uid  = disk_config.get("monit_log")
+
+    base = validate(host, "logger_path") + "logger.sh "
+
+    # 1) partition size
+    partition_size_output = execute_command_on_remote_machine(host, base + "spacesummary")
+    
+    print(partition_size_output)
+    results = proccess_partition_size_output(partitions, partition_size_output, description) or {}
+    print(results)
+    # 2) MONIT notifications (optional)
+    monit_txt = ""
+    if monit_uid:
+        monit_txt = execute_command_on_remote_machine(host, base + "spacealertsummary") or ""
+        results.append({
+            action_key: {
+                "dataElement": monit_uid,
+                "result": monit_txt,
+                "description": description
+            }
+        })
+
+    return results
 
 
 def check_servers():
@@ -309,16 +392,16 @@ def pushReportToServer(categoryOptionCombo, dataElement, value):
     # escape firewall false positive
     value = value.replace("alter table", "altertable")
     data = {"dataValues": [
-        {
-            "dataElement": dataElement,
-            "period": datetime.now().strftime('%Y%m%d'),
-            "orgUnit": server_config.get("orgUnit"),
-            "categoryOptionCombo": categoryOptionCombo,
-            "attributeOptionCombo": "Xr12mI7VPn3",
-            "value": value,
-            "storedBy": "widp_script"
-        }
-    ]
+            {
+                "dataElement": dataElement,
+                "period": datetime.now().strftime('%Y%m%d'),
+                "orgUnit": server_config.get("orgUnit"),
+                "categoryOptionCombo": categoryOptionCombo,
+                "attributeOptionCombo": "Xr12mI7VPn3",
+                "value": value,
+                "storedBy": "widp_script"
+            }
+        ]
     }
 
     url = server_config.get(
@@ -382,6 +465,14 @@ def run_logger(data):
                 result = run_action(
                     hostdetails[server], "catalinaerrors", hostdetails[server].get("catalina_file"))
                 add_to_report(server, item, result)
+                
+        if "diskspace" == item.get("type"):
+            for server in item.get("servers"):
+                print(item)
+                results = run_action(hostdetails[server], "diskspace", item)
+                for result in results:
+                    action = {"description": result["description"], "dataElement": result["dataElement"], "type": "diskspace"}
+                    add_to_report(server, action, result["result"])
 
 
 if __name__ == '__main__':
