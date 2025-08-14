@@ -34,8 +34,8 @@ catalinaerrors() {
 
 dockerharborclonelogger() {
     local file=$1
-    TODAY=$(date '+%Y-%m-%d')
-    awk "/$TODAY/{flag=1} flag" "$file" | sed "s/'[^:]*:[^']*'/USER:PASSWORDHIDDEN/g "
+    TODAY="[$(date '+%Y-%m-%d')T"
+    awk -v d="$TODAY" 'index($0,d){flag=1} flag' "$file" | sed -E 's#([^[:space:]/:@]+):([^[:space:]/@]+)@#USER:PASSWORDHIDDEN@#g'
 }
 
 clonelogger() {
