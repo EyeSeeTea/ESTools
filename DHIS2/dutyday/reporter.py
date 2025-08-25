@@ -107,13 +107,11 @@ def update_scripts(data):
 
 
 def execute_command_on_remote_machine(host, command):
-    path_to_private_key = validate(host, "keyfile")
-    private_key = paramiko.RSAKey.from_private_key_file(path_to_private_key)
-
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(validate(host, "host"), username=validate(
-        host, "user"), pkey=private_key)
+    client.connect(validate(host, "host"), 
+                   username=validate(host, "user"), 
+                   key_filename=validate(host, "keyfile"))
 
     stdin, stdout, stderr = client.exec_command(command)
     output = stdout.read().decode().strip()
@@ -242,7 +240,7 @@ def analyze_analytics(host):
         return analyticslog
 
 
-def proccess_partition_size_output(partitions, df_output, description):
+def proccess_filesystem_size_output(filesystems, df_output, description):
     """
     Process the output of the df command to extract disk space information.
     """
@@ -258,19 +256,19 @@ def proccess_partition_size_output(partitions, df_output, description):
     headers = lines[:1][0].split("|")
     data_lines = lines[1:]
     results = []
-    for partition in partitions:
+    for filesystem in filesystems:
         for line in data_lines:
             cols = [c.strip() for c in line.split("|")]
-            if partition in cols[0]:
-                for key, value in partitions[partition].items():
+            if filesystem == cols[0]:
+                for key, value in filesystems[filesystem].items():
                     try:
                         idx = headers.index(key)
                         print(f"{key} -> índice {idx}")
                         print(f"{cols[idx]}")
                         results.append({
-                            "description": description +" "+ partition,
+                            "description": description +" "+ filesystem,
                             "result": str(cols[idx]),
-                            "dataElement":partitions[partition][key]
+                            "dataElement":filesystems[filesystem][key]
                         })
                     except ValueError:
                         print(f"{key} no está en headers")
@@ -279,22 +277,22 @@ def proccess_partition_size_output(partitions, df_output, description):
 
 def analyze_disk_space(host, disk_config):
     """
-    - At the end execute spacesummary (df -P -h) monitalertsummary (7 days).
+    - At the end execute spacesummary (df -m --output=target,used,pcent) monitalertsummary (7 days).
+      The format passed to "df" is used as the header of the output to avoid localization issues. config.json should use those names (used, pcent)
     """
     description = "Space analysis"
-    partitions = disk_config.get("partitions", {}) or {}
+    filesystems = disk_config.get("filesystems", {}) or {}
     monit_uid  = disk_config.get("monit_log")
 
     base = validate(host, "logger_path") + "logger.sh "
 
-    # 1) partition size
-    partition_size_output = execute_command_on_remote_machine(host, base + "spacesummary")
+    # 1) filesystem size
+    filesystem_size_output = execute_command_on_remote_machine(host, base + "spacesummary")
     
-    print(partition_size_output)
-    results = proccess_partition_size_output(partitions, partition_size_output, description) or {}
+    print(filesystem_size_output)
+    results = proccess_filesystem_size_output(filesystems, filesystem_size_output, description) or {}
     print(results)
     # 2) MONIT notifications (optional)
-    monit_txt = ""
     if monit_uid:
         monit_txt = execute_command_on_remote_machine(host, base + "spacealertsummary") or ""
         results.append({

@@ -75,12 +75,22 @@ analyticslogger() {
 }
 
 spacealertsummary() {
-    local file=$1
-    grep -E "$(for i in {0..6}; do date -d "$i days ago" '+%Y-%m-%d'; done | paste -sd'|' -)" /var/log/monit.log | grep space
+    local file=${1:-/var/log/monit.log}
+    grep -E "$(for i in {0..6}; do date -d "$i days ago" '+%Y-%m-%d'; done | paste -sd'|' -)" $file | grep space
 }
 
 spacesummary() {
-    df -P -h | tr -s ' ' '|'  |  sed '1s/^S\.ficheros/Filesystem/'
+    # megabytes
+    # Forced output to only the fields that we are interested in
+    # Excluded FStypes that are not disk related
+    # Change output from columns to words separated by "|"
+    # Remove the "%" sign
+    # Exclude the original (localized) header line. Insert instead the format line as a header
+    # $1=$1 to force awk to use OFS in the output
+
+    format="target,used,pcent"
+    df -m --output=$format --exclude=tmpfs --exclude=efivarfs --exclude=overlay --exclude=devtmpfs | \
+        awk -v header=${format//,/|} 'BEGIN {OFS="|"; print header} NR>1 {$1=$1; gsub("%","") ; print}'
 } 
 # Script starts here
 if [ $# -eq 0 ]; then

@@ -72,7 +72,7 @@
     },
     {
       "type": "custom",
-      "description": "---------------------DISK-SPACE---------------------",
+      "description": "---------------------CUSTOM-COMMAND---------------------",
       "command": "df -h",
       "servers": ["docker_example_key", "tomcat_example_key"]
     },
@@ -91,10 +91,9 @@
     {
       "type": "diskspace",
       "description": "---------------------DISK-SPACE---------------------",
-      "command": "df -h",
       "servers": ["docker_example_key", "tomcat_example_key"],
-      "partitions": {
-        "/partition1":   { "Use%": "use uid", "Used": "col used uid in dhis" }
+      "filesystems": {
+        "/filesystem1":   { "pcent": "col usage's uid in dhis, in %", "used": "col used's uid in dhis, in MiB" }
       },
       "monit_log": "monit log notifications uid"
     }
