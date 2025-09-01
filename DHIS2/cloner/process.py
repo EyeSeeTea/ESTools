@@ -128,10 +128,11 @@ def select_users(api, usernames, users_from_group_names):
 
 
 def activate(api, users):
-    debug('Activating %d user(s)...' % len(users))
-    for user in users:
-        user['userCredentials']['disabled'] = False
-        api.put('/users/' + user['id'], user)
+    group = 250
+    print('Activating %d user(s) in groups of %d ...' % (len(users), group))
+    for i in range(0, len(users), group):
+        print('Activating from %d to %d ...' % (i, min(len(users), i + group)))
+        api.post('/metadata?importStrategy=CREATE_AND_UPDATE&mergeMode=REPLACE', { "users": users[i:i+group] })
 
 
 def delete_others(api, users):
