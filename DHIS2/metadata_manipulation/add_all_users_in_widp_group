@@ -1,0 +1,24 @@
+import json
+
+from d2apy import dhis2api
+
+
+def init_api(url, username, password):
+    return dhis2api.Dhis2Api(url, username, password)
+query_group = "/userGroups/UmSnxmr4LE0.json&fields=*"
+query_all_users = "/users?&fields=id&paging=false"
+api = init_api("https://extranet.who.int/dhis2-dev", "user", "pass")
+
+widp_users_group = "UmSnxmr4LE0"
+all_users = api.get(query_all_users)
+id_filter = ""
+group = api.get(query_group)
+group["users"] = []
+del group["sharing"]
+for user in all_users["users"]:
+    group["users"].append({"id": user["id"]})
+
+userGroups = {"userGroups": []}
+userGroups["userGroups"].append(group)
+with open('group_updated.json', 'w') as json_file:
+    json.dump(userGroups, json_file,ensure_ascii=False)
