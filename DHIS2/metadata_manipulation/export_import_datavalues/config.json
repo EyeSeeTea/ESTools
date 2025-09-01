@@ -1,0 +1,28 @@
+{
+  "server_config":
+    {
+    "local_temp_folder": "/home/user/keep_data",
+      "api_remote": {
+        "url": "https://export_from_this_server",
+        "username": "user",
+        "password": "pass"
+      },
+      "api_local": {
+        "url": "https://import_in_this_server",
+        "username": "user",
+        "password": "pass"
+      }
+    },
+  "data": [
+    {
+      "type": "dataset",
+      "ou_uid": "H8RixfF8ugH",
+      "dataset_uid": "Wxl8hxuOsIQ",
+      "startdate": "2014-04-01",
+      "enddate": "2019-04-30",
+      "removeuids": [
+        "Lkjp0MFLDov"
+      ]
+    }
+  ]
+}
