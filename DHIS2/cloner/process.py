@@ -86,7 +86,6 @@ def execute(api, entry, cfg, import_dir):
         debug('No selection.')
         return
 
-
     action = get('action')
     if action == 'activate':
         activate(api, users)
@@ -106,7 +105,7 @@ def execute(api, entry, cfg, import_dir):
         raise ValueError('Unknown action: %s' % action)
 
 
-def wait_for_server(api, delay=90, timeout=900):
+def wait_for_server(api, delay=90, timeout=900, attempts=2, migration_delay=1500):
     "Sleep until server is ready to accept requests"
     debug('Check active API: %s' % api.api_url)
     time.sleep(delay)  # in case tomcat is still starting
@@ -115,6 +114,12 @@ def wait_for_server(api, delay=90, timeout=900):
         try:
             api.get('/me')
             break
+        except requests.exceptions.HTTPError:
+            if attempts > 0:
+                attempts = attempts - 1
+                time.sleep(migration_delay)
+            else:
+                raise RuntimeError('Server error')
         except requests.exceptions.ConnectionError:
             if time.time() - start_time > timeout:
                 raise RuntimeError('Timeout: could not connect to the API')
