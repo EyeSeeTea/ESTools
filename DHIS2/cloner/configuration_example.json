@@ -1,13 +1,17 @@
 {
     "backups_dir": "/home/user/backups",
     "backup_name": "TRAINING",
-    "server_dir_local": "/home/user/server",
+    "server_dir_local": "/usr/local/tomcat",
     "server_dir_remote": "/home/user/server",
     "hostname_remote": "prod",
     "db_local": "postgresql://user:pass@server_local:5432/db",
     "db_remote": "postgresql://user:pass@server_remote:5432/db",
     "war_local": "dhis2-demo.war",
     "war_remote": "dhis2.war",
+    "repo_url": "http://github.com/EyeSeeTea/WHO-packages.git",
+    "repo_branch": "2.30",
+    "repo_folder": "ETA",
+    "post_process_import_dir": "/usr/local/tomcat/import",
     "api_local": {
         "url": "http://localhost:8080",
         "username": "system",
