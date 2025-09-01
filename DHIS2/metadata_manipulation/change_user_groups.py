@@ -36,22 +36,39 @@ all_replaceable_objects = [
 
 def main():
     args = get_args()
+
     dhis_objects = [item for item in args.apply if item not in args.exclude]
-    if args.replace_objects:
-        replaceable_objects = [item for item in args.replace_objects if item in all_replaceable_objects]
+
+    if args.remove_objects:
+        modifiable_objects = [item for item in args.remove_objects]
+        action = remove_objects
+    elif args.replace_objects:
+        modifiable_objects = [item for item in args.replace_objects if item in all_replaceable_objects]
+        action = replace_objects
     else:
-        replaceable_objects = all_replaceable_objects
+        modifiable_objects = all_replaceable_objects
+        action = replace_objects
 
     output = {}
     replacements = {}
+    removable_ids = {}
 
     if args.replace_ids:
         replacements = get_replacements(args.replace_ids)
+
+    if args.remove_ids:
+        removable_ids = args.remove_ids
 
     input_objects = get_input_objects(args.input, args.exclude)
 
     for dhis_object in input_objects:
         dhis_object_old = json.load(open(args.input, encoding="utf-8")).get(dhis_object)
+
+        if len(removable_ids) > 0:
+            dhis_object_old = recursive_action(remove_ids, args, dhis_object_old, removable_ids)
+
+        if len(replacements) > 0:
+            dhis_object_old = recursive_action(replace_ids, args, dhis_object_old, replacements)
 
         if dhis_object in dhis_objects:
             if not dhis_object_old:
@@ -59,25 +76,39 @@ def main():
                 continue
 
             elements_new = []
-            for element in dhis_object_old:
-                replace_objects(args, element, replaceable_objects)
+            if args.recursive:
+                elements_new = recursive_action(action, args, dhis_object_old, modifiable_objects)
+            else:
+                for element in dhis_object_old:
+                    action(args, element, modifiable_objects)
 
-                remove_ous_and_catcombos(args, dhis_object, element)
+                    remove_ous_and_catcombos(args, dhis_object, element)
 
-                replace_ids(args, element, replacements)
-
-                elements_new.append(element)
+                    elements_new.append(element)
 
             output[dhis_object] = elements_new
         else:
             output[dhis_object] = dhis_object_old
 
-    json.dump(output, open(args.output, 'wt'), indent=2)
+    json.dump(output, open(args.output, 'wt', encoding="utf-8"), ensure_ascii=False, indent=2)
 
 
 def replace_ids(args, element, replacements):
-    if args.replace_ids and element['id'] in replacements.keys():
-        element['id'] = replacements.get(element['id'])
+    if isinstance(element, dict):
+        for key in element.keys():
+            for replacement_key in replacements.keys():
+                if isinstance(element[key], str) and replacement_key in element[key]:
+                    element[key] = element[key].replace(replacement_key, replacements[replacement_key])
+
+
+def remove_ids(args, element, removable_ids):
+    if isinstance(element, list):
+        for child in element[:]:
+            if isinstance(child, dict) and "id" in child.keys() and child["id"] in removable_ids:
+                element.remove(child)
+    elif isinstance(element, dict) and "id" in element.keys() and element["id"] in removable_ids:
+        element["id"] = None
+        element.pop("id", None)
 
 
 def get_input_objects(input, excluded_objects):
@@ -96,6 +127,30 @@ def get_replacements(ids):
     return replacements
 
 
+def recursive_action(action, args, dhis_objects, modifiable_objects):
+    action(args, dhis_objects, modifiable_objects)
+    if isinstance(dhis_objects, list):
+        return recursive_list(action, args, dhis_objects, modifiable_objects)
+    elif isinstance(dhis_objects, dict):
+        return recursive_dict(action, args, dhis_objects, modifiable_objects)
+    else:
+        return dhis_objects
+
+
+def recursive_dict(action, args, dhis_objects, modifiable_objects):
+    new_dict = dict()
+    for key in dhis_objects.keys():
+        new_dict[key] = recursive_action(action, args, dhis_objects.get(key), modifiable_objects)
+    return new_dict
+
+
+def recursive_list(action, args, dhis_objects, modifiable_objects):
+    new_list = list()
+    for item in iter(dhis_objects):
+        new_list.append(recursive_action(action, args, item, modifiable_objects))
+    return new_list
+
+
 def remove_ous_and_catcombos(args, dhis_object, element):
     if dhis_object in ['programs', 'dataElements']:
         if args.remove_ous and element.get('organisationUnits'):
@@ -110,12 +165,37 @@ def replace_objects(args, element, replaceable_objects):
             element['publicAccess'] = args.publicAccess
         elif replaceable in all_replaceable_objects:
             file = json.load(open(args.__getattribute__(replaceable)))
-            element[replaceable] = file[replaceable]
+            if isinstance(element, dict) and replaceable in element.keys():
+                element[replaceable] = file[replaceable]
         else:
             print("Error: " + replaceable + " is an invalid replaceable object)")
             print("List of valid replaceable objects: ")
             print(all_replaceable_objects)
             exit(0)
+
+    return element
+
+
+def remove_objects(args, element, removable_object):
+    for replaceable in removable_object:
+        if replaceable in all_replaceable_objects:
+            remove_ids = get_list_of_removable_uids(args, replaceable)
+            new_element = []
+            if isinstance(element, dict) and replaceable in element.keys():
+                for iter_element in element[replaceable]:
+                    if iter_element['id'] not in remove_ids:
+                        new_element.append(iter_element)
+                element[replaceable] = new_element
+
+    return element
+
+
+def get_list_of_removable_uids(args, replaceable):
+    file = json.load(open(args.__getattribute__(replaceable)))
+    remove_ids = []
+    for removable_element in file[replaceable]:
+        remove_ids.append(removable_element['id'])
+    return remove_ids
 
 
 def get_args():
@@ -126,12 +206,15 @@ def get_args():
         help='input file (read from input.json if not given)')
     add('-o', '--output', default="output.json",
         help='output file (write to output.json if not given)')
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--replace-objects', nargs='+',
+        help='replace only the provided objects default: publicAccess, userAccesses, userGroupAccesses')
+    group.add_argument('--remove-objects', nargs='+',
+        help='delete the objects in the provided .json using its id. Example: userGroupAccesses')
     add('-ua', '--userAccesses', dest="userAccesses", default="userAccesses.json",
         help='userAccesses file (read from userAccesses.json if not given)')
     add('-uga', '--userGroupAccesses', dest="userGroupAccesses", default="userGroupAccesses.json",
         help='userGroupAccesses file (read from userGroupAccesses.json if not given)')
-    add('-ro', '--replace-objects', nargs='+', default=all_replaceable_objects,
-        help='replace only the provided objects default: publicAccess, userAccesses, userGroupAccesses')
     add('--public-access', default='--------', dest="publicAccess",
         help='set public permissions. Default: no public access (--------)')
     add('--remove-ous', action='store_true',
@@ -140,10 +223,14 @@ def get_args():
         help='remove catcombos assignment from programs')
     add('--replace-ids', nargs='+', metavar='FROM TO', default=[],
         help='ids to replace. NOTE: references are not updated!!!')
+    add('--remove-ids', nargs='+', metavar='FROM TO', default=[],
+        help='ids to remove. NOTE: Remove the entire object')
     add('--apply-to-objects', dest='apply', nargs='+', default=dhis_objects,
         help='DHIS2 objects to include. Default: All')
     add('--exclude', nargs='+', default=[],
         help='DHIS2 objects to exclude. Default: None')
+    add('-r', '--recursive', dest='recursive', action="store_true",
+        help='apply replace or remove actions recursively.')
     return parser.parse_args()
 
 
