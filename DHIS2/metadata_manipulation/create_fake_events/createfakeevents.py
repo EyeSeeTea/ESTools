@@ -35,6 +35,7 @@ enrollment = {"trackedEntityInstance":"%s","enrollment":"%s", "program":"YGa3Bmr
 
 tracker_entity_instance_wrapper = {'trackedEntityInstances': []}
 enrollment_wrapper = {'enrollments': []}
+datavalue_hour_model = {"lastUpdated": "2019-03-22T14:43:21.287", "storedBy": "Nsambya1", "created": "2019-03-22T14:43:19.437", "dataElement": "ys2RAphtDMM","value": "","providedElsewhere": False}
 
 
 def main():
@@ -188,8 +189,33 @@ def create_fake_events(events, ETA_start_id, max_events, output_prefix, start_da
             event['status'] = "COMPLETED"
             event.pop('attributeOptionCombo', None)
             event.pop('attributeCategoryOptions', None)
+        #arrival date
+        if event['programStage'] == 'B5wPtc839PW':
+            arrival_date = randomDate(start_date, enrollment_date, random.random())
 
-        id+=1
+            hourdatavalue = None
+            for datavalue in event['dataValues']:
+                if datavalue['dataElement'] == "FiZKvYuc3Te":
+                    hourdatavalue = copy.deepcopy(datavalue_hour_model)
+                    hourdatavalue['value'] = random.randint(0, 23)
+                    hourdatavalue['dataElement'] = "ys2RAphtDMM"
+                    datavalue['value'] = arrival_date[:arrival_date.find("T")]
+            if hourdatavalue is not None:
+                existHour = False
+                for datavalue in event['dataValues']:
+                    if datavalue['dataElement'] == "ys2RAphtDMM":
+                        existHour = True
+                if not existHour:
+                    event['dataValues'].append(hourdatavalue)
+        #enrollemnt date
+        if event['programStage'] == 'f5JCFeFc6fM':
+            for datavalue in event['dataValues']:
+                if datavalue['dataElement'] == "I3toNAzNmHJ":
+                    datavalue['value'] = enrollment_date[:enrollment_date.find("T")]
+
+        if 'notes' in event.keys():
+            event['notes'] = []
+        id += 1
         print("%s" % id)
 
         print("tei:")
@@ -302,7 +328,10 @@ def strTimeProp(start, end, format, prop):
 
 
 def randomDate(start, end, prop):
-    return strTimeProp(start, end, '%Y-%m-%dT%H:%M:%S.000', prop)
+    return fixDate(strTimeProp(start, end, '%Y-%m-%dT%H:%M:%S.000', prop))
+
+def fixDate(date):
+    return date.replace(" 0", "T0").replace(" 1", "T1");
 
 
 if __name__ == '__main__':
