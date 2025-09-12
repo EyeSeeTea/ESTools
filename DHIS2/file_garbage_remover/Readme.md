@@ -62,24 +62,27 @@ unset DB_PASSWORD_FG
 
 ### Description:
 
-Intended for d2-docker testing environments. 
-Identifies orphaned files in a Dockerized DHIS2 instance and directly deletes them from the container. This script does not archive or move files, permanently removing identified resources.
+Updated to mirror the behaviour of the tomcat script but targeted to
+`d2-docker` instances. It finds orphaned file resources (documents and data
+values) and, when run with `--force`, archives their database entries into the
+`fileresourcesaudit` table before deleting both the rows and the files in the
+docker containers.
 
 ### Usage:
 
-Run the script specifying the Docker DHIS2 instance:
+Run the script in either test or force mode, specifying the instance name:
 
 ```
-./file_garbage_remover_docker.py --instance docker.eyeseetea.com/project/dhis2-data:2.41-test
+./file_garbage_remover_docker.py --test  --instance docker.eyeseetea.com/project/dhis2-data:2.41-test
+./file_garbage_remover_docker.py --force --instance docker.eyeseetea.com/project/dhis2-data:2.41-test
 ```
 
 ### Operation:
 
-Executes an SQL query within the DHIS2 container using d2-docker run-sql.
-
-Copies the generated file list into the container.
-
-Deletes identified files directly inside the container.
+* Executes several SQL queries within the instance using `d2-docker run-sql`.
+* Builds a list of orphaned file resources.
+* In force mode, archives and deletes the corresponding database entries.
+* Copies the list of files into the core container and removes them.
 
 # Precautions
 
