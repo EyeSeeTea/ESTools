@@ -275,6 +275,44 @@ def proccess_filesystem_size_output(filesystems, df_output, description):
     return results
 
 
+def summarize_monit_log(log: str) -> str:
+    """Group by day and list total errors plus per-message counts (blank line between days)."""
+    import re
+    from collections import Counter, defaultdict
+
+    rx = re.compile(r"^\[(\d{4}-\d{2}-\d{2})T[^\]]*\]\s*(.*)")
+    totals = Counter()
+    per_day = defaultdict(Counter)
+
+    for line in log.splitlines():
+        m = rx.search(line)
+        if not m:
+            continue
+        ymd, msg = m.group(1), m.group(2).strip()
+        if msg:
+            totals[ymd] += 1
+            per_day[ymd][msg] += 1
+
+    if not totals:
+        return "No data"
+
+    out = []
+    for ymd in sorted(totals):  # YYYY-MM-DD
+        yyyy, mm, dd = ymd.split("-")
+        out.append(f"day {dd}-{mm}-{yyyy} — total: {totals[ymd]}")
+        for msg, cnt in sorted(per_day[ymd].items(), key=lambda x: (-x[1], x[0])):
+            out.append(f"  {msg} ×{cnt}")
+        out.append("")  # blank line between days
+    return "\n".join(out).rstrip()
+
+
+def truncate_monit_log(monit_log):
+    LIMIT = 25000
+    if len(monit_log) > LIMIT:
+        monit_log = "[...truncated...]\n" + monit_log[-LIMIT:]
+    return monit_log
+
+
 def analyze_disk_space(host, disk_config):
     """
     - At the end execute spacesummary (df -m --output=target,used,pcent) monitalertsummary (7 days).
@@ -295,12 +333,12 @@ def analyze_disk_space(host, disk_config):
     # 2) MONIT notifications (optional)
     if monit_uid:
         monit_txt = execute_command_on_remote_machine(host, base + "spacealertsummary") or ""
+        monit_txt = truncate_monit_log(summarize_monit_log(monit_txt))
         results.append({
-            action_key: {
-                "dataElement": monit_uid,
-                "result": monit_txt,
-                "description": description
-            }
+            "dataElement": monit_uid,
+            "result": monit_txt,
+            "description": description,
+            "type": "diskspace_monit"
         })
 
     return results
