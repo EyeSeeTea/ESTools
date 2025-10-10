@@ -233,11 +233,11 @@ def analyze_analytics(host):
         docker_name = host.get("docker_name")
         analyticslog = execute_command_on_remote_machine(host, validate(
             host, "logger_path") + "logger.sh analyticslogger docker " + logfile + " " + docker_name)
-        return analyticslog
+        return truncate_log(analyticslog)
     elif machine_type == "tomcat":
         analyticslog = execute_command_on_remote_machine(host, validate(
             host, "logger_path") + "logger.sh analyticslogger tomcat " + logfile)
-        return analyticslog
+        return truncate_log(analyticslog)
 
 
 def proccess_filesystem_size_output(filesystems, df_output, description):
@@ -306,8 +306,9 @@ def summarize_monit_log(log: str) -> str:
     return "\n".join(out).rstrip()
 
 
-def truncate_monit_log(monit_log):
-    LIMIT = 25000
+def truncate_log(monit_log):
+    #This action is required to avoid pushing too large logs to DHIS2
+    LIMIT = 20000
     if len(monit_log) > LIMIT:
         monit_log = "[...truncated...]\n" + monit_log[-LIMIT:]
     return monit_log
@@ -333,7 +334,7 @@ def analyze_disk_space(host, disk_config):
     # 2) MONIT notifications (optional)
     if monit_uid:
         monit_txt = execute_command_on_remote_machine(host, base + "spacealertsummary") or ""
-        monit_txt = truncate_monit_log(summarize_monit_log(monit_txt))
+        monit_txt = truncate_log(summarize_monit_log(monit_txt))
         results.append({
             "dataElement": monit_uid,
             "result": monit_txt,
@@ -372,7 +373,7 @@ def analyze_catalina(host):
     new_content = ""
     for line, count in line_count.items():
         new_content += f"{count:03d} {line}\n"
-    return new_content
+    return truncate_log(new_content)
 
 
 # this method remove the suffix to make the logs line uniques by error
