@@ -78,6 +78,7 @@ def load_host(server):
 
 def load_servers(data):
     for server in data["servers"]:
+        print(server)
         load_host(server)
         validate_host(hostdetails[server.get("server_name")])
 
@@ -106,13 +107,11 @@ def update_scripts(data):
 
 
 def execute_command_on_remote_machine(host, command):
-    path_to_private_key = validate(host, "keyfile")
-    private_key = paramiko.RSAKey.from_private_key_file(path_to_private_key)
-
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(validate(host, "host"), username=validate(
-        host, "user"), pkey=private_key)
+    client.connect(validate(host, "host"), 
+                   username=validate(host, "user"), 
+                   key_filename=validate(host, "keyfile"))
 
     stdin, stdout, stderr = client.exec_command(command)
     output = stdout.read().decode().strip()
@@ -124,6 +123,20 @@ def execute_command_on_remote_machine(host, command):
 
 
 def run_action(host, action, command=None):
+    """
+    run_action should return a report_details like this:
+    {
+        "<server_name>": [
+            {
+                "<action_key>": {
+                    "dataElement": "<DHIS2 Data Element UID>",  # required for push
+                    "result": "<string value>",                 # required for push
+                    "description": "<human-readable text>"      # optional, for display only
+                }
+            },
+            ...
+        ]
+    }"""
     if action == "cloning":
         validate(host, action)
         return analyze_clone(host)
@@ -142,6 +155,8 @@ def run_action(host, action, command=None):
         return analyze_custom_script(host, command)
     elif action == "catalinaerrors":
         return analyze_catalina(host)
+    elif action == "diskspace":
+        return analyze_disk_space(host, command) 
 
 
 # this method output is printed always - not used by the report
@@ -218,11 +233,116 @@ def analyze_analytics(host):
         docker_name = host.get("docker_name")
         analyticslog = execute_command_on_remote_machine(host, validate(
             host, "logger_path") + "logger.sh analyticslogger docker " + logfile + " " + docker_name)
-        return analyticslog
+        return truncate_log(analyticslog)
     elif machine_type == "tomcat":
         analyticslog = execute_command_on_remote_machine(host, validate(
             host, "logger_path") + "logger.sh analyticslogger tomcat " + logfile)
-        return analyticslog
+        return truncate_log(analyticslog)
+
+
+def proccess_filesystem_size_output(filesystems, df_output, description):
+    """
+    Process the output of the df command to extract disk space information.
+    """
+    import json
+
+    if not df_output or not df_output.strip():
+        return {}
+
+    lines = [ln.strip() for ln in df_output.strip().splitlines() if ln.strip()]
+    if not lines or len(lines) == 1:
+        return {}
+
+    headers = lines[:1][0].split("|")
+    data_lines = lines[1:]
+    results = []
+    for filesystem in filesystems:
+        for line in data_lines:
+            cols = [c.strip() for c in line.split("|")]
+            if filesystem == cols[0]:
+                for key, value in filesystems[filesystem].items():
+                    try:
+                        idx = headers.index(key)
+                        print(f"{key} -> índice {idx}")
+                        print(f"{cols[idx]}")
+                        results.append({
+                            "description": description +" "+ filesystem,
+                            "result": str(cols[idx]),
+                            "dataElement":filesystems[filesystem][key]
+                        })
+                    except ValueError:
+                        print(f"{key} no está en headers")
+    return results
+
+
+def summarize_monit_log(log: str) -> str:
+    """Group by day and list total errors plus per-message counts (blank line between days)."""
+    import re
+    from collections import Counter, defaultdict
+
+    rx = re.compile(r"^\[(\d{4}-\d{2}-\d{2})T[^\]]*\]\s*(.*)")
+    totals = Counter()
+    per_day = defaultdict(Counter)
+
+    for line in log.splitlines():
+        m = rx.search(line)
+        if not m:
+            continue
+        ymd, msg = m.group(1), m.group(2).strip()
+        if msg:
+            totals[ymd] += 1
+            per_day[ymd][msg] += 1
+
+    if not totals:
+        return "No data"
+
+    out = []
+    for ymd in sorted(totals):  # YYYY-MM-DD
+        yyyy, mm, dd = ymd.split("-")
+        out.append(f"day {dd}-{mm}-{yyyy} — total: {totals[ymd]}")
+        for msg, cnt in sorted(per_day[ymd].items(), key=lambda x: (-x[1], x[0])):
+            out.append(f"  {msg} ×{cnt}")
+        out.append("")  # blank line between days
+    return "\n".join(out).rstrip()
+
+
+def truncate_log(monit_log):
+    #This action is required to avoid pushing too large logs to DHIS2
+    LIMIT = 20000
+    if len(monit_log) > LIMIT:
+        monit_log = "[...truncated...]\n" + monit_log[-LIMIT:]
+    return monit_log
+
+
+def analyze_disk_space(host, disk_config):
+    """
+    - At the end execute spacesummary (df -m --output=target,used,pcent) monitalertsummary (7 days).
+      The format passed to "df" is used as the header of the output to avoid localization issues. config.json should use those names (used, pcent)
+    """
+    description = "Space analysis"
+    filesystems = disk_config.get("filesystems", {}) or {}
+    monit_uid  = disk_config.get("monit_log")
+
+    base = validate(host, "logger_path") + "logger.sh "
+
+    # 1) filesystem size
+    filesystem_size_output = execute_command_on_remote_machine(host, base + "spacesummary")
+    
+    print(filesystem_size_output)
+    results = proccess_filesystem_size_output(filesystems, filesystem_size_output, description) or {}
+    print(results)
+    # 2) MONIT notifications (optional)
+    if monit_uid:
+        monit_txt = execute_command_on_remote_machine(host, base + "spacealertsummary") or ""
+        monit_txt = truncate_log(summarize_monit_log(monit_txt))
+        results.append({
+            "dataElement": monit_uid,
+            "result": monit_txt,
+            "description": description,
+            "type": "diskspace_monit"
+        })
+
+    return results
 
 
 def check_servers():
@@ -253,7 +373,7 @@ def analyze_catalina(host):
     new_content = ""
     for line, count in line_count.items():
         new_content += f"{count:03d} {line}\n"
-    return new_content
+    return truncate_log(new_content)
 
 
 # this method remove the suffix to make the logs line uniques by error
@@ -309,16 +429,16 @@ def pushReportToServer(categoryOptionCombo, dataElement, value):
     # escape firewall false positive
     value = value.replace("alter table", "altertable")
     data = {"dataValues": [
-        {
-            "dataElement": dataElement,
-            "period": datetime.now().strftime('%Y%m%d'),
-            "orgUnit": server_config.get("orgUnit"),
-            "categoryOptionCombo": categoryOptionCombo,
-            "attributeOptionCombo": "Xr12mI7VPn3",
-            "value": value,
-            "storedBy": "widp_script"
-        }
-    ]
+            {
+                "dataElement": dataElement,
+                "period": datetime.now().strftime('%Y%m%d'),
+                "orgUnit": server_config.get("orgUnit"),
+                "categoryOptionCombo": categoryOptionCombo,
+                "attributeOptionCombo": "Xr12mI7VPn3",
+                "value": value,
+                "storedBy": "widp_script"
+            }
+        ]
     }
 
     url = server_config.get(
@@ -382,6 +502,14 @@ def run_logger(data):
                 result = run_action(
                     hostdetails[server], "catalinaerrors", hostdetails[server].get("catalina_file"))
                 add_to_report(server, item, result)
+                
+        if "diskspace" == item.get("type"):
+            for server in item.get("servers"):
+                print(item)
+                results = run_action(hostdetails[server], "diskspace", item)
+                for result in results:
+                    action = {"description": result["description"], "dataElement": result["dataElement"], "type": "diskspace"}
+                    add_to_report(server, action, result["result"])
 
 
 if __name__ == '__main__':

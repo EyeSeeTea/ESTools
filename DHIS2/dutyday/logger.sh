@@ -34,8 +34,8 @@ catalinaerrors() {
 
 dockerharborclonelogger() {
     local file=$1
-    TODAY=$(date '+%Y-%m-%d')
-    awk "/$TODAY/{flag=1} flag" "$file" | sed "s/'[^:]*:[^']*'/USER:PASSWORDHIDDEN/g "
+    TODAY="[$(date '+%Y-%m-%d')T"
+    awk -v d="$TODAY" 'index($0,d){flag=1} flag' "$file" | sed -E 's#([^[:space:]/:@]+):([^[:space:]/@]+)@#USER:PASSWORDHIDDEN@#g'
 }
 
 clonelogger() {
@@ -73,6 +73,25 @@ analyticslogger() {
     ERROR_LINES=$(grep -E "$START_DATE" "$LOG_FILE" | grep 'ERROR')
     printf "%s" "$START_LINE$END_LINE$ERROR_LINES" | awk '{gsub("T"," ",$3); print}' | sort -k3,3 -k4,4
 }
+
+spacealertsummary() {
+    local file=${1:-/var/log/monit.log}
+    grep -E "$(for i in {0..6}; do date -d "$i days ago" '+%Y-%m-%d'; done | paste -sd'|' -)" $file | grep space
+}
+
+spacesummary() {
+    # megabytes
+    # Forced output to only the fields that we are interested in
+    # Excluded FStypes that are not disk related
+    # Change output from columns to words separated by "|"
+    # Remove the "%" sign
+    # Exclude the original (localized) header line. Insert instead the format line as a header
+    # $1=$1 to force awk to use OFS in the output
+
+    format="target,used,pcent"
+    df -m --output=$format --exclude=tmpfs --exclude=efivarfs --exclude=overlay --exclude=devtmpfs | \
+        awk -v header=${format//,/|} 'BEGIN {OFS="|"; print header} NR>1 {$1=$1; gsub("%","") ; print}'
+} 
 # Script starts here
 if [ $# -eq 0 ]; then
     echo ""
@@ -106,6 +125,12 @@ catalinaerrors)
     ;;
 dockerharborclonelogger)
     dockerharborclonelogger "$@"
+    ;;
+spacealertsummary)
+    spacealertsummary "$@"
+    ;;
+spacesummary)
+    spacesummary "$@"
     ;;
 
 *)
