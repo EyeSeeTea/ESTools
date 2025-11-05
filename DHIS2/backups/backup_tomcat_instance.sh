@@ -7,6 +7,9 @@ export db_server=localhost
 export db_name=dhis2
 export dump_dest_path="/path/to/backups"
 export dump_remote_dest_path="/path/to/backups"
+export remote_expand_script="/path/to/script/to/convert/targz/into/folders.sh"
+export remote_log="/path/to/logfile/in/remote/server.log"
+export dump_remote_dest_folder="/path/to/expand/script/ouput/folder"
 export db_user="db_user"
 export db_pass="db_pass"
 export DHIS2_HOME="/path/to/dhis2_home"
@@ -16,6 +19,7 @@ DB_REMOTE_DEST_SERVER=""
 SKIP_DB=0
 SKIP_AUDIT=0
 SKIP_FILES=0
+REUSE_BACKUP=0
 PERIOD_NAME=""
 FORMAT="custom"
 TIMESTAMP=""
@@ -80,6 +84,7 @@ usage() {
     formatted_print "--exclude-db: Exclude the database dump from the backup."
     formatted_print "--exclude-audit: Exclude the audit table from the backup."
     formatted_print "--exclude-files: Exclude the DHIS2 files from the backup."
+    formatted_print "--reuse-backup-for-files: The filename for the backup of DHIS2 files will ommit the period, timestamp and custom name to use the same name each time (It will still include the instance name)."
     formatted_print ""
     formatted_print "Example: ./backup_db.sh --periodicity day-in-week --format custom --destination hostname.example"
 }
@@ -175,6 +180,10 @@ process_options() {
             SKIP_FILES=1
             shift
             ;;
+        --reuse-backup-for-files)
+            REUSE_BACKUP=1
+            shift
+            ;;
         -h | --help)
             usage
             exit 0
@@ -264,6 +273,22 @@ backup_db() {
     fi
 }
 
+expand_backup_in_remote() {
+    local files_backup_file=$1
+    local files_path="${dump_dest_path}/${files_backup_file}"
+    local dump_remote_dest_path="${dump_remote_dest_path}/."
+    local dump_remote_dest_folder="${dump_remote_dest_folder}"
+    local remote_expand_script="${remote_expand_script}"
+    local remote_log="${remote_log}"
+
+    if [ -z "$files_backup_file" ]; then
+        error "No backup files to convert."
+        return 1
+    fi
+
+    ssh ${DB_REMOTE_DEST_SERVER} "${remote_expand_script} -i \"${files_path}\" -o \"${dump_remote_dest_folder}\" 2>&1 | tee -a \"${remote_log}\" "
+}
+
 copy_backup_to_remote() {
     local db_backup_file=$1 files_backup_file=$2
     local db_path="${dump_dest_path}/${db_backup_file}"
@@ -300,6 +325,12 @@ backup() {
 
     backup_file_base="BACKUP-${dhis2_instance}-${PERIOD_NAME}${BACKUP_NAME}"
 
+    if [ $REUSE_BACKUP -eq 0 ]; then
+        backup_file_files_base="$backup_file_base"
+    else
+        backup_file_files_base="BACKUP-${dhis2_instance}-SINGLE"
+    fi
+
     if [ $SKIP_DB -eq 0 ]; then
         if backup_db "${backup_file_base}"; then
             success
@@ -309,7 +340,7 @@ backup() {
     fi
 
     if [ $SKIP_FILES -eq 0 ]; then
-        if backup_dhis2_folders "${DHIS2_HOME}" "${backup_file_base}"; then
+        if backup_dhis2_folders "${DHIS2_HOME}" "${backup_file_files_base}"; then
             success
         else
             fail 3
@@ -319,6 +350,13 @@ backup() {
     if [[ ! "$DB_REMOTE_DEST_SERVER" == "" ]]; then
         if copy_backup_to_remote "${DB_BACKUP_FILE}" "${FILES_BACKUP_FILE}"; then
             success
+            if [ $SKIP_FILES -eq 0 ]; then
+                if expand_backup_in_remote "${FILES_BACKUP_FILE}"; then
+                    success
+                else
+                    fail 4
+                fi
+            fi
         else
             fail 2
         fi
