@@ -286,10 +286,7 @@ expand_backup_in_remote() {
         return 1
     fi
 
-    if [ -z "$remote_expand_script" ]; then
-        error "No script configured to expand the backup in the remote server"
-        return 0
-    fi
+    log "expand files backup into ${DB_REMOTE_DEST_SERVER}..."
 
     ssh ${DB_REMOTE_DEST_SERVER} "${remote_expand_script} -i \"${files_path}\" -o \"${dump_remote_dest_folder}\" 2>&1 | tee -a \"${remote_log}\" "
 }
@@ -356,10 +353,12 @@ backup() {
         if copy_backup_to_remote "${DB_BACKUP_FILE}" "${FILES_BACKUP_FILE}"; then
             success
             if [ $SKIP_FILES -eq 0 ]; then
-                if expand_backup_in_remote "${FILES_BACKUP_FILE}"; then
-                    success
-                else
-                    fail 4
+                if [ ! "$remote_expand_script" == "" ]; then
+                    if expand_backup_in_remote "${FILES_BACKUP_FILE}"; then
+                        success
+                    else
+                        fail 4
+                    fi
                 fi
             fi
         else
