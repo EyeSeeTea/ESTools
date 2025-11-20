@@ -286,6 +286,11 @@ expand_backup_in_remote() {
         return 1
     fi
 
+    if [ -z "$remote_expand_script" ]; then
+        error "No script configured to expand the backup in the remote server"
+        return 0
+    fi
+
     ssh ${DB_REMOTE_DEST_SERVER} "${remote_expand_script} -i \"${files_path}\" -o \"${dump_remote_dest_folder}\" 2>&1 | tee -a \"${remote_log}\" "
 }
 
