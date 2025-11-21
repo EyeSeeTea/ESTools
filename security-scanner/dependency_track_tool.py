@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Optional
-from urllib.parse import urlparse, urlunparse
+from typing import Optional, Dict, Any
+from urllib.parse import urlparse, urlunparse, quote
 
 import requests
 
@@ -499,21 +499,20 @@ This assistant will store that token in a local .env file next to these scripts 
         self.u.print_step("Preparing BOM upload to Dependency-Track")
 
         # Resolve API base URL (can come from parameters, environment or be the local default)
-        api_url = api_url_override or os.environ.get("DTRACK_API_URL")
-        if not api_url:
+        api_base_url = api_url_override or os.environ.get("DTRACK_API_URL")
+        if not api_base_url:
             if interactive:
-                api_url = f"http://localhost:{self.api_port}"
+                api_base_url = f"http://localhost:{self.api_port}"
             else:
                 print(
                     "❌ DTRACK_API_URL is required in forced mode. "
                     "Set it in the environment or dependency_tracker_url in the assistant .env."
                 )
                 return False
-        api_url = self._maybe_fix_ui_port(api_url)
-        print(f"Using Dependency-Track API base URL: {api_url}")
-        if not api_url.endswith("/api/v1/bom"):
-            api_url = api_url.rstrip("/") + "/api/v1/bom"
-        print(f"Full BOM endpoint: {api_url}")
+        api_base_url = self._maybe_fix_ui_port(api_base_url)
+        print(f"Using Dependency-Track API base URL: {api_base_url}")
+        bom_endpoint = api_base_url.rstrip("/") + "/api/v1/bom"
+        print(f"Full BOM endpoint: {bom_endpoint}")
 
         # 1) Try user-provided API key or environment variable
         api_key: Optional[str] = api_key_override or os.environ.get("DTRACK_API_KEY")
@@ -560,7 +559,7 @@ This assistant will store that token in a local .env file next to these scripts 
             with bom_path.open("rb") as bom_file:
                 files = {"bom": (bom_path.name, bom_file, "application/json")}
                 response = requests.post(
-                    api_url,
+                    bom_endpoint,
                     data=data,
                     headers=headers,
                     files=files,
@@ -572,6 +571,12 @@ This assistant will store that token in a local .env file next to these scripts 
 
         if response.ok:
             print("✅ BOM uploaded successfully.")
+            self._print_vulnerability_summary(
+                api_base_url=api_base_url,
+                api_key=api_key,
+                project_name=project_name,
+                project_version=project_version,
+            )
             return True
 
         print(
@@ -579,3 +584,119 @@ This assistant will store that token in a local .env file next to these scripts 
             f"{response.text}"
         )
         return False
+
+    # ------------------------------------------------------------------
+    # Vulnerability summary
+    # ------------------------------------------------------------------
+
+    def _print_vulnerability_summary(
+        self,
+        api_base_url: str,
+        api_key: str,
+        project_name: str,
+        project_version: str,
+    ) -> None:
+        """
+        Fetch vulnerability findings for the given project and print a compact summary.
+        """
+        project = self._lookup_project(api_base_url, api_key, project_name, project_version)
+        if not project:
+            print("⚠️ Could not find project in Dependency-Track to fetch vulnerabilities.")
+            return
+
+        findings = self._fetch_project_findings(api_base_url, api_key, project.get("uuid"))
+        if findings is None:
+            print("⚠️ Could not retrieve vulnerability findings for this project.")
+            return
+
+        if not findings:
+            print("✅ No vulnerability findings reported for this project.")
+            return
+
+        severity_counts: Dict[str, int] = {}
+        entries: list[str] = []
+
+        for finding in findings:
+            vulnerability: Dict[str, Any] = finding.get("vulnerability") or {}
+            severity = (vulnerability.get("severity") or "UNKNOWN").upper()
+            severity_counts[severity] = severity_counts.get(severity, 0) + 1
+
+            vuln_id = vulnerability.get("vulnId") or vulnerability.get("title") or vulnerability.get("uuid") or "Unknown"
+            component = finding.get("componentName") or (finding.get("component") or {}).get("name") or "Unknown component"
+            comp_version = finding.get("componentVersionName") or (finding.get("component") or {}).get("version") or ""
+            comp_display = f"{component} {comp_version}".strip()
+            entries.append(f"[{severity}] {vuln_id} in {comp_display}")
+
+        self.u.print_step("Vulnerability findings from Dependency-Track")
+        print("Counts by severity:")
+        for sev in sorted(severity_counts.keys(), reverse=True):
+            print(f" - {sev}: {severity_counts[sev]}")
+
+        print("\nFindings:")
+        for line in entries:
+            print(f" - {line}")
+
+    def _lookup_project(
+        self,
+        api_base_url: str,
+        api_key: str,
+        project_name: str,
+        project_version: str,
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Resolve project metadata via the Dependency-Track lookup endpoint.
+        """
+        url = (
+            api_base_url.rstrip("/")
+            + f"/api/v1/project/lookup?name={quote(project_name)}&version={quote(project_version)}"
+        )
+        try:
+            response = requests.get(url, headers={"X-Api-Key": api_key}, timeout=60)
+        except requests.RequestException as exc:
+            print(f"⚠️ Failed to look up project: {exc}")
+            return None
+
+        if response.status_code == 404:
+            print("⚠️ Project not found in Dependency-Track (lookup returned 404).")
+            return None
+        if not response.ok:
+            print(f"⚠️ Project lookup failed with status {response.status_code}: {response.text}")
+            return None
+
+        try:
+            return response.json()
+        except ValueError:
+            print("⚠️ Project lookup returned invalid JSON.")
+            return None
+
+    def _fetch_project_findings(
+        self,
+        api_base_url: str,
+        api_key: str,
+        project_uuid: Optional[str],
+    ) -> Optional[list[Dict[str, Any]]]:
+        """
+        Fetch vulnerability findings for the given project UUID.
+        """
+        if not project_uuid:
+            return None
+
+        url = api_base_url.rstrip("/") + f"/api/v1/finding/project/{project_uuid}?suppressed=false"
+        try:
+            response = requests.get(url, headers={"X-Api-Key": api_key}, timeout=120)
+        except requests.RequestException as exc:
+            print(f"⚠️ Failed to retrieve findings: {exc}")
+            return None
+
+        if response.status_code == 404:
+            print("⚠️ Findings endpoint returned 404. The project may not exist or visibility is restricted.")
+            return None
+        if not response.ok:
+            print(f"⚠️ Findings request failed with status {response.status_code}: {response.text}")
+            return None
+
+        try:
+            return response.json()
+        except ValueError:
+            print("⚠️ Findings response returned invalid JSON.")
+            return None
