@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  dtrack-apiserver:
+    image: dependencytrack/apiserver
+    container_name: dtrack-apiserver
+    ports:
+      - "${DTRACK_API_PORT:-8081}:8080"      # API
+    environment:
+      - APP_LOGGING_LEVEL=INFO
+    volumes:
+      - dtrack-data:/data
+    restart: unless-stopped
+
+  dtrack-frontend:
+    image: dependencytrack/frontend
+    container_name: dtrack-frontend
+    ports:
+      - "${DTRACK_UI_PORT:-8080}:8080"      # Web UI
+    environment:
+      - API_BASE_URL=http://localhost:${DTRACK_API_PORT:-8081}
+    depends_on:
+      - dtrack-apiserver
+    restart: unless-stopped
+
+volumes:
+  dtrack-data:

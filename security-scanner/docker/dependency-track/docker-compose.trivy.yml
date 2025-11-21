@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  trivy-server:
+    image: aquasec/trivy:latest
+    container_name: dtrack-trivy-server
+    ports:
+      - "${TRIVY_PORT:-4954}:4954"
+    volumes:
+      - trivy-cache:/root/.cache/
+    # The token is injected via the TRIVY_TOKEN environment variable,
+    # which is written to the .env file by DependencyTrackTool.
+    # If TRIVY_TOKEN is not set, it falls back to SECRETTOKEN123.
+    entrypoint: "trivy server --listen :4954 --token ${TRIVY_TOKEN:-SECRETTOKEN123}"
+    restart: unless-stopped
+
+volumes:
+  trivy-cache:
