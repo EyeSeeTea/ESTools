@@ -82,18 +82,7 @@ class SecurityAssistant:
         bom_path: Optional[Path] = None
         trivy_was_run = False
 
-        # 1) Snyk
-        if self._should_run_step(
-            self.config.run_snyk,
-            "Do you want to run Snyk (snyk test)?",
-        ):
-            snyk_ok = self.snyk.run(app_root, non_interactive=self.config.forced)
-            if not snyk_ok and self.config.forced:
-                return 1
-        else:
-            print("ℹ️ Skipping Snyk.")
-
-        # 2) BOM generation
+        # 1) BOM generation
         if self._should_run_step(
             self.config.run_bom,
             "Do you want to generate a CycloneDX BOM (bom.json)?",
@@ -115,7 +104,7 @@ class SecurityAssistant:
             if candidate.is_file():
                 bom_path = candidate
 
-        # 3) Trivy (CLI scan of the BOM)
+        # 2) Trivy (CLI scan of the BOM)
         if self._should_run_step(
             self.config.run_trivy,
             "Do you want to scan the BOM with Trivy?",
@@ -158,6 +147,17 @@ class SecurityAssistant:
                     return 1
         else:
             print("ℹ️ Skipping Dependency-Track.")
+
+        # 4) Snyk (run last so its output stays visible)
+        if self._should_run_step(
+            self.config.run_snyk,
+            "Do you want to run Snyk (snyk test)?",
+        ):
+            snyk_ok = self.snyk.run(app_root, non_interactive=self.config.forced)
+            if not snyk_ok and self.config.forced:
+                return 1
+        else:
+            print("ℹ️ Skipping Snyk.")
 
         self._print_summary()
         return 0
