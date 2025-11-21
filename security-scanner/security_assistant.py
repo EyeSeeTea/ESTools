@@ -25,6 +25,7 @@ class SecurityConfig:
     dtrack_api_port: str
     dtrack_ui_port: str
     dtrack_api_url: Optional[str]
+    dtrack_show_findings: bool
     project_name: Optional[str]
     project_version: Optional[str]
 
@@ -43,6 +44,7 @@ def build_config(args: argparse.Namespace) -> SecurityConfig:
         dtrack_api_port=args.dtrack_api_port or "8081",
         dtrack_ui_port=args.dtrack_ui_port or "8080",
         dtrack_api_url=args.dependency_track_server,
+        dtrack_show_findings=args.show_dtrack_findings,
         project_name=args.project_name,
         project_version=args.project_version,
     )
@@ -81,6 +83,7 @@ class SecurityAssistant:
 
         bom_path: Optional[Path] = None
         trivy_was_run = False
+        dtrack_ok = False
 
         # 1) BOM generation
         if self._should_run_step(
@@ -122,7 +125,7 @@ class SecurityAssistant:
         else:
             print("ℹ️ Skipping Trivy.")
 
-        # 4) Dependency-Track (UI + analyzers)
+        # 3) Dependency-Track (UI + analyzers)
         if self._should_run_step(
             self.config.run_dtrack,
             "Do you want to start Dependency-Track and upload the BOM?",
@@ -147,6 +150,18 @@ class SecurityAssistant:
                     return 1
         else:
             print("ℹ️ Skipping Dependency-Track.")
+
+        # 3b) Findings-only (fetch vulnerabilities even if BOM upload was skipped)
+        if self.config.dtrack_show_findings and not dtrack_ok:
+            findings_ok = self.dependency_track.show_findings(
+                project_name=project_name,
+                project_version=project_version,
+                api_url_override=self.config.dtrack_api_url,
+                api_key_override=None,
+                interactive=not self.config.forced,
+            )
+            if not findings_ok and self.config.forced:
+                return 1
 
         # 4) Snyk (run last so its output stays visible)
         if self._should_run_step(
@@ -299,6 +314,11 @@ def parse_args() -> argparse.Namespace:
             "Dependency-Track API base URL to use without prompting (for example http://localhost:8081). "
             "If provided, the assistant will connect to that server instead of starting a local stack."
         ),
+    )
+    parser.add_argument(
+        "--show-dtrack-findings",
+        action="store_true",
+        help="Fetch and display Dependency-Track findings even if the BOM upload step is skipped.",
     )
     parser.add_argument("--project-name", help="Override project name for Dependency-Track.")
     parser.add_argument("--project-version", help="Override project version for Dependency-Track.")
