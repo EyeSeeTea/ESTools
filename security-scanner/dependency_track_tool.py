@@ -251,6 +251,59 @@ class DependencyTrackTool:
 
         return url
 
+    def _resolve_api_context(
+        self,
+        api_url_override: Optional[str],
+        api_key_override: Optional[str],
+        interactive: bool,
+    ) -> Optional[tuple[str, str]]:
+        """
+        Resolve API base URL and API key, loading assistant .env as needed.
+        """
+        assistant_root = Path(__file__).resolve().parent
+        env_file = EnvFile(assistant_root)
+
+        # Load variables from the assistant's .env into the current environment,
+        # but do not override existing environment variables.
+        env_file.load_to_environ(overwrite=False)
+
+        api_base_url = api_url_override or os.environ.get("DTRACK_API_URL")
+        if not api_base_url:
+            if interactive:
+                api_base_url = f"http://localhost:{self.api_port}"
+            else:
+                print(
+                    "❌ DTRACK_API_URL is required in forced mode. "
+                    "Set it in the environment or dependency_tracker_url in the assistant .env."
+                )
+                return None
+        api_base_url = self._maybe_fix_ui_port(api_base_url)
+
+        # 1) Try user-provided API key or environment variable
+        api_key: Optional[str] = api_key_override or os.environ.get("DTRACK_API_KEY")
+
+        # 2) Try token from the assistant's .env under a reusable key
+        if not api_key:
+            token_from_file = env_file.read_key("dependency_tracker_token")
+            if token_from_file:
+                print("Loading Dependency-Track API token from assistant .env (dependency_tracker_token)")
+                api_key = token_from_file
+
+        # 3) Ask user as last resort and persist in the assistant's .env for future runs
+        if not api_key and interactive:
+            api_key = input("Enter Dependency-Track API Key (stored locally for reuse): ").strip()
+            if api_key:
+                env_file.write_key("dependency_tracker_token", api_key)
+
+        if not api_key:
+            print(
+                "❌ Dependency-Track API key is required. "
+                "In forced mode configure DTRACK_API_KEY or dependency_tracker_token in the assistant .env."
+            )
+            return None
+
+        return api_base_url, api_key
+
     # ------------------------------------------------------------------
     # Ports (local mode only)
     # ------------------------------------------------------------------
@@ -475,67 +528,23 @@ This assistant will store that token in a local .env file next to these scripts 
         """
         Upload the generated BOM to Dependency-Track using the requests library.
 
-        The API key is resolved in this order:
-          1) Environment variable DTRACK_API_KEY (if set).
-          2) Local .env file next to this assistant (key: dependency_tracker_token).
-          3) Interactive prompt; if provided, it is persisted in that .env file.
-
-        The API URL is resolved as follows:
-          - Environment variable DTRACK_API_URL (if set; can be a base URL).
-          - If not set, defaults to http://localhost:<self.api_port>.
-          - If the URL does not already end with '/api/v1/bom', this method
-            will append '/api/v1/bom' to construct the final endpoint.
+        A duplicate BOM (HTTP 409) is treated as a soft success: we still fetch findings
+        and clearly state that the BOM was already present. Any other failure is fatal.
         """
-        # Assistant root directory: where this script (and the rest of the assistant) lives.
-        # We store a reusable .env file here so the API key is global for the assistant,
-        # not per scanned project.
-        assistant_root = Path(__file__).resolve().parent
-        env_file = EnvFile(assistant_root)
-
-        # Load variables from the assistant's .env into the current environment,
-        # but do not override existing environment variables.
-        env_file.load_to_environ(overwrite=False)
+        ctx = self._resolve_api_context(
+            api_url_override=api_url_override,
+            api_key_override=api_key_override,
+            interactive=interactive,
+        )
+        if ctx is None:
+            return False
+        api_base_url, api_key = ctx
 
         self.u.print_step("Preparing BOM upload to Dependency-Track")
 
-        # Resolve API base URL (can come from parameters, environment or be the local default)
-        api_base_url = api_url_override or os.environ.get("DTRACK_API_URL")
-        if not api_base_url:
-            if interactive:
-                api_base_url = f"http://localhost:{self.api_port}"
-            else:
-                print(
-                    "❌ DTRACK_API_URL is required in forced mode. "
-                    "Set it in the environment or dependency_tracker_url in the assistant .env."
-                )
-                return False
-        api_base_url = self._maybe_fix_ui_port(api_base_url)
-        print(f"Using Dependency-Track API base URL: {api_base_url}")
         bom_endpoint = api_base_url.rstrip("/") + "/api/v1/bom"
+        print(f"Using Dependency-Track API base URL: {api_base_url}")
         print(f"Full BOM endpoint: {bom_endpoint}")
-
-        # 1) Try user-provided API key or environment variable
-        api_key: Optional[str] = api_key_override or os.environ.get("DTRACK_API_KEY")
-
-        # 2) Try token from the assistant's .env under a reusable key
-        if not api_key:
-            token_from_file = env_file.read_key("dependency_tracker_token")
-            if token_from_file:
-                print("Loading Dependency-Track API token from assistant .env (dependency_tracker_token)")
-                api_key = token_from_file
-
-        # 3) Ask user as last resort and persist in the assistant's .env for future runs
-        if not api_key and interactive:
-            api_key = input("Enter Dependency-Track API Key (leave empty to skip upload): ").strip()
-            if api_key:
-                env_file.write_key("dependency_tracker_token", api_key)
-
-        if not api_key:
-            print(
-                "❌ Dependency-Track API key is required. "
-                "In forced mode configure DTRACK_API_KEY or dependency_tracker_token in the assistant .env."
-            )
-            return False
 
         self.u.print_step("Project details for Dependency-Track")
         print(f"Detected project name: {project_name}")
@@ -569,21 +578,65 @@ This assistant will store that token in a local .env file next to these scripts 
             print(f"⚠️ Failed to upload BOM: {exc}")
             return False
 
+        duplicate = response.status_code == 409
+
         if response.ok:
             print("✅ BOM uploaded successfully.")
-            self._print_vulnerability_summary(
-                api_base_url=api_base_url,
-                api_key=api_key,
-                project_name=project_name,
-                project_version=project_version,
+            summary_note = "Findings below reflect the freshly uploaded BOM."
+        elif duplicate:
+            print(
+                "ℹ️ BOM already exists in Dependency-Track (HTTP 409). "
+                "No new upload performed; showing findings from the existing BOM."
             )
-            return True
+            summary_note = "Findings below come from the existing BOM (no new upload)."
+        else:
+            print(
+                f"⚠️ Dependency-Track responded with status {response.status_code}: "
+                f"{response.text}"
+            )
+            return False
 
-        print(
-            f"⚠️ Dependency-Track responded with status {response.status_code}: "
-            f"{response.text}"
+        self._print_vulnerability_summary(
+            api_base_url=api_base_url,
+            api_key=api_key,
+            project_name=project_name,
+            project_version=project_version,
+            source_note=summary_note,
         )
-        return False
+        return True
+
+    # ------------------------------------------------------------------
+    # Findings-only entry point
+    # ------------------------------------------------------------------
+
+    def show_findings(
+        self,
+        project_name: str,
+        project_version: str,
+        api_url_override: Optional[str],
+        api_key_override: Optional[str],
+        interactive: bool,
+    ) -> bool:
+        """
+        Fetch and print vulnerability findings for an existing project without uploading a BOM.
+        """
+        ctx = self._resolve_api_context(
+            api_url_override=api_url_override,
+            api_key_override=api_key_override,
+            interactive=interactive,
+        )
+        if ctx is None:
+            return False
+        api_base_url, api_key = ctx
+
+        self._print_vulnerability_summary(
+            api_base_url=api_base_url,
+            api_key=api_key,
+            project_name=project_name,
+            project_version=project_version,
+            source_note="Findings below were fetched without uploading a BOM in this run.",
+        )
+        return True
 
     # ------------------------------------------------------------------
     # Vulnerability summary
@@ -595,6 +648,7 @@ This assistant will store that token in a local .env file next to these scripts 
         api_key: str,
         project_name: str,
         project_version: str,
+        source_note: Optional[str] = None,
     ) -> None:
         """
         Fetch vulnerability findings for the given project and print a compact summary.
@@ -628,6 +682,8 @@ This assistant will store that token in a local .env file next to these scripts 
             entries.append(f"[{severity}] {vuln_id} in {comp_display}")
 
         self.u.print_step("Vulnerability findings from Dependency-Track")
+        if source_note:
+            print(source_note)
         print("Counts by severity:")
         for sev in sorted(severity_counts.keys(), reverse=True):
             print(f" - {sev}: {severity_counts[sev]}")
