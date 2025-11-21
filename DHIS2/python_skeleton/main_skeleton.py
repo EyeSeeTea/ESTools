@@ -4,7 +4,7 @@ import argparse
 
 from file_utils import load_dhis_env_config
 from create_missing_values_use_case import CreateMissingValuesUseCase
-
+from dhis_utils import test_connection
 
 # Default configuration (can be overridden by .env and CLI)
 DEFAULT_BASE_URL = ""
@@ -49,6 +49,8 @@ def main():
         default_base_url=args.base_url,
         default_jsessionid=args.jsessionid,
     )
+
+    test_connection(base_url=base_url, jsessionid=jsessionid)
 
     use_case = CreateMissingValuesUseCase(
         base_url=base_url,

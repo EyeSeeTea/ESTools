@@ -180,7 +180,19 @@ VALUES (
         for row in rows:
             tracked_entity_id = (row.get("trackedentityid") or "").strip()
             tei_uid = (row.get("tei_uid") or "").strip()
-            full_name = (row.get("full_name") or "").strip()
+            firstname = (row.get("firstname") or "").strip()
+            surname = (row.get("surname") or "").strip()
+
+            # Construimos el full_name como:
+            #   firstname + " " + surname
+            if firstname and surname:
+                full_name = f"{firstname} {surname}"
+            elif firstname:
+                full_name = firstname
+            elif surname:
+                full_name = surname
+            else:
+                full_name = ""
 
             if not tracked_entity_id or not tei_uid or not full_name:
                 print(f"[SKIP] Missing required data in CSV row: {row}")
