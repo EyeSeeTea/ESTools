@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import csv
 import json
 import os
 import re
@@ -10,7 +11,7 @@ from datetime import datetime
 import psycopg2
 
 SQL_FIND_ORPHANS_DOCUMENTS = """
-    SELECT fileresourceid, storagekey
+    SELECT fileresourceid, storagekey, name, created
     FROM fileresource fr
     WHERE NOT EXISTS (
         SELECT 1 FROM document d WHERE d.fileresource = fr.fileresourceid
@@ -22,7 +23,7 @@ SQL_FIND_ORPHANS_DOCUMENTS = """
 """
 
 SQL_FIND_DATA_VALUES_FILE_RESOURCES = """
-    SELECT fileresourceid, uid, storagekey
+    SELECT fileresourceid, uid, storagekey, name, created
     FROM fileresource fr where fr.domain = 'DATA_VALUE' and  fr.storagekey like '%dataValue%';
 """
 
@@ -173,10 +174,11 @@ def ensure_audit_table_exists(cursor, dry_run=False):
 
 def main():
     parser = argparse.ArgumentParser(description="Move orphaned DHIS2 file resources and archive DB entries.")
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--test", action="store_true", help="Run in dry-run mode (no changes).")
-    group.add_argument("--force", action="store_true", help="Apply changes: move files and modify DB.")
+    parser.add_argument("--force", action="store_true", help="Apply changes: move files and modify DB.")
+    parser.add_argument("--test", action="store_true", help="Run in dry-run mode (no changes). Default if --force not provided.")
     parser.add_argument("--config", required=True, help="Path to config.json file.")
+    parser.add_argument("--csv-path", help="Optional CSV file to record processed entries. In --force mode the file is rewritten unless --maintain-csv.")
+    parser.add_argument("--maintain-csv", action="store_true", help="Keep CSV contents even in --force mode (append only).")
     args = parser.parse_args()
 
     config = load_config(args.config)
@@ -202,20 +204,31 @@ def main():
         log(f"    temp_file_path: {temp_file_path} -> {'OK' if os.path.isdir(temp_file_path) else 'INVALID'}")
         sys.exit(1)
 
-    dry_run = args.test
+    if args.force and args.test:
+        log("❌ Choose either --force or --test, not both.")
+        sys.exit(1)
+
+    dry_run = not args.force  # default to test mode unless --force is provided
     log(f"{'Running in TEST mode' if dry_run else 'Running in FORCE mode'}")
     log(f"Connecting to database: {db_url}")
     log(f"File base path: {file_base_path}")
     log(f"Temporary move path: {temp_file_path}")
 
+    summary = {"mode": "TEST" if dry_run else "FORCE", "items": []}
+
     with psycopg2.connect(dsn=db_url) as conn:
         with conn.cursor() as cur:
             ensure_audit_table_exists(cur, dry_run)
-            remove_documents(file_base_path, temp_file_path, dry_run, cur, conn)
-            remove_datavalues(file_base_path, temp_file_path, dry_run, cur, conn)
+            remove_documents(file_base_path, temp_file_path, dry_run, cur, conn, summary)
+            remove_datavalues(file_base_path, temp_file_path, dry_run, cur, conn, summary)
+
+    if args.csv_path:
+        overwrite_csv = bool(args.force) and not args.maintain_csv
+        write_csv(args.csv_path, summary, overwrite=overwrite_csv)
+    emit_summary(summary)
 
 
-def remove_documents(file_base_path, temp_file_path, dry_run, cur, conn):
+def remove_documents(file_base_path, temp_file_path, dry_run, cur, conn, summary):
     log("Querying orphaned fileresource entries...")
     cur.execute(SQL_FIND_ORPHANS_DOCUMENTS)
     rows = cur.fetchall()
@@ -225,10 +238,10 @@ def remove_documents(file_base_path, temp_file_path, dry_run, cur, conn):
         return
 
     log(f"Found {len(rows)} \"document\" orphaned entries.")
-    process_orphan_files(rows, file_base_path, temp_file_path, dry_run, cur, conn, "document")
+    process_orphan_files(rows, file_base_path, temp_file_path, dry_run, cur, conn, "document", summary)
 
 
-def remove_datavalues(file_base_path, temp_file_path, dry_run, cur, conn):
+def remove_datavalues(file_base_path, temp_file_path, dry_run, cur, conn, summary):
     log("Querying orphaned fileresource entries...")
     cur.execute(SQL_FIND_DATA_VALUES_FILE_RESOURCES)
     rows = cur.fetchall()
@@ -241,41 +254,108 @@ def remove_datavalues(file_base_path, temp_file_path, dry_run, cur, conn):
     tracker_uids = get_all_tracker_uids(cur)
     # 3. Filter out referenced file resources
     orphan_data_values = []
-    for fileresourceid, uid, storagekey in rows:
+    for fileresourceid, uid, storagekey, name, created in rows:
         if uid in datavalue_uids:
             continue  # Referenced in datavalue
         if uid in event_blob:
             continue  # Referenced in event
         if uid in tracker_uids:
             continue # referenced in a trackerentityattribute
-        orphan_data_values.append((fileresourceid, storagekey))
+        orphan_data_values.append((fileresourceid, storagekey, name, created))
 
     if not orphan_data_values:
         log("✅ No fileResources entries found.")
         return
 
     log(f"Found {len(orphan_data_values)} \"data_value\" orphaned entries.")
-    process_orphan_files(orphan_data_values, file_base_path, temp_file_path, dry_run, cur, conn, "dataValue")
+    process_orphan_files(orphan_data_values, file_base_path, temp_file_path, dry_run, cur, conn, "dataValue", summary)
 
 
-def process_orphan_files(orphan_data_values, file_base_path, temp_file_path, dry_run, cur, conn, folder):
+def process_orphan_files(orphan_data_values, file_base_path, temp_file_path, dry_run, cur, conn, folder, summary):
     count = 0
-    for fileresourceid, storagekey in orphan_data_values:
+    for entry in orphan_data_values:
+        # entries may come as (id, storagekey, name)
+        fileresourceid, storagekey = entry[0], entry[1]
+        name = entry[2] if len(entry) > 2 else ""
+        created = entry[3] if len(entry) > 3 else None
         if not fileresourceid:
             log(f"⚠️ Skipping row with empty/null fileresourceid: {fileresourceid}")
             continue
         try:
-            matches = get_matching_files(storagekey, file_base_path, "dataValue")
+            matches = get_matching_files(storagekey, file_base_path, folder)
             if not matches:
-                log(f"No files found for storage_key: {storagekey}")
-                continue
-            move_files(matches, file_base_path, temp_file_path, folder, dry_run)
+                log(f"No files found for storage_key: {storagekey} (folder={folder})")
+            else:
+                move_files(matches, file_base_path, temp_file_path, folder, dry_run)
+            # Always update the db also if the files not existed on disk
             update_db(fileresourceid, cur, conn, dry_run)
+            rel_matches = [os.path.join(folder, os.path.relpath(m, os.path.join(file_base_path, folder))) for m in matches]
+            summary["items"].append({
+                "id": fileresourceid,
+                "name": name,
+                "storagekey": storagekey,
+                "folder": folder,
+                "files": rel_matches,
+                "created": created.isoformat() if hasattr(created, "isoformat") else created,
+                "action": "would_move_and_delete" if dry_run else "moved_and_deleted",
+                "notified": False
+            })
         except Exception as e:
             log(f"❌ Aborting due to error with fileresourceid {fileresourceid}: {e}")
             sys.exit(1)
         count = count + 1
     log(f"{count} file(s) {'would be moved' if dry_run else 'were successfully moved and deleted'}")
+
+
+def emit_summary(summary):
+    mode = summary.get("mode", "TEST")
+    items = summary.get("items", [])
+    log(f"Summary ({mode}): {len(items)} fileresource entries processed.")
+    for item in items:
+        files = item.get("files") or ["<missing from disk>"]
+        log(f"  - id={item.get('id')} name=\"{item.get('name')}\" storagekey={item.get('storagekey')} action={item.get('action')}")
+        for f in files:
+            log(f"      file: {f}")
+
+
+def write_csv(csv_path, summary, overwrite=False):
+    if not csv_path:
+        return
+    file_exists = os.path.isfile(csv_path)
+    mode = "w" if overwrite else "a"
+    want_header = overwrite or not file_exists
+    fieldnames = ["id", "name", "created", "storagekey", "folder", "action", "files", "notified"]
+    existing_ids = set()
+    if not overwrite and file_exists:
+        try:
+            with open(csv_path, "r", newline="") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    if "id" in row and row["id"]:
+                        existing_ids.add(str(row["id"]))
+        except Exception as e:
+            log(f"⚠️ Could not read existing CSV for deduplication: {e}")
+    try:
+        with open(csv_path, mode, newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            if want_header:
+                writer.writeheader()
+            for item in summary.get("items", []):
+                if str(item.get("id")) in existing_ids:
+                    continue
+                writer.writerow({
+                    "id": item.get("id"),
+                    "name": item.get("name"),
+                    "created": item.get("created"),
+                    "storagekey": item.get("storagekey"),
+                    "folder": item.get("folder"),
+                    "action": item.get("action"),
+                    "files": "|".join(item.get("files") or []),
+                    "notified": str(item.get("notified", False)).lower(),
+                })
+        log(f"CSV summary {'overwritten' if overwrite else 'appended'} at {csv_path}")
+    except Exception as e:
+        log(f"❌ Failed to write CSV {csv_path}: {e}")
 
 
 if __name__ == "__main__":
