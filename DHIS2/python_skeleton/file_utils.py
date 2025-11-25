@@ -48,6 +48,26 @@ def _with_timestamp_if_exists(path: Path) -> Path:
     return path.with_name(f"{path.stem}_{timestamp}{path.suffix}")
 
 
+def resolve_input_path(path: str | Path) -> Path:
+    """
+    Public helper to map a relative path to the 'input' folder.
+    """
+    return _to_input_path(path)
+
+
+def resolve_output_path(path: str | Path, with_timestamp: bool = True) -> Path:
+    """
+    Public helper to map a relative path to the 'output' folder.
+
+    If with_timestamp is True and the file exists, a timestamp is appended
+    to avoid overwriting the existing file.
+    """
+    resolved = _to_output_path(path)
+    if with_timestamp:
+        return _with_timestamp_if_exists(resolved)
+    return resolved
+
+
 def read_json(path: str | Path):
     """
     Read a JSON file from disk and return the parsed content.

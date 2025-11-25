@@ -4,6 +4,10 @@ import argparse
 
 from file_utils import load_dhis_env_config
 from create_missing_values_use_case import CreateMissingValuesUseCase
+from update_blueprint_dataelements_use_case import (
+    UpdateBlueprintDataElementsUseCase,
+    DEFAULT_SHEETS as DEFAULT_BLUEPRINT_SHEETS,
+)
 from dhis_utils import test_connection
 
 # Default configuration (can be overridden by .env and CLI)
@@ -13,10 +17,20 @@ DEFAULT_JSESSIONID = ""
 DEFAULT_INPUT_FILE = ("teis_without_storedby.csv")    # read from input/
 DEFAULT_OUTPUT_FILE = "insert_attr_fullname.sql"    # write to output/
 
+DEFAULT_BLUEPRINT_INPUT = "Blueprint_HWF.xlsx"  # read from input/
+DEFAULT_BLUEPRINT_OUTPUT = "blueprint_apvd.xlsx"  # write to output/
+DEFAULT_USE_CASE = "create-missing-values"
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Create missing attribute values SQL for DHIS2 tracked entities."
+        description="Utilities for DHIS2 blueprints and tracked entities."
+    )
+    parser.add_argument(
+        "--use-case",
+        choices=["create-missing-values", "update-blueprint-dataelements"],
+        default=DEFAULT_USE_CASE,
+        help="Which workflow to run.",
     )
     parser.add_argument(
         "--base-url",
@@ -38,6 +52,43 @@ def parse_args():
         default=DEFAULT_OUTPUT_FILE,
         help="Output SQL file name (relative to 'output/' folder).",
     )
+    parser.add_argument(
+        "--xlsx-file",
+        default=DEFAULT_BLUEPRINT_INPUT,
+        help="Input XLSX file (relative to 'input/' folder) for blueprint updates.",
+    )
+    parser.add_argument(
+        "--output-xlsx-file",
+        default=DEFAULT_BLUEPRINT_OUTPUT,
+        help="Output XLSX file (relative to 'output/' folder) for blueprint updates.",
+    )
+    parser.add_argument(
+        "--sheets",
+        nargs="+",
+        default=list(DEFAULT_BLUEPRINT_SHEETS),
+        help="Sheet names to process when updating blueprint data elements.",
+    )
+    parser.add_argument(
+        "--name-col",
+        default="3",
+        help="Column (index, letter, or header text) that holds the data element name.",
+    )
+    parser.add_argument(
+        "--uid-col",
+        default="DE UID",
+        help="Column (index, letter, or header text) where the UID will be written.",
+    )
+    parser.add_argument(
+        "--code-col",
+        default="DE Code",
+        help="Column (index, letter, or header text) where the code will be written.",
+    )
+    parser.add_argument(
+        "--data-start-row",
+        type=int,
+        default=2,
+        help="Row to start reading data when headers are not used.",
+    )
     return parser.parse_args()
 
 
@@ -52,12 +103,25 @@ def main():
 
     test_connection(base_url=base_url, jsessionid=jsessionid)
 
-    use_case = CreateMissingValuesUseCase(
-        base_url=base_url,
-        jsessionid=jsessionid,
-        input_path=args.input_file,
-        output_path=args.output_file,
-    )
+    if args.use_case == "update-blueprint-dataelements":
+        use_case = UpdateBlueprintDataElementsUseCase(
+            base_url=base_url,
+            jsessionid=jsessionid,
+            xlsx_path=args.xlsx_file,
+            output_path=args.output_xlsx_file,
+            sheet_names=args.sheets,
+            name_column=args.name_col,
+            uid_column=args.uid_col,
+            code_column=args.code_col,
+            data_start_row=args.data_start_row,
+        )
+    else:
+        use_case = CreateMissingValuesUseCase(
+            base_url=base_url,
+            jsessionid=jsessionid,
+            input_path=args.input_file,
+            output_path=args.output_file,
+        )
 
     use_case.execute()
 
