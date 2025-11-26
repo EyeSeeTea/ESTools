@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
 
+import argparse
+import os
 import subprocess
 import sys
-import argparse
+import tempfile
+from datetime import datetime
 
+from csv_utils import append_items, deduplicate_items
 
-LOCAL_SQL_FILE = "/tmp/find_orphan_files.sql"
-LOCAL_LIST_FILE = "/tmp/list_of_files_to_be_removed.txt"
-REMOTE_LIST_FILE = "/tmp/list_of_files_to_be_removed.txt"
-FILE_BASE_PATH = "/DHIS2_home/files"
-
-
-SQL_QUERY = """
-    SELECT storagekey
+SQL_FIND_ORPHANS_DOCUMENTS = """
+    SELECT fileresourceid, storagekey, name, created
     FROM fileresource fr
     WHERE NOT EXISTS (
         SELECT 1 FROM document d WHERE d.fileresource = fr.fileresourceid
@@ -20,79 +18,206 @@ SQL_QUERY = """
     AND fr.uid NOT IN (
         SELECT url FROM document
     )
-    AND fr.domain = 'DOCUMENT';
+    AND fr.domain = 'DOCUMENT' and  fr.storagekey like '%document%';
+"""
+
+SQL_FIND_DATA_VALUES_FILE_RESOURCES = """
+    SELECT fileresourceid, uid, storagekey, name, created
+    FROM fileresource fr where fr.domain = 'DATA_VALUE' and  fr.storagekey like '%dataValue%';
+"""
+
+SQL_EVENT_FILE_UIDS = """
+        SELECT eventdatavalues
+        FROM event
+        WHERE programstageid 
+        IN (SELECT programstageid FROM programstagedataelement WHERE dataelementid  
+        IN (SELECT dataelementid FROM dataelement WHERE valuetype='FILE_RESOURCE' or valuetype='IMAGE')) and deleted='f';
+"""
+
+SQL_DATA_VALUE_UIDS = """
+        SELECT dv.value
+        FROM datavalue dv
+        WHERE dv.value IN (SELECT uid FROM fileresource WHERE domain='DATA_VALUE')
+"""
+
+SQL_TRACKER_ATTRIBUTE_UIDS = """
+select value from trackedentityattributevalue where value IN (SELECT uid FROM fileresource WHERE domain='DATA_VALUE');
+"""
+
+SQL_INSERT_AUDIT = """
+    INSERT INTO fileresourcesaudit SELECT * FROM fileresource WHERE fileresourceid = {fid};
+"""
+
+SQL_DELETE_ORIGINAL = """
+    DELETE FROM fileresource WHERE fileresourceid = {fid};
+"""
+
+SQL_CREATE_TABLE_IF_NOT_EXIST = """
+    CREATE TABLE IF NOT EXISTS fileresourcesaudit AS TABLE fileresource WITH NO DATA;
 """
 
 
-def run(command, check=True, capture=False):
-    """Run a shell command."""
-    print(f"$ {' '.join(command)}")
-    return subprocess.run(command, check=check, capture_output=capture, text=True)
+def run(cmd, capture=False):
+    kwargs = {"check": True}
+    if capture:
+        kwargs["stdout"] = subprocess.PIPE
+        kwargs["stderr"] = subprocess.PIPE
+        kwargs["text"] = True
+    return subprocess.run(cmd, **kwargs)
 
 
-def find_container_id(name_pattern):
-    """Find the container ID based on a name substring. Retrieves first match only"""
-    result = run(["docker", "ps", "--format", "{{.ID}}", "-f", f"name={name_pattern}"], capture=True)
+def find_container_id(instance):
+    slug = "d2-docker-" + instance.replace("/", "-").replace(":", "-").replace(".", "-")
+    core = slug.replace("dhis2-data-", "") + "-core-1"
+    result = run(["docker", "ps", "--format", "{{.ID}}", "-f", f"name={core}"], capture=True)
     lines = result.stdout.strip().splitlines()
-    return lines[0] if lines else None
+    if not lines:
+        return None
+    return lines[0]
 
 
-def slugify(instance_name):
-    """Convert instance name to container name slug."""
-    return "d2-docker-" + instance_name.replace("/", "-").replace(":", "-").replace(".", "-")
+def run_sql(instance, sql):
+    with tempfile.NamedTemporaryFile("w", delete=False) as f:
+        f.write(sql)
+        tmp_path = f.name
+    try:
+        result = run(["d2-docker", "run-sql", "-i", instance, tmp_path], capture=True)
+        return result.stdout
+    finally:
+        try:
+            os.remove(tmp_path)
+        except OSError:
+            pass
+
+
+def parse_tab_rows(output, expected_cols):
+    rows = []
+    for line in output.strip().splitlines():
+        if not line or line.lower().startswith("fileresourceid") or line.lower().startswith("value") or line.lower().startswith("eventdatavalues"):
+            continue
+        if line.startswith("(") and "row" in line:
+            continue
+        parts = [p.strip() for p in line.split("|")]
+        if len(parts) < expected_cols:
+            continue
+        rows.append(parts)
+    return rows
+
+
+def get_orphan_documents(instance):
+    out = run_sql(instance, SQL_FIND_ORPHANS_DOCUMENTS)
+    rows = []
+    for fid, storagekey, name, created in parse_tab_rows(out, 4):
+        rows.append({
+            "id": fid,
+            "name": name,
+            "storagekey": storagekey,
+            "folder": "document",
+            "files": [],
+            "created": created,
+            "detection_date": datetime.utcnow().isoformat(),
+            "action": "would_move_and_delete",
+            "notified": False,
+        })
+    return rows
+
+
+def get_orphan_datavalues(instance):
+    data_rows = parse_tab_rows(run_sql(instance, SQL_FIND_DATA_VALUES_FILE_RESOURCES), 5)
+    datavalue_uids = set(r[0] for r in parse_tab_rows(run_sql(instance, SQL_DATA_VALUE_UIDS), 1))
+    tracker_uids = set(r[0] for r in parse_tab_rows(run_sql(instance, SQL_TRACKER_ATTRIBUTE_UIDS), 1))
+    event_blob = "\n".join(r[0] for r in parse_tab_rows(run_sql(instance, SQL_EVENT_FILE_UIDS), 1))
+
+    orphans = []
+    for fid, uid, storagekey, name, created in data_rows:
+        if uid in datavalue_uids:
+            continue
+        if uid in event_blob:
+            continue
+        if uid in tracker_uids:
+            continue
+        orphans.append({
+            "id": fid,
+            "name": name,
+            "storagekey": storagekey,
+            "folder": "dataValue",
+            "files": [],
+            "created": created,
+            "detection_date": datetime.utcnow().isoformat(),
+            "action": "would_move_and_delete",
+            "notified": False,
+        })
+    return orphans
+
+
+def delete_files(container_id, row, dry_run):
+    base = "/DHIS2_home/files"
+    storagekey = row["storagekey"]
+    folder = row["folder"]
+    prefix = os.path.join(base, folder, storagekey.replace(f"{folder}/", ""))
+    cmd = ["docker", "exec", container_id, "bash", "-c", f"rm -v {prefix}*"]
+    if dry_run:
+        print(f"[DRY RUN] {' '.join(cmd)}")
+    else:
+        try:
+            run(cmd)
+        except subprocess.CalledProcessError as e:
+            print(f"⚠️  File deletion failed (likely missing): {' '.join(cmd)} -> {e}")
+            # Continue with DB cleanup and CSV logging even if file is already gone.
+
+
+def ensure_audit_table(instance):
+    run_sql(instance, SQL_CREATE_TABLE_IF_NOT_EXIST)
+
+
+def archive_and_delete(instance, fileresourceid):
+    fid = int(fileresourceid)
+    sql = SQL_INSERT_AUDIT.format(fid=fid) + SQL_DELETE_ORIGINAL.format(fid=fid)
+    run_sql(instance, sql)
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Remove orphaned DHIS2 file resources from Core container.")
-    parser.add_argument("-i", "--instance", required=True, help="d2-docker instance name (e.g. /usr/bin/python3 file_garbage_remover.py -i docker.eyeseetea.com/widpit/dhis2-data:2.42-widp-preprod-cont-indiv)")
+    parser = argparse.ArgumentParser(description="Find/delete orphan file resources in d2-docker instance and log to CSV.")
+    parser.add_argument("--instance", required=True, help="d2-docker instance name (e.g. docker.eyeseetea.com/project/dhis2-data:2.41-test)")
+    parser.add_argument("--csv-path", help="CSV file to log orphan entries.")
+    parser.add_argument("--force", action="store_true", help="Actually delete files in container.")
+    parser.add_argument("--maintain-csv", action="store_true", help="Append to CSV in force mode (do not overwrite).")
     args = parser.parse_args()
 
-    instance_name = args.instance
-    container_slug = slugify(instance_name)
-    core_container_match = container_slug.replace("dhis2-data-", "") + "-core-1"
+    container_id = find_container_id(args.instance)
+    if not container_id:
+        print("❌ Could not find core container for instance", file=sys.stderr)
+        sys.exit(1)
 
-    print("Writing SQL file...")
-    with open(LOCAL_SQL_FILE, "w") as f:
-        f.write(SQL_QUERY)
+    dry_run = not args.force
+    print(f"Running in {'DRY-RUN' if dry_run else 'FORCE'} mode against container {container_id}")
 
-    print("Running SQL with d2-docker and capturing output...")
-    result = run(["d2-docker", "run-sql", "-i", instance_name, LOCAL_SQL_FILE], capture=True)
+    ensure_audit_table(args.instance)
 
-    print("Saving result to file...")
-    with open(LOCAL_LIST_FILE, "w") as f:
-        for line in result.stdout.strip().splitlines():
-            line = line.strip()
-            if line and not line.lower().startswith("storagekey"):
-                f.write(f"{line}\n")
+    rows = []
+    rows.extend(get_orphan_documents(args.instance))
+    rows.extend(get_orphan_datavalues(args.instance))
+    print(f"Found {len(rows)} orphan entries")
 
-    print("Identifying containers...")
-    core_container = find_container_id(core_container_match)
-    print(core_container)
+    for row in rows:
+        delete_files(container_id, row, dry_run)
+        if dry_run:
+            print(f"[DRY RUN] Skipping DB archive/delete for {row['id']} ({row.get('name', '')}) action={row.get('action')}")
+            continue
+        try:
+            archive_and_delete(args.instance, row["id"])
+            row["action"] = "moved_and_deleted"
+        except Exception as e:
+            print(f"❌ Failed DB archive/delete for {row['id']}: {e}", file=sys.stderr)
+            if not dry_run:
+                sys.exit(1)
 
-    print(f"Core container: {core_container}")
+    if args.csv_path:
+        overwrite_csv = bool(args.force) and not args.maintain_csv
+        items = deduplicate_items(args.csv_path, rows, unique_keys=("id", "name"), overwrite=overwrite_csv)
+        append_items(args.csv_path, items, overwrite=overwrite_csv)
 
-    print("Copying file list to Core container...")
-    run(["docker", "cp", LOCAL_LIST_FILE, f"{core_container}:{REMOTE_LIST_FILE}"])
-
-    print(f"Deleting orphaned files in Core container... {core_container}")
-    delete_cmd = f"""
-    bash -c '
-    if [ ! -f "{REMOTE_LIST_FILE}" ]; then
-        echo "File list not found: {REMOTE_LIST_FILE}"
-        exit 1
-    fi
-
-    while IFS= read -r key; do
-        fullpath="{FILE_BASE_PATH}/$key"
-        echo "Deleting files: $fullpath*"
-        rm -v "$fullpath"* 2>/dev/null || echo "Nothing to delete for $fullpath"
-    done < "{REMOTE_LIST_FILE}"
-    '
-    """
-
-    run(["docker", "exec", core_container, "bash", "-c", delete_cmd])
-
-    print("Cleanup complete.")
+    print(f"Summary: processed {len(rows)} orphan entries")
 
 
 if __name__ == "__main__":

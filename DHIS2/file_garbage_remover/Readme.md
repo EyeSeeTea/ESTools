@@ -5,6 +5,36 @@ These scripts identify files with no database references and take appropriate ac
 
 Included Scripts
 
+## main.py (recommended entry point)
+
+Run cleanup (tomcat or docker) and optionally send a notification in one command. Dry-run is the default unless you add `--force`.
+
+### Example (docker cleanup + notify using webhook from config.json)
+```
+python3 main.py \
+  --mode docker \
+  --docker-instance docker.eyeseetea.com/widpit/dhis2-data:2.41-widp-dev-test \
+  --csv-path /tmp/fg_docker.csv \
+  --config /path/to/config.json \
+  --notify-title "Orphans widp-dev-test"
+```
+- Add `--force` to delete/move for real (tomcat) or delete in container (docker).  
+- Add `--notify-test` to print the payload instead of sending.  
+- To notify only (no cleanup): `python3 main.py --notify-only --csv-path /tmp/fg.csv --config /path/to/config.json --notify-title "..." [--notify-test]`
+
+config.json needs the cleanup settings plus the webhook (if you want notifications):
+```
+{
+  "db_host": "",
+  "db_port": "",
+  "db_name": "",
+  "db_user": "",
+  "file_base_path": "",
+  "temp_file_path": "",
+  "webhook-url": "https://your.webhook.url"
+}
+```
+
 ## file_garbage_remover_tomcat.py
 
 ### Description:

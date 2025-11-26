@@ -293,6 +293,12 @@ def run_docker_cleanup(args):
         log(f"❌ Docker cleanup script not found at {script_path}")
         sys.exit(1)
     cmd = [sys.executable, script_path, "--instance", args.docker_instance]
+    if args.csv_path:
+        cmd.extend(["--csv-path", args.csv_path])
+        if args.maintain_csv:
+            cmd.append("--maintain-csv")
+    if args.force:
+        cmd.append("--force")
     log(f"Running docker cleanup via: {' '.join(cmd)}")
     try:
         subprocess.run(cmd, check=True)
