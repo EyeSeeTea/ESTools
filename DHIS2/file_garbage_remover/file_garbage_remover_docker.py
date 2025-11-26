@@ -8,53 +8,16 @@ import tempfile
 from datetime import datetime
 
 from csv_utils import append_items, deduplicate_items
-
-SQL_FIND_ORPHANS_DOCUMENTS = """
-    SELECT fileresourceid, storagekey, name, created
-    FROM fileresource fr
-    WHERE NOT EXISTS (
-        SELECT 1 FROM document d WHERE d.fileresource = fr.fileresourceid
-    )
-    AND fr.uid NOT IN (
-        SELECT url FROM document
-    )
-    AND fr.domain = 'DOCUMENT' and  fr.storagekey like '%document%';
-"""
-
-SQL_FIND_DATA_VALUES_FILE_RESOURCES = """
-    SELECT fileresourceid, uid, storagekey, name, created
-    FROM fileresource fr where fr.domain = 'DATA_VALUE' and  fr.storagekey like '%dataValue%';
-"""
-
-SQL_EVENT_FILE_UIDS = """
-        SELECT eventdatavalues
-        FROM event
-        WHERE programstageid 
-        IN (SELECT programstageid FROM programstagedataelement WHERE dataelementid  
-        IN (SELECT dataelementid FROM dataelement WHERE valuetype='FILE_RESOURCE' or valuetype='IMAGE')) and deleted='f';
-"""
-
-SQL_DATA_VALUE_UIDS = """
-        SELECT dv.value
-        FROM datavalue dv
-        WHERE dv.value IN (SELECT uid FROM fileresource WHERE domain='DATA_VALUE')
-"""
-
-SQL_TRACKER_ATTRIBUTE_UIDS = """
-select value from trackedentityattributevalue where value IN (SELECT uid FROM fileresource WHERE domain='DATA_VALUE');
-"""
-
-SQL_INSERT_AUDIT = """
-    INSERT INTO fileresourcesaudit SELECT * FROM fileresource WHERE fileresourceid = {fid};
-"""
-
-SQL_DELETE_ORIGINAL = """
-    DELETE FROM fileresource WHERE fileresourceid = {fid};
-"""
-
-SQL_CREATE_TABLE_IF_NOT_EXIST = """
-    CREATE TABLE IF NOT EXISTS fileresourcesaudit AS TABLE fileresource WITH NO DATA;
-"""
+from sql_queries import (
+    SQL_CREATE_TABLE_IF_NOT_EXIST,
+    SQL_DATA_VALUE_UIDS,
+    SQL_DELETE_ORIGINAL,
+    SQL_EVENT_FILE_UIDS,
+    SQL_FIND_DATA_VALUES_FILE_RESOURCES,
+    SQL_FIND_ORPHANS_DOCUMENTS,
+    SQL_INSERT_AUDIT,
+    SQL_TRACKER_ATTRIBUTE_UIDS,
+)
 
 
 def run(cmd, capture=False):
@@ -172,7 +135,7 @@ def ensure_audit_table(instance):
 
 def archive_and_delete(instance, fileresourceid):
     fid = int(fileresourceid)
-    sql = SQL_INSERT_AUDIT.format(fid=fid) + SQL_DELETE_ORIGINAL.format(fid=fid)
+    sql = (SQL_INSERT_AUDIT % {"fid": fid}) + (SQL_DELETE_ORIGINAL % {"fid": fid})
     run_sql(instance, sql)
 
 
