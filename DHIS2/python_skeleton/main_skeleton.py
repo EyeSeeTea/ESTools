@@ -4,10 +4,7 @@ import argparse
 
 from file_utils import load_dhis_env_config
 from create_missing_values_use_case import CreateMissingValuesUseCase
-from update_blueprint_dataelements_use_case import (
-    UpdateBlueprintDataElementsUseCase,
-    DEFAULT_SHEETS as DEFAULT_BLUEPRINT_SHEETS,
-)
+from reorder_sections_use_case import ReorderSectionsUseCase
 from dhis_utils import test_connection
 
 # Default configuration (can be overridden by .env and CLI)
@@ -19,6 +16,9 @@ DEFAULT_OUTPUT_FILE = "insert_attr_fullname.sql"    # write to output/
 
 DEFAULT_BLUEPRINT_INPUT = "Blueprint_HWF.xlsx"  # read from input/
 DEFAULT_BLUEPRINT_OUTPUT = "blueprint_apvd.xlsx"  # write to output/
+DEFAULT_BLUEPRINT_SHEETS = ("Module 1 - APVD", "Module 2 - APVD")
+DEFAULT_SECTIONS_INPUT = "sections_order.json"  # read from input/
+DEFAULT_SECTIONS_OUTPUT = "sections_order_sorted.json"  # write to output/
 DEFAULT_USE_CASE = "create-missing-values"
 
 
@@ -28,7 +28,7 @@ def parse_args():
     )
     parser.add_argument(
         "--use-case",
-        choices=["create-missing-values", "update-blueprint-dataelements"],
+        choices=["create-missing-values", "update-blueprint-dataelements", "reorder-sections"],
         default=DEFAULT_USE_CASE,
         help="Which workflow to run.",
     )
@@ -89,6 +89,16 @@ def parse_args():
         default=2,
         help="Row to start reading data when headers are not used.",
     )
+    parser.add_argument(
+        "--sections-file",
+        default=DEFAULT_SECTIONS_INPUT,
+        help="Input JSON file with sections (relative to 'input/' folder).",
+    )
+    parser.add_argument(
+        "--sections-output-file",
+        default=DEFAULT_SECTIONS_OUTPUT,
+        help="Output JSON file for sorted sections (relative to 'output/' folder).",
+    )
     return parser.parse_args()
 
 
@@ -101,9 +111,11 @@ def main():
         default_jsessionid=args.jsessionid,
     )
 
-    test_connection(base_url=base_url, jsessionid=jsessionid)
-
     if args.use_case == "update-blueprint-dataelements":
+        # Lazy import to avoid requiring openpyxl when not using this workflow.
+        from update_blueprint_dataelements_use_case import UpdateBlueprintDataElementsUseCase
+
+        test_connection(base_url=base_url, jsessionid=jsessionid)
         use_case = UpdateBlueprintDataElementsUseCase(
             base_url=base_url,
             jsessionid=jsessionid,
@@ -115,7 +127,13 @@ def main():
             code_column=args.code_col,
             data_start_row=args.data_start_row,
         )
+    elif args.use_case == "reorder-sections":
+        use_case = ReorderSectionsUseCase(
+            input_path=args.sections_file,
+            output_path=args.sections_output_file,
+        )
     else:
+        test_connection(base_url=base_url, jsessionid=jsessionid)
         use_case = CreateMissingValuesUseCase(
             base_url=base_url,
             jsessionid=jsessionid,

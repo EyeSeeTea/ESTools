@@ -39,6 +39,16 @@ What it does:
 - Searches DHIS2 with `name:like`; if one exact match is found, writes UID (and code when present).
 - If no exact match, shows candidates and prompts for UID manually in the console.
 
+### Reorder sections alphabetically
+Reads a JSON of sections from `input/` (either a list, or an object with a `sections` array) and rewrites `sortOrder` starting at 1 based on alphabetical name order.
+```bash
+python3 main_skeleton.py \
+  --use-case reorder-sections \
+  --sections-file sections_order.json \
+  --sections-output-file sections_order_sorted.json
+```
+Tip: The sample data was fetched via `https://server/api/sections?filter=dataSet.id:in:[NnhyjiUbcJN]&fields=*&paging=false`.
+
 ### Create SQL for missing attributes
 Generates INSERT statements for missing tracked-entity attributes (reads CSV from `input/`, writes SQL to `output/`):
 ```bash
