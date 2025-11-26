@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import argparse
-import json
 import sys
 
 import cleaner
@@ -30,8 +29,10 @@ def build_parser():
 
 
 def resolve_webhook(config_path, cli_webhook):
-    if cli_webhook:
-        return cli_webhook
+    return cli_webhook or _from_config(config_path, ["webhook-url", "webhook_url"])
+
+
+def _from_config(config_path, keys):
     if not config_path:
         return None
     try:
@@ -39,7 +40,14 @@ def resolve_webhook(config_path, cli_webhook):
     except Exception as e:
         print(f"❌ Failed to load config file: {e}", file=sys.stderr)
         sys.exit(1)
-    return cfg.get("webhook-url") or cfg.get("webhook_url")
+    for key in keys:
+        if key in cfg:
+            return cfg.get(key)
+    return None
+
+
+def resolve_proxy(config_path, cli_value, keys):
+    return cli_value or _from_config(config_path, keys)
 
 
 def run_notify_flow(csv_path, config_path=None, webhook_url=None, title=None, http_proxy=None, https_proxy=None, notify_test=False):
@@ -48,6 +56,8 @@ def run_notify_flow(csv_path, config_path=None, webhook_url=None, title=None, ht
         return
     content = "\n".join(names)
     webhook = resolve_webhook(config_path, webhook_url)
+    http_proxy = resolve_proxy(config_path, http_proxy, ["notify-http-proxy", "notify_http_proxy", "http-proxy", "http_proxy"])
+    https_proxy = resolve_proxy(config_path, https_proxy, ["notify-https-proxy", "notify_https_proxy", "https-proxy", "https_proxy"])
     if notify_test:
         print(f"[TEST] Would send notification to {webhook or '<no-webhook-configured>'}")
         print(f"[TEST] Title: {title or '<no-title>'}")
