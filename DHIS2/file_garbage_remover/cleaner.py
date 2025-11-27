@@ -241,6 +241,9 @@ def run_cleanup(args):
             remove_datavalues(file_base_path, temp_file_path, dry_run, cur, conn, summary)
 
     if args.csv_path:
+        if getattr(args, "save_all_as_notified", False):
+            for item in summary.get("items", []):
+                item["notified"] = True
         overwrite_csv = bool(args.force) and not args.maintain_csv
         items = deduplicate_items(args.csv_path, summary.get("items", []), unique_keys=("id", "name"), overwrite=overwrite_csv, log=log)
         append_items(args.csv_path, items, overwrite=overwrite_csv, log=log)

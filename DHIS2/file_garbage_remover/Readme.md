@@ -21,6 +21,16 @@ python3 main.py \
 - Add `--force` to delete/move for real (tomcat) or delete in container (docker).  
 - Add `--notify-test` to print the payload instead of sending.  
 - To notify only (no cleanup): `python3 main.py --notify-only --csv-path /tmp/fg.csv --config /path/to/config.json --notify-title "..." [--notify-test]`
+- To skip sending and save in CSV as notified: `--save-all-as-notified`.
+
+### Example (tomcat cleanup, dry-run, save as nnotified)
+```
+DB_PASSWORD_FG=your_password python3 main.py \
+  --config /path/to/config.json \
+  --csv-path /tmp/fg_tomcat.csv \
+  --save-all-as-notified
+```
+Add `--force` to move/delete files and files in DB.
 
 config.json needs the cleanup settings plus the webhook (if you want notifications):
 ```
@@ -31,7 +41,9 @@ config.json needs the cleanup settings plus the webhook (if you want notificatio
   "db_user": "",
   "file_base_path": "",
   "temp_file_path": "",
-  "webhook-url": "https://your.webhook.url"
+  "webhook-url": "https://your.webhook.url",
+  "notify-http-proxy": "http://openproxy.who.int:8080",
+  "notify-https-proxy": "http://openproxy.who.int:8080"
 }
 ```
 

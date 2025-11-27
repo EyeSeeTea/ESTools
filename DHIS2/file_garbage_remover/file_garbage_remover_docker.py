@@ -145,6 +145,7 @@ def main():
     parser.add_argument("--csv-path", help="CSV file to log orphan entries.")
     parser.add_argument("--force", action="store_true", help="Actually delete files in container.")
     parser.add_argument("--maintain-csv", action="store_true", help="Append to CSV in force mode (do not overwrite).")
+    parser.add_argument("--save-all-as-notified", action="store_true", help="Store CSV entries with notified=true even if not sent.")
     args = parser.parse_args()
 
     container_id = find_container_id(args.instance)
@@ -161,6 +162,10 @@ def main():
     rows.extend(get_orphan_documents(args.instance))
     rows.extend(get_orphan_datavalues(args.instance))
     print(f"Found {len(rows)} orphan entries")
+
+    if args.save_all_as_notified:
+        for row in rows:
+            row["notified"] = True
 
     for row in rows:
         delete_files(container_id, row, dry_run)

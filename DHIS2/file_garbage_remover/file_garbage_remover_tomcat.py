@@ -179,6 +179,7 @@ def main():
     parser.add_argument("--config", required=True, help="Path to config.json file.")
     parser.add_argument("--csv-path", help="Optional CSV file to record processed entries. In --force mode the file is rewritten unless --maintain-csv.")
     parser.add_argument("--maintain-csv", action="store_true", help="Keep CSV contents even in --force mode (append only).")
+    parser.add_argument("--save-all-as-notified", action="store_true", help="Store CSV entries with notified=true even if not sent.")
     args = parser.parse_args()
 
     config = load_config(args.config)
@@ -223,6 +224,9 @@ def main():
             remove_datavalues(file_base_path, temp_file_path, dry_run, cur, conn, summary)
 
     if args.csv_path:
+        if args.save_all_as_notified:
+            for item in summary.get("items", []):
+                item["notified"] = True
         overwrite_csv = bool(args.force) and not args.maintain_csv
         write_csv(args.csv_path, summary, overwrite=overwrite_csv)
     emit_summary(summary)
