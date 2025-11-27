@@ -52,9 +52,9 @@ def resolve_proxy(config_path, cli_value, keys):
     return cli_value or _from_config(config_path, keys)
 
 
-def run_notify_flow(csv_path, config_path=None, webhook_url=None, title=None, http_proxy=None, https_proxy=None, notify_test=False, notify_max_lines=50):
+def run_notify_flow(csv_path, config_path=None, webhook_url=None, title=None, http_proxy=None, https_proxy=None, notify_test=False, notify_max_lines=100):
     names, ids, fieldnames, rows = pending_from_csv(csv_path)
-    if not names and not save_all_as_notified:
+    if not names:
         return
     max_lines = notify_max_lines if notify_max_lines and notify_max_lines > 0 else None
     truncated = names[:max_lines] if max_lines else names
@@ -85,9 +85,8 @@ def run_notify_flow(csv_path, config_path=None, webhook_url=None, title=None, ht
                 print(f"❌ Failed to send notification: {e}", file=sys.stderr)
                 sys.exit(1)
     # mark entries as notified
-    ids_to_mark = ids if not save_all_as_notified else set(str(row.get("id")) for row in rows)
-    if ids_to_mark:
-        mark_notified(csv_path, rows, fieldnames, ids_to_mark)
+    if ids:
+        mark_notified(csv_path, rows, fieldnames, ids)
 
 
 def main():

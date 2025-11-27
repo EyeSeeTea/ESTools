@@ -8,7 +8,12 @@ import tempfile
 from datetime import datetime
 
 from csv_utils import append_items, deduplicate_items
-from common import mark_items_notified
+from common import (
+    build_datavalue_items,
+    build_document_items,
+    emit_summary,
+    mark_items_notified,
+)
 from sql_queries import (
     SQL_CREATE_TABLE_IF_NOT_EXIST,
     SQL_DATA_VALUE_UIDS,
@@ -70,20 +75,8 @@ def parse_tab_rows(output, expected_cols):
 
 def get_orphan_documents(instance):
     out = run_sql(instance, SQL_FIND_ORPHANS_DOCUMENTS)
-    rows = []
-    for fid, storagekey, name, created in parse_tab_rows(out, 4):
-        rows.append({
-            "id": fid,
-            "name": name,
-            "storagekey": storagekey,
-            "folder": "document",
-            "files": [],
-            "created": created,
-            "detection_date": datetime.utcnow().isoformat(),
-            "action": "would_move_and_delete",
-            "notified": False,
-        })
-    return rows
+    raw_rows = parse_tab_rows(out, 4)
+    return build_document_items(raw_rows)
 
 
 def get_orphan_datavalues(instance):
@@ -91,27 +84,7 @@ def get_orphan_datavalues(instance):
     datavalue_uids = set(r[0] for r in parse_tab_rows(run_sql(instance, SQL_DATA_VALUE_UIDS), 1))
     tracker_uids = set(r[0] for r in parse_tab_rows(run_sql(instance, SQL_TRACKER_ATTRIBUTE_UIDS), 1))
     event_blob = "\n".join(r[0] for r in parse_tab_rows(run_sql(instance, SQL_EVENT_FILE_UIDS), 1))
-
-    orphans = []
-    for fid, uid, storagekey, name, created in data_rows:
-        if uid in datavalue_uids:
-            continue
-        if uid in event_blob:
-            continue
-        if uid in tracker_uids:
-            continue
-        orphans.append({
-            "id": fid,
-            "name": name,
-            "storagekey": storagekey,
-            "folder": "dataValue",
-            "files": [],
-            "created": created,
-            "detection_date": datetime.utcnow().isoformat(),
-            "action": "would_move_and_delete",
-            "notified": False,
-        })
-    return orphans
+    return build_datavalue_items(data_rows, datavalue_uids, tracker_uids, event_blob)
 
 
 def delete_files(container_id, row, dry_run):
@@ -185,7 +158,7 @@ def main():
         items = deduplicate_items(args.csv_path, rows, unique_keys=("id", "name"), overwrite=overwrite_csv)
         append_items(args.csv_path, items, overwrite=overwrite_csv)
 
-    print(f"Summary: processed {len(rows)} orphan entries")
+    emit_summary(rows, "DRY-RUN" if dry_run else "FORCE", log_fn=print)
 
 
 if __name__ == "__main__":

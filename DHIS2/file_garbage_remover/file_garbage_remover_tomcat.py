@@ -7,7 +7,14 @@ from datetime import datetime
 
 import psycopg2
 
-from common import load_config, log, mark_items_notified
+from common import (
+    build_datavalue_items,
+    build_document_items,
+    emit_summary,
+    load_config,
+    log,
+    mark_items_notified,
+)
 from csv_utils import deduplicate_items, append_items
 from sql_queries import (
     SQL_CREATE_TABLE_IF_NOT_EXIST,
@@ -29,15 +36,6 @@ def get_events(cursor):
 def get_event_blob(cursor):
     event_texts = get_events(cursor)
     return "\n".join(json.dumps(e) for e in event_texts)
-
-
-def get_data_value_file_resources(cursor):
-    cursor.execute("""
-        SELECT fileresourceid, uid, storagekey
-        FROM fileresource
-        WHERE domain = 'DATA_VALUE'
-    """)
-    return cursor.fetchall()
 
 
 def get_all_datavalue_uids(cursor):
@@ -174,59 +172,50 @@ def main():
         overwrite_csv = bool(args.force) and not args.maintain_csv
         items = deduplicate_items(args.csv_path, summary.get("items", []), unique_keys=("id", "name"), overwrite=overwrite_csv, log=log)
         append_items(args.csv_path, items, overwrite=overwrite_csv, log=log)
-    emit_summary(summary)
+    emit_summary(summary.get("items", []), summary.get("mode", "TEST"), log_fn=log)
 
 
 def remove_documents(file_base_path, temp_file_path, dry_run, cur, conn, summary):
     log("Querying orphaned fileresource entries...")
     cur.execute(SQL_FIND_ORPHANS_DOCUMENTS)
-    rows = cur.fetchall()
+    raw_rows = cur.fetchall()
+    items = build_document_items(raw_rows)
 
-    if not rows:
+    if not items:
         log("✅ No orphaned fileresource entries found.")
         return
 
-    log(f"Found {len(rows)} \"document\" orphaned entries.")
-    process_orphan_files(rows, file_base_path, temp_file_path, dry_run, cur, conn, "document", summary)
+    log(f"Found {len(items)} \"document\" orphaned entries.")
+    process_orphan_items(items, file_base_path, temp_file_path, dry_run, cur, conn, summary)
 
 
 def remove_datavalues(file_base_path, temp_file_path, dry_run, cur, conn, summary):
     log("Querying orphaned fileresource entries...")
     cur.execute(SQL_FIND_DATA_VALUES_FILE_RESOURCES)
-    rows = cur.fetchall()
-
+    raw_rows = cur.fetchall()
     # get all file resource datavalues
     datavalue_uids = get_all_datavalue_uids(cur)
     # get all events with file dataelement values
     event_blob = get_event_blob(cur)
 
     tracker_uids = get_all_tracker_uids(cur)
-    # 3. Filter out referenced file resources
-    orphan_data_values = []
-    for fileresourceid, uid, storagekey, name, created in rows:
-        if uid in datavalue_uids:
-            continue  # Referenced in datavalue
-        if uid in event_blob:
-            continue  # Referenced in event
-        if uid in tracker_uids:
-            continue # referenced in a trackerentityattribute
-        orphan_data_values.append((fileresourceid, storagekey, name, created))
+    items = build_datavalue_items(raw_rows, datavalue_uids, tracker_uids, event_blob)
 
-    if not orphan_data_values:
+    if not items:
         log("✅ No fileResources entries found.")
         return
 
-    log(f"Found {len(orphan_data_values)} \"data_value\" orphaned entries.")
-    process_orphan_files(orphan_data_values, file_base_path, temp_file_path, dry_run, cur, conn, "dataValue", summary)
+    log(f"Found {len(items)} \"data_value\" orphaned entries.")
+    process_orphan_items(items, file_base_path, temp_file_path, dry_run, cur, conn, summary)
 
 
-def process_orphan_files(orphan_data_values, file_base_path, temp_file_path, dry_run, cur, conn, folder, summary):
+def process_orphan_items(orphan_items, file_base_path, temp_file_path, dry_run, cur, conn, summary):
     count = 0
-    for entry in orphan_data_values:
-        # entries may come as (id, storagekey, name)
-        fileresourceid, storagekey = entry[0], entry[1]
-        name = entry[2] if len(entry) > 2 else ""
-        created = entry[3] if len(entry) > 3 else None
+    for item in orphan_items:
+        fileresourceid = item.get("id")
+        storagekey = item.get("storagekey", "")
+        name = item.get("name", "")
+        folder = item.get("folder", "")
         if not fileresourceid:
             log(f"⚠️ Skipping row with empty/null fileresourceid: {fileresourceid}")
             continue
@@ -239,32 +228,14 @@ def process_orphan_files(orphan_data_values, file_base_path, temp_file_path, dry
             # Always update the db also if the files not existed on disk
             update_db(fileresourceid, cur, conn, dry_run)
             rel_matches = [os.path.join(folder, os.path.relpath(m, os.path.join(file_base_path, folder))) for m in matches]
-            summary["items"].append({
-                "id": fileresourceid,
-                "name": name,
-                "storagekey": storagekey,
-                "folder": folder,
-                "files": rel_matches,
-                "created": created.isoformat() if hasattr(created, "isoformat") else created,
-                "action": "would_move_and_delete" if dry_run else "moved_and_deleted",
-                "notified": False
-            })
+            item["files"] = rel_matches
+            item["action"] = "would_move_and_delete" if dry_run else "moved_and_deleted"
+            summary["items"].append(item)
         except Exception as e:
             log(f"❌ Aborting due to error with fileresourceid {fileresourceid}: {e}")
             sys.exit(1)
         count = count + 1
     log(f"{count} file(s) {'would be moved' if dry_run else 'were successfully moved and deleted'}")
-
-
-def emit_summary(summary):
-    mode = summary.get("mode", "TEST")
-    items = summary.get("items", [])
-    log(f"Summary ({mode}): {len(items)} fileresource entries processed.")
-    for item in items:
-        files = item.get("files") or ["<missing from disk>"]
-        log(f"  - id={item.get('id')} name=\"{item.get('name')}\" storagekey={item.get('storagekey')} action={item.get('action')}")
-        for f in files:
-            log(f"      file: {f}")
 
 
 if __name__ == "__main__":
