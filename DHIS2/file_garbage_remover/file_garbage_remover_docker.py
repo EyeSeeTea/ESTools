@@ -8,6 +8,7 @@ import tempfile
 from datetime import datetime
 
 from csv_utils import append_items, deduplicate_items
+from common import mark_items_notified
 from sql_queries import (
     SQL_CREATE_TABLE_IF_NOT_EXIST,
     SQL_DATA_VALUE_UIDS,
@@ -164,8 +165,7 @@ def main():
     print(f"Found {len(rows)} orphan entries")
 
     if args.save_all_as_notified:
-        for row in rows:
-            row["notified"] = True
+        mark_items_notified(rows)
 
     for row in rows:
         delete_files(container_id, row, dry_run)

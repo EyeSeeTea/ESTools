@@ -1,78 +1,24 @@
 #!/usr/bin/env python3
 import argparse
-import csv
-import json
 import os
-import re
 import shutil
 import sys
 from datetime import datetime
 
 import psycopg2
 
-SQL_FIND_ORPHANS_DOCUMENTS = """
-    SELECT fileresourceid, storagekey, name, created
-    FROM fileresource fr
-    WHERE NOT EXISTS (
-        SELECT 1 FROM document d WHERE d.fileresource = fr.fileresourceid
-    )
-    AND fr.uid NOT IN (
-        SELECT url FROM document
-    )
-    AND fr.domain = 'DOCUMENT' and  fr.storagekey like '%document%';
-"""
-
-SQL_FIND_DATA_VALUES_FILE_RESOURCES = """
-    SELECT fileresourceid, uid, storagekey, name, created
-    FROM fileresource fr where fr.domain = 'DATA_VALUE' and  fr.storagekey like '%dataValue%';
-"""
-
-SQL_INSERT_AUDIT = """
-    INSERT INTO fileresourcesaudit SELECT * FROM fileresource WHERE fileresourceid = %(fid)s;
-"""
-
-SQL_DELETE_ORIGINAL = """
-    DELETE FROM fileresource WHERE fileresourceid = %(fid)s;
-"""
-
-SQL_CREATE_TABLE_IF_NOT_EXIST = """
-    CREATE TABLE IF NOT EXISTS fileresourcesaudit AS TABLE fileresource WITH NO DATA;
-"""
-
-SQL_EVENT_FILE_UIDS = """
-        SELECT eventdatavalues
-        FROM event
-        WHERE programstageid 
-        IN (SELECT programstageid FROM programstagedataelement WHERE dataelementid  
-        IN (SELECT dataelementid FROM dataelement WHERE valuetype='FILE_RESOURCE' or valuetype='IMAGE')) and deleted='f';
-"""
-
-SQL_DATA_VALUE_UIDS = """
-        SELECT dv.value
-        FROM datavalue dv
-        WHERE dv.value IN (SELECT uid FROM fileresource WHERE domain='DATA_VALUE')
-"""
-
-SQL_TRACKER_ATTRIBUTE_UIDS = """
-select value from trackedentityattributevalue where value IN (SELECT uid FROM fileresource WHERE domain='DATA_VALUE');
-"""
-
-
-def log(message):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    if isinstance(message, str):
-        # Detect pattern like: postgresql://user:password@host
-        message = re.sub(
-            r"(postgresql://[^:]+:)([^@]+)(@)",
-            r"\1*****\3",
-            message
-        )
-    print(f"[{timestamp}] {message}")
-
-
-def load_config(path):
-    with open(path, "r") as f:
-        return json.load(f)
+from common import load_config, log, mark_items_notified
+from csv_utils import deduplicate_items, append_items
+from sql_queries import (
+    SQL_CREATE_TABLE_IF_NOT_EXIST,
+    SQL_DATA_VALUE_UIDS,
+    SQL_DELETE_ORIGINAL,
+    SQL_EVENT_FILE_UIDS,
+    SQL_FIND_DATA_VALUES_FILE_RESOURCES,
+    SQL_FIND_ORPHANS_DOCUMENTS,
+    SQL_INSERT_AUDIT,
+    SQL_TRACKER_ATTRIBUTE_UIDS,
+)
 
 
 def get_events(cursor):
@@ -109,7 +55,6 @@ def get_matching_files(storage_key, base_dir, folder):
     storage_key = storage_key.replace(folder + "/", "")
     base_dir = os.path.join(base_dir, folder)
     matching = []
-
     for filename in os.listdir(base_dir):
         if filename.startswith(storage_key):
             fullpath = os.path.join(base_dir, filename)
@@ -225,10 +170,10 @@ def main():
 
     if args.csv_path:
         if args.save_all_as_notified:
-            for item in summary.get("items", []):
-                item["notified"] = True
+            mark_items_notified(summary.get("items", []))
         overwrite_csv = bool(args.force) and not args.maintain_csv
-        write_csv(args.csv_path, summary, overwrite=overwrite_csv)
+        items = deduplicate_items(args.csv_path, summary.get("items", []), unique_keys=("id", "name"), overwrite=overwrite_csv, log=log)
+        append_items(args.csv_path, items, overwrite=overwrite_csv, log=log)
     emit_summary(summary)
 
 
@@ -320,46 +265,6 @@ def emit_summary(summary):
         log(f"  - id={item.get('id')} name=\"{item.get('name')}\" storagekey={item.get('storagekey')} action={item.get('action')}")
         for f in files:
             log(f"      file: {f}")
-
-
-def write_csv(csv_path, summary, overwrite=False):
-    if not csv_path:
-        return
-    file_exists = os.path.isfile(csv_path)
-    mode = "w" if overwrite else "a"
-    want_header = overwrite or not file_exists
-    fieldnames = ["id", "name", "created", "storagekey", "folder", "action", "files", "notified"]
-    existing_ids = set()
-    if not overwrite and file_exists:
-        try:
-            with open(csv_path, "r", newline="") as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    if "id" in row and row["id"]:
-                        existing_ids.add(str(row["id"]))
-        except Exception as e:
-            log(f"⚠️ Could not read existing CSV for deduplication: {e}")
-    try:
-        with open(csv_path, mode, newline="") as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            if want_header:
-                writer.writeheader()
-            for item in summary.get("items", []):
-                if str(item.get("id")) in existing_ids:
-                    continue
-                writer.writerow({
-                    "id": item.get("id"),
-                    "name": item.get("name"),
-                    "created": item.get("created"),
-                    "storagekey": item.get("storagekey"),
-                    "folder": item.get("folder"),
-                    "action": item.get("action"),
-                    "files": "|".join(item.get("files") or []),
-                    "notified": str(item.get("notified", False)).lower(),
-                })
-        log(f"CSV summary {'overwritten' if overwrite else 'appended'} at {csv_path}")
-    except Exception as e:
-        log(f"❌ Failed to write CSV {csv_path}: {e}")
 
 
 if __name__ == "__main__":

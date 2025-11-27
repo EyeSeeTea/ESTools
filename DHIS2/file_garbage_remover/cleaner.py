@@ -9,6 +9,7 @@ from datetime import datetime
 import subprocess
 import psycopg2
 
+from common import load_config, log
 from csv_utils import append_items, deduplicate_items
 from sql_queries import (
     SQL_CREATE_TABLE_IF_NOT_EXIST,
@@ -20,22 +21,6 @@ from sql_queries import (
     SQL_INSERT_AUDIT,
     SQL_TRACKER_ATTRIBUTE_UIDS,
 )
-
-
-def log(message):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    if isinstance(message, str):
-        message = re.sub(
-            r"(postgresql://[^:]+:)([^@]+)(@)",
-            r"\1*****\3",
-            message
-        )
-    print(f"[{timestamp}] {message}")
-
-
-def load_config(path):
-    with open(path, "r") as f:
-        return json.load(f)
 
 
 def get_events(cursor):
@@ -242,8 +227,7 @@ def run_cleanup(args):
 
     if args.csv_path:
         if getattr(args, "save_all_as_notified", False):
-            for item in summary.get("items", []):
-                item["notified"] = True
+            mark_items_notified(summary.get("items", []))
         overwrite_csv = bool(args.force) and not args.maintain_csv
         items = deduplicate_items(args.csv_path, summary.get("items", []), unique_keys=("id", "name"), overwrite=overwrite_csv, log=log)
         append_items(args.csv_path, items, overwrite=overwrite_csv, log=log)
