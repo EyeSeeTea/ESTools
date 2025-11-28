@@ -120,8 +120,7 @@ def main():
     parser.add_argument("--force", action="store_true", help="Apply changes: move files and modify DB.")
     parser.add_argument("--test", action="store_true", help="Run in dry-run mode (no changes). Default if --force not provided.")
     parser.add_argument("--config", required=True, help="Path to config.json file.")
-    parser.add_argument("--csv-path", help="Optional CSV file to record processed entries. In --force mode the file is rewritten unless --maintain-csv.")
-    parser.add_argument("--maintain-csv", action="store_true", help="Keep CSV contents even in --force mode (append only).")
+    parser.add_argument("--csv-path", help="Optional CSV file to record processed entries.")
     parser.add_argument("--save-all-as-notified", action="store_true", help="Store CSV entries with notified=true even if not sent.")
     args = parser.parse_args()
 
@@ -169,9 +168,10 @@ def main():
     if args.csv_path:
         if args.save_all_as_notified:
             mark_items_notified(summary.get("items", []))
-        overwrite_csv = bool(args.force) and not args.maintain_csv
-        items = deduplicate_items(args.csv_path, summary.get("items", []), unique_keys=("id", "name"), overwrite=overwrite_csv, log=log)
-        append_items(args.csv_path, items, overwrite=overwrite_csv, log=log)
+        else:
+            merge_notified_flags(args.csv_path, summary.get("items", []), unique_keys=("id", "uid"), log=log)
+        items = deduplicate_items(args.csv_path, summary.get("items", []), unique_keys=("id", "uid"), overwrite=False, log=log)
+        append_items(args.csv_path, items, overwrite=False, log=log)
     emit_summary(summary.get("items", []), summary.get("mode", "TEST"), log_fn=log)
 
 

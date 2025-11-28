@@ -7,7 +7,7 @@ import sys
 import tempfile
 from datetime import datetime
 
-from csv_utils import append_items, deduplicate_items
+from csv_utils import append_items, deduplicate_items, merge_notified_flags
 from common import (
     build_datavalue_items,
     build_document_items,
@@ -75,7 +75,7 @@ def parse_tab_rows(output, expected_cols):
 
 def get_orphan_documents(instance):
     out = run_sql(instance, SQL_FIND_ORPHANS_DOCUMENTS)
-    raw_rows = parse_tab_rows(out, 4)
+    raw_rows = parse_tab_rows(out, 5)
     return build_document_items(raw_rows)
 
 
@@ -118,7 +118,6 @@ def main():
     parser.add_argument("--instance", required=True, help="d2-docker instance name (e.g. docker.eyeseetea.com/project/dhis2-data:2.41-test)")
     parser.add_argument("--csv-path", help="CSV file to log orphan entries.")
     parser.add_argument("--force", action="store_true", help="Actually delete files in container.")
-    parser.add_argument("--maintain-csv", action="store_true", help="Append to CSV in force mode (do not overwrite).")
     parser.add_argument("--save-all-as-notified", action="store_true", help="Store CSV entries with notified=true even if not sent.")
     args = parser.parse_args()
 
@@ -139,6 +138,9 @@ def main():
 
     if args.save_all_as_notified:
         mark_items_notified(rows)
+    else:
+        if args.csv_path:
+            merge_notified_flags(args.csv_path, rows, unique_keys=("id", "uid"))
 
     for row in rows:
         delete_files(container_id, row, dry_run)
@@ -154,9 +156,8 @@ def main():
                 sys.exit(1)
 
     if args.csv_path:
-        overwrite_csv = bool(args.force) and not args.maintain_csv
-        items = deduplicate_items(args.csv_path, rows, unique_keys=("id", "name"), overwrite=overwrite_csv)
-        append_items(args.csv_path, items, overwrite=overwrite_csv)
+        items = deduplicate_items(args.csv_path, rows, unique_keys=("id", "uid"), overwrite=False)
+        append_items(args.csv_path, items, overwrite=False)
 
     emit_summary(rows, "DRY-RUN" if dry_run else "FORCE", log_fn=print)
 

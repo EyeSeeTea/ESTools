@@ -1,5 +1,5 @@
 SQL_FIND_ORPHANS_DOCUMENTS = """
-    SELECT fileresourceid, storagekey, name, created
+    SELECT fileresourceid, uid, storagekey, name, created
     FROM fileresource fr
     WHERE NOT EXISTS (
         SELECT 1 FROM document d WHERE d.fileresource = fr.fileresourceid

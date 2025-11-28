@@ -10,7 +10,7 @@ import subprocess
 import psycopg2
 
 from common import load_config, log
-from csv_utils import append_items, deduplicate_items
+from csv_utils import append_items, deduplicate_items, merge_notified_flags
 from sql_queries import (
     SQL_CREATE_TABLE_IF_NOT_EXIST,
     SQL_DATA_VALUE_UIDS,
@@ -228,9 +228,10 @@ def run_cleanup(args):
     if args.csv_path:
         if getattr(args, "save_all_as_notified", False):
             mark_items_notified(summary.get("items", []))
-        overwrite_csv = bool(args.force) and not args.maintain_csv
-        items = deduplicate_items(args.csv_path, summary.get("items", []), unique_keys=("id", "name"), overwrite=overwrite_csv, log=log)
-        append_items(args.csv_path, items, overwrite=overwrite_csv, log=log)
+        else:
+            merge_notified_flags(args.csv_path, summary.get("items", []), unique_keys=("id", "uid"), log=log)
+        items = deduplicate_items(args.csv_path, summary.get("items", []), unique_keys=("id", "uid"), overwrite=False, log=log)
+        append_items(args.csv_path, items, overwrite=False, log=log)
     emit_summary(summary)
 
 
@@ -245,8 +246,8 @@ def run_docker_cleanup(args):
     cmd = [sys.executable, script_path, "--instance", args.docker_instance]
     if args.csv_path:
         cmd.extend(["--csv-path", args.csv_path])
-        if args.maintain_csv:
-            cmd.append("--maintain-csv")
+        if getattr(args, "save_all_as_notified", False):
+            cmd.append("--save-all-as-notified")
     if args.force:
         cmd.append("--force")
     log(f"Running docker cleanup via: {' '.join(cmd)}")

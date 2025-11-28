@@ -13,7 +13,6 @@ def build_parser():
     parser.add_argument("--test", action="store_true", help="Run in dry-run mode (default unless --force).")
     parser.add_argument("--config", help="Path to config.json file. Required unless --notify-only.")
     parser.add_argument("--csv-path", help="CSV file to record processed entries or to read notifications from.")
-    parser.add_argument("--maintain-csv", action="store_true", help="Keep CSV contents even in --force mode (append only).")
     parser.add_argument("--mode", choices=["tomcat", "docker"], default="tomcat", help="Cleanup mode: tomcat (default) or docker.")
     parser.add_argument("--docker-instance", help="d2-docker instance name (required for --mode=docker).")
 

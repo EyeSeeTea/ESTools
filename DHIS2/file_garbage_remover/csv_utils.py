@@ -1,12 +1,13 @@
 import csv
 import os
 
-DEFAULT_FIELDNAMES = ["id", "name", "created", "detection_date", "storagekey", "folder", "action", "files", "notified"]
+DEFAULT_FIELDNAMES = ["id", "uid", "name", "created", "detection_date", "storagekey", "folder", "action", "files", "notified"]
 
 
 def serialize_item(item):
     return {
         "id": item.get("id"),
+        "uid": item.get("uid"),
         "name": item.get("name"),
         "created": item.get("created"),
         "detection_date": item.get("detection_date"),
@@ -57,7 +58,7 @@ def write_rows(csv_path, rows, fieldnames=None):
         writer.writerows(rows)
 
 
-def deduplicate_items(csv_path, new_items, unique_keys=("id",), overwrite=False, log=None):
+def deduplicate_items(csv_path, new_items, unique_keys=("id", "uid"), overwrite=False, log=None):
     """
     Returns new_items filtered to avoid duplicates with existing CSV based on unique_keys.
     If overwrite=True, no filtering is applied (CSV will be rewritten).
@@ -83,3 +84,29 @@ def deduplicate_items(csv_path, new_items, unique_keys=("id",), overwrite=False,
         existing_keys.add(key)
         filtered.append(item)
     return filtered
+
+
+def merge_notified_flags(csv_path, items, unique_keys=("id", "uid"), log=None):
+    """
+    For each item, if an existing CSV has the same unique key with notified=true,
+    copy that notified flag into the item (unless already true).
+    """
+    if not os.path.isfile(csv_path):
+        return items
+    try:
+        rows, _ = read_rows(csv_path)
+    except Exception as e:
+        if log:
+            log(f"⚠️ Could not read existing CSV for notified merge: {e}")
+        return items
+
+    notified_map = {}
+    for row in rows:
+        key = tuple((row.get(k) or "").strip() for k in unique_keys)
+        notified_map[key] = str(row.get("notified", "")).lower() == "true"
+
+    for item in items:
+        key = tuple((str(item.get(k)) or "").strip() for k in unique_keys)
+        if notified_map.get(key):
+            item["notified"] = True
+    return items

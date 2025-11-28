@@ -41,9 +41,10 @@ def _iso(value):
 
 def build_document_items(raw_rows):
     items = []
-    for fid, storagekey, name, created in raw_rows:
+    for fid, uid, storagekey, name, created in raw_rows:
         items.append({
             "id": fid,
+            "uid": uid,
             "name": name,
             "storagekey": storagekey,
             "folder": "document",
@@ -67,6 +68,7 @@ def build_datavalue_items(raw_rows, datavalue_uids, tracker_uids, event_blob):
             continue
         items.append({
             "id": fid,
+            "uid": uid,
             "name": name,
             "storagekey": storagekey,
             "folder": "dataValue",
