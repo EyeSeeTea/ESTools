@@ -9,7 +9,7 @@ from datetime import datetime
 import subprocess
 import psycopg2
 
-from common import load_config, log
+from common import load_config, log, mark_items_notified
 from csv_utils import append_items, deduplicate_items, merge_notified_flags
 from sql_queries import (
     SQL_CREATE_TABLE_IF_NOT_EXIST,
