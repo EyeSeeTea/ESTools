@@ -7,12 +7,15 @@ SQL_FIND_ORPHANS_DOCUMENTS = """
     AND fr.uid NOT IN (
         SELECT url FROM document
     )
-    AND fr.domain = 'DOCUMENT' and  fr.storagekey like '%document%';
+    AND fr.domain = 'DOCUMENT' and  fr.storagekey like '%document%'
+    AND COALESCE(fr.lastupdated, fr.created, NOW()) < (NOW() - INTERVAL '24 hours');
 """
 
 SQL_FIND_DATA_VALUES_FILE_RESOURCES = """
     SELECT fileresourceid, uid, storagekey, name, created
-    FROM fileresource fr where fr.domain = 'DATA_VALUE' and  fr.storagekey like '%dataValue%';
+    FROM fileresource fr
+    WHERE fr.domain = 'DATA_VALUE' and fr.storagekey like '%dataValue%'
+    AND COALESCE(fr.lastupdated, fr.created, NOW()) < (NOW() - INTERVAL '24 hours');
 """
 
 SQL_INSERT_AUDIT = """
