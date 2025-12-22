@@ -128,3 +128,50 @@ Deletes identified files directly inside the container.
 Production Environments: Always use --test mode before using --force to verify intended changes.
 
 Docker/Test Environments: Files deleted by file_garbage_remover_docker.py cannot be recovered.
+
+## Restoring fileresource entries (tomcat)
+
+Manual steps if a resource was moved by mistake:
+1) Restore the row into `fileresource` from `fileresourcesaudit` using a **new** `fileresourceid` to avoid collisions.
+Column list (stable): `uid, code, created, lastupdated, name, contenttype, contentlength, contentmd5, storagekey, isassigned, domain, userid, lastupdatedby, hasmultiplestoragefiles, fileresourceowner`
+```
+INSERT INTO fileresource (
+  fileresourceid, uid, code, created, lastupdated, name, contenttype,
+  contentlength, contentmd5, storagekey, isassigned, domain, userid,
+  lastupdatedby, hasmultiplestoragefiles, fileresourceowner
+)
+SELECT
+  nextval('fileresource_fileresourceid_seq'), uid, code, created, lastupdated,
+  name, contenttype, contentlength, contentmd5, storagekey, isassigned,
+  domain, userid, lastupdatedby, hasmultiplestoragefiles, fileresourceowner
+FROM fileresourcesaudit
+WHERE fileresourceid = <OLD_ID>;
+```
+Run inside a transaction and verify before commit.
+
+2) Move the file back from `temp_file_path` to `file_base_path`, keeping the folder (`document` or `dataValue`). Use a wildcard to catch image variants (e.g., `..._max`, `..._min`):
+```
+mv "<temp_file_path>/<folder>/<file_prefix>"* "<file_base_path>/<folder>/"
+```
+
+Example to restore entries moved in the last 24 hours:
+```
+-- 1) Reinsert rows with new IDs
+INSERT INTO fileresource (
+  fileresourceid, uid, code, created, lastupdated, name, contenttype,
+  contentlength, contentmd5, storagekey, isassigned, domain, userid,
+  lastupdatedby, hasmultiplestoragefiles, fileresourceowner
+)
+SELECT
+  nextval('fileresource_fileresourceid_seq'), uid, code, created, lastupdated,
+  name, contenttype, contentlength, contentmd5, storagekey, isassigned,
+  domain, userid, lastupdatedby, hasmultiplestoragefiles, fileresourceowner
+FROM fileresourcesaudit
+WHERE COALESCE(lastupdated, created, NOW()) >= (NOW() - INTERVAL '24 hours');
+
+-- 2) Move files back (adjust paths)
+find "<temp_file_path>" -type f -mtime -1 -print0 | while IFS= read -r -d '' f; do
+  rel="${f#<temp_file_path>/}"
+  mv "$f" "<file_base_path>/$rel"
+done
+```
