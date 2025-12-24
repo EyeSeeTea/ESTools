@@ -288,7 +288,7 @@ expand_backup_in_remote() {
 
     log "expand files backup into ${DB_REMOTE_DEST_SERVER}..."
 
-    ssh ${DB_REMOTE_DEST_SERVER} "${remote_expand_script} -i \"${files_path}\" -o \"${dump_remote_dest_folder}\" 2>&1 | tee -a \"${remote_log}\" "
+    ssh ${DB_REMOTE_DEST_SERVER} "set -o pipefail; ${remote_expand_script} -i \"${files_path}\" -o \"${dump_remote_dest_folder}\" 2>&1 | tee -a \"${remote_log}\" "
 }
 
 copy_backup_to_remote() {
