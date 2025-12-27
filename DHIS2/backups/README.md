@@ -30,6 +30,9 @@ Options:
 - `--exclude-db`: Exclude the database dump from the backup.
 - `--exclude-audit`: Exclude audit table.
 - `--exclude-files`: Exclude the DHIS2 files from the backup.
+- `--reuse-backup-for-files`: The filename for the backup of DHIS2 files will ommit the period, timestamp and custom name to use the same name each time (It will still include the instance name).
+
+Script now allows the user to configure a remote script to convert the copied files.tar.gz into a folder (not a simple decompress into that folder, but a script that allows to reference previous backup files in order to minimize disk usage)
 
 ### Example
 
