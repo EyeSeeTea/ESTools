@@ -22,6 +22,7 @@ python3 main.py \
 - Add `--notify-test` to print the payload instead of sending.  
 - To notify only (no cleanup): `python3 main.py --notify-only --csv-path /tmp/fg.csv --config /path/to/config.json --notify-title "..." [--notify-test]`
 - To skip sending and save in CSV as notified: `--save-all-as-notified`.
+- To ignore logger timestamp JSONs and contenttype `application/json;charset=utf-8`: `--ignore-logger-files`.
 
 ### Example (tomcat cleanup, dry-run, save as nnotified)
 ```
