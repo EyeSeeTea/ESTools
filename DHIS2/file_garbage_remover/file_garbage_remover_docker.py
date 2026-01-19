@@ -20,6 +20,7 @@ from sql_queries import (
     SQL_DELETE_ORIGINAL,
     SQL_EVENT_FILE_UIDS,
     SQL_FIND_DATA_VALUES_FILE_RESOURCES,
+    SQL_FIND_DATA_VALUES_FILE_RESOURCES_IGNORE_LOGGER,
     SQL_FIND_ORPHANS_DOCUMENTS,
     SQL_INSERT_AUDIT,
     SQL_TRACKER_ATTRIBUTE_UIDS,
@@ -79,8 +80,9 @@ def get_orphan_documents(instance):
     return build_document_items(raw_rows)
 
 
-def get_orphan_datavalues(instance):
-    data_rows = parse_tab_rows(run_sql(instance, SQL_FIND_DATA_VALUES_FILE_RESOURCES), 5)
+def get_orphan_datavalues(instance, ignore_logger_files=False):
+    query = SQL_FIND_DATA_VALUES_FILE_RESOURCES_IGNORE_LOGGER if ignore_logger_files else SQL_FIND_DATA_VALUES_FILE_RESOURCES
+    data_rows = parse_tab_rows(run_sql(instance, query), 5)
     datavalue_uids = set(r[0] for r in parse_tab_rows(run_sql(instance, SQL_DATA_VALUE_UIDS), 1))
     tracker_uids = set(r[0] for r in parse_tab_rows(run_sql(instance, SQL_TRACKER_ATTRIBUTE_UIDS), 1))
     event_blob = "\n".join(r[0] for r in parse_tab_rows(run_sql(instance, SQL_EVENT_FILE_UIDS), 1))
@@ -119,6 +121,7 @@ def main():
     parser.add_argument("--csv-path", help="CSV file to log orphan entries.")
     parser.add_argument("--force", action="store_true", help="Actually delete files in container.")
     parser.add_argument("--save-all-as-notified", action="store_true", help="Store CSV entries with notified=true even if not sent.")
+    parser.add_argument("--ignore-logger-files", action="store_true", help="Ignore logger JSON files (timestamp names or application/json;charset=utf-8).")
     args = parser.parse_args()
 
     container_id = find_container_id(args.instance)
@@ -133,7 +136,7 @@ def main():
 
     rows = []
     rows.extend(get_orphan_documents(args.instance))
-    rows.extend(get_orphan_datavalues(args.instance))
+    rows.extend(get_orphan_datavalues(args.instance, args.ignore_logger_files))
     print(f"Found {len(rows)} orphan entries")
 
     if args.save_all_as_notified:

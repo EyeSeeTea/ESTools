@@ -4,6 +4,12 @@ import os
 DEFAULT_FIELDNAMES = ["id", "uid", "name", "created", "detection_date", "storagekey", "folder", "action", "files", "notified"]
 
 
+def _key_value(value):
+    if value is None:
+        return ""
+    return str(value).strip()
+
+
 def serialize_item(item):
     return {
         "id": item.get("id"),
@@ -70,7 +76,7 @@ def deduplicate_items(csv_path, new_items, unique_keys=("id", "uid"), overwrite=
     try:
         rows, _ = read_rows(csv_path)
         for row in rows:
-            key = tuple((row.get(k) or "").strip() for k in unique_keys)
+            key = tuple(_key_value(row.get(k)) for k in unique_keys)
             existing_keys.add(key)
     except Exception as e:
         if log:
@@ -78,7 +84,7 @@ def deduplicate_items(csv_path, new_items, unique_keys=("id", "uid"), overwrite=
 
     filtered = []
     for item in new_items:
-        key = tuple((str(item.get(k)) or "").strip() for k in unique_keys)
+        key = tuple(_key_value(item.get(k)) for k in unique_keys)
         if key in existing_keys:
             continue
         existing_keys.add(key)
@@ -102,11 +108,11 @@ def merge_notified_flags(csv_path, items, unique_keys=("id", "uid"), log=None):
 
     notified_map = {}
     for row in rows:
-        key = tuple((row.get(k) or "").strip() for k in unique_keys)
+        key = tuple(_key_value(row.get(k)) for k in unique_keys)
         notified_map[key] = str(row.get("notified", "")).lower() == "true"
 
     for item in items:
-        key = tuple((str(item.get(k)) or "").strip() for k in unique_keys)
+        key = tuple(_key_value(item.get(k)) for k in unique_keys)
         if notified_map.get(key):
             item["notified"] = True
     return items

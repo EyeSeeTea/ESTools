@@ -17,6 +17,7 @@ from sql_queries import (
     SQL_DELETE_ORIGINAL,
     SQL_EVENT_FILE_UIDS,
     SQL_FIND_DATA_VALUES_FILE_RESOURCES,
+    SQL_FIND_DATA_VALUES_FILE_RESOURCES_IGNORE_LOGGER,
     SQL_FIND_ORPHANS_DOCUMENTS,
     SQL_INSERT_AUDIT,
     SQL_TRACKER_ATTRIBUTE_UIDS,
@@ -111,9 +112,10 @@ def remove_documents(file_base_path, temp_file_path, dry_run, cur, conn, summary
     process_orphan_files(rows, file_base_path, temp_file_path, dry_run, cur, conn, "document", summary)
 
 
-def remove_datavalues(file_base_path, temp_file_path, dry_run, cur, conn, summary):
+def remove_datavalues(file_base_path, temp_file_path, dry_run, cur, conn, summary, ignore_logger_files=False):
     log("Querying orphaned fileresource entries (data values)...")
-    cur.execute(SQL_FIND_DATA_VALUES_FILE_RESOURCES)
+    query = SQL_FIND_DATA_VALUES_FILE_RESOURCES_IGNORE_LOGGER if ignore_logger_files else SQL_FIND_DATA_VALUES_FILE_RESOURCES
+    cur.execute(query)
     rows = cur.fetchall()
 
     datavalue_uids = get_all_datavalue_uids(cur)
@@ -223,7 +225,15 @@ def run_cleanup(args):
         with conn.cursor() as cur:
             ensure_audit_table_exists(cur, dry_run)
             remove_documents(file_base_path, temp_file_path, dry_run, cur, conn, summary)
-            remove_datavalues(file_base_path, temp_file_path, dry_run, cur, conn, summary)
+            remove_datavalues(
+                file_base_path,
+                temp_file_path,
+                dry_run,
+                cur,
+                conn,
+                summary,
+                ignore_logger_files=args.ignore_logger_files,
+            )
 
     if args.csv_path:
         if getattr(args, "save_all_as_notified", False):

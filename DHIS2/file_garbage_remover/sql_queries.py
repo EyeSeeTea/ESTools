@@ -18,6 +18,16 @@ SQL_FIND_DATA_VALUES_FILE_RESOURCES = """
     AND COALESCE(fr.lastupdated, fr.created, NOW()) < (NOW() - INTERVAL '24 hours');
 """
 
+SQL_FIND_DATA_VALUES_FILE_RESOURCES_IGNORE_LOGGER = """
+    SELECT fileresourceid, uid, storagekey, name, created
+    FROM fileresource fr
+    WHERE fr.domain = 'DATA_VALUE'
+      AND fr.storagekey like '%dataValue%'
+      AND COALESCE(fr.lastupdated, fr.created, NOW()) < (NOW() - INTERVAL '24 hours')
+      AND COALESCE(fr.contenttype, '') <> 'application/json;charset=utf-8'
+      AND COALESCE(fr.name, '') !~ '^[0-9]{13}\\.json$';
+"""
+
 SQL_INSERT_AUDIT = """
     INSERT INTO fileresourcesaudit SELECT * FROM fileresource WHERE fileresourceid = %(fid)s;
 """

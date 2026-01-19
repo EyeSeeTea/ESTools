@@ -22,6 +22,7 @@ from sql_queries import (
     SQL_DELETE_ORIGINAL,
     SQL_EVENT_FILE_UIDS,
     SQL_FIND_DATA_VALUES_FILE_RESOURCES,
+    SQL_FIND_DATA_VALUES_FILE_RESOURCES_IGNORE_LOGGER,
     SQL_FIND_ORPHANS_DOCUMENTS,
     SQL_INSERT_AUDIT,
     SQL_TRACKER_ATTRIBUTE_UIDS,
@@ -122,6 +123,7 @@ def main():
     parser.add_argument("--config", required=True, help="Path to config.json file.")
     parser.add_argument("--csv-path", help="Optional CSV file to record processed entries.")
     parser.add_argument("--save-all-as-notified", action="store_true", help="Store CSV entries with notified=true even if not sent.")
+    parser.add_argument("--ignore-logger-files", action="store_true", help="Ignore logger JSON files (timestamp names or application/json;charset=utf-8).")
     args = parser.parse_args()
 
     config = load_config(args.config)
@@ -163,7 +165,7 @@ def main():
         with conn.cursor() as cur:
             ensure_audit_table_exists(cur, dry_run)
             remove_documents(file_base_path, temp_file_path, dry_run, cur, conn, summary)
-            remove_datavalues(file_base_path, temp_file_path, dry_run, cur, conn, summary)
+            remove_datavalues(file_base_path, temp_file_path, dry_run, cur, conn, summary, args.ignore_logger_files)
 
     if args.csv_path:
         if args.save_all_as_notified:
@@ -189,9 +191,10 @@ def remove_documents(file_base_path, temp_file_path, dry_run, cur, conn, summary
     process_orphan_items(items, file_base_path, temp_file_path, dry_run, cur, conn, summary)
 
 
-def remove_datavalues(file_base_path, temp_file_path, dry_run, cur, conn, summary):
+def remove_datavalues(file_base_path, temp_file_path, dry_run, cur, conn, summary, ignore_logger_files=False):
     log("Querying orphaned fileresource entries...")
-    cur.execute(SQL_FIND_DATA_VALUES_FILE_RESOURCES)
+    query = SQL_FIND_DATA_VALUES_FILE_RESOURCES_IGNORE_LOGGER if ignore_logger_files else SQL_FIND_DATA_VALUES_FILE_RESOURCES
+    cur.execute(query)
     raw_rows = cur.fetchall()
     # get all file resource datavalues
     datavalue_uids = get_all_datavalue_uids(cur)

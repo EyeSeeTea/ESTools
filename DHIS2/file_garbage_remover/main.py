@@ -15,6 +15,7 @@ def build_parser():
     parser.add_argument("--csv-path", help="CSV file to record processed entries or to read notifications from.")
     parser.add_argument("--mode", choices=["tomcat", "docker"], default="tomcat", help="Cleanup mode: tomcat (default) or docker.")
     parser.add_argument("--docker-instance", help="d2-docker instance name (required for --mode=docker).")
+    parser.add_argument("--ignore-logger-files", action="store_true", help="Ignore logger JSON files (timestamp names or application/json;charset=utf-8).")
 
     # Notification options
     parser.add_argument("--notify-only", action="store_true", help="Skip cleanup and only send notifications from CSV.")
