@@ -1,0 +1,59 @@
+SQL_FIND_ORPHANS_DOCUMENTS = """
+    SELECT fileresourceid, uid, storagekey, name, created
+    FROM fileresource fr
+    WHERE NOT EXISTS (
+        SELECT 1 FROM document d WHERE d.fileresource = fr.fileresourceid
+    )
+    AND fr.uid NOT IN (
+        SELECT url FROM document
+    )
+    AND fr.domain = 'DOCUMENT' and  fr.storagekey like '%document%'
+    AND COALESCE(fr.lastupdated, fr.created, NOW()) < (NOW() - INTERVAL '24 hours');
+"""
+
+SQL_FIND_DATA_VALUES_FILE_RESOURCES = """
+    SELECT fileresourceid, uid, storagekey, name, created
+    FROM fileresource fr
+    WHERE fr.domain = 'DATA_VALUE' and fr.storagekey like '%dataValue%'
+    AND COALESCE(fr.lastupdated, fr.created, NOW()) < (NOW() - INTERVAL '24 hours');
+"""
+
+SQL_FIND_DATA_VALUES_FILE_RESOURCES_IGNORE_LOGGER = """
+    SELECT fileresourceid, uid, storagekey, name, created
+    FROM fileresource fr
+    WHERE fr.domain = 'DATA_VALUE'
+      AND fr.storagekey like '%dataValue%'
+      AND COALESCE(fr.lastupdated, fr.created, NOW()) < (NOW() - INTERVAL '24 hours')
+      AND COALESCE(fr.contenttype, '') <> 'application/json;charset=utf-8'
+      AND COALESCE(fr.name, '') !~ '^[0-9]{13}\\.json$';
+"""
+
+SQL_INSERT_AUDIT = """
+    INSERT INTO fileresourcesaudit SELECT * FROM fileresource WHERE fileresourceid = %(fid)s;
+"""
+
+SQL_DELETE_ORIGINAL = """
+    DELETE FROM fileresource WHERE fileresourceid = %(fid)s;
+"""
+
+SQL_CREATE_TABLE_IF_NOT_EXIST = """
+    CREATE TABLE IF NOT EXISTS fileresourcesaudit AS TABLE fileresource WITH NO DATA;
+"""
+
+SQL_EVENT_FILE_UIDS = """
+        SELECT eventdatavalues
+        FROM event
+        WHERE programstageid 
+        IN (SELECT programstageid FROM programstagedataelement WHERE dataelementid  
+        IN (SELECT dataelementid FROM dataelement WHERE valuetype='FILE_RESOURCE' or valuetype='IMAGE')) and deleted='f';
+"""
+
+SQL_DATA_VALUE_UIDS = """
+        SELECT dv.value
+        FROM datavalue dv
+        WHERE dv.value IN (SELECT uid FROM fileresource WHERE domain='DATA_VALUE')
+"""
+
+SQL_TRACKER_ATTRIBUTE_UIDS = """
+select value from trackedentityattributevalue where value IN (SELECT uid FROM fileresource WHERE domain='DATA_VALUE');
+"""
