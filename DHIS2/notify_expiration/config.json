@@ -1,0 +1,8 @@
+{
+  "server": "https://domain/dhis2-instance/",
+  "user": "USER",
+  "password": "PASSWORD",
+  "months_expiry": 18,
+  "how_many_days": 7,
+  "only_enabled": false
+}
