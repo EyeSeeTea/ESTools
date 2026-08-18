@@ -1,5 +1,5 @@
 [Unit]
-Description=Real-time RAM Protection Sentinel for Java and PostgreSQL
+Description=Real-time RAM Protection Sentinel
 After=network.target monit.service
 
 [Service]
