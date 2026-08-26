@@ -1,0 +1,21 @@
+[Unit]
+Description=Real-time RAM Protection Sentinel
+After=network.target monit.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/python3 /usr/local/bin/ram_sentinel.py \
+  --emergency-trigger 4000 \
+  --safe-recovery 8000 \
+  --tier kill:dhis_dev \
+  --tier stop:postgres \
+  --notify-script /path/to/notification_script.py \
+  --server-name my-server \
+  --notify-level critical
+Restart=always
+RestartSec=5
+SyslogIdentifier=stopramoom
+
+[Install]
+WantedBy=multi-user.target
