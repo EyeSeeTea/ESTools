@@ -22,6 +22,7 @@ A daemon that monitors available RAM and stops Monit-managed services when memor
 
 ```
 ram_sentinel.py --emergency-trigger MB --safe-recovery MB --tier TYPE:MONIT_NAME [--tier ...] [--dry-run]
+               [--notify-script PATH] [--server-name NAME] [--notify-level critical|all]
 ```
 
 ### Parameters
@@ -32,6 +33,21 @@ ram_sentinel.py --emergency-trigger MB --safe-recovery MB --tier TYPE:MONIT_NAME
 | `--safe-recovery MB` | yes | Available RAM (MB) required before restoring services |
 | `--tier TYPE:MONIT_NAME` | yes (repeat) | Service to stop, in escalation order |
 | `--dry-run` | no | Simulate all actions — reads RAM and PIDs for real, skips destructive commands |
+| `--notify-script PATH` | no | Path to the centralized notification script (disabled if omitted) |
+| `--server-name NAME` | no | Server label sent as `MONIT_HOST` in notifications (defaults to hostname) |
+| `--notify-level` | no | `critical` (default): only kill/stop events. `all`: also recovery events. |
+
+## Notifications
+
+When `--notify-script` is set, the sentinel calls the script via `subprocess.run()` on each kill/stop action and (if `--notify-level all`) on recovery. The script receives the event details through environment variables:
+
+| Variable | Value |
+|----------|-------|
+| `MONIT_HOST` | `--server-name` value (or hostname) |
+| `MONIT_SERVICE` | `RAM-SENTINEL` |
+| `MONIT_DESCRIPTION` | `[CRITICAL] ...` or `[INFO] ...` |
+
+This matches the calling convention of `monit_clickup_notifications.py` so no proxy/HTTP logic needs to be duplicated in the sentinel.
 
 ## Dry-run mode
 
@@ -66,7 +82,10 @@ ExecStart=/usr/bin/python3 /usr/local/bin/ram_sentinel.py \
   --emergency-trigger 4000 \
   --safe-recovery 8000 \
   --tier kill:my_tomcat_service \
-  --tier stop:my_postgres_service
+  --tier stop:my_postgres_service \
+  --notify-script /path/to/notification_script.py \
+  --server-name my-server \
+  --notify-level critical
 ```
 
 Set thresholds based on your server's total RAM. A reasonable rule of thumb:

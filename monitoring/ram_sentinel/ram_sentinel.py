@@ -15,13 +15,18 @@ STOP_TIMEOUT_SECONDS = 30
 SETTLE_SECONDS = 20
 STATE_FILE = "/run/stopram/state.json"
 
+# === NOTIFICATION (populated from CLI args) ===
+# "critical" fires on kill/stop actions; "info" also fires on recovery.
+_NOTIFY_SCRIPT = ""
+_NOTIFY_SERVER_NAME = ""
+_NOTIFY_LEVEL = "critical"
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description=(
-            "RAM Sentinel: stops services managed by Monit when available RAM "
-            "drops critically low. Services are stopped in --tier order and "
-            "restored in reverse order once RAM recovers."
+            "RAM Sentinel: stops services when available RAM drops critically low. "
+            "Services are stopped in --tier order and restored in reverse order once RAM recovers."
         )
     )
     parser.add_argument(
@@ -36,13 +41,13 @@ def parse_args():
         type=int,
         required=True,
         metavar="MB",
-        help="Available RAM (MB) required before handing services back to Monit",
+        help="Available RAM (MB) required before restoring services",
     )
     parser.add_argument(
         "--tier",
         action="append",
         dest="tiers",
-        metavar="TYPE:MONIT_NAME",
+        metavar="TYPE:NAME",
         help=(
             "Service to stop, in escalation order. Format: TYPE:MONIT_NAME. "
             "TYPE must be 'kill' (SIGKILL the monitored PID) or "
@@ -56,10 +61,28 @@ def parse_args():
         action="store_true",
         help=(
             "Simulate all actions without executing them. Reads RAM, Monit status "
-            "and PIDs for real — only skips the destructive commands "
-            "(unmonitor, kill, stop, monitor)."
+            "and PIDs for real — only skips the destructive commands."
         ),
     )
+    parser.add_argument(
+        "--notify-script",
+        default="",
+        metavar="PATH",
+        help="Path to the centralized notification script (empty = disabled)",
+    )
+    parser.add_argument(
+        "--server-name",
+        default="",
+        metavar="NAME",
+        help="Server label used as MONIT_HOST in notifications (defaults to hostname)",
+    )
+    parser.add_argument(
+        "--notify-level",
+        choices=["critical", "all"],
+        default="critical",
+        help="'critical': only kill/stop events (default). 'all': also recovery events.",
+    )
+
     cfg = parser.parse_args()
 
     if not cfg.tiers:
@@ -72,18 +95,40 @@ def parse_args():
 def _parse_tier(raw, parser):
     parts = raw.split(":", 1)
     if len(parts) != 2:
-        parser.error(f"Invalid --tier format '{raw}'. Expected TYPE:MONIT_NAME.")
-    tier_type, monit_name = parts
+        parser.error(f"Invalid --tier format '{raw}'. Expected TYPE:NAME.")
+    tier_type, name = parts
     if tier_type not in ("kill", "stop"):
         parser.error(f"Unknown tier type '{tier_type}'. Must be 'kill' or 'stop'.")
-    if not monit_name:
-        parser.error(f"Missing monit name in --tier '{raw}'.")
-    return {"type": tier_type, "name": monit_name}
+    if not name:
+        parser.error(f"Missing name in --tier '{raw}'.")
+    return {"type": tier_type, "name": name}
 
 
 def info(message):
     timestamp = datetime.now().strftime("[%Y-%m-%d %H:%M:%S]")
     print(f"{timestamp} {message}", flush=True)
+
+
+def notify(description, level="critical"):
+    """Calls the centralized notification script with MONIT_* env vars, non-fatal.
+    level='critical' always fires; level='info' only fires when --notify-level all."""
+    if not _NOTIFY_SCRIPT:
+        return
+    if level == "info" and _NOTIFY_LEVEL != "all":
+        return
+    try:
+        env = os.environ.copy()
+        env["MONIT_HOST"] = _NOTIFY_SERVER_NAME
+        env["MONIT_SERVICE"] = "RAM-SENTINEL"
+        env["MONIT_DESCRIPTION"] = f"[{level.upper()}] {description}"
+        subprocess.run(
+            ["python3", _NOTIFY_SCRIPT],
+            env=env,
+            timeout=15,
+            capture_output=True,
+        )
+    except Exception as e:
+        info(f"WARNING: notification failed (non-fatal): {e}")
 
 
 def run_cmd(cmd, shell=False, timeout=None):
@@ -123,20 +168,22 @@ def get_monit_names():
     for line in output.splitlines():
         parts = line.split()
         if len(parts) >= 2:
-            # Cover both formats: 'name status ...' and "Process 'name' status ..."
             names.add(parts[0].strip("'\""))
             names.add(parts[1].strip("'\""))
     return names
 
 
 def validate_tiers(tiers):
-    """Logs a WARNING for any tier whose monit name is not in 'monit summary'.
-    Keeps running — a misconfigured tier should not leave the host unprotected."""
+    """Logs a WARNING for misconfigured tiers. Never aborts — a bad tier should not
+    leave the host unprotected."""
+    monit_tiers = tiers
+    if not monit_tiers:
+        return
     known = get_monit_names()
     if not known:
-        info("WARNING: could not retrieve Monit service list — skipping tier validation.")
+        info("WARNING: could not retrieve Monit service list — skipping Monit tier validation.")
         return
-    for tier in tiers:
+    for tier in monit_tiers:
         if tier["name"] not in known:
             info(
                 f"WARNING: tier '{tier['type']}:{tier['name']}' — "
@@ -187,22 +234,16 @@ def log_system_snapshot():
 
 
 def stop_tier(tier, dry_run=False):
-    """Stops a single tier. Returns the monit name."""
+    """Stops a single tier."""
     name = tier["name"]
     tier_type = tier["type"]
 
     if tier_type == "kill":
-        # Read PID before unmonitoring — monit status is unreliable after unmonitor
         pid = get_monit_pid(name)
         if pid is None:
-            info(
-                f"Tier kill:{name} — no PID found in monit status. "
-                f"Process may already be dead. Unmonitoring anyway."
-            )
+            info(f"Tier kill:{name} — no PID found in monit status. Unmonitoring anyway.")
         elif not pid_is_alive(pid):
-            info(
-                f"Tier kill:{name} — PID {pid} no longer alive. Unmonitoring anyway."
-            )
+            info(f"Tier kill:{name} — PID {pid} no longer alive. Unmonitoring anyway.")
             pid = None
         else:
             info(f"Tier kill:{name} — PID {pid} found and alive.")
@@ -232,12 +273,17 @@ def stop_tier(tier, dry_run=False):
     else:
         time.sleep(3)
 
-    return name
+
+def restore_tier(tier, dry_run=False):
+    """Re-enables Monit tracking so Monit restarts the service."""
+    name = tier["name"]
+    info(f"Re-enabling Monit tracking for '{name}'...")
+    maybe_run(f"monit monitor {name}", dry_run)
 
 
-def save_state(stopped_names, dry_run=False):
+def save_state(stopped_tiers, dry_run=False):
     if dry_run:
-        info(f"[DRY-RUN] would persist state: {stopped_names}")
+        info(f"[DRY-RUN] would persist state: {[t['type']+':'+t['name'] for t in stopped_tiers]}")
         return
     try:
         os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
@@ -245,7 +291,7 @@ def save_state(stopped_names, dry_run=False):
         with open(tmp_file, "w") as f:
             json.dump(
                 {
-                    "stopped_services": stopped_names,
+                    "stopped_tiers": stopped_tiers,
                     "timestamp": datetime.now().isoformat(),
                 },
                 f,
@@ -260,7 +306,12 @@ def save_state(stopped_names, dry_run=False):
 def load_state():
     try:
         with open(STATE_FILE) as f:
-            return json.load(f).get("stopped_services", [])
+            data = json.load(f)
+        # New format: list of {"type": ..., "name": ...} dicts
+        if "stopped_tiers" in data:
+            return data["stopped_tiers"]
+        # Old format: list of name strings under "stopped_services"
+        return [{"type": "stop", "name": n} for n in data.get("stopped_services", [])]
     except FileNotFoundError:
         return []
     except Exception as e:
@@ -285,19 +336,22 @@ def maybe_run(cmd, dry_run, shell=False, timeout=None):
     return run_cmd(cmd, shell=shell, timeout=timeout)
 
 
-def enable_monit_service(name, dry_run=False):
-    info(f"Re-enabling Monit tracking for '{name}'...")
-    maybe_run(f"monit monitor {name}", dry_run)
-
-
-def stop_tier_and_settle(cfg, tier, stopped_names):
+def stop_tier_and_settle(cfg, tier, stopped_tiers, trigger_ram=None):
     """Stops a tier, persists state, waits for RAM to settle. Returns updated available RAM."""
     name = tier["name"]
 
-    save_state(stopped_names + [name], dry_run=cfg.dry_run)
+    save_state(stopped_tiers + [tier], dry_run=cfg.dry_run)
     stop_tier(tier, dry_run=cfg.dry_run)
-    stopped_names.append(name)
-    save_state(stopped_names, dry_run=cfg.dry_run)
+    stopped_tiers.append(tier)
+    save_state(stopped_tiers, dry_run=cfg.dry_run)
+
+    ram_after = get_available_memory_mb()
+    ram_info = (
+        f"RAM at trigger: {trigger_ram} MB → after stop: {ram_after} MB."
+        if trigger_ram is not None
+        else f"RAM after stop: {ram_after} MB."
+    )
+    notify(f"{tier['type'].upper()} {name}: service stopped. {ram_info}")
 
     info(f"Waiting up to {SETTLE_SECONDS}s for RAM to settle after stopping '{name}'...")
     if cfg.dry_run:
@@ -314,20 +368,20 @@ def run_recovery_routine(cfg):
         f"CRITICAL ALERT: Available RAM ({available_ram} MB) < "
         f"Emergency Threshold ({cfg.emergency_trigger} MB)!"
     )
-
     log_system_snapshot()
 
-    stopped_names = []
+    stopped_tiers = []
 
     for tier in cfg.tiers:
-        available_ram = stop_tier_and_settle(cfg, tier, stopped_names)
+        available_ram = stop_tier_and_settle(cfg, tier, stopped_tiers, trigger_ram=available_ram)
         if available_ram > 0 and available_ram >= cfg.emergency_trigger:
             break
 
-    wait_and_restore(cfg, stopped_names)
+    wait_and_restore(cfg, stopped_tiers)
 
 
-def wait_and_restore(cfg, stopped_names):
+def wait_and_restore(cfg, stopped_tiers):
+    stopped_names = {t["name"] for t in stopped_tiers}
     remaining_tiers = [t for t in cfg.tiers if t["name"] not in stopped_names]
 
     available_ram = get_available_memory_mb()
@@ -340,45 +394,59 @@ def wait_and_restore(cfg, stopped_names):
                 f"RAM still critical ({available_ram} MB). "
                 f"Escalating to next tier: {tier['type']}:{tier['name']}..."
             )
-            available_ram = stop_tier_and_settle(cfg, tier, stopped_names)
+            available_ram = stop_tier_and_settle(cfg, tier, stopped_tiers, trigger_ram=available_ram)
+            stopped_names.add(tier["name"])
             continue
 
         now = time.monotonic()
         if now - last_log >= RECOVERY_LOG_INTERVAL_SECONDS:
             info(
                 f"Waiting for recovery: {available_ram} MB available "
-                f"(target: >= {cfg.safe_recovery} MB, stopped: {stopped_names})"
+                f"(target: >= {cfg.safe_recovery} MB, "
+                f"stopped: {[t['type']+':'+t['name'] for t in stopped_tiers]})"
             )
             last_log = now
 
         time.sleep(CHECK_INTERVAL_SECONDS)
         available_ram = get_available_memory_mb()
 
+    restored = [f"{t['type']}:{t['name']}" for t in reversed(stopped_tiers)]
     info(
         f"RAM recovered: {available_ram} MB (>= {cfg.safe_recovery} MB). "
-        f"Restoring services in reverse order: {list(reversed(stopped_names))}"
+        f"Restoring services in reverse order: {restored}"
     )
-    for name in reversed(stopped_names):
-        enable_monit_service(name, dry_run=cfg.dry_run)
+    for tier in reversed(stopped_tiers):
+        restore_tier(tier, dry_run=cfg.dry_run)
     if cfg.dry_run:
         info("[DRY-RUN] would clear state file.")
     else:
         clear_state()
 
-    info("Emergency recovery completed. Monit will restart the services.")
+    info("Emergency recovery completed.")
+    notify(
+        f"RAM recovered to {available_ram} MB. Services restored: {', '.join(restored)}.",
+        level="info",
+    )
 
 
 def main():
+    global _NOTIFY_SCRIPT, _NOTIFY_SERVER_NAME, _NOTIFY_LEVEL
+
     cfg = parse_args()
+    _NOTIFY_SCRIPT = cfg.notify_script
+    _NOTIFY_SERVER_NAME = cfg.server_name or os.uname().nodename
+    _NOTIFY_LEVEL = cfg.notify_level
 
     tier_summary = ", ".join(f"{t['type']}:{t['name']}" for t in cfg.tiers)
     mode = "DRY-RUN (no destructive actions will be taken)" if cfg.dry_run else "LIVE"
+    notify_status = "disabled" if not _NOTIFY_SCRIPT else f"enabled (level={_NOTIFY_LEVEL})"
     info(
         f"RAM Sentinel started [{mode}] | "
         f"Interval: {CHECK_INTERVAL_SECONDS}s | "
         f"Emergency Trigger: < {cfg.emergency_trigger} MB | "
         f"Safe Target: >= {cfg.safe_recovery} MB | "
-        f"Tiers: [{tier_summary}]"
+        f"Tiers: [{tier_summary}] | "
+        f"Notifications: {notify_status}"
     )
 
     try:
@@ -388,7 +456,6 @@ def main():
 
     validate_tiers(cfg.tiers)
 
-    # Resume an interrupted recovery (skipped in dry-run: state file is live-mode-only)
     if cfg.dry_run:
         info("[DRY-RUN] skipping state file load.")
     else:
