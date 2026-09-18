@@ -505,6 +505,7 @@ def wait_and_restore(cfg, stopped_tiers):
 
     available_ram = get_available_memory_mb()
     last_log = 0.0
+    exhausted_notified = False
 
     while available_ram < cfg.safe_recovery:
         if available_ram < cfg.emergency_trigger and remaining_tiers:
@@ -515,6 +516,16 @@ def wait_and_restore(cfg, stopped_tiers):
             )
             available_ram = stop_tier_and_settle(cfg, tier, stopped_tiers, trigger_ram=available_ram)
             continue
+
+        if available_ram < cfg.emergency_trigger and not exhausted_notified:
+            # Nothing left to stop: warn once so someone can step in manually
+            message = (
+                f"All tiers exhausted and RAM still critical ({available_ram} MB < "
+                f"{cfg.emergency_trigger} MB). Manual intervention may be required."
+            )
+            info(f"CRITICAL: {message}")
+            notify(message)
+            exhausted_notified = True
 
         now = time.monotonic()
         if now - last_log >= RECOVERY_LOG_INTERVAL_SECONDS:
