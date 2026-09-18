@@ -147,15 +147,17 @@ def run_cmd(cmd, shell=False, timeout=None):
 
 
 def get_available_memory_mb():
+    """Reads MemAvailable from /proc/meminfo (no subprocess, so it still works under
+    memory pressure). Returns 0 on failure, which callers treat as critical."""
     try:
-        output = run_cmd("free -m")
-        if output:
-            for line in output.split("\n"):
-                if line.startswith("Mem:"):
-                    parts = line.split()
-                    return int(parts[6])
+        with open("/proc/meminfo", "r") as f:
+            for line in f:
+                if line.startswith("MemAvailable:"):
+                    # meminfo reports kB
+                    return int(line.split()[1]) // 1024
+        info("WARNING: MemAvailable not found in /proc/meminfo")
     except Exception as e:
-        info(f"Failed to query available memory: {e}")
+        info(f"Failed to read /proc/meminfo: {e}")
     return 0
 
 
