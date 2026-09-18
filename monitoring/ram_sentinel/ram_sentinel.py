@@ -162,18 +162,16 @@ def _send_notification(env):
         info(f"WARNING: notification failed (non-fatal): {e}")
 
 
-def run_cmd(cmd, shell=False, timeout=None, raise_on_timeout=False):
+def run_cmd(cmd, timeout=None, raise_on_timeout=False):
     """Returns the command output, or None on error/timeout. With
     raise_on_timeout=True a timeout raises subprocess.TimeoutExpired instead,
     so callers can tell "failed" apart from "unknown"."""
     try:
-        if isinstance(cmd, str) and not shell:
+        if isinstance(cmd, str):
             # shlex keeps quoted arguments together (see shlex.quote at call sites).
             # Monit names shouldn't contain spaces, but this makes it robust anyway.
             cmd = shlex.split(cmd)
-        return subprocess.check_output(
-            cmd, shell=shell, text=True, timeout=timeout
-        ).strip()
+        return subprocess.check_output(cmd, text=True, timeout=timeout).strip()
     except subprocess.TimeoutExpired:
         info(f"WARNING: command timed out after {timeout}s: {cmd}")
         if raise_on_timeout:
@@ -442,12 +440,12 @@ def clear_state():
         info(f"WARNING: failed to remove state file {STATE_FILE}: {e}")
 
 
-def maybe_run(cmd, dry_run, shell=False, timeout=None, raise_on_timeout=False):
+def maybe_run(cmd, dry_run, timeout=None, raise_on_timeout=False):
     """Runs cmd unless dry_run is True, in which case just logs it."""
     if dry_run:
         info(f"[DRY-RUN] would run: {cmd}")
         return None
-    return run_cmd(cmd, shell=shell, timeout=timeout, raise_on_timeout=raise_on_timeout)
+    return run_cmd(cmd, timeout=timeout, raise_on_timeout=raise_on_timeout)
 
 
 def stop_tier_and_settle(cfg, tier, stopped_tiers, trigger_ram=None):
