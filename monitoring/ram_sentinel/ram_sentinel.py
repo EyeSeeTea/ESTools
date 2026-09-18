@@ -153,7 +153,10 @@ def notify(description, level="critical"):
         info(f"WARNING: notification failed (non-fatal): {e}")
 
 
-def run_cmd(cmd, shell=False, timeout=None):
+def run_cmd(cmd, shell=False, timeout=None, raise_on_timeout=False):
+    """Returns the command output, or None on error/timeout. With
+    raise_on_timeout=True a timeout raises subprocess.TimeoutExpired instead,
+    so callers can tell "failed" apart from "unknown"."""
     try:
         if isinstance(cmd, str) and not shell:
             # shlex keeps quoted arguments together (see shlex.quote at call sites).
@@ -164,6 +167,8 @@ def run_cmd(cmd, shell=False, timeout=None):
         ).strip()
     except subprocess.TimeoutExpired:
         info(f"WARNING: command timed out after {timeout}s: {cmd}")
+        if raise_on_timeout:
+            raise
         return None
     except subprocess.CalledProcessError as e:
         info(f"Error executing '{cmd}': {e}")
@@ -346,10 +351,19 @@ def stop_tier(tier, dry_run=False):
         info(f"Tier stop:{name} — unmonitoring...")
         maybe_run(f"monit unmonitor {quoted_name}", dry_run)
         info(f"Tier stop:{name} — running monit stop...")
-        result = maybe_run(f"monit stop {quoted_name}", dry_run, timeout=STOP_TIMEOUT_SECONDS)
-        # run_cmd returns None on error/timeout; in dry-run we simulate success
-        sent = dry_run or result is not None
-        action = "stop request sent to Monit" if sent else "monit stop failed"
+        try:
+            result = maybe_run(
+                f"monit stop {quoted_name}", dry_run,
+                timeout=STOP_TIMEOUT_SECONDS, raise_on_timeout=True,
+            )
+            # run_cmd returns None on error (request rejected); in dry-run we simulate success
+            sent = dry_run or result is not None
+            action = "stop request sent to Monit" if sent else "monit stop failed"
+        except subprocess.TimeoutExpired:
+            # Monit may still be stopping the service: treat as sent so the settle
+            # wait decides whether to escalate, instead of stopping the next tier blindly.
+            sent = True
+            action = f"monit stop timed out after {STOP_TIMEOUT_SECONDS}s, result unknown"
 
     # Nothing was sent, so there is no memory to wait for
     if sent:
@@ -415,12 +429,12 @@ def clear_state():
         info(f"WARNING: failed to remove state file {STATE_FILE}: {e}")
 
 
-def maybe_run(cmd, dry_run, shell=False, timeout=None):
+def maybe_run(cmd, dry_run, shell=False, timeout=None, raise_on_timeout=False):
     """Runs cmd unless dry_run is True, in which case just logs it."""
     if dry_run:
         info(f"[DRY-RUN] would run: {cmd}")
         return None
-    return run_cmd(cmd, shell=shell, timeout=timeout)
+    return run_cmd(cmd, shell=shell, timeout=timeout, raise_on_timeout=raise_on_timeout)
 
 
 def stop_tier_and_settle(cfg, tier, stopped_tiers, trigger_ram=None):
