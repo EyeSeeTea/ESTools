@@ -223,14 +223,51 @@ def wait_for_ram_settle(threshold_mb, max_seconds=SETTLE_SECONDS):
     return get_available_memory_mb()
 
 
+SNAPSHOT_MEMINFO_KEYS = (
+    "MemTotal", "MemFree", "MemAvailable", "Buffers", "Cached", "SwapTotal", "SwapFree",
+)
+
+
+def get_top_processes_by_rss(limit=10):
+    """Returns [(pid, rss_kb, name)] sorted by RSS, read from /proc/<pid>/status."""
+    procs = []
+    for entry in os.listdir("/proc"):
+        if not entry.isdigit():
+            continue
+        try:
+            name, rss_kb = "?", 0
+            with open(f"/proc/{entry}/status") as f:
+                for line in f:
+                    if line.startswith("Name:"):
+                        name = line.split(None, 1)[1].strip()
+                    elif line.startswith("VmRSS:"):
+                        rss_kb = int(line.split()[1])
+                        break
+            if rss_kb:
+                procs.append((int(entry), rss_kb, name))
+        except (OSError, ValueError, IndexError):
+            # process exited while reading, or kernel thread without VmRSS
+            continue
+    procs.sort(key=lambda p: p[1], reverse=True)
+    return procs[:limit]
+
+
 def log_system_snapshot():
+    """Logs memory stats and top processes reading /proc directly (no subprocess,
+    since forking may fail or hang under memory pressure)."""
     try:
-        snapshot = run_cmd("free -m")
-        info(f"Memory snapshot (free -m):\n{snapshot}")
-        top_procs = run_cmd(
-            "ps -eo pid,%mem,rss,comm --sort=-%mem | head -11", shell=True
-        )
-        info(f"Top processes by memory:\n{top_procs}")
+        meminfo = {}
+        with open("/proc/meminfo") as f:
+            for line in f:
+                key, _, value = line.partition(":")
+                if key in SNAPSHOT_MEMINFO_KEYS:
+                    meminfo[key] = int(value.split()[0]) // 1024
+        info("Memory snapshot (MB): " + ", ".join(
+            f"{k}={meminfo[k]}" for k in SNAPSHOT_MEMINFO_KEYS if k in meminfo
+        ))
+        lines = [f"{pid:>8} {rss_kb // 1024:>8} MB  {name}"
+                 for pid, rss_kb, name in get_top_processes_by_rss()]
+        info("Top processes by RSS:\n" + "\n".join(lines))
     except Exception as e:
         info(f"WARNING: system snapshot failed (non-fatal): {e}")
 
