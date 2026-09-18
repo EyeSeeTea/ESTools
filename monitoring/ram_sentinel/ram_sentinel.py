@@ -610,7 +610,12 @@ def main():
         pending = load_state()
         if pending:
             info(f"Found pending state from a previous run: {pending}. Resuming recovery...")
-            wait_and_restore(cfg, pending)
+            try:
+                wait_and_restore(cfg, pending)
+            except Exception as e:
+                # Same as the main loop: log and keep protecting the host. The state
+                # file is only cleared after a successful restore, so it is not lost.
+                info(f"Unexpected error while resuming recovery: {e}")
 
     while True:
         try:
