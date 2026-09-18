@@ -516,7 +516,6 @@ def wait_and_restore(cfg, stopped_tiers):
                 f"Escalating to next tier: {tier['type']}:{tier['name']}..."
             )
             available_ram = stop_tier_and_settle(cfg, tier, stopped_tiers, trigger_ram=available_ram)
-            stopped_names.add(tier["name"])
             continue
 
         now = time.monotonic()
