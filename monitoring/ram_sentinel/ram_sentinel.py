@@ -173,6 +173,10 @@ def run_cmd(cmd, shell=False, timeout=None, raise_on_timeout=False):
     except subprocess.CalledProcessError as e:
         info(f"Error executing '{cmd}': {e}")
         return None
+    except OSError as e:
+        # e.g. the kernel refuses to create the process under memory pressure (ENOMEM)
+        info(f"Could not start '{cmd}': {e}")
+        return None
 
 
 def read_mem_available_mb():
