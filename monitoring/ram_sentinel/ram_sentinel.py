@@ -6,6 +6,7 @@ import os
 import shlex
 import subprocess
 import sys
+import threading
 import time
 from datetime import datetime
 
@@ -126,16 +127,24 @@ def info(message):
 
 def notify(description, level="critical"):
     """Calls the centralized notification script with MONIT_* env vars, non-fatal.
-    level='critical' always fires; level='info' only fires when --notify-level all."""
+    level='critical' always fires; level='info' only fires when --notify-level all.
+    Runs in a background thread so a slow script never delays the recovery."""
     if not _NOTIFY_SCRIPT:
         return
     if level == "info" and _NOTIFY_LEVEL != "all":
         return
+    env = os.environ.copy()
+    env["MONIT_HOST"] = _NOTIFY_SERVER_NAME
+    env["MONIT_SERVICE"] = "RAM-SENTINEL"
+    env["MONIT_DESCRIPTION"] = f"[{level.upper()}] {description}"
     try:
-        env = os.environ.copy()
-        env["MONIT_HOST"] = _NOTIFY_SERVER_NAME
-        env["MONIT_SERVICE"] = "RAM-SENTINEL"
-        env["MONIT_DESCRIPTION"] = f"[{level.upper()}] {description}"
+        threading.Thread(target=_send_notification, args=(env,), daemon=True).start()
+    except Exception as e:
+        info(f"WARNING: could not start notification thread (non-fatal): {e}")
+
+
+def _send_notification(env):
+    try:
         # Executed directly: the script must have a shebang and execute permission
         result = subprocess.run(
             [_NOTIFY_SCRIPT],
