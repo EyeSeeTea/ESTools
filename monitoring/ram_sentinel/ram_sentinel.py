@@ -70,7 +70,10 @@ def parse_args():
         "--notify-script",
         default="",
         metavar="PATH",
-        help="Path to the centralized notification script (empty = disabled)",
+        help=(
+            "Path to the centralized notification script (empty = disabled). "
+            "It is executed directly, so it needs a shebang and execute permission."
+        ),
     )
     parser.add_argument(
         "--server-name",
@@ -91,6 +94,16 @@ def parse_args():
         parser.error("At least one --tier is required.")
 
     cfg.tiers = [_parse_tier(t, parser) for t in cfg.tiers]
+
+    # Notifications were explicitly requested: fail at deploy time rather than
+    # running with alerts silently broken.
+    if cfg.notify_script and not (
+        os.path.isfile(cfg.notify_script) and os.access(cfg.notify_script, os.X_OK)
+    ):
+        parser.error(
+            f"--notify-script '{cfg.notify_script}' does not exist or is not executable "
+            f"(it is run directly, so it needs a shebang and execute permission)."
+        )
     return cfg
 
 
@@ -123,12 +136,19 @@ def notify(description, level="critical"):
         env["MONIT_HOST"] = _NOTIFY_SERVER_NAME
         env["MONIT_SERVICE"] = "RAM-SENTINEL"
         env["MONIT_DESCRIPTION"] = f"[{level.upper()}] {description}"
-        subprocess.run(
-            ["python3", _NOTIFY_SCRIPT],
+        # Executed directly: the script must have a shebang and execute permission
+        result = subprocess.run(
+            [_NOTIFY_SCRIPT],
             env=env,
             timeout=15,
             capture_output=True,
+            text=True,
         )
+        if result.returncode != 0:
+            info(
+                f"WARNING: notification script exited with code {result.returncode} "
+                f"(non-fatal): {result.stderr.strip()}"
+            )
     except Exception as e:
         info(f"WARNING: notification failed (non-fatal): {e}")
 

@@ -33,13 +33,13 @@ ram_sentinel.py --emergency-trigger MB --safe-recovery MB --tier TYPE:MONIT_NAME
 | `--safe-recovery MB` | yes | Available RAM (MB) required before restoring services |
 | `--tier TYPE:MONIT_NAME` | yes (repeat) | Service to stop, in escalation order |
 | `--dry-run` | no | Simulate all actions — reads RAM and PIDs for real, skips destructive commands |
-| `--notify-script PATH` | no | Path to the centralized notification script (disabled if omitted) |
+| `--notify-script PATH` | no | Path to the centralized notification script (disabled if omitted). Must exist and be executable, otherwise the sentinel refuses to start |
 | `--server-name NAME` | no | Server label sent as `MONIT_HOST` in notifications (defaults to hostname) |
 | `--notify-level` | no | `critical` (default): only kill/stop events. `all`: also recovery events. |
 
 ## Notifications
 
-When `--notify-script` is set, the sentinel calls the script via `subprocess.run()` on each kill/stop action and (if `--notify-level all`) on recovery. The script receives the event details through environment variables:
+When `--notify-script` is set, the sentinel executes the script directly (so it needs a shebang, e.g. `#!/usr/bin/env python3`, and execute permission) on each kill/stop action and (if `--notify-level all`) on recovery. The script receives the event details through environment variables:
 
 | Variable | Value |
 |----------|-------|
