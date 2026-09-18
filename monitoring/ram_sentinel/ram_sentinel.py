@@ -282,9 +282,14 @@ def log_system_snapshot():
 
 
 def stop_tier(tier, dry_run=False):
-    """Stops a single tier."""
+    """Sends the stop/kill action for a single tier.
+
+    Returns (sent, action): sent is True if the signal/request could be delivered.
+    It does not mean the service is already down (monit stop is asynchronous)."""
     name = tier["name"]
     tier_type = tier["type"]
+    sent = False
+    action = ""
 
     if tier_type == "kill":
         pid = get_monit_pid(name)
@@ -299,27 +304,37 @@ def stop_tier(tier, dry_run=False):
         info(f"Tier kill:{name} — unmonitoring...")
         maybe_run(f"monit unmonitor {shlex.quote(name)}", dry_run)
 
-        if pid is not None:
+        if pid is None:
+            action = "no live PID found in monit status, nothing killed"
+        else:
             info(f"Tier kill:{name} — sending SIGKILL to PID {pid}...")
             if dry_run:
                 info(f"[DRY-RUN] would os.kill({pid}, 9)")
+                sent = True
             else:
                 try:
                     os.kill(pid, 9)
-                    info(f"Tier kill:{name} — PID {pid} killed.")
+                    info(f"Tier kill:{name} — SIGKILL sent to PID {pid}.")
+                    sent = True
                 except Exception as e:
                     info(f"Tier kill:{name} — SIGKILL failed: {e}")
+            action = f"SIGKILL sent to PID {pid}" if sent else f"SIGKILL to PID {pid} failed"
 
     elif tier_type == "stop":
         info(f"Tier stop:{name} — unmonitoring...")
         maybe_run(f"monit unmonitor {shlex.quote(name)}", dry_run)
         info(f"Tier stop:{name} — running monit stop...")
-        maybe_run(f"monit stop {shlex.quote(name)}", dry_run, timeout=STOP_TIMEOUT_SECONDS)
+        result = maybe_run(f"monit stop {shlex.quote(name)}", dry_run, timeout=STOP_TIMEOUT_SECONDS)
+        # run_cmd returns None on error/timeout; in dry-run we simulate success
+        sent = dry_run or result is not None
+        action = "stop request sent to Monit" if sent else "monit stop failed"
 
     if dry_run:
         info(f"[DRY-RUN] would sleep 3s for OS to reclaim memory.")
     else:
         time.sleep(3)
+
+    return sent, action
 
 
 def restore_tier(tier, dry_run=False):
@@ -389,7 +404,8 @@ def stop_tier_and_settle(cfg, tier, stopped_tiers, trigger_ram=None):
     name = tier["name"]
 
     save_state(stopped_tiers + [tier], dry_run=cfg.dry_run)
-    stop_tier(tier, dry_run=cfg.dry_run)
+    sent, action = stop_tier(tier, dry_run=cfg.dry_run)
+    # Recorded even if it failed: it was unmonitored, so it must be re-monitored on restore
     stopped_tiers.append(tier)
     save_state(stopped_tiers, dry_run=cfg.dry_run)
 
@@ -399,7 +415,8 @@ def stop_tier_and_settle(cfg, tier, stopped_tiers, trigger_ram=None):
         if trigger_ram is not None
         else f"RAM after stop: {ram_after} MB."
     )
-    notify(f"{tier['type'].upper()} {name}: service stopped. {ram_info}")
+    status = action if sent else f"FAILED: {action}"
+    notify(f"{tier['type'].upper()} {name}: {status}. {ram_info}")
 
     info(f"Waiting up to {SETTLE_SECONDS}s for RAM to settle after stopping '{name}'...")
     if cfg.dry_run:
