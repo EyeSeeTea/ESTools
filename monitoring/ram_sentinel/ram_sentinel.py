@@ -351,10 +351,12 @@ def stop_tier(tier, dry_run=False):
         sent = dry_run or result is not None
         action = "stop request sent to Monit" if sent else "monit stop failed"
 
-    if dry_run:
-        info(f"[DRY-RUN] would sleep 3s for OS to reclaim memory.")
-    else:
-        time.sleep(3)
+    # Nothing was sent, so there is no memory to wait for
+    if sent:
+        if dry_run:
+            info(f"[DRY-RUN] would sleep 3s for OS to reclaim memory.")
+        else:
+            time.sleep(3)
 
     return sent, action
 
@@ -439,6 +441,11 @@ def stop_tier_and_settle(cfg, tier, stopped_tiers, trigger_ram=None):
     )
     status = action if sent else f"FAILED: {action}"
     notify(f"{tier['type'].upper()} {name}: {status}. {ram_info}")
+
+    if not sent:
+        # Don't wait for RAM to settle after a failed action: escalate right away
+        info(f"Tier '{name}' failed ({action}). Skipping settle wait.")
+        return ram_after
 
     info(f"Waiting up to {SETTLE_SECONDS}s for RAM to settle after stopping '{name}'...")
     if cfg.dry_run:
