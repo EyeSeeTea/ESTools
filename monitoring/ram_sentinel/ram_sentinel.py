@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import subprocess
+import sys
 import time
 from datetime import datetime
 
@@ -146,19 +147,25 @@ def run_cmd(cmd, shell=False, timeout=None):
         return None
 
 
-def get_available_memory_mb():
+def read_mem_available_mb():
     """Reads MemAvailable from /proc/meminfo (no subprocess, so it still works under
-    memory pressure). Returns 0 on failure, which callers treat as critical."""
+    memory pressure). Raises if the value cannot be read."""
+    with open("/proc/meminfo", "r") as f:
+        for line in f:
+            if line.startswith("MemAvailable:"):
+                # meminfo reports kB
+                return int(line.split()[1]) // 1024
+    raise RuntimeError("MemAvailable couldn't be found in /proc/meminfo")
+
+
+def get_available_memory_mb():
+    """Same as read_mem_available_mb() but returns 0 on failure, which callers
+    treat as critical."""
     try:
-        with open("/proc/meminfo", "r") as f:
-            for line in f:
-                if line.startswith("MemAvailable:"):
-                    # meminfo reports kB
-                    return int(line.split()[1]) // 1024
-        info("WARNING: MemAvailable not found in /proc/meminfo")
+        return read_mem_available_mb()
     except Exception as e:
-        info(f"Failed to read /proc/meminfo: {e}")
-    return 0
+        info(f"Failed to read available memory: {e}")
+        return 0
 
 
 def get_monit_names():
@@ -487,6 +494,15 @@ def main():
         f"Tiers: [{tier_summary}] | "
         f"Notifications: {notify_status}"
     )
+
+    # A failed read is treated as 0 MB (critical) at runtime. If it already fails
+    # at startup it is a platform problem (no /proc, kernel < 3.14 without
+    # MemAvailable), and running would stop every tier and never restore them.
+    try:
+        read_mem_available_mb()
+    except Exception as e:
+        info(f"FATAL: cannot read available memory from /proc/meminfo: {e}. Refusing to start.")
+        sys.exit(1)
 
     try:
         os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
