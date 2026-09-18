@@ -109,7 +109,7 @@ Service names passed to `--tier` must match exactly what `monit summary` shows:
 monit summary
 ```
 
-At startup, the sentinel logs a WARNING for any tier name not found in Monit — check `journalctl -u ram-sentinel` after the first start.
+At startup, any tier name not found in Monit is logged as a WARNING and ignored. If no valid tier is left, or `monit summary` can't be queried, the sentinel refuses to start (systemd will keep retrying) — check `journalctl -u ram-sentinel` after the first start.
 
 ## Prerequisites
 

@@ -186,22 +186,23 @@ def get_monit_names():
 
 
 def validate_tiers(tiers):
-    """Logs a WARNING for misconfigured tiers. Never aborts — a bad tier should not
-    leave the host unprotected."""
-    monit_tiers = tiers
-    if not monit_tiers:
-        return
+    """Returns only the tiers whose name is known to Monit, logging a WARNING for
+    each one dropped. Raises RuntimeError if Monit can't be queried, since every
+    action goes through Monit and the sentinel would be unable to do anything."""
     known = get_monit_names()
     if not known:
-        info("WARNING: could not retrieve Monit service list — skipping Monit tier validation.")
-        return
-    for tier in monit_tiers:
-        if tier["name"] not in known:
+        raise RuntimeError("could not retrieve the service list from 'monit summary'")
+    valid = []
+    for tier in tiers:
+        if tier["name"] in known:
+            valid.append(tier)
+        else:
             info(
                 f"WARNING: tier '{tier['type']}:{tier['name']}' — "
-                f"'{tier['name']}' not found in 'monit summary'. "
-                f"Check the service name or update --tier."
+                f"'{tier['name']}' not found in 'monit summary'. Ignoring it; "
+                f"check the service name or update --tier."
             )
+    return valid
 
 
 def get_monit_pid(monit_name):
@@ -528,7 +529,17 @@ def main():
     except Exception as e:
         info(f"WARNING: cannot create state dir for {STATE_FILE}: {e}")
 
-    validate_tiers(cfg.tiers)
+    # Drop unknown tiers so recovery doesn't waste time on them, and refuse to
+    # start if nothing is left: a sentinel that can't act would give false confidence.
+    try:
+        cfg.tiers = validate_tiers(cfg.tiers)
+    except Exception as e:
+        info(f"FATAL: cannot validate tiers against Monit: {e}. Refusing to start.")
+        sys.exit(1)
+    if not cfg.tiers:
+        info("FATAL: none of the configured tiers exist in Monit. Refusing to start.")
+        sys.exit(1)
+    info(f"Active tiers: [{', '.join(t['type'] + ':' + t['name'] for t in cfg.tiers)}]")
 
     if cfg.dry_run:
         info("[DRY-RUN] skipping state file load.")
