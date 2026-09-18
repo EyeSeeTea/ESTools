@@ -222,12 +222,11 @@ def pid_is_alive(pid):
 def wait_for_ram_settle(threshold_mb, max_seconds=SETTLE_SECONDS):
     """Polls RAM for up to max_seconds. Returns available RAM when stable or timeout."""
     deadline = time.monotonic() + max_seconds
-    while time.monotonic() < deadline:
+    while True:
         ram = get_available_memory_mb()
-        if ram > 0 and ram >= threshold_mb:
+        if ram >= threshold_mb or time.monotonic() >= deadline:
             return ram
         time.sleep(CHECK_INTERVAL_SECONDS)
-    return get_available_memory_mb()
 
 
 SNAPSHOT_MEMINFO_KEYS = (
