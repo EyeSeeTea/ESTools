@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import shlex
 import subprocess
 import sys
 import time
@@ -135,7 +136,9 @@ def notify(description, level="critical"):
 def run_cmd(cmd, shell=False, timeout=None):
     try:
         if isinstance(cmd, str) and not shell:
-            cmd = cmd.split()
+            # shlex keeps quoted arguments together (see shlex.quote at call sites).
+            # Monit names shouldn't contain spaces, but this makes it robust anyway.
+            cmd = shlex.split(cmd)
         return subprocess.check_output(
             cmd, shell=shell, text=True, timeout=timeout
         ).strip()
@@ -203,7 +206,7 @@ def validate_tiers(tiers):
 
 def get_monit_pid(monit_name):
     """Returns the PID reported by Monit for a service, or None."""
-    output = run_cmd(f"monit status {monit_name}")
+    output = run_cmd(f"monit status {shlex.quote(monit_name)}")
     if not output:
         return None
     for line in output.splitlines():
@@ -294,7 +297,7 @@ def stop_tier(tier, dry_run=False):
             info(f"Tier kill:{name} — PID {pid} found and alive.")
 
         info(f"Tier kill:{name} — unmonitoring...")
-        maybe_run(f"monit unmonitor {name}", dry_run)
+        maybe_run(f"monit unmonitor {shlex.quote(name)}", dry_run)
 
         if pid is not None:
             info(f"Tier kill:{name} — sending SIGKILL to PID {pid}...")
@@ -309,9 +312,9 @@ def stop_tier(tier, dry_run=False):
 
     elif tier_type == "stop":
         info(f"Tier stop:{name} — unmonitoring...")
-        maybe_run(f"monit unmonitor {name}", dry_run)
+        maybe_run(f"monit unmonitor {shlex.quote(name)}", dry_run)
         info(f"Tier stop:{name} — running monit stop...")
-        maybe_run(f"monit stop {name}", dry_run, timeout=STOP_TIMEOUT_SECONDS)
+        maybe_run(f"monit stop {shlex.quote(name)}", dry_run, timeout=STOP_TIMEOUT_SECONDS)
 
     if dry_run:
         info(f"[DRY-RUN] would sleep 3s for OS to reclaim memory.")
@@ -323,7 +326,7 @@ def restore_tier(tier, dry_run=False):
     """Re-enables Monit tracking so Monit restarts the service."""
     name = tier["name"]
     info(f"Re-enabling Monit tracking for '{name}'...")
-    maybe_run(f"monit monitor {name}", dry_run)
+    maybe_run(f"monit monitor {shlex.quote(name)}", dry_run)
 
 
 def save_state(stopped_tiers, dry_run=False):
