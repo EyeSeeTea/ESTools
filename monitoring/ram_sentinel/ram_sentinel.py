@@ -308,6 +308,7 @@ def stop_tier(tier, dry_run=False):
     Returns (sent, action): sent is True if the signal/request could be delivered.
     It does not mean the service is already down (monit stop is asynchronous)."""
     name = tier["name"]
+    quoted_name = shlex.quote(name)
     tier_type = tier["type"]
     sent = False
     action = ""
@@ -323,7 +324,7 @@ def stop_tier(tier, dry_run=False):
             info(f"Tier kill:{name} — PID {pid} found and alive.")
 
         info(f"Tier kill:{name} — unmonitoring...")
-        maybe_run(f"monit unmonitor {shlex.quote(name)}", dry_run)
+        maybe_run(f"monit unmonitor {quoted_name}", dry_run)
 
         if pid is None:
             action = "no live PID found in monit status, nothing killed"
@@ -343,9 +344,9 @@ def stop_tier(tier, dry_run=False):
 
     elif tier_type == "stop":
         info(f"Tier stop:{name} — unmonitoring...")
-        maybe_run(f"monit unmonitor {shlex.quote(name)}", dry_run)
+        maybe_run(f"monit unmonitor {quoted_name}", dry_run)
         info(f"Tier stop:{name} — running monit stop...")
-        result = maybe_run(f"monit stop {shlex.quote(name)}", dry_run, timeout=STOP_TIMEOUT_SECONDS)
+        result = maybe_run(f"monit stop {quoted_name}", dry_run, timeout=STOP_TIMEOUT_SECONDS)
         # run_cmd returns None on error/timeout; in dry-run we simulate success
         sent = dry_run or result is not None
         action = "stop request sent to Monit" if sent else "monit stop failed"
