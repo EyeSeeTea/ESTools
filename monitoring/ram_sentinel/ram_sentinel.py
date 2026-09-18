@@ -376,7 +376,7 @@ def run_recovery_routine(cfg):
 
     for tier in cfg.tiers:
         available_ram = stop_tier_and_settle(cfg, tier, stopped_tiers, trigger_ram=available_ram)
-        if available_ram > 0 and available_ram >= cfg.emergency_trigger:
+        if available_ram >= cfg.emergency_trigger:
             break
 
     wait_and_restore(cfg, stopped_tiers)
@@ -390,7 +390,7 @@ def wait_and_restore(cfg, stopped_tiers):
     last_log = 0.0
 
     while available_ram < cfg.safe_recovery:
-        if 0 < available_ram < cfg.emergency_trigger and remaining_tiers:
+        if available_ram < cfg.emergency_trigger and remaining_tiers:
             tier = remaining_tiers.pop(0)
             info(
                 f"RAM still critical ({available_ram} MB). "
@@ -469,7 +469,7 @@ def main():
     while True:
         try:
             available_ram = get_available_memory_mb()
-            if 0 < available_ram < cfg.emergency_trigger:
+            if available_ram < cfg.emergency_trigger:
                 run_recovery_routine(cfg)
         except Exception as e:
             info(f"Unexpected error in sentinel loop: {e}")
