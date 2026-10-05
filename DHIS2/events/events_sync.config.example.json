@@ -1,0 +1,24 @@
+{
+  "src": {
+    "url": "https://source.example.org/dhis2",
+    "jsessionid": "PUT_SOURCE_JSESSIONID"
+  },
+  "dst": {
+    "url": "https://dev.example.org/dhis2",
+    "jsessionid": "PUT_DESTINATION_JSESSIONID"
+  },
+  "occurredAfter": "2020-01-01",
+  "occurredBefore": "2026-12-31",
+  "outDir": "./dump",
+  "orgUnits": [
+    "AbCdEfGh001",
+    "AbCdEfGh002",
+    "AbCdEfGh003"
+  ],
+  "programs": [
+    { "name": "Example Program A", "id": "ProgramA001" },
+    { "name": "Example Program B", "id": "ProgramB002" },
+    { "name": "Example Program C", "id": "ProgramC003" }
+  ]
+}
+
