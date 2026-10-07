@@ -6,7 +6,9 @@ Phases (each one resumable, nothing touches the destination until `upload` witho
 
   1. events   Download events for every (program x orgUnit) pair, filtered by date, paginated.
               Only events. No files. This is the "dry run" of the download: it writes
-              report.json and FAILS if any event is outside the allowed programs/orgUnits.
+              report.json and FAILS if any event is outside the allowed programs/orgUnits,
+              or if a program has events in org units that are not in the list (--allow-partial
+              to only warn).
   2. files    Download the files of the file-type data values of the events saved in phase 1.
   3. verify   Offline checks: server totals vs. events on disk, no duplicates, every file value
               has a non-empty file on disk.
@@ -157,6 +159,55 @@ def cmd_events(a):
             print("   ", v)
         sys.exit(1)
     print("\nOK: all events inside the allowed programs and org units.")
+
+    missing = program_coverage(s, a, programs, out)
+    if missing and not a.allow_partial:
+        print("Add the org units of the missing events to orgUnits, or use --allow-partial if this is intended.")
+        sys.exit(1)
+
+
+def program_server_total(s, a, program):
+    """Events of the program in the source, in every org unit the user can access, same date filter."""
+    params = {
+        "program": program,
+        "ouMode": "ACCESSIBLE",
+        "occurredAfter": a.after,
+        "occurredBefore": a.before,
+        "pageSize": 1,
+        "totalPages": "true",
+        "fields": "event",
+    }
+    r = s.get(f"{api(a.src)}/tracker/events", params=params)
+    r.raise_for_status()
+    body = r.json()
+    return body.get("total", (body.get("pager") or {}).get("total"))  # 2.41 / 2.40
+
+
+def program_coverage(s, a, programs, out):
+    """
+    The org unit list may leave out some of the org units where a program has events
+    (e.g. org units outside the EUR branch). Those events are never requested, so the
+    checks above cannot see them. Compare the program total in the source with the
+    unique events on disk.
+    """
+    on_disk = {}
+    for _, ev in iter_events(out):
+        on_disk.setdefault(ev.get("program"), set()).add(ev["event"])
+
+    print("\n=== Coverage (program: on disk / total in source for all accessible org units) ===")
+    missing = []
+    for program in programs:
+        total = program_server_total(s, a, program)
+        got = len(on_disk.get(program, set()))
+        flag = "OK " if total is not None and got >= total else "BAD"
+        print(f"  {flag} {program}: {got} / {total}")
+        if flag == "BAD":
+            missing.append((program, got, total))
+    if missing:
+        print(f"\n!!! {len(missing)} programs have events in org units that are not in orgUnits.")
+    else:
+        print("\nOK: every event of the programs was downloaded.")
+    return missing
 
 
 # ----------------------------------------------------------------------------- 2. files
@@ -430,6 +481,11 @@ def main():
     e.add_argument("--after", required=True, help="occurredAfter YYYY-MM-DD")
     e.add_argument("--before", required=True, help="occurredBefore YYYY-MM-DD")
     e.add_argument("--out", required=True)
+    e.add_argument(
+        "--allow-partial",
+        action="store_true",
+        help="do not fail when a program has events in org units that are not in the list",
+    )
     e.set_defaults(fn=cmd_events)
 
     f = sub.add_parser("files")
