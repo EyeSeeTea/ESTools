@@ -1,0 +1,13 @@
+{
+  "timezone": "Europe/Madrid",
+  "passwords_file": "~/.dhis2_tokens",
+  "servers": {
+    "dev-1": {"url": "https://dhis2-dev-1.example.org", "api_version": "41", "credentials_key": "dev_post"},
+    "dev-2": {"url": "https://dhis2.example.org/dev-2", "credentials_key": "demo_user;demo_pass"},
+    "prod-1": {"url": "https://dhis2-prod-1.example.org", "api_version": "41"}
+  },
+  "groups": {
+    "dev": ["dev-1", "dev-2"],
+    "prod": ["prod-1"]
+  }
+}
