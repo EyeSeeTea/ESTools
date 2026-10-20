@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>DHIS2 Notice Guide</title>
+<style>
+:root{
+  --bg:#f6f3ee; --card:#fffdf9; --fg:#1f2328; --muted:#5d646c; --line:#d9d3c8;
+  --ink:#27506b; --ink-soft:#e3edf3; --notice:#c0392b; --notice-soft:#f8e4e1;
+  --ok:#2f7d4f; --code-bg:#1f2933; --code-fg:#e8eef3;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14181c; --card:#1b2127; --fg:#e6e9ec; --muted:#9aa4ad; --line:#2f3841;
+  --ink:#8ec1e0; --ink-soft:#1f2f3a; --notice:#ff7b6b; --notice-soft:#3a2220;
+  --ok:#6cc58d; --code-bg:#0d1115; --code-fg:#dce6ee; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#14181c; --card:#1b2127; --fg:#e6e9ec; --muted:#9aa4ad; --line:#2f3841;
+  --ink:#8ec1e0; --ink-soft:#1f2f3a; --notice:#ff7b6b; --notice-soft:#3a2220;
+  --ok:#6cc58d; --code-bg:#0d1115; --code-fg:#dce6ee; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);margin:0;
+  font:16px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:24px 64px}
+.wrap{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{text-wrap:balance;line-height:1.2;margin:0}
+h1{font-size:2rem;letter-spacing:-.01em}
+h2{font-size:1.35rem;display:flex;gap:.6rem;align-items:baseline}
+h2 .n{font:600 .8rem ui-monospace,monospace;color:var(--bg);background:var(--ink);padding:.15rem .5rem;border-radius:4px}
+p{margin:0 0 .75rem;max-width:68ch}
+code,pre{font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;font-size:.88rem}
+code{background:var(--ink-soft);color:var(--ink);padding:.1rem .35rem;border-radius:4px}
+pre{background:var(--code-bg);color:var(--code-fg);padding:.9rem 1rem;border-radius:8px;overflow-x:auto;margin:.5rem 0 1rem;line-height:1.55}
+pre .c{color:#8fa1b0}
+section{display:flex;flex-direction:column;gap:.5rem;min-width:0}
+header.top{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap}
+.sub{color:var(--muted);max-width:60ch;margin-top:.5rem}
+.tools{display:flex;gap:.5rem}
+.tools button{font:inherit;font-size:.85rem;padding:.35rem .8rem;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;cursor:pointer}
+.tools button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1rem 1.1rem;min-width:0}
+.scroll{overflow-x:auto}
+figure{margin:0}
+figcaption{color:var(--muted);font-size:.9rem;margin-top:.5rem;max-width:75ch}
+ol.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:flex;flex-direction:column;gap:.9rem}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:2.2rem minmax(0,1fr);gap:.8rem}
+ol.steps>li::before{content:counter(s);width:2rem;height:2rem;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:700}
+ol.steps h3{font-size:1.02rem;margin-bottom:.2rem}
+ol.steps p{margin-bottom:.4rem}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:.5rem .7rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.note{border-left:4px solid var(--notice);background:var(--notice-soft);padding:.7rem 1rem;border-radius:0 8px 8px 0;max-width:75ch}
+.note p:last-child{margin:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+
+/* language switch: English by default */
+.es{display:none}
+:root[data-lang="es"] .en{display:none}
+:root[data-lang="es"] .es{display:revert}
+
+/* diagram */
+svg{max-width:100%;height:auto;display:block}
+svg text{fill:currentColor;font:13px ui-sans-serif,system-ui,sans-serif}
+svg .small{font-size:11px;fill:var(--muted)}
+svg .lane{fill:var(--card);stroke:var(--line)}
+svg .lane-label{font-weight:700;font-size:12px;letter-spacing:.06em;fill:var(--muted)}
+svg .box{fill:var(--ink-soft);stroke:var(--ink);stroke-width:1.5}
+svg .box.red{fill:var(--notice-soft);stroke:var(--notice)}
+svg .box.ok{fill:var(--card);stroke:var(--ok);stroke-width:1.5}
+svg .arrow{stroke:var(--fg);stroke-width:1.5;fill:none}
+svg .arrow.dash{stroke-dasharray:5 4;stroke:var(--muted)}
+svg .lbl{font-size:11px;font-weight:600}
+svg .bold{font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div>
+    <h1>DHIS2 Notice Guide</h1>
+    <p class="sub en">Put a maintenance notice on top of the login page of one or many DHIS2 instances, and have it removed automatically when the window is over.</p>
+    <p class="sub es">Pon un aviso de mantenimiento encima del mensaje de la pantalla de login de una o varias instancias DHIS2, y que se quite solo al terminar la ventana.</p>
+  </div>
+  <div class="tools" role="group" aria-label="Language">
+    <button type="button" data-set="en" aria-pressed="true">English</button>
+    <button type="button" data-set="es" aria-pressed="false">Español</button>
+  </div>
+</header>
+
+<section>
+  <h2><span class="n">0</span><span class="en">The idea in one picture</span><span class="es">La idea en un esquema</span></h2>
+  <figure class="card scroll">
+    <svg viewBox="0 0 840 400" width="840" role="img" aria-label="Lifecycle of a notice: you write and apply it, the script publishes it and saves a job, cron removes it after the end time">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+      </defs>
+      <!-- lanes -->
+      <rect class="lane" x="4" y="10" width="832" height="80" rx="8"/>
+      <rect class="lane" x="4" y="100" width="832" height="80" rx="8"/>
+      <rect class="lane" x="4" y="190" width="832" height="80" rx="8"/>
+      <text class="lane-label" x="16" y="30"><tspan class="en">YOU</tspan><tspan class="es">TÚ</tspan></text>
+      <text class="lane-label" x="16" y="120"><tspan class="en">SCRIPT</tspan><tspan class="es">SCRIPT</tspan></text>
+      <text class="lane-label" x="16" y="210"><tspan class="en">CRON · EVERY HOUR</tspan><tspan class="es">CRON · CADA HORA</tspan></text>
+
+      <!-- lane 1 -->
+      <rect class="box" x="115" y="30" width="150" height="50" rx="6"/>
+      <text x="190" y="52" text-anchor="middle" class="bold"><tspan class="en">1 · Write notice</tspan><tspan class="es">1 · Escribir aviso</tspan></text>
+      <text x="190" y="68" text-anchor="middle" class="small">.json + .html</text>
+      <rect class="box" x="295" y="30" width="150" height="50" rx="6"/>
+      <text x="370" y="52" text-anchor="middle" class="bold">2 · check</text>
+      <text x="370" y="68" text-anchor="middle" class="small"><tspan class="en">read-only</tspan><tspan class="es">solo lectura</tspan></text>
+      <rect class="box red" x="475" y="30" width="150" height="50" rx="6"/>
+      <text x="550" y="52" text-anchor="middle" class="bold">3 · apply</text>
+      <text x="550" y="68" text-anchor="middle" class="small"><tspan class="en">summary → y/N</tspan><tspan class="es">resumen → y/N</tspan></text>
+      <path class="arrow" d="M265 55H293" marker-end="url(#ar)"/>
+      <path class="arrow" d="M445 55H473" marker-end="url(#ar)"/>
+
+      <!-- lane 2 -->
+      <rect class="box red" x="475" y="120" width="150" height="50" rx="6"/>
+      <text x="550" y="142" text-anchor="middle" class="bold"><tspan class="en">Notice on top</tspan><tspan class="es">Aviso encima</tspan></text>
+      <text x="550" y="158" text-anchor="middle" class="small">default + en</text>
+      <rect class="box" x="655" y="120" width="150" height="50" rx="6"/>
+      <text x="730" y="142" text-anchor="middle" class="bold"><tspan class="en">Saves the job</tspan><tspan class="es">Guarda el job</tspan></text>
+      <text x="730" y="158" text-anchor="middle" class="small">state/jobs/&lt;id&gt;.json</text>
+      <path class="arrow" d="M550 80V118" marker-end="url(#ar)"/>
+      <text x="558" y="104" class="lbl">y</text>
+      <path class="arrow" d="M625 145H653" marker-end="url(#ar)"/>
+
+      <!-- lane 3 -->
+      <rect class="box" x="115" y="210" width="150" height="50" rx="6"/>
+      <text x="190" y="232" text-anchor="middle" class="bold">tick</text>
+      <text x="190" y="248" text-anchor="middle" class="small"><tspan class="en">reads the jobs</tspan><tspan class="es">lee los jobs</tspan></text>
+      <rect class="box" x="295" y="210" width="150" height="50" rx="6"/>
+      <text x="370" y="232" text-anchor="middle" class="bold"><tspan class="en">End time passed?</tspan><tspan class="es">¿Pasó la hora fin?</tspan></text>
+      <text x="370" y="248" text-anchor="middle" class="small"><tspan class="en">no → silent, exits</tspan><tspan class="es">no → silencio, sale</tspan></text>
+      <rect class="box red" x="475" y="210" width="150" height="50" rx="6"/>
+      <text x="550" y="232" text-anchor="middle" class="bold"><tspan class="en">Removes the block</tspan><tspan class="es">Quita el bloque</tspan></text>
+      <text x="550" y="248" text-anchor="middle" class="small"><tspan class="en">GET → clean → POST</tspan><tspan class="es">GET → limpia → POST</tspan></text>
+      <rect class="box ok" x="655" y="210" width="150" height="50" rx="6"/>
+      <text x="730" y="232" text-anchor="middle" class="bold"><tspan class="en">Job = finished</tspan><tspan class="es">Job = finished</tspan></text>
+      <text x="730" y="248" text-anchor="middle" class="small"><tspan class="en">kept as history</tspan><tspan class="es">queda de histórico</tspan></text>
+      <path class="arrow" d="M265 235H293" marker-end="url(#ar)"/>
+      <path class="arrow" d="M445 235H473" marker-end="url(#ar)"/>
+      <text x="452" y="228" class="lbl"><tspan class="en">yes</tspan><tspan class="es">sí</tspan></text>
+      <path class="arrow" d="M625 235H653" marker-end="url(#ar)"/>
+      <path class="arrow dash" d="M730 170V208" marker-end="url(#ar)"/>
+      <text x="738" y="194" class="small"><tspan class="en">tick reads it</tspan><tspan class="es">tick lo lee</tspan></text>
+
+      <!-- DHIS2 message strip -->
+      <text class="lane-label" x="16" y="298"><tspan class="en">DHIS2 LOGIN MESSAGE</tspan><tspan class="es">MENSAJE DE LOGIN EN DHIS2</tspan></text>
+      <rect class="box ok" x="115" y="312" width="150" height="56" rx="6"/>
+      <text x="190" y="336" text-anchor="middle" class="bold"><tspan class="en">Original</tspan><tspan class="es">Original</tspan></text>
+      <text x="190" y="352" text-anchor="middle" class="small"><tspan class="en">before</tspan><tspan class="es">antes</tspan></text>
+      <rect class="box red" x="385" y="312" width="150" height="56" rx="6"/>
+      <text x="460" y="336" text-anchor="middle" class="bold" style="fill:var(--notice)"><tspan class="en">NOTICE + original</tspan><tspan class="es">AVISO + original</tspan></text>
+      <text x="460" y="352" text-anchor="middle" class="small"><tspan class="en">visible on login</tspan><tspan class="es">visible en el login</tspan></text>
+      <rect class="box ok" x="655" y="312" width="150" height="56" rx="6"/>
+      <text x="730" y="336" text-anchor="middle" class="bold"><tspan class="en">Original</tspan><tspan class="es">Original</tspan></text>
+      <text x="730" y="352" text-anchor="middle" class="small"><tspan class="en">restored</tspan><tspan class="es">restaurado</tspan></text>
+      <path class="arrow" d="M265 340H383" marker-end="url(#ar)"/>
+      <text x="324" y="332" text-anchor="middle" class="lbl">apply</text>
+      <path class="arrow" d="M535 340H653" marker-end="url(#ar)"/>
+      <text x="594" y="332" text-anchor="middle" class="lbl">tick</text>
+      <text x="594" y="386" text-anchor="middle" class="small"><tspan class="en">up to 1 h after the end time</tspan><tspan class="es">hasta 1 h después de la hora fin</tspan></text>
+    </svg>
+    <figcaption class="en">You only do steps 1–3. The script publishes the notice and writes a job file. Cron runs <code>tick</code> every hour: when a job's end time has passed it removes exactly the block it added and marks the job finished. No notice file is deleted or moved.</figcaption>
+    <figcaption class="es">Tú solo haces los pasos 1–3. El script publica el aviso y escribe un fichero de job. Cron ejecuta <code>tick</code> cada hora: cuando la hora fin ya pasó, quita exactamente el bloque que añadió y marca el job como terminado. No se borra ni se mueve ningún fichero de avisos.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2><span class="n">1</span><span class="en">Add a new notice</span><span class="es">Añadir un aviso nuevo</span></h2>
+  <p class="en">A notice is two small files in <code>notices/</code>: the text (HTML) and a JSON that says where and until when. Easiest path: copy the example.</p>
+  <p class="es">Un aviso son dos ficheros pequeños en <code>notices/</code>: el texto (HTML) y un JSON que dice dónde y hasta cuándo. Lo más fácil: copiar el ejemplo.</p>
+  <ol class="steps">
+    <li><div>
+      <h3><span class="en">Copy the example</span><span class="es">Copia el ejemplo</span></h3>
+      <pre>cd /path/to/dhis2_notice
+cp notices/example.html notices/2026-11-13-prod.html
+cp notices/example.json notices/2026-11-13-prod.json</pre>
+    </div></li>
+    <li><div>
+      <h3><span class="en">Write the message (HTML)</span><span class="es">Escribe el mensaje (HTML)</span></h3>
+      <p class="en">It is published exactly as written, so the colour and alignment go inside the file. Always in English.</p>
+      <p class="es">Se publica tal cual, así que el color y la alineación van dentro del fichero. Siempre en inglés.</p>
+      <pre>&lt;center&gt;&lt;span style="color:red"&gt;&lt;b&gt;
+Scheduled update: this instance will be upgraded on 13 November 2026 from 09:00 to 13:00 CET.&lt;br/&gt;
+The system may be unavailable during this period. Sorry for the inconvenience.
+&lt;/b&gt;&lt;/span&gt;&lt;/center&gt;</pre>
+    </div></li>
+    <li><div>
+      <h3><span class="en">Fill in the JSON</span><span class="es">Rellena el JSON</span></h3>
+      <pre>{
+  "servers": ["prod"],                      <span class="c">// server keys and/or groups from servers.json</span>
+  "end": "2026-11-14 09:00",                <span class="c">// when it is removed (Europe/Madrid)</span>
+  "message_file": "2026-11-13-prod.html"    <span class="c">// the HTML, next to this file</span>
+}</pre>
+      <p class="en">Remove the <code>//</code> comments in the real file (JSON does not allow them). Optional <code>"locale": "fr"</code> writes the notice only to that language.</p>
+      <p class="es">Quita los comentarios <code>//</code> en el fichero real (JSON no los admite). Opcional: <code>"locale": "fr"</code> escribe el aviso solo en ese idioma.</p>
+    </div></li>
+    <li><div>
+      <h3><span class="en">Check, then dry run</span><span class="es">Comprueba y simula</span></h3>
+      <pre>./dhis2_notice.py check prod                                     <span class="c"># credentials found? current message?</span>
+./dhis2_notice.py apply notices/2026-11-13-prod.json --dry-run   <span class="c"># validates, changes nothing</span></pre>
+    </div></li>
+    <li><div>
+      <h3><span class="en">Apply</span><span class="es">Aplica</span></h3>
+      <pre>./dhis2_notice.py apply notices/2026-11-13-prod.json</pre>
+      <p class="en">It prints a summary (servers, URLs, end time, text). Type <code>y</code> to publish; anything else cancels.</p>
+      <p class="es">Muestra un resumen (servidores, URLs, hora fin, texto). Escribe <code>y</code> para publicar; cualquier otra cosa cancela.</p>
+    </div></li>
+    <li><div>
+      <h3><span class="en">Verify and forget</span><span class="es">Verifica y olvídate</span></h3>
+      <p class="en">Open a login page to see the banner, and run <code>./dhis2_notice.py status</code>: the job must be <code>active</code>. Cron removes it after the end time.</p>
+      <p class="es">Abre un login para ver el banner y ejecuta <code>./dhis2_notice.py status</code>: el job debe estar <code>active</code>. Cron lo quita pasada la hora fin.</p>
+    </div></li>
+  </ol>
+  <div class="note">
+    <p class="en"><b>Rules:</b> <code>end</code> must be in the future. A server can have only one active notice per language. To change a running notice, <code>restore</code> it first and apply again.</p>
+    <p class="es"><b>Reglas:</b> <code>end</code> debe estar en el futuro. Un servidor solo puede tener un aviso activo por idioma. Para cambiar uno en curso, haz <code>restore</code> y vuelve a aplicar.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">2</span><span class="en">How to run it</span><span class="es">Cómo se ejecuta</span></h2>
+  <div class="card scroll">
+  <table>
+    <thead><tr><th><span class="en">Command</span><span class="es">Comando</span></th><th><span class="en">What it does</span><span class="es">Qué hace</span></th></tr></thead>
+    <tbody>
+      <tr><td><code>./dhis2_notice.py check &lt;server|group&gt;</code></td><td><span class="en">Read-only. Shows which credentials are used and the current message.</span><span class="es">Solo lectura. Muestra qué credenciales usa y el mensaje actual.</span></td></tr>
+      <tr><td><code>apply notices/x.json --dry-run</code></td><td><span class="en">Validates and shows the summary. Changes nothing.</span><span class="es">Valida y muestra el resumen. No cambia nada.</span></td></tr>
+      <tr><td><code>apply notices/x.json</code></td><td><span class="en">Summary, asks <code>y/N</code>, publishes and saves the job.</span><span class="es">Resumen, pregunta <code>y/N</code>, publica y guarda el job.</span></td></tr>
+      <tr><td><code>apply … --minutes 5</code></td><td><span class="en">Testing: ignores the file's <code>end</code>, ends in 5 minutes.</span><span class="es">Pruebas: ignora el <code>end</code> del fichero, termina en 5 minutos.</span></td></tr>
+      <tr><td><code>status</code></td><td><span class="en">Lists jobs and their state.</span><span class="es">Lista los jobs y su estado.</span></td></tr>
+      <tr><td><code>restore [job-id]</code></td><td><span class="en">Removes the notice now (all open jobs, or one).</span><span class="es">Quita el aviso ya (todos los jobs abiertos, o uno).</span></td></tr>
+      <tr><td><code>tick</code></td><td><span class="en">Removes notices whose end has passed. Cron runs it; it prints nothing if there is nothing to do.</span><span class="es">Quita los avisos cuya hora fin pasó. Lo ejecuta cron; no imprime nada si no hay nada que hacer.</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <h3 class="en" style="margin-top:.8rem">Cron (once, on the server)</h3>
+  <h3 class="es" style="margin-top:.8rem">Cron (una vez, en el servidor)</h3>
+  <pre>mkdir -p state
+crontab -e
+<span class="c"># add:</span>
+0 * * * * cd /path/to/dhis2_notice &amp;&amp; python3 dhis2_notice.py tick &gt;&gt; state/tick.log 2&gt;&amp;1</pre>
+  <p class="en">An empty <code>state/tick.log</code> is normal. To see what happened use <code>./dhis2_notice.py status</code> and <code>tail state/notice.log</code>.</p>
+  <p class="es">Un <code>state/tick.log</code> vacío es normal. Para ver qué pasó usa <code>./dhis2_notice.py status</code> y <code>tail state/notice.log</code>.</p>
+</section>
+
+<section>
+  <h2><span class="n">3</span><span class="en">Where things live</span><span class="es">Dónde está cada cosa</span></h2>
+  <div class="card scroll">
+  <table>
+    <thead><tr><th><span class="en">Path</span><span class="es">Ruta</span></th><th><span class="en">Purpose</span><span class="es">Para qué</span></th></tr></thead>
+    <tbody>
+      <tr><td><code>dhis2_notice.py</code></td><td><span class="en">The script (Python 3.9+, no dependencies).</span><span class="es">El script (Python 3.9+, sin dependencias).</span></td></tr>
+      <tr><td><code>servers.json</code></td><td><span class="en">Servers, groups, timezone. No secrets.</span><span class="es">Servidores, grupos, zona horaria. Sin secretos.</span></td></tr>
+      <tr><td><code>~/.dhis2_tokens</code></td><td><span class="en">Credentials (PAT or user:password), <code>chmod 600</code>. Never printed or logged.</span><span class="es">Credenciales (PAT o usuario:contraseña), <code>chmod 600</code>. Nunca se imprimen ni se registran.</span></td></tr>
+      <tr><td><code>notices/</code></td><td><span class="en">Your notices (.json + .html). Never modified by the script.</span><span class="es">Tus avisos (.json + .html). El script nunca los modifica.</span></td></tr>
+      <tr><td><code>state/jobs/</code></td><td><span class="en">One file per apply. Do not delete <code>active</code> ones: they hold the text to remove.</span><span class="es">Un fichero por apply. No borres los <code>active</code>: contienen el texto a quitar.</span></td></tr>
+      <tr><td><code>state/notice.log</code></td><td><span class="en">Timestamped actions with URL and added/removed text.</span><span class="es">Acciones con fecha y hora, URL y texto añadido/quitado.</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">4</span><span class="en">If something goes wrong</span><span class="es">Si algo falla</span></h2>
+  <div class="card scroll">
+  <table>
+    <thead><tr><th><span class="en">Message</span><span class="es">Mensaje</span></th><th><span class="en">Meaning</span><span class="es">Significado</span></th></tr></thead>
+    <tbody>
+      <tr><td><code>401 … token does not exists</code></td><td><span class="en">Wrong token, or a token from another instance.</span><span class="es">Token incorrecto, o de otra instancia.</span></td></tr>
+      <tr><td><code>401 … http method is not allowed</code></td><td><span class="en">The PAT does not allow GET and/or POST.</span><span class="es">El PAT no permite GET y/o POST.</span></td></tr>
+      <tr><td><code>403 Access is denied</code></td><td><span class="en">The user cannot edit system settings.</span><span class="es">El usuario no puede editar ajustes del sistema.</span></td></tr>
+      <tr><td><code>'x' not found in the passwords file</code></td><td><span class="en"><code>credentials_key</code> does not match an entry (case sensitive).</span><span class="es"><code>credentials_key</code> no coincide con ninguna entrada (distingue mayúsculas).</span></td></tr>
+      <tr><td><code>already have an active notice</code></td><td><span class="en">Run <code>status</code>, then <code>restore</code>.</span><span class="es">Ejecuta <code>status</code> y luego <code>restore</code>.</span></td></tr>
+      <tr><td><code>notice block not found … left untouched</code></td><td><span class="en">Someone already removed or edited it by hand. Nothing was changed.</span><span class="es">Alguien ya lo quitó o editó a mano. No se cambió nada.</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="en">Job state <code>restore_failed</code> means the removal did not work: read <code>state/notice.log</code>, fix the cause and run <code>restore</code>.</p>
+  <p class="es">El estado <code>restore_failed</code> indica que no se pudo quitar: lee <code>state/notice.log</code>, corrige la causa y ejecuta <code>restore</code>.</p>
+</section>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, btns=document.querySelectorAll('[data-set]'), KEY='dhis2-notice-lang';
+  function set(l){
+    root.setAttribute('data-lang',l); root.lang=l;
+    btns.forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.set===l))});
+    try{localStorage.setItem(KEY,l)}catch(e){}
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){set(b.dataset.set)})});
+  var l='en'; try{l=localStorage.getItem(KEY)||'en'}catch(e){}
+  set(l==='es'?'es':'en');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+# real configuration and secrets stay out of the repo
+.passwords
+servers.json
+notices/*
+!notices/example.json
+!notices/example.html
+__pycache__/
+state/

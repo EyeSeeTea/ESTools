@@ -1,0 +1,5 @@
+{
+  "servers": ["dev"],
+  "end": "2026-11-13 13:00",
+  "message_file": "example.html"
+}
